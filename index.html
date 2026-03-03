@@ -1,72 +1,70 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskTalk - しゃべるだけでやること整理</title>
+    <title>Poplist</title>
     <link rel="stylesheet" href="./style.css">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Fredoka:wght@600;700&family=Righteous&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <header class="header-pattern-1">
-            <h1 class="app-title">TaskTalk</h1>
-            <p class="tagline">しゃべるだけでやること整理</p>
-            <p class="description">話すだけでタスクリストを完全自動作成<br>あとはどんどんこなすだけ</p>
-            <p class="cta-text">もう無理！と思ったらまずTaskTalkに吐き出そう</p>
+        <header>
+            <h1 class="app-title">Poplist</h1>
+            <p class="tagline">Speak. Sort. Ship.</p>
+            <p class="description">Talk through what's on your plate.<br>Get a task list. Start knocking it out.</p>
+            <p class="cta-text">Overwhelmed? Just start talking.</p>
         </header>
 
         <div class="voice-input-section">
             <button id="voiceBtn" class="voice-btn">
-                <span class="btn-text">話してみる</span>
+                <span class="btn-text">Speak</span>
             </button>
             <div id="statusText" class="status-text"></div>
         </div>
 
         <div class="filter-section hidden">
-            <button class="filter-btn" data-filter="today">今日</button>
-            <button class="filter-btn" data-filter="week">今週</button>
-            <button class="filter-btn" data-filter="later">そのうち</button>
-            <button class="filter-btn active" data-filter="all">すべて</button>
+            <button class="filter-btn" data-filter="today">Today</button>
+            <button class="filter-btn" data-filter="week">This Week</button>
+            <button class="filter-btn" data-filter="later">Later</button>
+            <button class="filter-btn active" data-filter="all">All</button>
         </div>
 
         <div id="tasksContainer" class="tasks-container hidden"></div>
 
-        <button id="settingsBtn" class="settings-btn">カテゴリ設定</button>
-       
+        <button id="settingsBtn" class="settings-btn">Settings</button>
     </div>
 
-    <!-- API設定モーダル -->
+    <!-- API Settings Modal -->
     <div id="apiSettingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>ChatGPT API設定</h2>
+                <h2>API Settings</h2>
                 <button class="close-btn" id="closeApiModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="api-info">
-                    <p>タスクの抽出にChatGPT APIを使用します。</p>
-                    <p>APIキーは <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a> で取得できます。</p>
-                    <p><small>※ APIキーはブラウザのローカルストレージに保存され、外部には送信されません。</small></p>
+                    <p>Poplist uses the ChatGPT API to extract tasks from your speech.</p>
+                    <p>Get an API key at <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>.</p>
+                    <p><small>Your key is stored locally and never sent anywhere else.</small></p>
                 </div>
                 <div class="api-key-input">
                     <label>OpenAI API Key</label>
                     <input type="password" id="apiKeyInput" placeholder="sk-...">
-                    <button id="saveApiKey" class="save-btn">保存</button>
+                    <button id="saveApiKey" class="save-btn">Save</button>
                     <div id="apiKeyStatus" class="api-status"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- カテゴリ設定モーダル -->
+    <!-- Category Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>カテゴリ設定</h2>
+                <h2>Categories</h2>
                 <button class="close-btn" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -75,7 +73,7 @@
         </div>
     </div>
 
-    <!-- バブル破裂用のSVGフィルター -->
+    <!-- SVG filter for bubble pop effect -->
     <svg style="position: absolute; width: 0; height: 0;">
         <defs>
             <filter id="goo">
