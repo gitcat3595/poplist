@@ -2,7 +2,7 @@
 const i18n = {
     en: {
         speechLang: 'en-US',
-        tagline: 'Speak. Sort. Ship.',
+        tagline: 'Speak. Sort. POP!',
         description: 'Talk through what\'s on your plate.<br>Get a task list. Start knocking it out.',
         cta: 'Overwhelmed? Just start talking.',
         speak: 'Speak',
@@ -55,7 +55,7 @@ Return only valid JSON, no other text.`
 
     ja: {
         speechLang: 'ja-JP',
-        tagline: '話す。整理する。実行する。',
+        tagline: '話す。整理する。POP！',
         description: '頭の中にあることを話しましょう。<br>タスクリストを作成して、こなしていきましょう。',
         cta: '圧倒されていますか？ただ話し始めましょう。',
         speak: '話す',
@@ -107,7 +107,7 @@ Return only valid JSON, no other text.`
 
     fr: {
         speechLang: 'fr-FR',
-        tagline: 'Parlez. Triez. Livrez.',
+        tagline: 'Parlez. Triez. POP !',
         description: 'Exprimez ce que vous avez à faire.<br>Obtenez une liste. Commencez à avancer.',
         cta: 'Submergé ? Commencez juste à parler.',
         speak: 'Parler',
@@ -160,7 +160,7 @@ Renvoyez uniquement du JSON valide, sans autre texte.`
 
     zh: {
         speechLang: 'zh-CN',
-        tagline: '说话。整理。完成。',
+        tagline: '说话。整理。POP！',
         description: '说出您要做的事情。<br>获取任务列表，开始行动。',
         cta: '不知所措？开始说话吧。',
         speak: '说话',
