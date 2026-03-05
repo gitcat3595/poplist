@@ -1,15 +1,15 @@
 :root {
-    --bg: #ffffff;
-    --surface: #f7f7f7;
-    --surface-raised: #ffffff;
-    --border: #e8e8e8;
-    --border-hover: #c4c4c4;
+    --bg: #f2f2f7;
+    --surface: #ffffff;
+    --surface-raised: #f9f9f9;
+    --border: #e0e0e5;
+    --border-hover: #b8b8c0;
     --text-primary: #111111;
     --text-secondary: #666666;
     --text-muted: #aaaaaa;
     --accent: #111111;
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.12);
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
     --red: #cc3333;
     --red-glow: rgba(204, 51, 51, 0.3);
 }
@@ -192,11 +192,17 @@ header.hidden {
     display: none;
 }
 
+/* Ensure full-width items inside the task grid are centred */
+.tasks-container .voice-input-section,
+.tasks-container .completion-screen {
+    grid-column: 1 / -1;
+}
+
 /* Category card */
 .category-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.2s ease;
     position: relative;
