@@ -224,7 +224,7 @@ const app = {
     currentFilter: 'all',
     recognition: null,
     lang: 'en',
-    apiKey: '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'
+    apiKey: ''
 };
 
 // Clear tasks on load (dev mode)
@@ -367,13 +367,20 @@ function initSpeechRecognition() {
     return true;
 }
 
+// API key modal
+function openApiSettings() {
+    const input = document.getElementById('apiKeyInput');
+    if (input && app.apiKey) input.value = app.apiKey;
+    document.getElementById('apiSettingsModal').classList.add('show');
+}
+
 // Extract tasks with ChatGPT
 async function processWithChatGPT(text) {
     console.log('Extracting tasks with ChatGPT...');
 
     if (!app.apiKey) {
-        console.log('No API key - using dummy data');
-        useDummyData(text);
+        document.getElementById('statusText').textContent = 'Add your OpenAI API key to get started';
+        openApiSettings();
         return;
     }
 
@@ -433,10 +440,15 @@ async function processWithChatGPT(text) {
 
     } catch (error) {
         console.error('ChatGPT API error:', error.message);
-        document.getElementById('statusText').textContent = t.apiError(error.message);
-        setTimeout(() => {
-            useDummyData(text);
-        }, 1000);
+        if (error.message.includes('401') || error.message.includes('403')) {
+            document.getElementById('statusText').textContent = 'API key invalid — please update it';
+            setTimeout(() => openApiSettings(), 1000);
+        } else {
+            document.getElementById('statusText').textContent = t.apiError(error.message);
+            setTimeout(() => {
+                document.getElementById('statusText').textContent = t.readyPrompt;
+            }, 3000);
+        }
     }
 }
 
@@ -588,10 +600,10 @@ function renderTasks() {
             const bubbleColor = lightenColor(category.color, 20);
             return `
             <div class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}" data-category="${category.id}" draggable="true">
-                <div class="task-bubble" style="--bubble-color: ${bubbleColor}; background: ${bubbleColor};" onclick="toggleTask(${task.id})"></div>
+                <div class="task-bubble" style="--bubble-color: ${bubbleColor}; background: ${bubbleColor};" onclick="event.stopPropagation(); toggleTask(${task.id})"></div>
                 <div class="task-content">
-                    <span class="task-text" onclick="editTask(${task.id})" contenteditable="false">${task.text}</span>
-                    <div class="task-timing" onclick="cycleTiming(${task.id})">
+                    <span class="task-text" onclick="event.stopPropagation(); editTask(${task.id})" contenteditable="false">${task.text}</span>
+                    <div class="task-timing" onclick="event.stopPropagation(); cycleTiming(${task.id})">
                         <span class="timing-display">${getTimingLabel(task.timing)}</span>
                     </div>
                 </div>
@@ -893,6 +905,15 @@ function openSettings() {
         </div>
     `).join('');
 
+    // API key button at the bottom of the settings modal
+    settingsContainer.innerHTML += `
+        <div style="text-align:center; margin-top: 8px;">
+            <button onclick="openApiSettings()" style="background:transparent; border:1px solid var(--border); color:var(--text-secondary); padding:8px 20px; border-radius:4px; cursor:pointer; font-family:inherit; font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase;">
+                API Key
+            </button>
+        </div>
+    `;
+
     document.getElementById('settingsModal').classList.add('show');
 }
 
@@ -994,5 +1015,28 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             setLanguage(btn.dataset.lang);
         });
+    });
+
+    document.getElementById('closeApiModal')?.addEventListener('click', () => {
+        document.getElementById('apiSettingsModal').classList.remove('show');
+    });
+
+    document.getElementById('apiSettingsModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'apiSettingsModal') e.currentTarget.classList.remove('show');
+    });
+
+    document.getElementById('saveApiKey')?.addEventListener('click', () => {
+        const key = document.getElementById('apiKeyInput').value.trim();
+        const status = document.getElementById('apiKeyStatus');
+        if (!key) return;
+        app.apiKey = key;
+        localStorage.setItem('poplist_apikey', key);
+        status.textContent = 'Saved!';
+        status.className = 'api-status success';
+        setTimeout(() => {
+            status.textContent = '';
+            status.className = 'api-status';
+            document.getElementById('apiSettingsModal').classList.remove('show');
+        }, 1500);
     });
 });
