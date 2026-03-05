@@ -297,8 +297,9 @@ async function processWithChatGPT(text) {
         });
 
         if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error || `Server error ${response.status}`);
+            let errMsg = `Server error ${response.status}`;
+            try { const err = await response.json(); errMsg = err.error || errMsg; } catch {}
+            throw new Error(errMsg);
         }
 
         const result = await response.json();
