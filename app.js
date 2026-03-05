@@ -30,27 +30,7 @@ const i18n = {
         categoryName: 'Category name',
         colorLabel: 'Color',
         timings: { today: 'Today', week: 'Week', later: 'Later' },
-        cats: { work: 'Work', home: 'Home', personal: 'Personal', other: 'Other' },
-        gptPrompt: `You are a task extraction assistant.
-Extract actionable tasks from the user's speech and return them as JSON.
-
-Return only this JSON format:
-{
-  "tasks": [
-    {
-      "text": "Task description",
-      "category": "work" or "home" or "personal" or "other"
-    }
-  ]
-}
-
-Category rules:
-- work: job-related (meetings, emails, reports, deadlines)
-- home: household (shopping, cleaning, errands, repairs)
-- personal: self (gym, health, hobbies, learning)
-- other: anything else
-
-Return only valid JSON, no other text.`
+        cats: { work: 'Work', home: 'Home', personal: 'Personal', other: 'Other' }
     },
 
     ja: {
@@ -83,26 +63,7 @@ Return only valid JSON, no other text.`
         categoryName: 'カテゴリー名',
         colorLabel: '色',
         timings: { today: '今日', week: '今週', later: '後で' },
-        cats: { work: '仕事', home: '家', personal: '個人', other: 'その他' },
-        gptPrompt: `あなたはタスク抽出アシスタントです。ユーザーの音声からアクションタスクを抽出し、JSONとして返してください。
-
-以下のJSON形式のみで返してください：
-{
-  "tasks": [
-    {
-      "text": "タスクの説明",
-      "category": "work" または "home" または "personal" または "other"
-    }
-  ]
-}
-
-カテゴリールール：
-- work: 仕事関連（会議、メール、レポート、締め切り）
-- home: 家庭関連（買い物、掃除、用事、修理）
-- personal: 個人関連（ジム、健康、趣味、学習）
-- other: その他すべて
-
-有効なJSONのみを返してください。他のテキストは不要です。`
+        cats: { work: '仕事', home: '家', personal: '個人', other: 'その他' }
     },
 
     fr: {
@@ -135,27 +96,7 @@ Return only valid JSON, no other text.`
         categoryName: 'Nom de la catégorie',
         colorLabel: 'Couleur',
         timings: { today: "Auj.", week: 'Semaine', later: 'Plus tard' },
-        cats: { work: 'Travail', home: 'Maison', personal: 'Personnel', other: 'Autre' },
-        gptPrompt: `Vous êtes un assistant d'extraction de tâches.
-Extrayez les tâches actionnables du discours de l'utilisateur et renvoyez-les en JSON.
-
-Renvoyez uniquement ce format JSON :
-{
-  "tasks": [
-    {
-      "text": "Description de la tâche",
-      "category": "work" ou "home" ou "personal" ou "other"
-    }
-  ]
-}
-
-Règles de catégorie :
-- work : lié au travail (réunions, emails, rapports, délais)
-- home : ménage (courses, nettoyage, errands, réparations)
-- personal : personnel (gym, santé, loisirs, apprentissage)
-- other : tout le reste
-
-Renvoyez uniquement du JSON valide, sans autre texte.`
+        cats: { work: 'Travail', home: 'Maison', personal: 'Personnel', other: 'Autre' }
     },
 
     zh: {
@@ -188,27 +129,7 @@ Renvoyez uniquement du JSON valide, sans autre texte.`
         categoryName: '分类名称',
         colorLabel: '颜色',
         timings: { today: '今天', week: '本周', later: '稍后' },
-        cats: { work: '工作', home: '家庭', personal: '个人', other: '其他' },
-        gptPrompt: `您是一个任务提取助手。
-从用户的语音中提取可操作的任务，并以JSON格式返回。
-
-仅返回以下JSON格式：
-{
-  "tasks": [
-    {
-      "text": "任务描述",
-      "category": "work" 或 "home" 或 "personal" 或 "other"
-    }
-  ]
-}
-
-分类规则：
-- work：工作相关（会议、邮件、报告、截止日期）
-- home：家庭相关（购物、清洁、跑腿、维修）
-- personal：个人相关（健身、健康、爱好、学习）
-- other：其他任何事情
-
-仅返回有效的JSON，不要包含其他文本。`
+        cats: { work: '工作', home: '家庭', personal: '个人', other: '其他' }
     }
 };
 
@@ -223,8 +144,7 @@ const app = {
     ],
     currentFilter: 'all',
     recognition: null,
-    lang: 'en',
-    apiKey: ''
+    lang: 'en'
 };
 
 // Clear tasks on load (dev mode)
@@ -356,68 +276,32 @@ function initSpeechRecognition() {
             return;
         }
 
-        // Network or other errors — show message then load demo data
         statusText.textContent = i18n[app.lang].micError;
         setTimeout(() => {
-            if (app.tasks.length === 0) useDummyData('');
-            else statusText.textContent = i18n[app.lang].readyPrompt;
+            statusText.textContent = i18n[app.lang].readyPrompt;
         }, 2000);
     };
 
     return true;
 }
 
-// API key modal
-function openApiSettings() {
-    const input = document.getElementById('apiKeyInput');
-    if (input && app.apiKey) input.value = app.apiKey;
-    document.getElementById('apiSettingsModal').classList.add('show');
-}
-
-// Extract tasks with ChatGPT
+// Extract tasks via backend proxy (API key stays server-side)
 async function processWithChatGPT(text) {
-    console.log('Extracting tasks with ChatGPT...');
-
-    if (!app.apiKey) {
-        document.getElementById('statusText').textContent = 'Add your OpenAI API key to get started';
-        openApiSettings();
-        return;
-    }
-
     const t = i18n[app.lang];
 
     try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('/api/extract-tasks', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${app.apiKey}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                    {
-                        role: 'system',
-                        content: t.gptPrompt
-                    },
-                    {
-                        role: 'user',
-                        content: text
-                    }
-                ],
-                temperature: 0.3
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang: app.lang })
         });
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            const err = await response.json();
+            throw new Error(err.error || `Server error ${response.status}`);
         }
 
-        const data = await response.json();
-        const content = data.choices[0].message.content;
-        const result = JSON.parse(content);
-
-        console.log(`Tasks extracted: ${result.tasks.length}`);
+        const result = await response.json();
 
         result.tasks.forEach((taskData) => {
             app.tasks.push({
@@ -439,16 +323,11 @@ async function processWithChatGPT(text) {
         }, 3000);
 
     } catch (error) {
-        console.error('ChatGPT API error:', error.message);
-        if (error.message.includes('401') || error.message.includes('403')) {
-            document.getElementById('statusText').textContent = 'API key invalid — please update it';
-            setTimeout(() => openApiSettings(), 1000);
-        } else {
-            document.getElementById('statusText').textContent = t.apiError(error.message);
-            setTimeout(() => {
-                document.getElementById('statusText').textContent = t.readyPrompt;
-            }, 3000);
-        }
+        console.error('Error:', error.message);
+        document.getElementById('statusText').textContent = t.apiError(error.message);
+        setTimeout(() => {
+            document.getElementById('statusText').textContent = t.readyPrompt;
+        }, 3000);
     }
 }
 
@@ -905,15 +784,6 @@ function openSettings() {
         </div>
     `).join('');
 
-    // API key button at the bottom of the settings modal
-    settingsContainer.innerHTML += `
-        <div style="text-align:center; margin-top: 8px;">
-            <button onclick="openApiSettings()" style="background:transparent; border:1px solid var(--border); color:var(--text-secondary); padding:8px 20px; border-radius:4px; cursor:pointer; font-family:inherit; font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase;">
-                API Key
-            </button>
-        </div>
-    `;
-
     document.getElementById('settingsModal').classList.add('show');
 }
 
@@ -961,17 +831,11 @@ function loadCategories() {
     if (saved) app.categories = JSON.parse(saved);
 }
 
-function loadApiKey() {
-    const saved = localStorage.getItem('poplist_apikey');
-    if (saved) app.apiKey = saved;
-}
-
 // Boot
 document.addEventListener('DOMContentLoaded', () => {
     loadLang();
     loadCategories();
     loadTasks();
-    loadApiKey();
 
     setLanguage(app.lang);
 
@@ -1017,26 +881,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.getElementById('closeApiModal')?.addEventListener('click', () => {
-        document.getElementById('apiSettingsModal').classList.remove('show');
-    });
-
-    document.getElementById('apiSettingsModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'apiSettingsModal') e.currentTarget.classList.remove('show');
-    });
-
-    document.getElementById('saveApiKey')?.addEventListener('click', () => {
-        const key = document.getElementById('apiKeyInput').value.trim();
-        const status = document.getElementById('apiKeyStatus');
-        if (!key) return;
-        app.apiKey = key;
-        localStorage.setItem('poplist_apikey', key);
-        status.textContent = 'Saved!';
-        status.className = 'api-status success';
-        setTimeout(() => {
-            status.textContent = '';
-            status.className = 'api-status';
-            document.getElementById('apiSettingsModal').classList.remove('show');
-        }, 1500);
-    });
 });
