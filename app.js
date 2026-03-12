@@ -1,10 +1,16 @@
-// i18n strings
+// ==========================================
+// POPLIST - Voice Task Manager
+// Smart keyword-based classification (No AI)
+// Languages: English & Japanese
+// ==========================================
+
+// i18n translations
 const i18n = {
     en: {
         speechLang: 'en-US',
-        tagline: 'Speak. Sort. POP!',
-        description: 'Talk through what\'s on your plate.<br>Get a task list. Start knocking it out.',
-        cta: 'Overwhelmed? Just start talking.',
+        tagline: 'Have things popping up in your head?',
+        description: 'Talk through what\'s on your mind.<br>Get a task list and start knocking it out.',
+        cta: '',
         speak: 'Speak',
         speakAgain: 'Speak again',
         startNew: 'Start new list',
@@ -12,9 +18,7 @@ const i18n = {
         tapToStop: 'Tap to stop',
         building: 'Building your list...',
         readyPrompt: 'Speak to build your task list',
-        tasksAdded: (n) => `${n} tasks added`,
-        tasksDemoAdded: (n) => `${n} tasks added (demo)`,
-        apiError: (msg) => `API error: ${msg}`,
+        tasksAdded: (n) => `${n} task${n !== 1 ? 's' : ''} added`,
         micError: 'Error. Check mic permissions.',
         filterToday: 'Today',
         filterWeek: 'This Week',
@@ -23,381 +27,532 @@ const i18n = {
         settings: 'Settings',
         addTask: 'Add task',
         newTask: 'New task',
+        newTasksSection: 'New Tasks',
         noMatch: 'No tasks match this filter',
-        completionTitle: 'List cleared.<br>Get some rest.',
-        completionMsg: 'Everything\'s done.<br>Whenever you\'re ready, start a new list.',
-        modalCategories: 'Categories',
-        categoryName: 'Category name',
-        colorLabel: 'Color',
-        timings: { today: 'Today', week: 'Week', later: 'Later' },
-        cats: { work: 'Work', home: 'Home', personal: 'Personal', other: 'Other' }
+        completionTitle: 'All done!',
+        completionMessage: 'Nice work.',
+        categories: {
+            work: { name: 'Work', color: '#5B8FA3' },
+            home: { name: 'Home', color: '#7BA883' },
+            personal: { name: 'Personal', color: '#9B7BA8' },
+            other: { name: 'Other', color: '#B8B8B8' }
+        }
     },
-
     ja: {
         speechLang: 'ja-JP',
-        tagline: '話す。整理する。POP！',
-        description: '頭の中にあることを話しましょう。<br>タスクリストを作成して、こなしていきましょう。',
-        cta: '圧倒されていますか？ただ話し始めましょう。',
-        speak: '話す',
-        speakAgain: 'もう一度話す',
-        startNew: '新しいリストを始める',
+        tagline: 'まずは話してみよう',
+        description: 'リストができたら、あとはやるだけ',
+        cta: '',
+        speak: '話してみる',
+        speakAgain: 'また話す',
+        startNew: '新しいリスト',
         recording: '録音中...',
-        tapToStop: 'タップして停止',
-        building: 'リストを作成中...',
+        tapToStop: 'タップして終了',
+        building: 'リスト作成中...',
         readyPrompt: '話してタスクリストを作成',
         tasksAdded: (n) => `${n}件のタスクを追加しました`,
-        tasksDemoAdded: (n) => `${n}件のタスクを追加しました（デモ）`,
-        apiError: (msg) => `APIエラー: ${msg}`,
-        micError: 'エラー。マイクの権限を確認してください。',
+        micError: 'エラー。マイクの許可を確認してください。',
         filterToday: '今日',
         filterWeek: '今週',
-        filterLater: '後で',
+        filterLater: 'そのうち',
         filterAll: 'すべて',
         settings: '設定',
         addTask: 'タスクを追加',
         newTask: '新しいタスク',
-        noMatch: 'このフィルターに一致するタスクはありません',
-        completionTitle: 'リスト完了。<br>ゆっくり休んでください。',
-        completionMsg: 'すべて完了しました。<br>準備ができたら、新しいリストを始めましょう。',
-        modalCategories: 'カテゴリー',
-        categoryName: 'カテゴリー名',
-        colorLabel: '色',
-        timings: { today: '今日', week: '今週', later: '後で' },
-        cats: { work: '仕事', home: '家', personal: '個人', other: 'その他' }
-    },
+        newTasksSection: '新規タスク',
+        noMatch: 'タスクが見つかりません',
+        completionTitle: 'すべて完了！',
+        completionMessage: 'お疲れ様でした。',
+        categories: {
+            work: { name: '仕事', color: '#5B8FA3' },
+            home: { name: '家のこと', color: '#7BA883' },
+            personal: { name: '自分のこと', color: '#9B7BA8' },
+            other: { name: 'その他', color: '#B8B8B8' }
+        }
+    }
+};
 
-    fr: {
-        speechLang: 'fr-FR',
-        tagline: 'Parlez. Triez. POP !',
-        description: 'Exprimez ce que vous avez à faire.<br>Obtenez une liste. Commencez à avancer.',
-        cta: 'Submergé ? Commencez juste à parler.',
-        speak: 'Parler',
-        speakAgain: 'Parler à nouveau',
-        startNew: 'Commencer une nouvelle liste',
-        recording: 'Enregistrement...',
-        tapToStop: 'Appuyer pour arrêter',
-        building: 'Construction de votre liste...',
-        readyPrompt: 'Parlez pour créer votre liste de tâches',
-        tasksAdded: (n) => `${n} tâches ajoutées`,
-        tasksDemoAdded: (n) => `${n} tâches ajoutées (démo)`,
-        apiError: (msg) => `Erreur API : ${msg}`,
-        micError: 'Erreur. Vérifiez les permissions du microphone.',
-        filterToday: "Aujourd'hui",
-        filterWeek: 'Cette semaine',
-        filterLater: 'Plus tard',
-        filterAll: 'Tout',
-        settings: 'Paramètres',
-        addTask: 'Ajouter une tâche',
-        newTask: 'Nouvelle tâche',
-        noMatch: 'Aucune tâche ne correspond à ce filtre',
-        completionTitle: 'Liste terminée.<br>Reposez-vous.',
-        completionMsg: 'Tout est fait.<br>Quand vous êtes prêt, commencez une nouvelle liste.',
-        modalCategories: 'Catégories',
-        categoryName: 'Nom de la catégorie',
-        colorLabel: 'Couleur',
-        timings: { today: "Auj.", week: 'Semaine', later: 'Plus tard' },
-        cats: { work: 'Travail', home: 'Maison', personal: 'Personnel', other: 'Autre' }
+// Enhanced keyword dictionaries for classification
+const categoryKeywords = {
+    en: {
+        work: [
+            'meeting', 'email', 'report', 'presentation', 'deadline', 'project', 'client', 'customer',
+            'boss', 'colleague', 'office', 'work', 'job', 'task', 'call', 'conference', 'review',
+            'proposal', 'budget', 'invoice', 'contract', 'document', 'file', 'spreadsheet',
+            'analysis', 'strategy', 'plan', 'schedule', 'appointment', 'interview', 'hire',
+            'team', 'department', 'manager', 'employee', 'submit', 'deliver', 'complete',
+            'prepare', 'organize', 'coordinate', 'follow up', 'respond', 'update', 'send'
+        ],
+        home: [
+            'buy', 'shop', 'shopping', 'grocery', 'groceries', 'store', 'supermarket', 'mall',
+            'clean', 'cleaning', 'vacuum', 'dishes', 'laundry', 'wash', 'sweep', 'mop',
+            'cook', 'cooking', 'dinner', 'lunch', 'breakfast', 'meal', 'recipe', 'kitchen',
+            'trash', 'garbage', 'recycling', 'take out', 'throw away',
+            'repair', 'fix', 'maintenance', 'plumber', 'electrician', 'paint', 'renovate',
+            'garden', 'yard', 'lawn', 'plants', 'water', 'feed', 'pet', 'dog', 'cat',
+            'bills', 'utilities', 'rent', 'mortgage', 'insurance', 'pay',
+            'organize', 'declutter', 'tidy', 'arrange', 'sort', 'fold', 'iron'
+        ],
+        personal: [
+            'gym', 'workout', 'exercise', 'run', 'jog', 'fitness', 'yoga', 'pilates', 'sports',
+            'doctor', 'dentist', 'hospital', 'clinic', 'appointment', 'checkup', 'health',
+            'medicine', 'prescription', 'pharmacy', 'vitamins',
+            'read', 'book', 'library', 'study', 'learn', 'course', 'class', 'lesson',
+            'practice', 'training', 'skill', 'hobby', 'passion', 'interest',
+            'movie', 'film', 'theater', 'concert', 'show', 'event', 'festival',
+            'friend', 'family', 'relationship', 'birthday', 'anniversary', 'party', 'celebrate',
+            'relax', 'rest', 'sleep', 'meditation', 'mindfulness', 'self-care',
+            'haircut', 'salon', 'spa', 'massage', 'beauty', 'skincare',
+            'game', 'gaming', 'music', 'instrument', 'art', 'draw', 'paint', 'craft'
+        ]
     },
-
-    zh: {
-        speechLang: 'zh-CN',
-        tagline: '说话。整理。POP！',
-        description: '说出您要做的事情。<br>获取任务列表，开始行动。',
-        cta: '不知所措？开始说话吧。',
-        speak: '说话',
-        speakAgain: '再次说话',
-        startNew: '开始新列表',
-        recording: '录音中...',
-        tapToStop: '点击停止',
-        building: '正在创建您的列表...',
-        readyPrompt: '说话以创建任务列表',
-        tasksAdded: (n) => `已添加 ${n} 个任务`,
-        tasksDemoAdded: (n) => `已添加 ${n} 个任务（演示）`,
-        apiError: (msg) => `API 错误：${msg}`,
-        micError: '错误。请检查麦克风权限。',
-        filterToday: '今天',
-        filterWeek: '本周',
-        filterLater: '稍后',
-        filterAll: '全部',
-        settings: '设置',
-        addTask: '添加任务',
-        newTask: '新任务',
-        noMatch: '没有与此筛选器匹配的任务',
-        completionTitle: '列表完成。<br>好好休息。',
-        completionMsg: '一切都完成了。<br>准备好后，开始新列表。',
-        modalCategories: '分类',
-        categoryName: '分类名称',
-        colorLabel: '颜色',
-        timings: { today: '今天', week: '本周', later: '稍后' },
-        cats: { work: '工作', home: '家庭', personal: '个人', other: '其他' }
+    ja: {
+        work: [
+            '会議', 'ミーティング', 'メール', '報告', 'レポート', 'プレゼン', 'プレゼンテーション',
+            '資料', '書類', '提出', '締切', 'デッドライン', 'プロジェクト', '案件', '業務',
+            'クライアント', '顧客', '取引先', '営業', '商談', '見積', '契約', '発注',
+            '上司', '同僚', 'チーム', '部署', '打ち合わせ', '会社', 'オフィス', '仕事',
+            '電話', '連絡', '確認', '相談', '依頼', '調整', 'スケジュール', '予定',
+            '準備', '作成', '整理', '送信', '返信', '対応', '処理', '完了', '提案',
+            '企画', '戦略', '計画', '分析', 'データ', '資料作成', '面接', '採用'
+        ],
+        home: [
+            '買い物', '買う', 'スーパー', 'コンビニ', '店', '購入', 'ショッピング',
+            '食材', '野菜', '肉', '魚', '牛乳', 'パン', '卵', '調味料', '飲み物',
+            '掃除', '片付け', '整理', '洗濯', '洗う', '拭く', '磨く', '掃除機',
+            '料理', '調理', 'ご飯', '食事', '夕食', '朝食', '昼食', 'レシピ', 'キッチン',
+            'ゴミ', 'ゴミ出し', 'リサイクル', '捨てる', '処分',
+            '修理', '直す', 'メンテナンス', '業者', '工事', 'リフォーム', 'ペンキ',
+            '庭', '植物', '花', '水やり', 'ガーデニング', 'ペット', '犬', '猫', '餌',
+            '支払い', '振込', '料金', '光熱費', '家賃', '保険', 'ローン', '税金'
+        ],
+        personal: [
+            'ジム', '運動', 'トレーニング', 'ワークアウト', 'ランニング', 'ジョギング',
+            'ヨガ', 'ピラティス', 'スポーツ', 'フィットネス', '筋トレ', 'ストレッチ',
+            '病院', '医者', 'クリニック', '通院', '診察', '検診', '健康診断', '歯医者',
+            '薬', '処方', '薬局', 'サプリ', 'ビタミン', '治療',
+            '勉強', '学習', '本', '読書', '図書館', '習い事', 'レッスン', 'スクール',
+            '資格', '試験', 'テスト', '英語', '語学', '練習', 'スキル', '趣味',
+            '映画', 'コンサート', 'ライブ', 'イベント', '観劇', '美術館', '博物館',
+            '友達', '友人', '家族', '誕生日', '記念日', 'パーティー', 'お祝い', 'プレゼント',
+            '休憩', 'リラックス', '睡眠', '瞑想', 'マインドフルネス', 'セルフケア',
+            '美容院', 'ヘアカット', 'エステ', 'マッサージ', 'ネイル', 'スキンケア',
+            'ゲーム', '音楽', '楽器', 'アート', '絵', '創作', 'クラフト', '趣味'
+        ]
     }
 };
 
 // App state
 const app = {
     tasks: [],
-    categories: [
-        { id: 'work',     name: 'Work',     color: '#505050' },
-        { id: 'home',     name: 'Home',     color: '#3d4a3d' },
-        { id: 'personal', name: 'Personal', color: '#3a3a4a' },
-        { id: 'other',    name: 'Other',    color: '#333333' }
-    ],
+    categories: {},
     currentFilter: 'all',
-    recognition: null,
-    lang: 'en'
+    currentLang: 'en',
+    recognition: null
 };
 
-// Clear tasks on load (dev mode)
-localStorage.removeItem('poplist_tasks');
-
-// Language persistence
-function loadLang() {
-    const saved = localStorage.getItem('poplist_lang');
-    if (saved && i18n[saved]) app.lang = saved;
+// Initialize app
+function init() {
+    loadLanguage(localStorage.getItem('poplist_lang') || 'en');
+    loadCategories();
+    loadTasks();
+    renderTasks();
+    initSpeechRecognition();
+    bindEvents();
 }
 
-function setLanguage(lang) {
-    app.lang = lang;
-    document.documentElement.lang = lang;
-
+// Load language
+function loadLanguage(lang) {
+    app.currentLang = lang;
+    localStorage.setItem('poplist_lang', lang);
+    
     const t = i18n[lang];
+    app.categories = {
+        work: { id: 'work', ...t.categories.work },
+        home: { id: 'home', ...t.categories.home },
+        personal: { id: 'personal', ...t.categories.personal },
+        other: { id: 'other', ...t.categories.other }
+    };
+    
+    updateUI();
+}
 
-    // Static DOM text
+// Update UI with translations
+function updateUI() {
+    const t = i18n[app.currentLang];
+    
     document.querySelector('.tagline').textContent = t.tagline;
     document.querySelector('.description').innerHTML = t.description;
-    document.querySelector('.cta-text').textContent = t.cta;
+    document.querySelector('.cta').textContent = t.cta;
     document.querySelector('.btn-text').textContent = t.speak;
     document.getElementById('statusText').textContent = t.readyPrompt;
-
-    // Filter buttons
-    document.querySelector('[data-filter="today"]').textContent = t.filterToday;
-    document.querySelector('[data-filter="week"]').textContent = t.filterWeek;
-    document.querySelector('[data-filter="later"]').textContent = t.filterLater;
-    document.querySelector('[data-filter="all"]').textContent = t.filterAll;
-
-    // Settings button + modal header
     document.getElementById('settingsBtn').textContent = t.settings;
-    document.querySelector('#settingsModal .modal-header h2').textContent = t.modalCategories;
-
-    // Reset category names to lang defaults
-    app.categories.forEach(cat => {
-        if (t.cats[cat.id]) cat.name = t.cats[cat.id];
+    
+    // Update filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const filter = btn.dataset.filter;
+        btn.textContent = t[`filter${filter.charAt(0).toUpperCase()}${filter.slice(1)}`];
     });
-    saveCategories();
-
-    // Active lang button
+    
+    // Update language buttons
     document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
+        btn.classList.toggle('active', btn.dataset.lang === app.currentLang);
     });
-
-    // Update speech recognition lang
-    if (app.recognition) {
-        app.recognition.lang = t.speechLang;
-    }
-
-    // Persist
-    localStorage.setItem('poplist_lang', lang);
-
-    // Refresh rendered tasks if any exist
-    if (app.tasks.length > 0) {
-        renderTasks();
-    }
+    
+    renderTasks();
 }
 
-// Init speech recognition
+// Speech recognition
 function initSpeechRecognition() {
+    console.log('🎤 Initializing speech recognition...');
+    
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
+    
     if (!SpeechRecognition) {
-        console.log('SpeechRecognition not supported');
+        console.error('❌ Speech recognition not supported');
+        alert('Speech recognition not supported. Please use Chrome, Edge, or Safari.');
         return false;
     }
-
+    
+    console.log('✅ Speech recognition supported');
+    
     app.recognition = new SpeechRecognition();
-    app.recognition.lang = i18n[app.lang].speechLang;
-    app.recognition.continuous = false;
+    app.recognition.continuous = true;
     app.recognition.interimResults = false;
-
+    
     let transcript = '';
-
+    
     app.recognition.onstart = () => {
-        document.getElementById('voiceBtn').classList.add('recording');
-        document.querySelector('.btn-text').textContent = i18n[app.lang].recording;
+        const t = i18n[app.currentLang];
+        console.log('🔴 Recording started');
+        
+        const voiceBtn = document.getElementById('voiceBtn');
         const statusText = document.getElementById('statusText');
-        statusText.textContent = i18n[app.lang].tapToStop;
+        
+        voiceBtn.classList.add('recording');
+        document.querySelector('.btn-text').textContent = t.recording;
+        statusText.textContent = t.tapToStop;
         statusText.classList.add('recording');
+        
+        // Add audio bars animation
+        addAudioBars();
+        
         transcript = '';
     };
-
+    
     app.recognition.onresult = (event) => {
         for (let i = event.resultIndex; i < event.results.length; i++) {
             if (event.results[i].isFinal) {
-                transcript += event.results[i][0].transcript;
+                transcript += event.results[i][0].transcript + ' ';
             }
         }
     };
-
+    
     app.recognition.onend = () => {
-        document.getElementById('voiceBtn').classList.remove('recording');
-        document.querySelector('.btn-text').textContent = i18n[app.lang].speak;
+        const t = i18n[app.currentLang];
+        console.log('🛑 Recording stopped');
+        
+        const voiceBtn = document.getElementById('voiceBtn');
         const statusText = document.getElementById('statusText');
+        
+        voiceBtn.classList.remove('recording');
+        document.querySelector('.btn-text').textContent = t.speak;
         statusText.classList.remove('recording');
-
+        
+        // Remove audio bars
+        removeAudioBars();
+        
         if (transcript.trim()) {
-            statusText.textContent = i18n[app.lang].building;
-            app.tasks = [];
+            console.log('Transcript:', transcript);
+            document.getElementById('statusText').textContent = t.building;
+            
             setTimeout(() => {
-                processWithChatGPT(transcript);
-                transcript = '';
-            }, 50);
+                processTranscript(transcript.trim());
+            }, 500);
         } else {
-            statusText.textContent = i18n[app.lang].readyPrompt;
+            document.getElementById('statusText').textContent = t.readyPrompt;
         }
     };
-
+    
     app.recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
+        const t = i18n[app.currentLang];
+        console.error('❌ Speech recognition error:', event.error);
+        
         document.getElementById('voiceBtn').classList.remove('recording');
-        document.querySelector('.btn-text').textContent = i18n[app.lang].speak;
-        const statusText = document.getElementById('statusText');
-        statusText.classList.remove('recording');
-
-        if (event.error === 'no-speech') {
-            // Silence — just reset quietly
-            statusText.textContent = i18n[app.lang].readyPrompt;
-            return;
+        document.querySelector('.btn-text').textContent = t.speak;
+        document.getElementById('statusText').classList.remove('recording');
+        
+        // Show specific error messages
+        let errorMsg = t.micError;
+        if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+            errorMsg = 'Microphone access denied. Please enable it in browser settings.';
+        } else if (event.error === 'no-speech') {
+            errorMsg = 'No speech detected. Please try again.';
+        } else if (event.error === 'network') {
+            errorMsg = 'Network error. Please check your connection.';
         }
-
-        if (event.error === 'service-not-allowed' || event.error === 'not-allowed') {
-            statusText.textContent = 'Mic blocked — open via a local server (not file://)';
-            setTimeout(() => {
-                statusText.textContent = i18n[app.lang].readyPrompt;
-            }, 4000);
-            return;
-        }
-
-        statusText.textContent = i18n[app.lang].micError;
+        
+        document.getElementById('statusText').textContent = errorMsg;
+        
         setTimeout(() => {
-            statusText.textContent = i18n[app.lang].readyPrompt;
-        }, 2000);
+            document.getElementById('statusText').textContent = t.readyPrompt;
+        }, 4000);
     };
-
+    
+    console.log('✅ Speech recognition initialized successfully');
     return true;
 }
 
-// Extract tasks via backend proxy (API key stays server-side)
-async function processWithChatGPT(text) {
-    const t = i18n[app.lang];
-
-    try {
-        const response = await fetch('/api/extract-tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, lang: app.lang })
-        });
-
-        if (!response.ok) {
-            let errMsg = `Server error ${response.status}`;
-            try { const err = await response.json(); errMsg = err.error || errMsg; } catch {}
-            throw new Error(errMsg);
-        }
-
-        const result = await response.json();
-
-        result.tasks.forEach((taskData) => {
-            app.tasks.push({
-                id: Date.now() + Math.random(),
-                text: taskData.text,
-                category: taskData.category,
-                timing: 'later',
-                completed: false,
-                createdAt: Date.now()
-            });
-        });
-
-        saveTasks();
-        renderTasks();
-
-        document.getElementById('statusText').textContent = t.tasksAdded(result.tasks.length);
-        setTimeout(() => {
-            document.getElementById('statusText').textContent = t.readyPrompt;
-        }, 3000);
-
-    } catch (error) {
-        console.error('Error:', error.message);
-        document.getElementById('statusText').textContent = t.apiError(error.message);
-        setTimeout(() => {
-            document.getElementById('statusText').textContent = t.readyPrompt;
-        }, 3000);
-    }
-}
-
-// Dummy data for testing
-function useDummyData(text) {
-    const dummyTasks = [
-        { text: 'Prep meeting slides', category: 'work' },
-        { text: 'Reply to client emails', category: 'work' },
-        { text: 'Finish project report and get sign-off before EOD', category: 'work' },
-        { text: 'Grocery run — get food for the week', category: 'home' },
-        { text: 'Pick up dry cleaning', category: 'home' },
-        { text: 'Hit the gym', category: 'personal' },
-        { text: 'Read for 30 minutes', category: 'personal' },
-        { text: 'Book dentist appointment', category: 'other' }
-    ];
-
-    dummyTasks.forEach((taskData) => {
-        app.tasks.push({
+// Process transcript and extract tasks
+function processTranscript(text) {
+    console.log('Processing transcript:', text);
+    
+    // Clear existing tasks
+    app.tasks = [];
+    
+    // Extract tasks
+    const taskTexts = extractTasks(text);
+    console.log('Extracted tasks:', taskTexts);
+    
+    // Create task objects
+    taskTexts.forEach(taskText => {
+        const category = categorizeTask(taskText);
+        const task = {
             id: Date.now() + Math.random(),
-            text: taskData.text,
-            category: taskData.category,
+            text: taskText,
+            category: category,
             timing: 'later',
             completed: false,
             createdAt: Date.now()
-        });
+        };
+        app.tasks.push(task);
+        console.log(`Task: "${taskText}" → ${category}`);
     });
-
+    
     saveTasks();
     renderTasks();
-
-    const t = i18n[app.lang];
-    document.getElementById('statusText').textContent = t.tasksDemoAdded(dummyTasks.length);
+    
+    const t = i18n[app.currentLang];
+    document.getElementById('statusText').textContent = t.tasksAdded(taskTexts.length);
+    
     setTimeout(() => {
         document.getElementById('statusText').textContent = t.readyPrompt;
     }, 3000);
 }
 
-// Lighten a hex color
-function lightenColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (0x1000000 +
-        (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-        (B < 255 ? B < 1 ? 0 : B : 255))
-        .toString(16).slice(1);
+// Extract tasks from text
+function extractTasks(text) {
+    const lang = app.currentLang;
+    let tasks = [];
+    
+    if (lang === 'ja') {
+        // Japanese: split by 。、 and connectors
+        let segments = text.split(/[。．]/);
+        
+        segments.forEach(segment => {
+            segment = segment.trim();
+            if (!segment) return;
+            
+            // Split by connectors: て、で、し、から、たら、ので
+            const parts = segment.split(/、|(?<=て)|(?<=で)|(?<=し)|(?<=から)|(?<=たら)|(?<=ので)/);
+            
+            parts.forEach(part => {
+                part = part.trim();
+                // Remove leading conjunctions
+                part = part.replace(/^(そして|それから|その後|また|あと|次に)\s*/g, '');
+                // Remove trailing punctuation
+                part = part.replace(/[、。．,\s]+$/g, '');
+                
+                if (part.length >= 3) {
+                    tasks.push(part);
+                }
+            });
+        });
+    } else {
+        // English: split by periods, commas, and connectors
+        let segments = text.split(/\.|;/);
+        
+        segments.forEach(segment => {
+            segment = segment.trim();
+            if (!segment) return;
+            
+            // Split by "and", commas
+            const parts = segment.split(/,|\sand\s/i);
+            
+            parts.forEach(part => {
+                part = part.trim();
+                // Remove leading words like "then", "also", "next"
+                part = part.replace(/^(then|also|next|after that|and then)\s+/i, '');
+                // Remove trailing punctuation
+                part = part.replace(/[,.\s]+$/g, '');
+                
+                if (part.length >= 5) {
+                    tasks.push(part);
+                }
+            });
+        });
+    }
+    
+    return tasks;
 }
 
-// Darken a hex color
-function darkenColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) - amt;
-    const G = (num >> 8 & 0x00FF) - amt;
-    const B = (num & 0x0000FF) - amt;
-    return '#' + (0x1000000 +
-        (R > 0 ? R : 0) * 0x10000 +
-        (G > 0 ? G : 0) * 0x100 +
-        (B > 0 ? B : 0))
-        .toString(16).slice(1);
+// Categorize task based on keywords
+function categorizeTask(text) {
+    const lang = app.currentLang;
+    const keywords = categoryKeywords[lang];
+    const textLower = text.toLowerCase();
+    
+    // Score each category
+    const scores = {
+        work: 0,
+        home: 0,
+        personal: 0
+    };
+    
+    // Check for keyword matches
+    for (const [category, words] of Object.entries(keywords)) {
+        if (category === 'other') continue;
+        
+        for (const keyword of words) {
+            if (textLower.includes(keyword.toLowerCase())) {
+                scores[category]++;
+            }
+        }
+    }
+    
+    // Find category with highest score
+    let maxScore = 0;
+    let bestCategory = 'other';
+    
+    for (const [category, score] of Object.entries(scores)) {
+        if (score > maxScore) {
+            maxScore = score;
+            bestCategory = category;
+        }
+    }
+    
+    return bestCategory;
 }
 
-// Get category name
-function getCategoryName(categoryId) {
-    const category = app.categories.find(c => c.id === categoryId);
-    return category ? category.name : i18n[app.lang].cats.other;
+// Create task element (reusable)
+function createTaskElement(task, category) {
+    const t = i18n[app.currentLang];
+    
+    const taskItem = document.createElement('div');
+    taskItem.className = 'task-item';
+    taskItem.dataset.taskId = task.id;
+    
+    // Display text with placeholder if empty/new
+    const displayText = task.text || t.newTask;
+    const textClass = (!task.text || task.isNew) ? 'task-text placeholder' : 'task-text';
+    
+    // Show category selector ONLY for new tasks
+    let metaHTML = '';
+    if (task.isNew) {
+        metaHTML = `
+            <div class="task-meta">
+                <select class="task-category-select" data-task-id="${task.id}">
+                    ${Object.entries(app.categories).map(([catId, cat]) => 
+                        `<option value="${catId}" ${task.category === catId ? 'selected' : ''}>${cat.name}</option>`
+                    ).join('')}
+                </select>
+                <div class="task-timing" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
+            </div>
+        `;
+    } else {
+        metaHTML = `
+            <div class="task-meta">
+                <div class="task-timing" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
+            </div>
+        `;
+    }
+    
+    taskItem.innerHTML = `
+        <div class="task-bubble" style="background: ${category.color};" data-task-id="${task.id}"></div>
+        <div class="task-content">
+            <div class="${textClass}" contenteditable="false">${displayText}</div>
+            ${metaHTML}
+        </div>
+    `;
+    
+    // Bubble click - complete task (only if not new)
+    taskItem.querySelector('.task-bubble').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!task.isNew && task.text) {
+            completeTask(task.id);
+        }
+    });
+    
+    // Task text edit
+    const taskTextEl = taskItem.querySelector('.task-text');
+    
+    // Handle click to edit
+    taskTextEl.addEventListener('click', () => {
+        taskTextEl.contentEditable = 'true';
+        taskTextEl.focus();
+        
+        // If it's a new task with placeholder, clear it
+        if (task.isNew && taskTextEl.textContent === t.newTask) {
+            taskTextEl.textContent = '';
+        }
+    });
+    
+    // Handle blur (finish editing)
+    taskTextEl.addEventListener('blur', () => {
+        taskTextEl.contentEditable = 'false';
+        const newText = taskTextEl.textContent.trim();
+        
+        // If empty, delete the task
+        if (!newText) {
+            app.tasks = app.tasks.filter(t => t.id !== task.id);
+            saveTasks();
+            renderTasks();
+            return;
+        }
+        
+        task.text = newText;
+        task.isNew = false; // No longer new
+        saveTasks();
+        renderTasks();
+    });
+    
+    // Handle Enter key
+    taskTextEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            taskTextEl.blur();
+        }
+    });
+    
+    // Handle focus (when editing starts)
+    taskTextEl.addEventListener('focus', () => {
+        if (task.isNew && taskTextEl.textContent === t.newTask) {
+            taskTextEl.textContent = '';
+        }
+    });
+    
+    // Category selector change (only if present)
+    const categorySelect = taskItem.querySelector('.task-category-select');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', (e) => {
+            e.stopPropagation();
+            task.category = e.target.value;
+            task.isNew = false;
+            saveTasks();
+            renderTasks();
+        });
+    }
+    
+    // Timing click - cycle through options
+    taskItem.querySelector('.task-timing').addEventListener('click', () => {
+        const timings = ['later', 'today', 'week'];
+        const currentIndex = timings.indexOf(task.timing);
+        task.timing = timings[(currentIndex + 1) % timings.length];
+        saveTasks();
+        renderTasks();
+    });
+    
+    return taskItem;
 }
 
 // Render tasks
@@ -405,481 +560,486 @@ function renderTasks() {
     const container = document.getElementById('tasksContainer');
     const filterSection = document.querySelector('.filter-section');
     const header = document.querySelector('header');
-    const voiceSection = document.querySelector('.voice-input-section');
-    const t = i18n[app.lang];
-
-    let visibleTasks = app.tasks;
-
+    const t = i18n[app.currentLang];
+    
+    // Filter tasks
+    let filteredTasks = app.tasks.filter(task => !task.completed);
     if (app.currentFilter !== 'all') {
-        visibleTasks = visibleTasks.filter(task => task.timing === app.currentFilter);
+        filteredTasks = filteredTasks.filter(task => task.timing === app.currentFilter);
     }
-
+    
+    // Group by category
+    const tasksByCategory = {};
+    Object.keys(app.categories).forEach(catId => {
+        tasksByCategory[catId] = filteredTasks.filter(task => task.category === catId);
+    });
+    
     container.innerHTML = '';
-
+    
+    // Check if all tasks completed
+    if (app.tasks.length > 0 && app.tasks.every(task => task.completed)) {
+        showCompletionScreen();
+        return;
+    }
+    
+    // No tasks
     if (app.tasks.length === 0) {
         container.classList.add('hidden');
         filterSection.classList.add('hidden');
         header.classList.remove('hidden');
-        document.getElementById('settingsBtn').style.display = 'none';
         return;
     }
-
+    
+    // Show tasks
     container.classList.remove('hidden');
     filterSection.classList.remove('hidden');
-    document.getElementById('settingsBtn').style.display = 'block';
     header.classList.add('hidden');
-
-    if (visibleTasks.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:40px;color:#444;grid-column:1/-1;">${t.noMatch}</div>`;
-        if (voiceSection) {
-            container.appendChild(voiceSection);
-            voiceSection.classList.remove('hidden');
-        }
-        return;
-    }
-
+    
+    // Group by category (including new tasks)
     const tasksByCategory = {};
-    app.categories.forEach(cat => {
-        tasksByCategory[cat.id] = visibleTasks.filter(task => task.category === cat.id);
+    Object.keys(app.categories).forEach(catId => {
+        tasksByCategory[catId] = filteredTasks.filter(task => task.category === catId);
     });
-
-    app.categories.forEach(category => {
-        const tasks = tasksByCategory[category.id];
+    
+    // Render categories with tasks
+    Object.entries(app.categories).forEach(([catId, category]) => {
+        const tasks = tasksByCategory[catId];
         if (tasks.length === 0) return;
-
+        
         const categoryCard = document.createElement('div');
         categoryCard.className = 'category-card';
-
-        let pressTimer;
+        
         const categoryHeader = document.createElement('div');
         categoryHeader.className = 'category-header';
-
-        categoryCard.style.borderLeft = `3px solid ${category.color}`;
-
+        categoryHeader.style.background = category.color;
         categoryHeader.innerHTML = `
             <span>${category.name}</span>
             <span class="task-count">${tasks.length}</span>
         `;
-
-        categoryHeader.addEventListener('mousedown', () => {
-            pressTimer = setTimeout(() => openCategoryEdit(category.id), 500);
-        });
-        categoryHeader.addEventListener('mouseup', () => clearTimeout(pressTimer));
-        categoryHeader.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-        categoryHeader.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            pressTimer = setTimeout(() => openCategoryEdit(category.id), 500);
-        });
-        categoryHeader.addEventListener('touchend', () => clearTimeout(pressTimer));
-
-        categoryCard.appendChild(categoryHeader);
-
+        
         const tasksList = document.createElement('div');
         tasksList.className = 'tasks-list';
-        tasksList.innerHTML = tasks.map(task => {
-            const bubbleColor = lightenColor(category.color, 20);
-            return `
-            <div class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}" data-category="${category.id}" draggable="true">
-                <div class="task-bubble" style="--bubble-color: ${bubbleColor}; background: ${bubbleColor};" onclick="event.stopPropagation(); toggleTask(${task.id})"></div>
-                <div class="task-content">
-                    <span class="task-text" onclick="event.stopPropagation(); editTask(${task.id})" contenteditable="false">${task.text}</span>
-                    <div class="task-timing" onclick="event.stopPropagation(); cycleTiming(${task.id})">
-                        <span class="timing-display">${getTimingLabel(task.timing)}</span>
-                    </div>
-                </div>
-            </div>
-        `}).join('');
-
-        const addButton = document.createElement('button');
-        addButton.className = 'add-task-btn';
-        addButton.textContent = t.addTask;
-        addButton.onclick = () => addNewTask(category.id);
-        tasksList.appendChild(addButton);
-
+        
+        tasks.forEach(task => {
+            const taskItem = createTaskElement(task, category);
+            tasksList.appendChild(taskItem);
+        });
+        
+        categoryCard.appendChild(categoryHeader);
         categoryCard.appendChild(tasksList);
         container.appendChild(categoryCard);
     });
-
-    setupDragAndDrop();
-
-    if (voiceSection) {
-        container.appendChild(voiceSection);
-        voiceSection.classList.remove('hidden');
-        const voiceBtnText = voiceSection.querySelector('.btn-text');
-        if (voiceBtnText) voiceBtnText.textContent = t.speakAgain;
+    
+    // Add single "Add Task" button at the bottom (always show if we have tasks)
+    if (app.tasks.filter(t => !t.completed).length > 0) {
+        const addTaskBtn = document.createElement('button');
+        addTaskBtn.className = 'add-task-btn-bottom';
+        addTaskBtn.textContent = `+ ${t.addTask}`;
+        addTaskBtn.addEventListener('click', addNewTask);
+        container.appendChild(addTaskBtn);
     }
 }
 
-// Completion screen
-function showCompletionScreen() {
-    const container = document.getElementById('tasksContainer');
-    const filterSection = document.querySelector('.filter-section');
-    const voiceSection = document.querySelector('.voice-input-section');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const t = i18n[app.lang];
-
-    if (settingsBtn) settingsBtn.style.display = 'none';
-
-    container.classList.remove('hidden');
-    filterSection.classList.add('hidden');
-
-    container.innerHTML = `
-        <div class="completion-screen">
-            <h2 class="completion-title">${t.completionTitle}</h2>
-            <p class="completion-message">
-                ${t.completionMsg}
-            </p>
-        </div>
-    `;
-
-    container.appendChild(voiceSection);
-    voiceSection.classList.remove('hidden');
-    const voiceBtnText = voiceSection.querySelector('.btn-text');
-    if (voiceBtnText) voiceBtnText.textContent = t.startNew;
-
-    createMassiveBubbleBurst();
-}
-
-// Mass bubble burst on completion
-function createMassiveBubbleBurst() {
-    const bubbleCount = 50;
-    const colors = ['#ffffff', '#bbbbbb', '#888888', '#555555', '#aaaaaa', '#dddddd'];
-
-    for (let i = 0; i < bubbleCount; i++) {
-        setTimeout(() => {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-
-            const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight;
-            const angle = Math.random() * 360;
-            const distance = 100 + Math.random() * 200;
-            const size = 10 + Math.random() * 20;
-
-            bubble.style.left = x + 'px';
-            bubble.style.top = y + 'px';
-            bubble.style.width = size + 'px';
-            bubble.style.height = size + 'px';
-            bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            bubble.style.setProperty('--tx', Math.cos(angle * Math.PI / 180) * distance + 'px');
-            bubble.style.setProperty('--ty', Math.sin(angle * Math.PI / 180) * distance + 'px');
-            bubble.style.animationDuration = (0.6 + Math.random() * 0.8) + 's';
-
-            document.body.appendChild(bubble);
-            setTimeout(() => bubble.remove(), 2000);
-        }, i * 30);
-    }
-}
-
-// Add new task
-function addNewTask(categoryId) {
-    const newTask = {
-        id: Date.now() + Math.random(),
-        text: '',
-        category: categoryId,
-        timing: 'later',
-        completed: false,
-        createdAt: Date.now()
-    };
-
-    app.tasks.push(newTask);
-    saveTasks();
-    renderTasks();
-
-    setTimeout(() => editTask(newTask.id), 100);
-}
-
-// Timing label
+// Get timing label
 function getTimingLabel(timing) {
-    const timings = i18n[app.lang].timings;
-    return timings[timing] || timings.later;
+    const t = i18n[app.currentLang];
+    const labels = {
+        today: t.filterToday,
+        week: t.filterWeek,
+        later: t.filterLater
+    };
+    return labels[timing] || labels.later;
 }
 
-// Cycle timing on tap
-function cycleTiming(taskId) {
+// Complete task with animation
+function completeTask(taskId) {
     const task = app.tasks.find(t => t.id === taskId);
     if (!task) return;
-
-    const timings = ['later', 'today', 'week'];
-    task.timing = timings[(timings.indexOf(task.timing) + 1) % timings.length];
-    saveTasks();
-    renderTasks();
-}
-
-// Drag and drop
-function setupDragAndDrop() {
-    let draggedTaskId = null;
-
-    document.querySelectorAll('.task-item').forEach(item => {
-        item.addEventListener('dragstart', (e) => {
-            draggedTaskId = parseFloat(item.dataset.taskId);
-            item.style.opacity = '0.4';
-            e.dataTransfer.effectAllowed = 'move';
-        });
-        item.addEventListener('dragend', () => {
-            item.style.opacity = '1';
-            draggedTaskId = null;
-        });
-    });
-
-    document.querySelectorAll('.category-card').forEach((card, index) => {
-        card.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            card.classList.add('drag-over');
-        });
-        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
-        card.addEventListener('drop', (e) => {
-            e.preventDefault();
-            card.classList.remove('drag-over');
-            if (!draggedTaskId) return;
-
-            const targetCategory = app.categories[index]?.id;
-            if (!targetCategory) return;
-
-            const task = app.tasks.find(t => t.id === draggedTaskId);
-            if (task && task.category !== targetCategory) {
-                task.category = targetCategory;
-                saveTasks();
-                renderTasks();
-            }
-        });
-    });
-}
-
-// Edit task inline
-function editTask(taskId) {
-    const task = app.tasks.find(t => t.id === taskId);
-    if (!task) return;
-
-    const taskElement = document.querySelector(`[data-task-id="${taskId}"] .task-text`);
-    if (!taskElement) return;
-
-    if (!task.text || !task.text.trim()) {
-        taskElement.setAttribute('data-placeholder', i18n[app.lang].newTask);
-    }
-
-    taskElement.contentEditable = true;
-    taskElement.focus();
-
-    taskElement.addEventListener('blur', function handler() {
-        taskElement.contentEditable = false;
-        task.text = taskElement.textContent.trim();
-        saveTasks();
-        taskElement.removeEventListener('blur', handler);
-    });
-
-    taskElement.addEventListener('keydown', function handler(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            taskElement.blur();
-            taskElement.removeEventListener('keydown', handler);
-        }
-    });
-}
-
-// Open category edit (long press on header)
-function openCategoryEdit(categoryId) {
-    const category = app.categories.find(c => c.id === categoryId);
-    if (!category) return;
-
-    const t = i18n[app.lang];
-    const modal = document.getElementById('settingsModal');
-    document.getElementById('categorySettings').innerHTML = `
-        <div class="category-setting-item">
-            <label>${t.categoryName}</label>
-            <input type="text" value="${category.name}"
-                   onchange="updateCategoryName('${category.id}', this.value)">
-            <label>${t.colorLabel}</label>
-            <div class="color-options">
-                ${getColorOptions().map(color => `
-                    <div class="color-option ${category.color === color ? 'selected' : ''}"
-                         style="background-color: ${color};"
-                         onclick="updateCategoryColor('${category.id}', '${color}')"></div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-
-    modal.classList.add('show');
-}
-
-// Toggle task completion + bubble pop
-function toggleTask(taskId) {
-    const task = app.tasks.find(t => t.id === taskId);
-    if (!task) return;
-
+    
     task.completed = true;
-
+    
     const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
     if (taskElement) {
-        const rect = taskElement.getBoundingClientRect();
-        createBubbleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        createBubbleBurst(taskElement);
     }
-
+    
     setTimeout(() => {
-        app.tasks = app.tasks.filter(t => t.id !== taskId);
         saveTasks();
-
-        if (app.tasks.length === 0) {
-            showCompletionScreen();
+        
+        // Check if ALL tasks are now completed
+        const allCompleted = app.tasks.length > 0 && app.tasks.every(t => t.completed);
+        
+        if (allCompleted) {
+            // Create massive celebration burst
+            setTimeout(() => {
+                showCompletionScreen();
+            }, 200);
         } else {
             renderTasks();
         }
     }, 300);
 }
 
-// Single task bubble pop
-function createBubbleBurst(x, y) {
-    const colors = ['#ffffff', '#aaaaaa', '#777777', '#555555', '#cccccc'];
-
+// Bubble burst animation
+function createBubbleBurst(element) {
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const colors = ['#7A9FB5', '#B8D4E0', '#A8C5B8', '#C4A8C7'];
+    
     for (let i = 0; i < 12; i++) {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-
-        const angle = (360 / 12) * i;
-        const distance = 40 + Math.random() * 50;
-        const size = 8 + Math.random() * 10;
-
-        bubble.style.left = x + 'px';
-        bubble.style.top = y + 'px';
-        bubble.style.width = size + 'px';
-        bubble.style.height = size + 'px';
-        bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        bubble.style.setProperty('--tx', Math.cos(angle * Math.PI / 180) * distance + 'px');
-        bubble.style.setProperty('--ty', Math.sin(angle * Math.PI / 180) * distance + 'px');
-
+        bubble.style.cssText = `
+            position: fixed;
+            width: ${Math.random() * 30 + 10}px;
+            height: ${Math.random() * 30 + 10}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            left: ${centerX}px;
+            top: ${centerY}px;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+        
         document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), 800);
+        
+        const angle = (Math.PI * 2 * i) / 12;
+        const distance = Math.random() * 100 + 50;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        
+        bubble.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+        ], {
+            duration: 800,
+            easing: 'ease-out'
+        }).onfinish = () => bubble.remove();
     }
 }
 
-// Filter
-function setFilter(filter) {
-    app.currentFilter = filter;
+// Show completion screen
+function showCompletionScreen() {
+    const container = document.getElementById('tasksContainer');
+    const filterSection = document.querySelector('.filter-section');
+    const header = document.querySelector('header');
+    const t = i18n[app.currentLang];
+    
+    container.classList.remove('hidden');
+    filterSection.classList.add('hidden');
+    header.classList.add('hidden');
+    
+    container.innerHTML = `
+        <div class="completion-screen">
+            <h2 class="completion-title">${t.completionTitle}</h2>
+            <p class="completion-message">${t.completionMessage}</p>
+            <button class="restart-btn" onclick="restartApp()">${t.startNew}</button>
+        </div>
+    `;
+    
+    // Create MASSIVE celebration bubble burst (100 bubbles!)
+    const colors = ['#7A9FB5', '#A8C5B8', '#C4A8C7', '#B8D4E0', '#E8A598', '#D8A5B8'];
+    
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+            const bubble = document.createElement('div');
+            bubble.className = 'celebration-bubble';
+            const size = Math.random() * 60 + 20;
+            const startX = Math.random() * window.innerWidth;
+            const startY = window.innerHeight + 100; // Start from below screen
+            const endY = Math.random() * (window.innerHeight * 0.7);
+            
+            bubble.style.cssText = `
+                position: fixed;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                border-radius: 50%;
+                left: ${startX}px;
+                top: ${startY}px;
+                pointer-events: none;
+                z-index: 9999;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                opacity: 0.9;
+            `;
+            document.body.appendChild(bubble);
+            
+            // Bubbles float up and then pop
+            bubble.animate([
+                { 
+                    transform: 'translateY(0) scale(1)', 
+                    opacity: 0 
+                },
+                { 
+                    transform: `translateY(-${window.innerHeight - endY}px) scale(1)`, 
+                    opacity: 0.9,
+                    offset: 0.7
+                },
+                { 
+                    transform: `translateY(-${window.innerHeight - endY}px) scale(1.5)`, 
+                    opacity: 0 
+                }
+            ], {
+                duration: 3000 + Math.random() * 2000,
+                easing: 'ease-out'
+            }).onfinish = () => bubble.remove();
+        }, i * 30);
+    }
+    
+    // Add extra sparkle effect
+    setTimeout(() => {
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const size = Math.random() * 8 + 4;
+                sparkle.style.cssText = `
+                    position: fixed;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: white;
+                    border-radius: 50%;
+                    left: ${Math.random() * window.innerWidth}px;
+                    top: ${Math.random() * window.innerHeight * 0.6}px;
+                    pointer-events: none;
+                    z-index: 10000;
+                    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+                `;
+                document.body.appendChild(sparkle);
+                
+                sparkle.animate([
+                    { transform: 'scale(0)', opacity: 1 },
+                    { transform: 'scale(2)', opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                }).onfinish = () => sparkle.remove();
+            }, i * 40);
+        }
+    }, 500);
+}
 
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    const targetBtn = document.querySelector(`[data-filter="${filter}"]`);
-    if (targetBtn) targetBtn.classList.add('active');
-
+// Restart app
+function restartApp() {
+    app.tasks = [];
+    saveTasks();
     renderTasks();
 }
 
-// Settings modal
-function openSettings() {
-    const t = i18n[app.lang];
-    const settingsContainer = document.getElementById('categorySettings');
-    settingsContainer.innerHTML = app.categories.map(category => `
-        <div class="category-setting-item">
-            <label>${t.categoryName}</label>
-            <input type="text" value="${category.name}"
-                   onchange="updateCategoryName('${category.id}', this.value)">
-            <label>${t.colorLabel}</label>
-            <div class="color-options">
-                ${getColorOptions().map(color => `
-                    <div class="color-option ${category.color === color ? 'selected' : ''}"
-                         style="background-color: ${color};"
-                         onclick="updateCategoryColor('${category.id}', '${color}')"></div>
-                `).join('')}
-            </div>
-        </div>
-    `).join('');
-
-    document.getElementById('settingsModal').classList.add('show');
+// Add new task (single button at bottom)
+function addNewTask() {
+    const t = i18n[app.currentLang];
+    
+    // Default to 'other' category
+    const task = {
+        id: Date.now() + Math.random(),
+        text: '',
+        category: 'other',
+        timing: 'later',
+        completed: false,
+        createdAt: Date.now(),
+        isNew: true
+    };
+    
+    app.tasks.push(task);
+    saveTasks();
+    renderTasks();
+    
+    // Focus on new task after render - scroll to bottom
+    setTimeout(() => {
+        const newTaskEl = document.querySelector(`[data-task-id="${task.id}"] .task-text`);
+        if (newTaskEl) {
+            // Scroll into view
+            newTaskEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Enter edit mode
+            newTaskEl.contentEditable = 'true';
+            newTaskEl.focus();
+            
+            // Select all placeholder text
+            const range = document.createRange();
+            range.selectNodeContents(newTaskEl);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }, 150);
 }
 
-// Grey-scale color palette for category customization
-function getColorOptions() {
-    return [
-        '#222222', '#333333', '#444444', '#555555',
-        '#3d4a3d', '#3a3a4a', '#4a3a3a', '#3d3d2a',
-        '#2a3d4a', '#4a3d2a', '#2a4a3d', '#3a2a4a',
-        '#606060', '#707070'
-    ];
+// Set filter
+function setFilter(filter) {
+    app.currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    renderTasks();
 }
 
-function updateCategoryName(categoryId, newName) {
-    const category = app.categories.find(c => c.id === categoryId);
-    if (category) {
-        category.name = newName;
-        saveCategories();
-        renderTasks();
-        openSettings();
-    }
+// Storage
+function saveTasks() {
+    localStorage.setItem('poplist_tasks', JSON.stringify(app.tasks));
 }
-
-function updateCategoryColor(categoryId, newColor) {
-    const category = app.categories.find(c => c.id === categoryId);
-    if (category) {
-        category.color = newColor;
-        saveCategories();
-        renderTasks();
-        openSettings();
-    }
-}
-
-// Persistence
-function saveTasks()      { localStorage.setItem('poplist_tasks', JSON.stringify(app.tasks)); }
-function saveCategories() { localStorage.setItem('poplist_categories', JSON.stringify(app.categories)); }
 
 function loadTasks() {
     const saved = localStorage.getItem('poplist_tasks');
-    if (saved) app.tasks = JSON.parse(saved);
+    if (saved) {
+        app.tasks = JSON.parse(saved);
+    }
+}
+
+function saveCategories() {
+    const categoriesToSave = {};
+    Object.entries(app.categories).forEach(([id, cat]) => {
+        categoriesToSave[id] = { name: cat.name, color: cat.color };
+    });
+    localStorage.setItem('poplist_categories', JSON.stringify(categoriesToSave));
 }
 
 function loadCategories() {
     const saved = localStorage.getItem('poplist_categories');
-    if (saved) app.categories = JSON.parse(saved);
+    if (saved) {
+        const savedCategories = JSON.parse(saved);
+        Object.keys(savedCategories).forEach(id => {
+            if (app.categories[id]) {
+                app.categories[id] = {
+                    ...app.categories[id],
+                    ...savedCategories[id]
+                };
+            }
+        });
+    }
 }
 
-// Boot
-document.addEventListener('DOMContentLoaded', () => {
-    loadLang();
-    loadCategories();
-    loadTasks();
+// Settings modal
+function openSettings() {
+    const modal = document.getElementById('settingsModal');
+    const settingsContainer = document.getElementById('categorySettings');
+    const t = i18n[app.currentLang];
+    
+    settingsContainer.innerHTML = Object.entries(app.categories).map(([id, category]) => `
+        <div class="category-setting-item">
+            <label>Category Name</label>
+            <input type="text" value="${category.name}" 
+                   onchange="updateCategoryName('${id}', this.value)">
+            <label>Color</label>
+            <div class="color-options">
+                <input type="color" value="${category.color}" 
+                       onchange="updateCategoryColor('${id}', this.value)">
+            </div>
+        </div>
+    `).join('');
+    
+    modal.classList.add('show');
+}
 
-    setLanguage(app.lang);
+function updateCategoryName(categoryId, newName) {
+    if (app.categories[categoryId]) {
+        app.categories[categoryId].name = newName;
+        saveCategories();
+        renderTasks();
+    }
+}
 
-    renderTasks();
+function updateCategoryColor(categoryId, newColor) {
+    if (app.categories[categoryId]) {
+        app.categories[categoryId].color = newColor;
+        saveCategories();
+        renderTasks();
+    }
+}
 
-    const recognitionReady = initSpeechRecognition();
-
+// Bind events
+function bindEvents() {
+    // Voice button
     document.getElementById('voiceBtn').addEventListener('click', () => {
-        if (!recognitionReady) {
-            alert('Speech recognition is not supported in this browser.');
+        console.log('🎤 Voice button clicked');
+        
+        if (!app.recognition) {
+            console.error('❌ Speech recognition not initialized');
+            alert('Speech recognition not available. Please refresh and try again.');
             return;
         }
-
-        const btn = document.getElementById('voiceBtn');
-        if (btn.classList.contains('recording')) {
+        
+        if (document.getElementById('voiceBtn').classList.contains('recording')) {
+            console.log('🛑 Stopping recording...');
             app.recognition.stop();
         } else {
-            app.recognition.lang = i18n[app.lang].speechLang;
-            app.recognition.start();
+            console.log('▶️ Starting recording...');
+            app.recognition.lang = i18n[app.currentLang].speechLang;
+            console.log('Language set to:', app.recognition.lang);
+            
+            try {
+                app.recognition.start();
+            } catch (error) {
+                console.error('❌ Failed to start recognition:', error);
+                alert('Failed to start recording. Please check microphone permissions.');
+            }
         }
     });
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const filter = btn.dataset.filter;
-            if (filter) setFilter(filter);
-        });
-    });
-
-    document.getElementById('settingsBtn')?.addEventListener('click', openSettings);
-
-    document.getElementById('closeModal')?.addEventListener('click', () => {
-        document.getElementById('settingsModal').classList.remove('show');
-    });
-
-    document.getElementById('settingsModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'settingsModal') e.currentTarget.classList.remove('show');
-    });
-
+    
+    // Language buttons
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            setLanguage(btn.dataset.lang);
+            loadLanguage(btn.dataset.lang);
         });
     });
+    
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setFilter(btn.dataset.filter);
+        });
+    });
+    
+    // Settings button
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    
+    // Close modal
+    document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.remove('show');
+    });
+    
+    // Click outside modal to close
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'settingsModal') {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+    });
+}
 
-});
+// Audio visualization bars
+function addAudioBars() {
+    const voiceSection = document.querySelector('.voice-input-section');
+    
+    // Remove existing bars if any
+    removeAudioBars();
+    
+    // Create bars container
+    const barsContainer = document.createElement('div');
+    barsContainer.className = 'audio-bars';
+    barsContainer.id = 'audioBars';
+    
+    // Create 5 bars
+    for (let i = 0; i < 5; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'audio-bar';
+        bar.style.animationDelay = `${i * 0.1}s`;
+        barsContainer.appendChild(bar);
+    }
+    
+    // Insert after voice button
+    const statusText = document.getElementById('statusText');
+    voiceSection.insertBefore(barsContainer, statusText);
+}
+
+function removeAudioBars() {
+    const bars = document.getElementById('audioBars');
+    if (bars) {
+        bars.remove();
+    }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', init);
