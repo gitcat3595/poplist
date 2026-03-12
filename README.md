@@ -26,7 +26,7 @@
    - Save
 
 3. **公開URL**
-   - `https://your-username.github.io/tasktalk/`
+   - `https://gitcat3595.github.io/poplist/`
    - このURLをユーザーに共有
 
 **データの保存：**
