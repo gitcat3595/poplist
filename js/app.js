@@ -595,12 +595,7 @@ function renderTasks() {
     filterSection.classList.remove('hidden');
     header.classList.add('hidden');
     
-    // Group by category (including new tasks)
-    const tasksByCategory = {};
-    Object.keys(app.categories).forEach(catId => {
-        tasksByCategory[catId] = filteredTasks.filter(task => task.category === catId);
-    });
-    
+      
     // Render categories with tasks
     Object.entries(app.categories).forEach(([catId, category]) => {
         const tasks = tasksByCategory[catId];
