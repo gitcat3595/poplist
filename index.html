@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Poplist</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,9 +12,7 @@
 <body>
     <div class="lang-selector">
         <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="ja">日本語</button>
-        <button class="lang-btn" data-lang="fr">FR</button>
-        <button class="lang-btn" data-lang="zh">中文</button>
+        <button class="lang-btn" data-lang="ja">JP</button>
     </div>
 
     <div class="container">
@@ -22,21 +20,21 @@
             <h1 class="app-title">Poplist</h1>
             <p class="tagline">Speak. Sort. POP!</p>
             <p class="description">Talk through what's on your plate.<br>Get a task list. Start knocking it out.</p>
-            <p class="cta-text">Overwhelmed? Just start talking.</p>
+            <p class="cta">Overwhelmed? Just start talking.</p>
         </header>
 
         <div class="voice-input-section">
             <button id="voiceBtn" class="voice-btn">
                 <span class="btn-text">Speak</span>
             </button>
-            <div id="statusText" class="status-text"></div>
+            <div id="statusText" class="status-text">Speak to build your task list</div>
         </div>
 
         <div class="filter-section hidden">
+            <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="today">Today</button>
             <button class="filter-btn" data-filter="week">This Week</button>
             <button class="filter-btn" data-filter="later">Later</button>
-            <button class="filter-btn active" data-filter="all">All</button>
         </div>
 
         <div id="tasksContainer" class="tasks-container hidden"></div>
@@ -44,11 +42,11 @@
         <button id="settingsBtn" class="settings-btn">Settings</button>
     </div>
 
-    <!-- Category Settings Modal -->
+    <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Categories</h2>
+                <h2>Category Settings</h2>
                 <button class="close-btn" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -57,7 +55,7 @@
         </div>
     </div>
 
-    <!-- SVG filter for bubble pop effect -->
+    <!-- Bubble burst SVG filter -->
     <svg style="position: absolute; width: 0; height: 0;">
         <defs>
             <filter id="goo">
@@ -68,6 +66,6 @@
         </defs>
     </svg>
 
-    <script src="./app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
