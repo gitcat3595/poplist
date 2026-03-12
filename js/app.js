@@ -29,13 +29,13 @@ const i18n = {
         newTask: 'New task',
         newTasksSection: 'New Tasks',
         noMatch: 'No tasks match this filter',
-        completionTitle: 'All done!',
+        completionTitle: 'All done',
         completionMessage: 'Nice work.',
         categories: {
-            work: { name: 'Work', color: '#5B8FA3' },
-            home: { name: 'Home', color: '#7BA883' },
-            personal: { name: 'Personal', color: '#9B7BA8' },
-            other: { name: 'Other', color: '#B8B8B8' }
+            work: { name: 'Work', color: '#555555' },
+            home: { name: 'Home', color: '#777777' },
+            personal: { name: 'Personal', color: '#999999' },
+            other: { name: 'Other', color: '#AAAAAA' }
         }
     },
     ja: {
@@ -61,13 +61,13 @@ const i18n = {
         newTask: '新しいタスク',
         newTasksSection: '新規タスク',
         noMatch: 'タスクが見つかりません',
-        completionTitle: 'すべて完了！',
+        completionTitle: 'すべて完了!',
         completionMessage: 'お疲れ様でした。',
         categories: {
-            work: { name: '仕事', color: '#5B8FA3' },
-            home: { name: '家のこと', color: '#7BA883' },
-            personal: { name: '自分のこと', color: '#9B7BA8' },
-            other: { name: 'その他', color: '#B8B8B8' }
+            work: { name: '仕事', color: '#555555' },
+            home: { name: '家のこと', color: '#777777' },
+            personal: { name: '自分のこと', color: '#999999' },
+            other: { name: 'その他', color: '#AAAAAA' }
         }
     }
 };
@@ -204,17 +204,17 @@ function updateUI() {
 
 // Speech recognition
 function initSpeechRecognition() {
-    console.log('🎤 Initializing speech recognition...');
+    console.log('Initializing speech recognition...');
     
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-        console.error('❌ Speech recognition not supported');
+        console.error('Speech recognition not supported');
         alert('Speech recognition not supported. Please use Chrome, Edge, or Safari.');
         return false;
     }
     
-    console.log('✅ Speech recognition supported');
+    console.log('Speech recognition supported');
     
     app.recognition = new SpeechRecognition();
     app.recognition.continuous = true;
@@ -224,7 +224,7 @@ function initSpeechRecognition() {
     
     app.recognition.onstart = () => {
         const t = i18n[app.currentLang];
-        console.log('🔴 Recording started');
+        console.log('Recording started');
         
         const voiceBtn = document.getElementById('voiceBtn');
         const statusText = document.getElementById('statusText');
@@ -250,7 +250,7 @@ function initSpeechRecognition() {
     
     app.recognition.onend = () => {
         const t = i18n[app.currentLang];
-        console.log('🛑 Recording stopped');
+        console.log('Recording stopped');
         
         const voiceBtn = document.getElementById('voiceBtn');
         const statusText = document.getElementById('statusText');
@@ -276,7 +276,7 @@ function initSpeechRecognition() {
     
     app.recognition.onerror = (event) => {
         const t = i18n[app.currentLang];
-        console.error('❌ Speech recognition error:', event.error);
+        console.error('Speech recognition error:', event.error);
         
         document.getElementById('voiceBtn').classList.remove('recording');
         document.querySelector('.btn-text').textContent = t.speak;
@@ -299,7 +299,7 @@ function initSpeechRecognition() {
         }, 4000);
     };
     
-    console.log('✅ Speech recognition initialized successfully');
+    console.log('Speech recognition initialized successfully');
     return true;
 }
 
@@ -456,13 +456,13 @@ function createTaskElement(task, category) {
                         `<option value="${catId}" ${task.category === catId ? 'selected' : ''}>${cat.name}</option>`
                     ).join('')}
                 </select>
-                <div class="task-timing" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
+                <div class="task-timing timing-${task.timing}" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
             </div>
         `;
     } else {
         metaHTML = `
             <div class="task-meta">
-                <div class="task-timing" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
+                <div class="task-timing timing-${task.timing}" data-task-id="${task.id}">${getTimingLabel(task.timing)}</div>
             </div>
         `;
     }
@@ -629,7 +629,7 @@ function renderTasks() {
     if (app.tasks.filter(t => !t.completed).length > 0) {
         const addTaskBtn = document.createElement('button');
         addTaskBtn.className = 'add-task-btn-bottom';
-        addTaskBtn.textContent = `+ ${t.addTask}`;
+        addTaskBtn.textContent = t.addTask;
         addTaskBtn.addEventListener('click', addNewTask);
         container.appendChild(addTaskBtn);
     }
@@ -681,8 +681,8 @@ function createBubbleBurst(element) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    const colors = ['#7A9FB5', '#B8D4E0', '#A8C5B8', '#C4A8C7'];
-    
+    const colors = ['#888888', '#AAAAAA', '#CCCCCC', '#999999'];
+
     for (let i = 0; i < 12; i++) {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
@@ -735,7 +735,7 @@ function showCompletionScreen() {
     `;
     
     // Create MASSIVE celebration bubble burst (100 bubbles!)
-    const colors = ['#7A9FB5', '#A8C5B8', '#C4A8C7', '#B8D4E0', '#E8A598', '#D8A5B8'];
+    const colors = ['#888888', '#AAAAAA', '#CCCCCC', '#999999', '#777777', '#BBBBBB'];
     
     for (let i = 0; i < 100; i++) {
         setTimeout(() => {
@@ -949,26 +949,26 @@ function updateCategoryColor(categoryId, newColor) {
 function bindEvents() {
     // Voice button
     document.getElementById('voiceBtn').addEventListener('click', () => {
-        console.log('🎤 Voice button clicked');
+        console.log('Voice button clicked');
         
         if (!app.recognition) {
-            console.error('❌ Speech recognition not initialized');
+            console.error('Speech recognition not initialized');
             alert('Speech recognition not available. Please refresh and try again.');
             return;
         }
         
         if (document.getElementById('voiceBtn').classList.contains('recording')) {
-            console.log('🛑 Stopping recording...');
+            console.log('Stopping recording...');
             app.recognition.stop();
         } else {
-            console.log('▶️ Starting recording...');
+            console.log('Starting recording...');
             app.recognition.lang = i18n[app.currentLang].speechLang;
             console.log('Language set to:', app.recognition.lang);
             
             try {
                 app.recognition.start();
             } catch (error) {
-                console.error('❌ Failed to start recognition:', error);
+                console.error('Failed to start recognition:', error);
                 alert('Failed to start recording. Please check microphone permissions.');
             }
         }
