@@ -2292,7 +2292,8 @@ let recognition    = null;
 let fullTranscript = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-let micPermGranted = false;   // Safari: track if getUserMedia was already approved
+let micPermGranted = false;
+let isProcessing   = false;  // guard: prevents double-processing
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -2336,30 +2337,42 @@ function buildRecognition() {
 
   r.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) fullTranscript += e.results[i][0].transcript + ' ';
+      const res = e.results[i];
+      const text = res[0].transcript;
+      if (res.isFinal) {
+        fullTranscript += text + ' ';
+        // Show accumulated transcript in the mic modal hint
+        const hint = document.getElementById('micModalHint');
+        if (hint) hint.textContent = fullTranscript.trim();
+      } else {
+        // Show live interim on Chrome (Safari doesn't fire interim)
+        const hint = document.getElementById('micModalHint');
+        if (hint) hint.textContent = (fullTranscript + text).trim();
+      }
     }
   };
 
   r.onend = () => {
     if (shouldRestart && state.isListening) {
-      // Safari: always recreate. Chrome: can reuse but recreating is safe too.
+      // Keep listening — rebuild recognition on Safari (required), reuse on Chrome
       recognition = buildRecognition();
       restartTimer = setTimeout(() => {
         try { recognition.start(); } catch(err) { console.warn('restart:', err); }
-      }, isSafari ? 400 : 200);
+      }, isSafari ? 350 : 150);
       return;
     }
-    // Normal end — user tapped Stop or we called .stop()
-    if (state.isListening) _setListeningUI(false);
+    // User stopped OR natural end after shouldRestart=false
+    // Don't touch UI here — stopListening already handled it
   };
 
   r.onerror = e => {
     console.warn('SR error:', e.error);
-    if (e.error === 'no-speech') return;   // silence is OK, keep restarting
-    if (e.error === 'aborted')  return;   // deliberate stop, ignore
+    if (e.error === 'no-speech') return;   // silence is OK — keep restarting
+    if (e.error === 'aborted')  return;   // deliberate stop — ignore
     shouldRestart = false;
     clearTimeout(restartTimer);
     _setListeningUI(false);
+    isProcessing = false;
     if (e.error === 'not-allowed') {
       micPermGranted = false;
       showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission denied');
@@ -2385,6 +2398,7 @@ async function requestMicPermission() {
 }
 
 async function startListening() {
+  if (isProcessing) return;  // don't start while compiling
   fullTranscript = '';
   shouldRestart  = true;
   clearTimeout(restartTimer);
@@ -2403,32 +2417,45 @@ async function startListening() {
 }
 
 async function stopListening() {
+  if (isProcessing) return;  // prevent double-tap race
+
+  // 1. Signal stop BEFORE touching recognition (prevents restart loop)
   shouldRestart = false;
   clearTimeout(restartTimer);
-  _setListeningUI(false);
-  try { recognition?.stop(); } catch(e) {}
 
+  // 2. Grab transcript NOW before anything can clear it
   const t = fullTranscript.trim();
   fullTranscript = '';
 
-  if (!t) return;
+  // 3. Close mic UI
+  _setListeningUI(false);
 
-  // Show compile overlay — small rAF delay so browser paints it before the await
+  // 4. Stop recognition (may fire onend async — that's fine, shouldRestart=false)
+  try { recognition?.stop(); } catch(e) {}
+
+  // 5. Nothing said? bail
+  if (!t) {
+    showToast(state.lang === 'ja' ? '何も聞き取れませんでした' : 'Nothing heard — try again');
+    return;
+  }
+
+  // 6. Show compile overlay with guaranteed 2-frame paint + min 800ms
+  isProcessing = true;
   showCompile();
-  // Wait for at least 2 frames + a minimum display time so users see the animation
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-  const minShow = new Promise(r => setTimeout(r, 800)); // always show ≥800ms
+  const minShow = new Promise(r => setTimeout(r, 800));
 
   let tasks = [];
   try {
     tasks = await classifyTranscript(t);
   } catch(e) {
     console.error('classify failed:', e);
+    tasks = localClassify(t, state.defaultTiming || 'This Week');
   }
 
-  await minShow; // ensure overlay was visible long enough
+  await minShow;
   hideCompile();
+  isProcessing = false;
 
   if (!tasks || tasks.length === 0) {
     showToast(state.lang === 'ja'
@@ -2437,11 +2464,11 @@ async function stopListening() {
     return;
   }
 
-  // Stagger tasks in one by one
+  // Stagger tasks in
   tasks.forEach((task, i) => {
     setTimeout(() => {
       makeTaskItem(
-        task.text     || '',
+        task.text     || t,
         task.timing   || state.defaultTiming || 'This Week',
         task.category || 'Other'
       );
