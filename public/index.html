@@ -277,7 +277,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
    Ink      : soft tinted wash + inner feather glow
 ════════════════════════════════════════ */
 .task-bubble {
-  width:20px; height:20px; border-radius:50%; flex-shrink:0;
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
   cursor:pointer; position:relative; overflow:visible;
   transition:transform .14s ease;
 }
@@ -1343,14 +1343,14 @@ GoogleService-Info.plist
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <p class="modal-title">Settings</p>
+    <p class="modal-title" data-en="Settings" data-ja="設定">Settings</p>
 
     <!-- ══ GENERAL ══ -->
     <div class="settings-section" style="margin-top:24px">
-      <div class="settings-section-label">General</div>
+      <div class="settings-section-label" data-en="General" data-ja="一般">General</div>
 
       <div class="settings-row">
-        <p class="settings-row-label">Language</p>
+        <p class="settings-row-label" data-en="Language" data-ja="言語">Language</p>
         <div class="settings-row-right">
           <div class="pill-toggle">
             <button class="colour-mode-btn active" id="sLangEN">EN</button>
@@ -1361,8 +1361,8 @@ GoogleService-Info.plist
 
       <div class="settings-row">
         <div style="flex:1;min-width:0">
-          <p class="settings-row-label">Default due date</p>
-          <p class="settings-row-sub">When not stated by voice</p>
+          <p class="settings-row-label" data-en="Default due date" data-ja="デフォルト期限">Default due date</p>
+          <p class="settings-row-sub" data-en="When not stated by voice" data-ja="音声で指定しない場合">When not stated by voice</p>
         </div>
         <div class="settings-row-right">
           <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
@@ -1370,11 +1370,11 @@ GoogleService-Info.plist
       </div>
 
       <div class="settings-row" style="border-bottom:none">
-        <p class="settings-row-label">Colour scheme</p>
+        <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
         <div class="settings-row-right">
           <div class="pill-toggle">
-            <button class="colour-scheme-btn active" id="colourModeBlue">Default</button>
-            <button class="colour-scheme-btn" id="colourModeGrey">Grey</button>
+            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="カラー">Default</button>
+            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Grey" data-ja="グレー">Grey</button>
           </div>
         </div>
       </div>
@@ -1383,7 +1383,7 @@ GoogleService-Info.plist
     <!-- ══ CUSTOMISE PRO ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="pro-label-row">
-        <span class="settings-section-label" style="margin:0;padding:0">Customise</span>
+        <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
       </div>
 
@@ -1391,12 +1391,12 @@ GoogleService-Info.plist
 
         <!-- Bubble Style -->
         <div class="pro-block">
-          <div class="pro-block-title">Bubble Style</div>
+          <div class="pro-block-title" data-en="Bubble Style" data-ja="バブルスタイル">Bubble Style</div>
           <div class="bubble-style-tabs">
-            <button class="bst-tab active" data-style="luminous">Default</button>
-            <button class="bst-tab" data-style="solid">3D</button>
-            <button class="bst-tab" data-style="ring">Ring</button>
-            <button class="bst-tab" data-style="ink">Ink</button>
+            <button class="bst-tab active" data-style="luminous" data-en="Default" data-ja="デフォルト">Default</button>
+            <button class="bst-tab" data-style="solid" data-en="3D" data-ja="3D">3D</button>
+            <button class="bst-tab" data-style="ring" data-en="Ring" data-ja="リング">Ring</button>
+            <button class="bst-tab" data-style="ink" data-en="Ink" data-ja="インク">Ink</button>
           </div>
           <div class="bubble-preview-row" style="margin-top:10px;margin-bottom:0">
             <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:24px;height:24px"></div>
@@ -1411,7 +1411,7 @@ GoogleService-Info.plist
 
         <!-- Colour Scheme -->
         <div class="pro-block">
-          <div class="pro-block-title">Colour Scheme</div>
+          <div class="pro-block-title" data-en="Colour Scheme" data-ja="バブルカラー">Colour Scheme</div>
           <div class="colour-grid" id="colourGrid">
             <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
             <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
@@ -1432,27 +1432,27 @@ GoogleService-Info.plist
 
         <!-- Categories -->
         <div class="pro-block">
-          <div class="pro-block-title">Categories</div>
+          <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
           <div class="cat-list">
             <div class="cat-item">
               <div class="cat-item-dot" style="background:#3B82F6"></div>
-              <span class="cat-item-name">Work</span>
-              <span class="cat-item-kw">emails, meetings, reports…</span>
+              <span class="cat-item-name" data-en="Work" data-ja="仕事">Work</span>
+              <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#475569"></div>
-              <span class="cat-item-name">Home</span>
-              <span class="cat-item-kw">groceries, cleaning, bills…</span>
+              <div class="cat-item-dot" style="background:#F97316"></div>
+              <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
+              <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#0D9488"></div>
-              <span class="cat-item-name">Personal</span>
-              <span class="cat-item-kw">gym, doctor, reading…</span>
+              <div class="cat-item-dot" style="background:#7C3AED"></div>
+              <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
+              <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
             </div>
             <div class="cat-item">
               <div class="cat-item-dot" style="background:#9CA3AF"></div>
-              <span class="cat-item-name">Others</span>
-              <span class="cat-item-kw">anything that doesn't fit</span>
+              <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
+              <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
             </div>
           </div>
           <div class="add-plus-row">
@@ -1464,7 +1464,7 @@ GoogleService-Info.plist
 
         <!-- Rules -->
         <div class="pro-block">
-          <div class="pro-block-title">Rules</div>
+          <div class="pro-block-title" data-en="Rules" data-ja="ルール">Rules</div>
           <div class="add-plus-row" style="padding-top:0">
             <span class="add-plus-row-sign">+</span> Add rule
           </div>
@@ -1472,7 +1472,7 @@ GoogleService-Info.plist
 
         <!-- Upgrade CTA -->
         <div class="upgrade-row">
-          <button class="upgrade-btn" id="unlockProBtn">Upgrade to PRO</button>
+          <button class="upgrade-btn" id="unlockProBtn" data-en="Upgrade to PRO" data-ja="PROにアップグレード">Upgrade to PRO</button>
         </div>
 
       </div><!-- /pro-wrap -->
@@ -1480,26 +1480,26 @@ GoogleService-Info.plist
 
     <!-- ══ HOW IT WORKS ══ -->
     <div class="settings-section" style="margin-top:24px">
-      <div class="settings-section-label">How it works</div>
+      <div class="settings-section-label" data-en="How it works" data-ja="使い方">How it works</div>
       <div class="guide-row">
-        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
-        <div><p class="guide-action">Tap the bubble — pop it done</p><p class="guide-detail">Particles burst outward. Task collapses away.</p></div>
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
+        <div><p class="guide-action" data-en="Speak your tasks" data-ja="タスクを話す">Speak your tasks</p><p class="guide-detail" data-en="Just say everything on your mind — automatically sorted by category." data-ja="思いついたことを話すだけ。カテゴリーに自動で振り分けられます。">Just say everything on your mind — automatically sorted by category.</p></div>
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><p class="guide-action">Tap the due date chip</p><p class="guide-detail">Today → This Week → Later → cycles back.</p></div>
+        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today → This Week → Later.</p></div>
       </div>
       <div class="guide-row">
-        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
-        <div><p class="guide-action">Speak your tasks</p><p class="guide-detail">Tap the mic. Say everything on your mind. AI classifies automatically.</p></div>
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
+        <div><p class="guide-action" data-en="Hold the task to change category" data-ja="カテゴリーを変更する">Hold the task to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
       </div>
       <div class="guide-row" style="border-bottom:none">
-        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
-        <div><p class="guide-action">Wrong category? Hold the task text</p><p class="guide-detail">Press and hold the task name to move it to a different category.</p></div>
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
+        <div><p class="guide-action" data-en="Pop it done" data-ja="完了させる">Pop it done</p><p class="guide-detail" data-en="Tap the bubble to mark it done." data-ja="バブルをタップしてタスクを完了。">Tap the bubble to mark it done.</p></div>
       </div>
     </div>
 
-    <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0">Done</button>
+    <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
 
@@ -2024,12 +2024,14 @@ function makeTaskItem(text, timing, cat) {
   const card  = document.getElementById(catId) || document.getElementById('cat-other');
   if (!card) return;
 
-  // When grey mode is active, new bubbles get bc-grey too
-  const colourClass = state.greyBubbles ? 'bc-grey' : state.bubbleColour;
+  // Bubble colour matches category; grey mode overrides all to bc-grey
+  const CAT_BUBBLE = { Work:'bc-blue', Home:'bc-amber', Personal:'bc-purple', Other:'bc-grey' };
+  const catColour   = CAT_BUBBLE[cat] || 'bc-blue';
+  const colourClass = state.greyBubbles ? 'bc-grey' : catColour;
   const item = document.createElement('div');
   item.className = 'task-item';
   item.innerHTML = `
-    <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
+    <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${catColour}"></div>
     <div class="task-body"><div class="task-top">
       <div class="task-text" contenteditable="true">${text}</div>
       <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
