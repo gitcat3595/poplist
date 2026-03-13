@@ -1478,6 +1478,23 @@ GoogleService-Info.plist
       </div><!-- /pro-wrap -->
     </div>
 
+    <!-- ══ AI SETTINGS ══ -->
+    <div class="settings-section" style="margin-top:24px">
+      <div class="settings-section-label">AI Classification</div>
+      <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px;border-bottom:none">
+        <p class="settings-row-label" style="margin-bottom:2px">OpenAI API Key</p>
+        <p class="settings-row-sub" style="margin-bottom:6px">Enables smart task splitting &amp; Japanese support. Without it, Poplist uses built-in keyword matching.</p>
+        <div style="position:relative;display:flex;gap:8px;align-items:center">
+          <input type="password" id="apiKeyInput"
+            placeholder="sk-..."
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+            style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--t1);outline:none;-webkit-appearance:none"/>
+          <button id="apiKeySave" style="padding:9px 16px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;touch-action:manipulation">Save</button>
+        </div>
+        <p id="apiKeyStatus" style="font-size:11px;color:var(--t3);margin-top:2px">No key saved — using built-in classifier</p>
+      </div>
+    </div>
+
     <!-- ══ HOW IT WORKS ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label">How it works</div>
@@ -1492,6 +1509,10 @@ GoogleService-Info.plist
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
         <div><p class="guide-action">Speak your tasks</p><p class="guide-detail">Tap the mic. Say everything on your mind. AI classifies automatically.</p></div>
+      </div>
+      <div class="guide-row" style="border-bottom:none">
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+        <div><p class="guide-action">Wrong category? Tap &amp; hold the bubble</p><p class="guide-detail">A sheet opens so you can move the task to the correct category.</p></div>
       </div>
     </div>
 
@@ -2169,23 +2190,82 @@ const micModal     = document.getElementById('micModal');
 const micStopBtn   = document.getElementById('micStopBtn');
 const transcriptEl = document.getElementById('voiceTranscript');
 
-/* Send transcript to Cloudflare Worker → OpenAI → structured task list */
+/* ── Local keyword-based classifier (fallback when no API key) ── */
+const LOCAL_CAT_KW = {
+  Work:     /meeting|email|report|client|project|deadline|invoice|proposal|presentation|call|boss|budget|strategy|slide|review|打ち合わせ|メール|報告|クライアント|プロジェクト|締め切り|請求|提案|プレゼン|上司|予算|ミーティング/i,
+  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment|買い物|スーパー|掃除|ゴミ|洗濯|修理|光熱費|家賃|料理|夕食|荷物|配達/i,
+  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut|ジム|ランニング|医者|歯医者|病院|読書|友達|家族|旅行|趣味|勉強|瞑想|ヨガ/i,
+};
+const LOCAL_TIMING_KW = {
+  Today:     /\b(today|urgent|asap|now|immediately|tonight|今日|今すぐ|急ぎ|本日|今夜)\b/i,
+  Later:     /\b(someday|eventually|later|future|no rush|そのうち|いつか|後で|将来|急がない)\b/i,
+};
+
+function localDetectCat(text) {
+  for (const [c, r] of Object.entries(LOCAL_CAT_KW)) if (r.test(text)) return c;
+  return 'Other';
+}
+function localDetectTiming(text, def) {
+  if (LOCAL_TIMING_KW.Today.test(text))  return 'Today';
+  if (LOCAL_TIMING_KW.Later.test(text))  return 'Later';
+  return def || 'This Week';
+}
+
+// Split transcript into tasks locally — split on commas, "and", Japanese connectors
+function localClassify(transcript, defaultTiming) {
+  // Clean timing words from text
+  const cleanText = t => t
+    .replace(/\b(today|tonight|this week|later|someday|eventually|asap|now|immediately)\b/gi, '')
+    .replace(/今日|今週|そのうち|急ぎ|いつか|後で/g, '')
+    .replace(/\s+/g, ' ').trim();
+
+  // Split on: ", and", " and ", "、", "。", ". ", "; "
+  const parts = transcript
+    .split(/,\s*and\s+|\s+and\s+|[、。；;]\s*|(?<=[。、.!?！？])\s*/u)
+    .map(s => s.replace(/^(and|also|そして|それから|あと|また)\s+/i, '').trim())
+    .filter(s => s.length > 1);
+
+  if (parts.length === 0) {
+    const cleaned = cleanText(transcript);
+    if (!cleaned) return [];
+    return [{ text: cleaned, timing: localDetectTiming(transcript, defaultTiming), category: localDetectCat(transcript) }];
+  }
+
+  return parts.map(p => ({
+    text:     cleanText(p) || p.trim(),
+    timing:   localDetectTiming(p, defaultTiming),
+    category: localDetectCat(p)
+  })).filter(t => t.text.length > 0);
+}
+
+/* Send transcript to Cloudflare Worker → OpenAI → structured task list
+   Falls back to local keyword classification if API key is not set */
 async function classifyTranscript(transcript) {
-  const categories   = ['Work', 'Home', 'Personal', 'Other']; // always English
+  const categories    = ['Work', 'Home', 'Personal', 'Other'];
   const defaultTiming = state.defaultTiming || 'This Week';
+
+  // Try API (uses key saved in Settings → passed as header, or server-side env var)
+  const savedKey = localStorage.getItem('poplist_openai_key') || '';
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (savedKey) headers['X-OpenAI-Key'] = savedKey;
+
     const res = await fetch('/api/classify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ transcript, categories, defaultTiming, lang: state.lang })
     });
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-    return data.tasks || [];
+    if (res.ok) {
+      const data = await res.json();
+      if (data.tasks && data.tasks.length > 0) return data.tasks;
+    }
   } catch(e) {
-    console.error('classify error:', e);
-    return [];
+    console.warn('API classify failed, using local:', e);
   }
+
+  // Local fallback
+  console.log('Using local classifier');
+  return localClassify(transcript, defaultTiming);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2335,7 +2415,10 @@ async function stopListening() {
 
   // Show compile overlay — small rAF delay so browser paints it before the await
   showCompile();
-  await new Promise(r => requestAnimationFrame(r));
+  // Wait for at least 2 frames + a minimum display time so users see the animation
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  const minShow = new Promise(r => setTimeout(r, 800)); // always show ≥800ms
 
   let tasks = [];
   try {
@@ -2344,6 +2427,7 @@ async function stopListening() {
     console.error('classify failed:', e);
   }
 
+  await minShow; // ensure overlay was visible long enough
   hideCompile();
 
   if (!tasks || tasks.length === 0) {
@@ -2482,9 +2566,39 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
 const openM  = id => document.getElementById(id).classList.add('show');
 const closeM = id => document.getElementById(id).classList.remove('show');
 
-document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  openM('settingsModal');
+  // Restore saved API key display
+  const savedKey = localStorage.getItem('poplist_openai_key') || '';
+  const inp = document.getElementById('apiKeyInput');
+  const st  = document.getElementById('apiKeyStatus');
+  if (inp) inp.value = savedKey ? '••••••••••••••••' : '';
+  if (st)  st.textContent = savedKey
+    ? '✅ Key saved — AI classification active'
+    : 'No key saved — using built-in classifier';
+  if (st)  st.style.color = savedKey ? '#16A34A' : 'var(--t3)';
+});
 document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
 document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+
+/* ── API Key save/load ── */
+document.getElementById('apiKeySave')?.addEventListener('click', () => {
+  const inp = document.getElementById('apiKeyInput');
+  const st  = document.getElementById('apiKeyStatus');
+  const val = inp?.value.trim();
+  if (!val || val === '••••••••••••••••') {
+    if (st) { st.textContent = 'No key saved — using built-in classifier'; st.style.color = 'var(--t3)'; }
+    return;
+  }
+  if (!val.startsWith('sk-')) {
+    if (st) { st.textContent = '⚠️ Key should start with "sk-"'; st.style.color = '#F97316'; }
+    return;
+  }
+  localStorage.setItem('poplist_openai_key', val);
+  if (inp) inp.value = '••••••••••••••••';
+  if (st)  { st.textContent = '✅ Key saved — AI classification active'; st.style.color = '#16A34A'; }
+  showToast('API key saved ✓');
+});
 
 /* ── Settings: default deadline chip cycles like task chips ── */
 document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
