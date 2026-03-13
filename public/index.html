@@ -1495,7 +1495,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
-        <div><p class="guide-action">Wrong category? Tap &amp; hold the bubble</p><p class="guide-detail">A sheet opens so you can move the task to the correct category.</p></div>
+        <div><p class="guide-action">Wrong category? Hold the task text</p><p class="guide-detail">Press and hold the task name to move it to a different category.</p></div>
       </div>
     </div>
 
@@ -1772,10 +1772,10 @@ function burstBubble(el, item) {
    • Long press → open "Move to…" category sheet
 ══════════════════════════════════════════ */
 const CAT_META = [
-  { en:'Work',     ja:'仕事',    colour:'#3B82F6', icon:'💼' },
-  { en:'Home',     ja:'家の事',  colour:'#F97316', icon:'🏠' },
-  { en:'Personal', ja:'自分の事',colour:'#7C3AED', icon:'🙋' },
-  { en:'Other',    ja:'その他',  colour:'#9CA3AF', icon:'📌' },
+  { en:'Work',     ja:'仕事',    colour:'#3B82F6' },
+  { en:'Home',     ja:'家の事',  colour:'#F97316' },
+  { en:'Personal', ja:'自分の事',colour:'#7C3AED' },
+  { en:'Other',    ja:'その他',  colour:'#9CA3AF' },
 ];
 
 let _catEditTarget = null; // the task-item DOM node currently being moved
@@ -1788,8 +1788,8 @@ function openCatEdit(taskItem) {
   const isJA = state.lang === 'ja';
   document.getElementById('catEditTitle').textContent = isJA ? 'カテゴリーを変更' : 'Move to…';
   document.getElementById('catEditSub').textContent   = isJA
-    ? '自動分類が違う場合は正しいカテゴリーを選んでください。'
-    : 'Auto-detected category wrong? Pick the right one.';
+    ? 'タスクを正しいカテゴリーに移動します。'
+    : 'Move this task to the right category.';
 
   const opts = document.getElementById('catEditOptions');
   opts.innerHTML = '';
@@ -1802,10 +1802,9 @@ function openCatEdit(taskItem) {
       border-bottom:${idx < CAT_META.length-1 ? '1px solid var(--border)' : 'none'};
       -webkit-tap-highlight-color:transparent;touch-action:manipulation;`;
     btn.innerHTML = `
-      <span style="font-size:20px">${cat.icon}</span>
-      <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
-      ${isCurrent ? '<span style="font-size:11px;font-weight:800;color:var(--t3)">current</span>' : ''}
       <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0"></span>
+      <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
+      ${isCurrent ? '<span style="font-size:11px;font-weight:800;color:var(--t3)">●</span>' : ''}
     `;
     btn.addEventListener('click', () => {
       moveCatTaskItem(taskItem, cat.en);
@@ -1850,29 +1849,36 @@ function moveCatTaskItem(item, newCatEn) {
 }
 
 function attachBubble(bubble) {
-  let pressTimer = null;
-  let didLongPress = false;
-
-  // Long-press: 450ms hold → open category sheet
-  bubble.addEventListener('pointerdown', e => {
-    didLongPress = false;
-    pressTimer = setTimeout(() => {
-      didLongPress = true;
-      bubble.releasePointerCapture(e.pointerId);
-      openCatEdit(bubble.closest('.task-item'));
-    }, 450);
-  });
-  bubble.addEventListener('pointerup',     () => clearTimeout(pressTimer));
-  bubble.addEventListener('pointercancel', () => clearTimeout(pressTimer));
-  bubble.addEventListener('pointermove',   () => clearTimeout(pressTimer));
-
-  // Short tap → burst
+  // Short tap only → burst (no long-press on bubble)
   bubble.addEventListener('click', () => {
-    if (didLongPress) { didLongPress = false; return; }
     burstBubble(bubble, bubble.closest('.task-item'));
   });
 }
+
+function attachTaskText(taskText) {
+  let pressTimer = null;
+  let didLongPress = false;
+
+  // Long-press on text → open category sheet
+  taskText.addEventListener('pointerdown', e => {
+    didLongPress = false;
+    pressTimer = setTimeout(() => {
+      didLongPress = true;
+      taskText.releasePointerCapture(e.pointerId);
+      // Prevent text selection during long press
+      window.getSelection()?.removeAllRanges();
+      openCatEdit(taskText.closest('.task-item'));
+    }, 500);
+  });
+  taskText.addEventListener('pointerup',     () => clearTimeout(pressTimer));
+  taskText.addEventListener('pointercancel', () => clearTimeout(pressTimer));
+  taskText.addEventListener('pointermove',   e => {
+    // Cancel if finger moved more than ~5px
+    clearTimeout(pressTimer);
+  });
+}
 document.querySelectorAll('.task-bubble').forEach(attachBubble);
+document.querySelectorAll('.task-text').forEach(attachTaskText);
 
 document.getElementById('closeCatEdit')?.addEventListener('click', () => closeM('catEditModal'));
 document.getElementById('catEditModal')?.addEventListener('click', e => {
@@ -2033,6 +2039,7 @@ function makeTaskItem(text, timing, cat) {
   card.insertBefore(item, addRow);
 
   attachBubble(item.querySelector('.task-bubble'));
+  attachTaskText(item.querySelector('.task-text'));
   attachChip(item.querySelector('.timing-chip'));
   item.querySelector('.task-text').addEventListener('keydown', handleTextKey);
 
