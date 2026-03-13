@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Settings Mock — Poplist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --blue:      #3B82F6;
+  --blue-lt:   #EFF6FF;
+  --black:     #111111;
+  --shcard:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --rc:   18px;
+  --rp:   50px;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+
+  /* layout: one shared horizontal gutter used everywhere */
+  --gutter: 20px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 60px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SHEET ─── */
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border-radius: 24px 24px 0 0;
+  margin-top: 48px;
+  padding-bottom: 32px;
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border); border-radius: 2px;
+  margin: 14px auto 0;
+}
+.modal-title {
+  font-size: 18px; font-weight: 800; color: var(--black);
+  padding: 18px var(--gutter) 0;
+}
+
+/* ─── SHARED SECTION LABEL ───
+   Same size, same weight, same case for General, Customise, How it works */
+.section-label {
+  font-size: 10px; font-weight: 800; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--t3);
+  /* indented by the same gutter as row content */
+  padding: 0 var(--gutter) 8px;
+}
+
+/* gap before each section */
+.section-gap { height: 24px }
+
+/* ─── GENERAL ROWS ───
+   dividers stop --gutter from each edge (not full-bleed) */
+.s-rows {
+  /* no horizontal padding here — individual rows carry it */
+}
+.s-row {
+  display: flex; align-items: center;
+  padding: 13px var(--gutter);
+  gap: 12px; min-height: 52px;
+  position: relative;
+}
+/* divider line inset by --gutter on both sides */
+.s-row::after {
+  content: '';
+  position: absolute; bottom: 0;
+  left: var(--gutter); right: var(--gutter);
+  height: 1px; background: var(--border);
+}
+.s-row:last-child::after { display: none }
+
+.s-row-label {
+  flex: 1; font-size: 14px; font-weight: 600; color: var(--t1);
+}
+.s-row-sub {
+  font-size: 11px; font-weight: 500; color: var(--t3); margin-top: 2px;
+}
+.s-row-right {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0; margin-left: auto;
+}
+
+/* ─── PILL TOGGLE (EN/JP, Default/Grey) ─── */
+.pill-toggle {
+  display: flex; align-items: center;
+  background: var(--surface);
+  border-radius: var(--rp);
+  padding: 3px; gap: 2px;
+}
+.pill-btn {
+  font-size: 11px; font-weight: 700; padding: 5px 12px;
+  border-radius: var(--rp); color: var(--t2);
+  background: transparent; border: none; cursor: pointer;
+  transition: var(--tr);
+}
+.pill-btn.active { background: var(--blue); color: #fff }
+
+/* ─── TIMING CHIP ─── */
+.timing-chip {
+  font-size: 11px; font-weight: 700; padding: 5px 13px;
+  border-radius: var(--rp); cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--card); color: var(--t2);
+  transition: var(--tr); white-space: nowrap;
+  display: inline-flex; align-items: center;
+}
+.timing-chip.today {
+  color: var(--blue); background: var(--blue-lt);
+  border-color: rgba(59,130,246,.35);
+}
+
+/* on very narrow screens collapse chip text */
+@media (max-width: 340px) {
+  .chip-full  { display: none }
+  .chip-short { display: inline !important }
+}
+
+/* ─── PRO SECTION ─── */
+
+/* The label "CUSTOMISE" + PRO badge sit OUTSIDE the card, same as General */
+.pro-label-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 var(--gutter) 8px;
+}
+.pro-badge {
+  font-size: 10px; font-weight: 800; padding: 2px 9px;
+  background: var(--blue-lt); border: 1px solid rgba(59,130,246,.2);
+  border-radius: 20px; color: var(--blue); letter-spacing: .3px;
+}
+
+/* The grey card holds all the content — no inner boxes */
+.pro-wrap {
+  margin: 0 var(--gutter);
+  background: var(--raised);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Each sub-section inside the card — no extra card/border */
+.pro-block {
+  padding: 12px 14px 14px;
+}
+
+/* inset divider between sub-sections */
+.pro-divider {
+  height: 1px; background: var(--border);
+  margin: 0 14px;
+}
+
+.pro-block-title {
+  font-size: 12px; font-weight: 700; color: var(--t2);
+  margin-bottom: 10px;
+}
+
+/* ─── BUBBLE STYLE TABS ─── */
+.bst-tabs { display: flex; gap: 5px }
+.bst-tab {
+  flex: 1; padding: 7px 4px; text-align: center;
+  font-size: 10px; font-weight: 800; letter-spacing: .2px;
+  border-radius: 10px; background: var(--card);
+  border: 1.5px solid var(--border); color: var(--t2);
+  pointer-events: none;
+}
+.bst-tab.active { background: var(--black); color: #fff; border-color: var(--black) }
+
+/* preview card */
+.bubble-preview-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 8px; padding: 10px 12px;
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.preview-name { font-size: 13px; font-weight: 700; color: var(--black) }
+.preview-desc { font-size: 11px; color: var(--t3); margin-top: 1px }
+
+/* ─── TASK BUBBLE ─── */
+.task-bubble {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; position: relative;
+}
+.task-bubble.luminous {
+  background: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.13), 0 2px 6px rgba(59,130,246,.25);
+}
+.task-bubble.luminous::before {
+  content:''; position:absolute;
+  width:7px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,.22);
+  top:3px; left:4px; filter:blur(.8px);
+}
+
+/* ─── COLOUR SWATCHES ─── */
+.colour-row { display: flex; flex-wrap: wrap; gap: 9px }
+.cswatch {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  border: none; pointer-events: none;
+}
+.cswatch.sel { outline: 2px solid var(--brim); outline-offset: 3px }
+
+/* ─── CATEGORIES LIST ─── */
+.cat-list { display: flex; flex-direction: column; gap: 5px }
+.cat-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; background: var(--card);
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0 }
+.cat-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--t1) }
+.cat-kw   { font-size: 11px; color: var(--t3) }
+
+/* + Add category / + Add rule — plain text with + */
+.add-row {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 4px 0;
+  font-size: 12px; font-weight: 700; color: var(--t3);
+  cursor: default;
+}
+.add-row-plus {
+  font-size: 16px; line-height: 1; color: var(--t3);
+}
+
+/* ─── RULES ─── */
+.rules-list { display: flex; flex-direction: column; gap: 5px }
+.rule-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; background: var(--card);
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--t2);
+  font-style: italic;
+}
+
+/* ─── UPGRADE BUTTON ─── */
+.upgrade-row { padding: 12px var(--gutter) 16px }
+.upgrade-btn {
+  width: 100%; padding: 13px;
+  background: var(--black); color: #fff;
+  font-size: 14px; font-weight: 800; letter-spacing: .2px;
+  border-radius: var(--rp); border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(17,17,17,.22);
+  transition: var(--tr);
+}
+
+/* ─── HOW IT WORKS ─── */
+.guide-rows { padding: 0 var(--gutter) }
+.guide-row {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 11px 0; position: relative;
+}
+.guide-row::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 0; right: 0;
+  height: 1px; background: var(--border);
+}
+.guide-row:last-child::after { display: none }
+.guide-icon {
+  width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px;
+  background: var(--raised); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue);
+}
+.guide-icon svg { width: 17px; height: 17px }
+.guide-action { font-size: 13px; font-weight: 700; margin-bottom: 2px; color: var(--black) }
+.guide-detail { font-size: 11px; color: var(--t2); line-height: 1.5 }
+
+/* ─── DONE ─── */
+.done-btn {
+  display: block; margin: 20px auto 0;
+  padding: 9px 36px; font-size: 12px; font-weight: 700;
+  color: var(--t2); background: var(--raised);
+  border: 1px solid var(--border); border-radius: var(--rp);
+  cursor: pointer; transition: var(--tr);
+}
+.done-btn:hover { color: var(--t1); border-color: var(--brim) }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="modal-handle"></div>
+  <p class="modal-title">Settings</p>
+
+  <!-- ══════ GENERAL ══════ -->
+  <div class="section-gap"></div>
+  <div class="section-label">General</div>
+
+  <div class="s-rows">
+    <div class="s-row">
+      <span class="s-row-label">Language</span>
+      <div class="s-row-right">
+        <div class="pill-toggle">
+          <button class="pill-btn active">EN</button>
+          <button class="pill-btn">JP</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-row">
+      <div style="flex:1;min-width:0">
+        <p class="s-row-label">Default due date</p>
+        <p class="s-row-sub">When not stated by voice</p>
+      </div>
+      <div class="s-row-right">
+        <span class="timing-chip" id="deadlineChip">
+          <span class="chip-full">This Week</span>
+          <span class="chip-short" style="display:none">↕ Due</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="s-row">
+      <span class="s-row-label">Colour scheme</span>
+      <div class="s-row-right">
+        <div class="pill-toggle">
+          <button class="pill-btn active">Default</button>
+          <button class="pill-btn">Grey</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CUSTOMISE PRO ══════ -->
+  <div class="section-gap"></div>
+
+  <!-- Label + PRO badge sit OUTSIDE the card, aligned with section headers -->
+  <div class="pro-label-row">
+    <span class="section-label" style="padding:0">Customise</span>
+    <span class="pro-badge">PRO</span>
+  </div>
+
+  <div style="height:8px"></div>
+
+  <!-- Grey card — all content flat inside, no inner boxes -->
+  <div class="pro-wrap">
+
+    <!-- Bubble Style -->
+    <div class="pro-block">
+      <div class="pro-block-title">Bubble Style</div>
+      <div class="bst-tabs">
+        <div class="bst-tab active">Default</div>
+        <div class="bst-tab">3D</div>
+        <div class="bst-tab">Ring</div>
+        <div class="bst-tab">Ink</div>
+      </div>
+      <div class="bubble-preview-row">
+        <div class="task-bubble luminous"></div>
+        <div>
+          <p class="preview-name">Default</p>
+          <p class="preview-desc">Solid fill with subtle edge gradient</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- no divider between Bubble Style and Colour Scheme -->
+
+    <!-- Colour Scheme -->
+    <div class="pro-block">
+      <div class="pro-block-title">Colour Scheme</div>
+      <div class="colour-row">
+        <div class="cswatch sel"  style="background:#3B82F6"></div>
+        <div class="cswatch"      style="background:#1E40AF"></div>
+        <div class="cswatch"      style="background:#0D9488"></div>
+        <div class="cswatch"      style="background:#16A34A"></div>
+        <div class="cswatch"      style="background:#F97316"></div>
+        <div class="cswatch"      style="background:#EF4444"></div>
+        <div class="cswatch"      style="background:#EC4899"></div>
+        <div class="cswatch"      style="background:#7C3AED"></div>
+        <div class="cswatch"      style="background:#111111"></div>
+        <div class="cswatch"      style="background:#475569"></div>
+        <div class="cswatch"      style="background:#9CA3AF"></div>
+        <div class="cswatch"      style="background:#E5E7EB"></div>
+      </div>
+    </div>
+
+    <div class="pro-divider"></div>
+
+    <!-- Categories -->
+    <div class="pro-block">
+      <div class="pro-block-title">Categories</div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <div class="cat-dot" style="background:#3B82F6"></div>
+          <span class="cat-name">Work</span>
+          <span class="cat-kw">emails, meetings, reports…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-dot" style="background:#475569"></div>
+          <span class="cat-name">Home</span>
+          <span class="cat-kw">groceries, cleaning, bills…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-dot" style="background:#0D9488"></div>
+          <span class="cat-name">Personal</span>
+          <span class="cat-kw">gym, doctor, reading…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-dot" style="background:#9CA3AF"></div>
+          <span class="cat-name">Others</span>
+          <span class="cat-kw">anything that doesn't fit</span>
+        </div>
+      </div>
+      <div class="add-row">
+        <span class="add-row-plus">+</span> Add category
+      </div>
+    </div>
+
+    <div class="pro-divider"></div>
+
+    <!-- Rules -->
+    <div class="pro-block">
+      <div class="pro-block-title">Rules</div>
+      <div class="add-row" style="padding-top:0">
+        <span class="add-row-plus">+</span> Add rule
+      </div>
+    </div>
+
+    <!-- Upgrade CTA -->
+    <div class="upgrade-row">
+      <button class="upgrade-btn">Upgrade to PRO</button>
+    </div>
+
+  </div><!-- /pro-wrap -->
+
+  <!-- ══════ HOW IT WORKS ══════ -->
+  <div class="section-gap"></div>
+  <div class="section-label">How it works</div>
+
+  <div class="guide-rows">
+    <div class="guide-row">
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>
+        </svg>
+      </div>
+      <div>
+        <p class="guide-action">Tap the bubble — pop it done</p>
+        <p class="guide-detail">Particles burst outward. Task collapses away.</p>
+      </div>
+    </div>
+
+    <div class="guide-row">
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div>
+        <p class="guide-action">Tap the deadline chip</p>
+        <p class="guide-detail">Today → This Week → Later → cycles back.</p>
+      </div>
+    </div>
+
+    <div class="guide-row">
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        </svg>
+      </div>
+      <div>
+        <p class="guide-action">Speak your tasks</p>
+        <p class="guide-detail">Tap the mic. Say everything on your mind. AI classifies automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done -->
+  <button class="done-btn">Done</button>
+
+</div><!-- /sheet -->
+
+<script>
+const chip     = document.getElementById('deadlineChip');
+const chipFull  = chip.querySelector('.chip-full');
+const chipShort = chip.querySelector('.chip-short');
+const CYCLE = ['Today','This Week','Later'];
+const SHORT = ['\u2195 Today','\u2195 Due','\u2195 Later'];
+let idx = 1;
+chip.addEventListener('click', () => {
+  idx = (idx + 1) % CYCLE.length;
+  chipFull.textContent  = CYCLE[idx];
+  chipShort.textContent = SHORT[idx];
+  chip.classList.toggle('today', idx === 0);
+});
+</script>
+</body>
+</html>

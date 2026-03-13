@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Poplist — Welcome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --blue:      #3B82F6;
+  --blue-lt:   #EFF6FF;
+  --blue-glow: rgba(59,130,246,.18);
+  --black:     #111111;
+  --shcard:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shlift:    0 2px 8px rgba(0,0,0,.10);
+  --shbtn:     0 4px 20px rgba(0,0,0,.25);
+  --rp:   50px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--black);
+}
+.nav-logo em {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--blue); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
+}
+.nav-right { display: flex; align-items: center; gap: 8px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: var(--shlift);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--blue); color: #fff }
+.nav-icon-btn {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 11px; color: var(--t2);
+  transition: var(--tr); box-shadow: var(--shlift);
+}
+.nav-icon-btn:hover { border-color: var(--blue); color: var(--blue) }
+
+/* ── MAIN CONTENT ── */
+.welcome-wrap {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 100%; max-width: 480px;
+  padding: 0 24px 120px;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.7px;
+  color: var(--black); margin-bottom: 40px; line-height: 1.2;
+}
+
+/* ── SPEAK BUTTON ── */
+.voice-btn {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shcard), 0 0 0 0 rgba(59,130,246,0);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px; color: var(--black);
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+  margin-bottom: 12px;
+}
+.voice-btn:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shcard), 0 0 0 5px rgba(59,130,246,.12);
+}
+.voice-btn:active { transform: scale(.93) }
+.voice-btn.listening {
+  border-color: var(--blue);
+  animation: mic-pulse 1.4s ease infinite;
+  color: var(--blue);
+}
+@keyframes mic-pulse {
+  0%,100% { box-shadow: var(--shcard), 0 0 0 5px rgba(59,130,246,.15), 0 0 0 10px rgba(59,130,246,.06) }
+  50%      { box-shadow: var(--shcard), 0 0 0 10px rgba(59,130,246,.2), 0 0 0 20px rgba(59,130,246,.04) }
+}
+.mic-icon { width: 22px; height: 22px }
+.voice-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; opacity: .45 }
+
+.voice-hint {
+  font-size: 12px; color: var(--t3); font-style: italic; margin-bottom: 36px;
+}
+
+/* divider */
+.or-divider {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  color: var(--t3); font-size: 11px; font-weight: 700; letter-spacing: .4px;
+  width: 100%; max-width: 220px;
+}
+.or-divider::before, .or-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── ADD TASK BUTTON ── */
+.add-task-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--rp); font-size: 14px; font-weight: 700;
+  color: var(--t2); box-shadow: var(--shlift);
+  transition: var(--tr);
+}
+.add-task-btn:hover { border-color: var(--blue); color: var(--blue) }
+.add-task-btn svg { width: 15px; height: 15px; flex-shrink: 0 }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Poplist<em></em></div>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active">EN</button>
+      <button class="lang-btn">JP</button>
+    </div>
+    <div class="nav-icon-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </div>
+  </div>
+</nav>
+
+<!-- WELCOME SCREEN -->
+<div class="welcome-wrap">
+  <h1 class="welcome-title">What's on<br>your mind?</h1>
+
+  <button class="voice-btn" id="voiceBtn">
+    <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="2" width="6" height="11" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="9" y1="22" x2="15" y2="22"/>
+    </svg>
+    <span class="voice-label">Speak</span>
+  </button>
+
+  <p class="voice-hint">Tap to add tasks by voice</p>
+
+  <div class="or-divider">or</div>
+
+  <button class="add-task-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Add task
+  </button>
+</div>
+
+<script>
+const btn = document.getElementById('voiceBtn');
+btn.addEventListener('click', () => {
+  btn.classList.toggle('listening');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Poplist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  POPLIST — Web Preview / Cursor reference for iOS App
+  ═══════════════════════════════════════════════════════════
+  DESIGN TOKENS (match these to your Swift Theme file):
+    bg        → Color("bg")        #F0F2F5
+    surface   → Color("surface")   #E8EAED
+    card      → Color("card")      #FFFFFF
+    raised    → Color("raised")    #F5F6F8
+    blue      → Color("blue")      #3B82F6
+    black     → Color("black")     #111111
+    t1        → Color("t1")        #111111
+    t2        → Color("t2")        #6B7280
+    t3        → Color("t3")        #9CA3AF
+    border    → Color("border")    #D1D5DB
+
+  FIREBASE INTEGRATION (see bottom of file for structure)
+  SECURITY: Firestore rules + Auth required before any write
+  ═══════════════════════════════════════════════════════════
+-->
+
+<style>
+/* ════════════════════════════════════════
+   DESIGN TOKENS — Grey base, blue + black accents
+   (Inspired by Apple HIG light mode + brand blue)
+════════════════════════════════════════ */
+:root {
+  /* ── Backgrounds — light grey base ── */
+  --bg:        #ECEEF2;   /* page background */
+  --surface:   #E2E4E9;   /* nav, strips */
+  --card:      #FFFFFF;   /* card white */
+  --raised:    #F5F6F8;   /* hover state */
+  --overlay:   #D8DAE0;   /* divider bg */
+
+  /* ── Text ── */
+  --t1:        #111111;   /* primary — near black */
+  --t2:        #6B7280;   /* secondary grey */
+  --t3:        #9CA3AF;   /* tertiary / placeholder */
+
+  /* ── Borders ── */
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+
+  /* ── Accent: Blue ── */
+  --blue:      #3B82F6;
+  --blue-dim:  #1D4ED8;
+  --blue-lt:   #EFF6FF;   /* blue tint bg */
+  --blue-glow: rgba(59,130,246,.18);
+
+  /* ── Accent: Black ── */
+  --black:     #111111;
+  --black-mid: #374151;
+
+  /* ── Shadows ── */
+  --shcard:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shbtn:   0 4px 16px rgba(59,130,246,.38);
+  --shlift:  0 2px 8px rgba(0,0,0,.10);
+
+  /* ── Shape / motion ── */
+  --rc:   18px;
+  --rp:   50px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--t1);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding-bottom:140px;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+input  { font-family:inherit }
+
+/* ════════════════════════════════════════
+   NAV
+════════════════════════════════════════ */
+.nav {
+  position:sticky; top:0; z-index:100;
+  width:100%; max-width:480px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px;
+  background:rgba(236,238,242,.94);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+}
+
+/* Logo: text is black, dot is blue */
+.nav-logo {
+  font-size:18px; font-weight:900; letter-spacing:-.5px; color:var(--black);
+}
+.nav-logo em {
+  display:inline-block; width:8px; height:8px;
+  background:var(--blue); border-radius:50%;
+  margin-left:2px; vertical-align:super; font-style:normal;
+  box-shadow:0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
+}
+
+.nav-right { display:flex; align-items:center; gap:8px }
+
+.lang-toggle {
+  display:flex; background:var(--card); border-radius:var(--rp);
+  padding:3px; border:1px solid var(--border); gap:2px;
+  box-shadow:var(--shlift);
+}
+.lang-btn {
+  font-size:11px; font-weight:700; padding:4px 10px;
+  border-radius:var(--rp); color:var(--t2); transition:var(--tr);
+}
+.lang-btn.active { background:var(--blue); color:#fff }
+
+.nav-icon-btn {
+  width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:11px; color:var(--t2);
+  cursor:pointer; transition:var(--tr);
+  box-shadow:var(--shlift);
+}
+.nav-icon-btn:hover { border-color:var(--blue); color:var(--blue) }
+
+.nav-export {
+  display:flex; align-items:center; gap:5px; padding:7px 13px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--rp); font-size:11px; font-weight:700;
+  color:var(--t2); transition:var(--tr); box-shadow:var(--shlift);
+}
+.nav-export:hover { border-color:var(--blue); color:var(--blue) }
+.nav-export svg { width:12px; height:12px }
+
+/* ════════════════════════════════════════
+   CONTAINER
+════════════════════════════════════════ */
+.container { width:100%; max-width:480px; padding:0 16px }
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero-compact { padding:24px 0 14px; text-align:center }
+.hero-compact h1 {
+  font-size:22px; font-weight:900; letter-spacing:-.6px;
+  margin-bottom:16px; color:var(--black);
+}
+
+.voice-wrap { display:flex; flex-direction:column; align-items:center; gap:8px }
+
+/* Voice button — white circle, subtle shadow, blue ring on hover */
+.voice-btn {
+  width:68px; height:68px; border-radius:50%;
+  background:var(--card);
+  border:1.5px solid var(--border);
+  box-shadow:var(--shcard), 0 0 0 0 rgba(59,130,246,0);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:3px; color:var(--black);
+  transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+  position:relative;
+}
+.voice-btn:hover {
+  border-color:var(--blue);
+  box-shadow:var(--shcard), 0 0 0 4px rgba(59,130,246,.12);
+}
+.voice-btn:active { transform:scale(.93) }
+.voice-btn.listening {
+  border-color:var(--blue);
+  animation:mic-pulse 1.4s ease infinite;
+  color:var(--blue);
+}
+@keyframes mic-pulse {
+  0%,100% { box-shadow:var(--shcard), 0 0 0 4px rgba(59,130,246,.15), 0 0 0 8px rgba(59,130,246,.06) }
+  50%      { box-shadow:var(--shcard), 0 0 0 8px rgba(59,130,246,.2),  0 0 0 16px rgba(59,130,246,.04) }
+}
+.mic-icon { width:20px; height:20px }
+.voice-label { font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.45 }
+.voice-transcript {
+  font-size:12px; color:var(--t3); min-height:16px;
+  font-style:italic; text-align:center; transition:color .2s;
+}
+
+/* ════════════════════════════════════════
+   FILTER BAR
+════════════════════════════════════════ */
+.filter-bar {
+  display:flex; gap:6px; padding:6px 0 16px;
+  overflow-x:auto; scrollbar-width:none; align-items:center;
+}
+.filter-bar::-webkit-scrollbar { display:none }
+.filter-btn {
+  font-size:12px; font-weight:700; padding:7px 15px;
+  border-radius:var(--rp);
+  background:var(--card); border:1px solid var(--border);
+  color:var(--t2); white-space:nowrap; flex-shrink:0;
+  transition:var(--tr); box-shadow:var(--shlift);
+}
+.filter-btn.active {
+  background:var(--black); border-color:var(--black); color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.filter-btn:not(.active):hover { border-color:var(--blue); color:var(--blue) }
+.sort-btn {
+  margin-left:auto; font-size:12px; font-weight:700; padding:7px 12px;
+  border-radius:var(--rp); background:var(--card); border:1px solid var(--border);
+  color:var(--t2); white-space:nowrap; flex-shrink:0;
+  transition:var(--tr); box-shadow:var(--shlift);
+}
+.sort-btn:hover { border-color:var(--blue); color:var(--blue) }
+
+/* ════════════════════════════════════════
+   CATEGORY CARDS
+════════════════════════════════════════ */
+.tasks-container { display:flex; flex-direction:column; gap:10px }
+
+.category-card {
+  background:var(--card); border-radius:var(--rc);
+  border:1px solid var(--border); box-shadow:var(--shcard);
+  overflow:hidden;
+}
+.category-card.empty { display:none }
+
+.category-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  background:var(--raised);
+}
+.cat-name {
+  font-size:11px; font-weight:800; letter-spacing:.8px;
+  text-transform:uppercase; color:var(--t2);
+}
+.cat-count {
+  font-size:11px; font-weight:700; color:var(--blue);
+  background:var(--blue-lt); border-radius:20px;
+  padding:2px 9px; border:1px solid rgba(59,130,246,.18);
+}
+
+/* ════════════════════════════════════════
+   TASK ITEMS
+════════════════════════════════════════ */
+.task-item {
+  display:flex; align-items:center; padding:13px 16px; gap:13px;
+  border-bottom:1px solid var(--border); transition:background var(--tr);
+  position:relative;
+}
+.task-item:last-of-type { border-bottom:none }
+.task-item:hover { background:var(--raised) }
+.task-item.collapsing {
+  animation:row-collapse .38s ease forwards; overflow:hidden; pointer-events:none;
+}
+@keyframes row-collapse {
+  0%   { max-height:80px; opacity:1; padding-top:13px; padding-bottom:13px }
+  100% { max-height:0;    opacity:0; padding-top:0;    padding-bottom:0    }
+}
+
+/* ════════════════════════════════════════
+   TASK BUBBLE — 4 styles
+   Luminous : glowing orb — bright fill + outer colour ring (DEFAULT, like logo dot)
+   Solid    : opaque fill + glossy top-left reflection
+   Ring     : transparent, coloured border only
+   Ink      : soft tinted wash + inner feather glow
+════════════════════════════════════════ */
+.task-bubble {
+  width:20px; height:20px; border-radius:50%; flex-shrink:0;
+  cursor:pointer; position:relative; overflow:visible;
+  transition:transform .14s ease;
+}
+.task-bubble:hover  { transform:scale(1.22) }
+.task-bubble:active { transform:scale(.80) }
+
+/* ── LUMINOUS / DEFAULT — solid fill, slight dark-edge gradient, faint same-colour glow ── */
+.task-bubble.luminous {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bubble-color,#3B82F6) 55%,
+    color-mix(in srgb, var(--bubble-color,#3B82F6) 82%, #000 18%) 100%
+  );
+  border: none;
+  box-shadow:
+    0 0 0 2.5px var(--bubble-color-glow, rgba(59,130,246,.18)),
+    0 0 6px 1px var(--bubble-color-glow, rgba(59,130,246,.14)),
+    0 1px 3px rgba(0,0,0,.13);
+  overflow: hidden;
+}
+.task-bubble.luminous::before { display:none }
+.task-bubble.luminous::after  { display:none }
+
+/* ── SOLID (3D) — sphere look, bright specular cap, no outer ring ── */
+.task-bubble.solid {
+  background: radial-gradient(
+    circle at 34% 30%,
+    color-mix(in srgb, var(--bubble-color,#3B82F6) 40%, white 60%) 0%,
+    var(--bubble-color,#3B82F6) 50%,
+    color-mix(in srgb, var(--bubble-color,#3B82F6) 78%, black 22%) 100%
+  );
+  border:none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.22), inset 0 -2px 4px rgba(0,0,0,.12);
+  overflow:hidden;
+}
+.task-bubble.solid::before {
+  content:'';
+  position:absolute;
+  top:2px; left:3px;
+  width:54%; height:40%;
+  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: linear-gradient(160deg, rgba(255,255,255,.82) 0%, rgba(255,255,255,.12) 100%);
+  filter:blur(.6px);
+  transform:rotate(-22deg);
+}
+.task-bubble.solid::after { display:none }
+
+/* ── RING — colour border only, transparent inside, no fill ── */
+.task-bubble.ring {
+  background: transparent;
+  border: 2px solid var(--bubble-color, #3B82F6);
+  box-shadow: none;
+  overflow: visible;
+}
+.task-bubble.ring::before,
+.task-bubble.ring::after { display:none }
+
+/* ── INK — subtle colour gradient, no border, no highlight ── */
+.task-bubble.ink {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bubble-color-ink, rgba(59,130,246,.42)) 0%,
+    var(--bubble-color-ink, rgba(59,130,246,.18)) 60%,
+    var(--bubble-color-ink, rgba(59,130,246,.06)) 100%
+  );
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+}
+.task-bubble.ink::before { display:none }
+.task-bubble.ink::after  { display:none }
+
+/* ── Pop animation — more dramatic on grey bg ── */
+.task-bubble.popping { animation:bubble-pop .44s cubic-bezier(.4,0,.6,1) forwards }
+@keyframes bubble-pop {
+  0%   { transform:scale(1);    opacity:1   }
+  25%  { transform:scale(1.6);  opacity:.9  }
+  55%  { transform:scale(.35);  opacity:.4  }
+  100% { transform:scale(0);    opacity:0   }
+}
+.burst-p { position:fixed; border-radius:50%; pointer-events:none; z-index:9999 }
+
+/* ════════════════════════════════════════
+   BUBBLE COLOUR PALETTE
+   These CSS vars get applied via JS when user picks a colour.
+   In iOS: equivalent to a colour asset + opacity modifier.
+════════════════════════════════════════ */
+/*
+  ════════════════════════════════════════════════════════
+  ↓↓↓  CHANGE DEFAULT BUBBLE COLOUR HERE  ↓↓↓
+
+  Current default: #3B82F6  (Tailwind Blue 500)
+
+  To change: update --bubble-color and --bubble-color-glow
+  on the .bc-blue line below, OR swap which class is
+  applied to all .task-bubble elements in the HTML.
+
+  Greyscale equivalent: #6B7280 / rgba(107,114,128,.45)
+  ════════════════════════════════════════════════════════
+*/
+.bc-blue   { --bubble-color:#3B82F6; --bubble-color-glow:rgba(59,130,246,.55);  --bubble-color-ink:rgba(59,130,246,.2);  --bubble-color-ink-border:rgba(59,130,246,.35);  --bubble-color-ink-glow:rgba(59,130,246,.18) }
+.bc-navy   { --bubble-color:#1E40AF; --bubble-color-glow:rgba(30,64,175,.55);   --bubble-color-ink:rgba(30,64,175,.22);  --bubble-color-ink-border:rgba(30,64,175,.38);   --bubble-color-ink-glow:rgba(30,64,175,.18) }
+.bc-black  { --bubble-color:#374151; --bubble-color-glow:rgba(55,65,81,.45);    --bubble-color-ink:rgba(17,17,17,.14);   --bubble-color-ink-border:rgba(17,17,17,.25);    --bubble-color-ink-glow:rgba(17,17,17,.12) }
+.bc-slate  { --bubble-color:#475569; --bubble-color-glow:rgba(71,85,105,.5);    --bubble-color-ink:rgba(71,85,105,.18);  --bubble-color-ink-border:rgba(71,85,105,.32);   --bubble-color-ink-glow:rgba(71,85,105,.15) }
+.bc-teal   { --bubble-color:#0D9488; --bubble-color-glow:rgba(13,148,136,.55);  --bubble-color-ink:rgba(13,148,136,.2);  --bubble-color-ink-border:rgba(13,148,136,.35);  --bubble-color-ink-glow:rgba(13,148,136,.18) }
+.bc-green  { --bubble-color:#16A34A; --bubble-color-glow:rgba(22,163,74,.55);   --bubble-color-ink:rgba(22,163,74,.2);   --bubble-color-ink-border:rgba(22,163,74,.35);   --bubble-color-ink-glow:rgba(22,163,74,.18) }
+.bc-amber  { --bubble-color:#F97316; --bubble-color-glow:rgba(249,115,22,.55);  --bubble-color-ink:rgba(249,115,22,.2);  --bubble-color-ink-border:rgba(249,115,22,.35);  --bubble-color-ink-glow:rgba(249,115,22,.18) }
+.bc-rose   { --bubble-color:#EF4444; --bubble-color-glow:rgba(239,68,68,.55);   --bubble-color-ink:rgba(239,68,68,.2);   --bubble-color-ink-border:rgba(239,68,68,.35);   --bubble-color-ink-glow:rgba(239,68,68,.18) }
+.bc-purple { --bubble-color:#7C3AED; --bubble-color-glow:rgba(124,58,237,.55);  --bubble-color-ink:rgba(124,58,237,.2);  --bubble-color-ink-border:rgba(124,58,237,.35);  --bubble-color-ink-glow:rgba(124,58,237,.18) }
+.bc-pink   { --bubble-color:#EC4899; --bubble-color-glow:rgba(236,72,153,.55);  --bubble-color-ink:rgba(236,72,153,.2);  --bubble-color-ink-border:rgba(236,72,153,.35);  --bubble-color-ink-glow:rgba(236,72,153,.18) }
+.bc-grey   { --bubble-color:#9CA3AF; --bubble-color-glow:rgba(156,163,175,.45); --bubble-color-ink:rgba(156,163,175,.2); --bubble-color-ink-border:rgba(156,163,175,.35); --bubble-color-ink-glow:rgba(156,163,175,.18) }
+.bc-white  { --bubble-color:#CBD5E1; --bubble-color-glow:rgba(148,163,184,.45); --bubble-color-ink:rgba(229,231,235,.5); --bubble-color-ink-border:rgba(17,17,17,.18);    --bubble-color-ink-glow:rgba(17,17,17,.06)  }
+
+/* ════════════════════════════════════════
+   TASK BODY + TIMING CHIP
+════════════════════════════════════════ */
+.task-body { flex:1; min-width:0 }
+.task-top  { display:flex; align-items:flex-start; justify-content:space-between; gap:10px }
+.task-text {
+  font-size:14px; font-weight:600; color:var(--t1); line-height:1.45;
+  word-break:break-word; border-radius:6px; padding:2px 5px; margin:-2px -5px;
+  cursor:text; outline:none; transition:background var(--tr); caret-color:var(--blue);
+  flex:1; min-width:0;
+}
+.task-text:focus { background:var(--surface) }
+
+/* Chip — no × icon, clean pill, cycles on click */
+.timing-chip {
+  font-size:10px; font-weight:700; letter-spacing:.1px;
+  padding:4px 11px;
+  border-radius:var(--rp);
+  border:1px solid var(--border);
+  background:var(--card); color:var(--t2);
+  cursor:pointer; user-select:none; white-space:nowrap;
+  transition:var(--tr); display:inline-flex; align-items:center; flex-shrink:0;
+  box-shadow:var(--shlift);
+}
+.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:rgba(59,130,246,.3); background:var(--blue-lt) }
+.timing-chip[data-timing="This Week"] { color:var(--t2);    border-color:var(--border);       background:var(--card)    }
+.timing-chip[data-timing="Later"]     { color:var(--t3);    border-color:var(--border);       background:var(--card);  opacity:.7 }
+.timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
+
+/* ════════════════════════════════════════
+   ADD TASK ROW
+════════════════════════════════════════ */
+.add-task-row {
+  display:flex; align-items:center; padding:10px 16px; gap:13px;
+  border-top:1px solid var(--border);
+  opacity:.4; cursor:pointer; transition:opacity var(--tr);
+}
+.add-task-row:hover { opacity:.75 }
+.add-task-plus {
+  width:20px; height:20px; border-radius:50%;
+  border:1.5px dashed var(--brim);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; line-height:1;
+}
+.add-task-plus::before {
+  content:'+';
+  font-size:13px; color:var(--t3);
+  display:block; line-height:1;
+  margin:0; padding:0;
+  position:relative; top:-1px;
+}
+.add-task-text { font-size:13px; color:var(--t3) }
+
+/* ════════════════════════════════════════
+   QUICK ADD CARD
+════════════════════════════════════════ */
+.add-task-preview-card {
+  background:var(--card); border-radius:var(--rc);
+  box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
+}
+.add-task-active { display:flex; align-items:flex-start; padding:14px 16px 12px; gap:13px }
+.add-bubble-ph {
+  width:24px; height:24px; border-radius:50%; flex-shrink:0;
+  background:var(--blue); opacity:.25; pointer-events:none;
+}
+.add-bubble-ph::before {
+  content:''; position:absolute; top:3px; left:5px;
+  width:42%; height:28%; border-radius:50%;
+  background:rgba(255,255,255,.5); filter:blur(1px); transform:rotate(-20deg);
+}
+.add-input-body { flex:1; min-width:0; position:relative }
+.add-task-field {
+  font-size:14px; font-weight:600; color:var(--t1);
+  width:100%; border:none; background:transparent; outline:none;
+  padding:2px 0; caret-color:var(--blue); line-height:1.45;
+}
+.add-task-field::placeholder { color:var(--t3) }
+
+.add-row-label {
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.5px; color:var(--t3); margin-bottom:6px; margin-top:10px;
+}
+.add-chips { display:flex; gap:5px; flex-wrap:wrap }
+.add-chip {
+  font-size:10px; font-weight:700; padding:4px 12px; border-radius:var(--rp);
+  border:1px solid var(--border); background:var(--card); color:var(--t2);
+  cursor:pointer; transition:var(--tr); box-shadow:var(--shlift);
+}
+.add-chip.sel { background:var(--black); color:#fff; border-color:var(--black) }
+.add-chip:hover:not(.sel) { border-color:var(--blue); color:var(--blue) }
+
+.add-row-sep { height:1px; background:var(--border); margin:10px 0 }
+.add-task-actions { display:flex; justify-content:flex-end; gap:8px; padding:10px 16px 14px }
+.btn-cancel {
+  font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+}
+.btn-cancel:hover { color:var(--t1); border-color:var(--brim) }
+.btn-add {
+  font-size:13px; font-weight:800; color:#fff; padding:8px 22px;
+  border-radius:var(--rp); background:var(--blue); box-shadow:var(--shbtn);
+  transition:transform .14s ease, box-shadow .14s ease;
+}
+.btn-add:hover { box-shadow:0 6px 24px rgba(59,130,246,.5) }
+.btn-add:active { transform:scale(.97) }
+
+/* ════════════════════════════════════════
+   FAB
+════════════════════════════════════════ */
+.fab-wrap {
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px; padding:0 16px;
+  display:flex; justify-content:center; pointer-events:none; z-index:80;
+}
+.fab {
+  display:flex; align-items:center; gap:8px; padding:15px 32px;
+  background:var(--black); color:#fff; border-radius:var(--rp);
+  font-size:14px; font-weight:800; letter-spacing:-.2px;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
+  pointer-events:all; transition:transform .14s ease, box-shadow .14s ease;
+}
+.fab:hover { box-shadow:0 6px 28px rgba(0,0,0,.32) }
+.fab:active { transform:scale(.96) }
+
+/* ════════════════════════════════════════
+   MODALS
+════════════════════════════════════════ */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.4); z-index:200;
+  align-items:flex-end; justify-content:center;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.show { display:flex }
+.modal-sheet {
+  width:100%; max-width:480px; background:var(--card);
+  border-radius:24px 24px 0 0; padding:20px 20px 48px;
+  box-shadow:0 -4px 40px rgba(0,0,0,.15);
+  animation:slide-up .26s cubic-bezier(.32,.72,0,1);
+  max-height:92vh; overflow-y:auto;
+  border-top:1px solid var(--border);
+}
+@keyframes slide-up {
+  from { transform:translateY(100%); opacity:0 }
+  to   { transform:translateY(0);    opacity:1 }
+}
+.modal-handle { width:36px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px }
+.modal-title  { font-size:18px; font-weight:900; margin-bottom:4px; letter-spacing:-.4px; color:var(--black) }
+.modal-sub    { font-size:13px; color:var(--t2); margin-bottom:22px }
+
+/* Settings structure */
+.settings-section      { margin-bottom:28px }
+.settings-section-label {
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.settings-row {
+  display:flex; align-items:center; padding:12px 0;
+  border-bottom:1px solid var(--border); gap:12px;
+}
+.settings-row:last-child { border-bottom:none }
+.settings-row-label { flex:1; font-size:14px; font-weight:600; color:var(--t1) }
+.settings-row-sub   { font-size:11px; color:var(--t3); margin-top:2px }
+.settings-row-right { font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px }
+
+.pro-badge {
+  font-size:10px; font-weight:800; padding:2px 8px;
+  background:var(--blue-lt); border:1px solid rgba(59,130,246,.2);
+  border-radius:20px; color:var(--blue); letter-spacing:.3px;
+}
+
+/* ════════════════════════════════════════
+   PRO BUBBLE STYLE PICKER (in Settings)
+   3 styles × 12 colours = full Pro customisation
+════════════════════════════════════════ */
+.pro-picker-wrap {
+  position:relative; padding:16px; background:var(--raised);
+  border-radius:14px; border:1px solid var(--border);
+}
+/* pro picker: content always visible at full opacity, only pointer-events blocked */
+.pro-picker-wrap.locked .bubble-style-tabs,
+.pro-picker-wrap.locked .colour-grid,
+.pro-picker-wrap.locked .bubble-preview-row {
+  pointer-events:none;
+  user-select:none;
+}
+.pro-lock-banner p { font-size:12px; font-weight:800; color:var(--t2) }
+.pro-upgrade-btn {
+  font-size:12px; font-weight:800; padding:8px 20px;
+  background:var(--blue); color:#fff; border-radius:var(--rp);
+  box-shadow:var(--shbtn);
+}
+
+/* Style selector tabs (4 tabs — smaller text to fit) */
+.bubble-style-tabs { display:flex; gap:5px; margin-bottom:14px }
+.bst-tab {
+  flex:1; padding:7px 2px; text-align:center;
+  font-size:10px; font-weight:800; letter-spacing:.2px;
+  border-radius:10px; background:var(--card);
+  border:1.5px solid var(--border); color:var(--t2);
+  cursor:pointer; transition:var(--tr); white-space:nowrap;
+}
+.bst-tab.active {
+  background:var(--black); color:#fff; border-color:var(--black);
+}
+.bst-tab:hover:not(.active) { border-color:var(--blue); color:var(--blue) }
+
+/* Bubble preview swatch grid */
+.bubble-preview-row {
+  display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  padding:12px 14px; background:var(--card);
+  border-radius:12px; border:1px solid var(--border);
+}
+.bubble-preview-row span {
+  font-size:11px; color:var(--t3); font-weight:600; margin-left:auto;
+}
+
+/* Colour swatches — fixed 20px to match bubble size, NO outer rim */
+.colour-grid {
+  display:flex; flex-wrap:wrap; gap:10px;
+}
+.cswatch {
+  width:20px; height:20px; border-radius:50%; cursor:pointer;
+  transition:transform .13s ease; position:relative;
+  border:none; flex-shrink:0; outline:none;
+}
+.cswatch:hover { transform:scale(1.15) }
+.cswatch.sel {
+  transform:scale(1.18);
+  box-shadow:none;
+  border:none;
+  outline:2px solid var(--brim);
+  outline-offset:3px;
+}
+/* Each swatch gets its own bg via inline style in HTML */
+
+/* ── Guide rows ── */
+.cat-list { display:flex; flex-direction:column; gap:6px; margin-top:4px }
+.cat-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; background:var(--raised);
+  border-radius:12px; border:1px solid var(--border);
+}
+.cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0 }
+.cat-item-name { flex:1; font-size:13px; font-weight:700 }
+.cat-item-kw   { font-size:11px; color:var(--t3) }
+
+.guide-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border) }
+.guide-row:last-child { border-bottom:none; padding-bottom:0 }
+.guide-icon {
+  width:36px; height:36px; flex-shrink:0; border-radius:10px;
+  background:var(--raised); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; color:var(--blue);
+}
+.guide-icon svg { width:17px; height:17px }
+.guide-action { font-size:13px; font-weight:700; margin-bottom:2px; color:var(--black) }
+.guide-detail { font-size:11px; color:var(--t2); line-height:1.5 }
+
+/* ── Export modal ── */
+.export-options { display:flex; flex-direction:column; gap:8px }
+.export-btn {
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+  background:var(--raised); border:1px solid var(--border);
+  border-radius:14px; text-align:left; width:100%; cursor:pointer; transition:var(--tr);
+}
+.export-btn:hover { border-color:var(--blue); background:var(--blue-lt) }
+.export-btn:active { transform:scale(.98) }
+.export-btn-icon {
+  width:40px; height:40px; border-radius:12px; background:var(--card);
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; color:var(--blue);
+}
+.export-btn-icon svg { width:20px; height:20px }
+.export-btn-label { font-size:14px; font-weight:700; margin-bottom:2px; color:var(--black) }
+.export-btn-desc  { font-size:11px; color:var(--t2) }
+.export-divider {
+  display:flex; align-items:center; gap:10px; margin:4px 0;
+  color:var(--t3); font-size:11px; font-weight:700;
+}
+.export-divider::before,.export-divider::after { content:''; flex:1; height:1px; background:var(--border) }
+.modal-cancel {
+  margin-top:14px; width:100%; padding:13px; font-size:14px; font-weight:700;
+  color:var(--t2); background:var(--raised); border:1px solid var(--border);
+  border-radius:var(--rp); transition:var(--tr);
+}
+.modal-cancel:hover { color:var(--t1); border-color:var(--brim) }
+
+/* language pill (EN/JP) — same look as lang-btn but used in settings */
+.colour-mode-btn {
+  font-size:11px; font-weight:700; padding:5px 12px;
+  border-radius:var(--rp); color:var(--t2); transition:var(--tr);
+  background:transparent;
+}
+.colour-mode-btn.active { background:var(--blue); color:#fff }
+
+/* colour scheme pill buttons (Default / Grey) — same pill style as language */
+.colour-scheme-btn {
+  font-size:11px; font-weight:700; padding:5px 12px;
+  border-radius:var(--rp); color:var(--t2); cursor:pointer; transition:var(--tr);
+  background:transparent;
+}
+.colour-scheme-btn.active {
+  background:var(--blue); color:#fff;
+}
+.colour-scheme-btn:hover:not(.active) { color:var(--blue) }
+
+/* container pill wrap for colour-scheme and lang pills */
+.pill-toggle {
+  display:flex; align-items:center;
+  background:var(--surface); border-radius:var(--rp); padding:3px;
+  gap:2px;
+}
+
+/* ════════════════════════════════════════
+   FIREBASE / AUTH SECTION (in Settings)
+════════════════════════════════════════ */
+.firebase-status {
+  display:flex; align-items:center; gap:10px; padding:12px 14px;
+  background:var(--raised); border-radius:12px; border:1px solid var(--border);
+  margin-bottom:6px;
+}
+.fb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+.fb-dot.connected    { background:#16A34A }
+.fb-dot.disconnected { background:#DC2626 }
+.firebase-status p { font-size:12px; font-weight:600; color:var(--t2); flex:1 }
+.firebase-status span { font-size:11px; color:var(--t3) }
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+.toast {
+  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(14px);
+  background:var(--black); color:#fff; font-size:13px; font-weight:700;
+  padding:10px 20px; border-radius:var(--rp);
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  opacity:0; transition:all .24s ease; pointer-events:none; white-space:nowrap; z-index:300;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0) }
+
+/* ════════════════════════════════════════
+   SECTION HEAD
+════════════════════════════════════════ */
+.section-head {
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--t3); padding-top:28px; padding-bottom:10px;
+}
+
+/* ════════════════════════════════════════
+   DEPLOY GUIDE CARD
+════════════════════════════════════════ */
+.deploy-card {
+  background:var(--card); border-radius:var(--rc);
+  box-shadow:var(--shcard); border:1px solid var(--border);
+  overflow:hidden; margin-bottom:16px;
+}
+.deploy-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; cursor:pointer; gap:10px;
+  border-bottom:1px solid transparent; transition:border-color var(--tr);
+}
+.deploy-header.open { border-bottom-color:var(--border) }
+.deploy-header-left { display:flex; align-items:center; gap:10px }
+.deploy-header-icon {
+  width:34px; height:34px; border-radius:10px;
+  background:var(--blue-lt); border:1px solid rgba(59,130,246,.2);
+  display:flex; align-items:center; justify-content:center; color:var(--blue); flex-shrink:0;
+}
+.deploy-header-icon svg { width:16px; height:16px }
+.deploy-title { font-size:14px; font-weight:800; color:var(--black) }
+.deploy-subtitle { font-size:11px; color:var(--t3); margin-top:1px }
+.deploy-chevron { color:var(--t3); transition:transform .2s ease; font-size:12px }
+.deploy-header.open .deploy-chevron { transform:rotate(180deg) }
+.deploy-body { display:none; padding:16px }
+.deploy-body.open { display:block }
+.deploy-step {
+  display:flex; gap:12px; margin-bottom:16px;
+}
+.deploy-step:last-child { margin-bottom:0 }
+.deploy-step-num {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  background:var(--blue); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:900; margin-top:1px;
+}
+.deploy-step-body { flex:1; min-width:0 }
+.deploy-step-title { font-size:13px; font-weight:700; color:var(--black); margin-bottom:3px }
+.deploy-step-detail { font-size:11px; color:var(--t2); line-height:1.6 }
+.deploy-code {
+  font-family:'SF Mono','Fira Code','Menlo',monospace;
+  font-size:10px; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:8px 10px; margin-top:6px; color:var(--black);
+  white-space:pre; overflow-x:auto; line-height:1.7;
+}
+.deploy-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:800; padding:2px 8px;
+  border-radius:20px; letter-spacing:.2px;
+}
+.deploy-tag.green  { background:#DCFCE7; color:#16A34A; border:1px solid #86EFAC }
+.deploy-tag.blue   { background:var(--blue-lt); color:var(--blue); border:1px solid rgba(59,130,246,.2) }
+.deploy-tag.orange { background:#FEF3C7; color:#D97706; border:1px solid #FCD34D }
+
+/* ════════════════════════════════════════
+   MIC MODAL
+════════════════════════════════════════ */
+.mic-modal {
+  display:none; position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,.5); backdrop-filter:blur(10px);
+  flex-direction:column; align-items:center; justify-content:center; gap:24px;
+}
+.mic-modal.show { display:flex }
+.mic-card {
+  background:var(--card); border-radius:24px; padding:32px 40px;
+  display:flex; flex-direction:column; align-items:center; gap:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2); border:1px solid var(--border);
+  min-width:280px;
+}
+.mic-modal-title { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px }
+.mic-modal-hint  { font-size:12px; color:var(--t2); text-align:center; max-width:240px; line-height:1.6 }
+.mic-wave { display:flex; align-items:center; gap:5px; height:40px }
+.mic-bar  { width:4px; border-radius:4px; background:var(--blue); animation:wave-bar 1s ease infinite }
+.mic-bar:nth-child(1){animation-delay:0s;   height:12px}
+.mic-bar:nth-child(2){animation-delay:.12s; height:24px}
+.mic-bar:nth-child(3){animation-delay:.24s; height:36px}
+.mic-bar:nth-child(4){animation-delay:.36s; height:28px}
+.mic-bar:nth-child(5){animation-delay:.12s; height:16px}
+.mic-bar:nth-child(6){animation-delay:.48s; height:32px}
+.mic-bar:nth-child(7){animation-delay:.24s; height:20px}
+@keyframes wave-bar {
+  0%,100% { transform:scaleY(1)   }
+  50%     { transform:scaleY(1.8) }
+}
+.mic-stop-btn {
+  font-size:13px; font-weight:800; color:var(--t1); padding:10px 28px;
+  border:1.5px solid var(--border); border-radius:var(--rp);
+  background:var(--raised); transition:var(--tr);
+  box-shadow:var(--shlift);
+}
+.mic-stop-btn:hover { border-color:var(--blue); color:var(--blue) }
+
+/* ════════════════════════════════════════
+   SCROLLBAR (webkit)
+════════════════════════════════════════ */
+::-webkit-scrollbar { width:4px }
+::-webkit-scrollbar-track { background:transparent }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px }
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════ -->
+<nav class="nav">
+  <div class="nav-logo">Poplist<em></em></div>
+  <div class="nav-right">
+    <button class="nav-export" id="exportBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="langEN">EN</button>
+      <button class="lang-btn" id="langJP">JP</button>
+    </div>
+    <div class="nav-icon-btn" id="settingsBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="container">
+
+  <div class="hero-compact">
+    <h1>What's on your mind?</h1>
+    <div class="voice-wrap">
+      <button class="voice-btn" id="voiceBtn">
+        <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="11" rx="3"/>
+          <path d="M5 10a7 7 0 0 0 14 0"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="9" y1="22" x2="15" y2="22"/>
+        </svg>
+        <span class="voice-label">Speak</span>
+      </button>
+      <span class="voice-transcript" id="voiceTranscript">Tap to add tasks by voice</span>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="today">Today</button>
+    <button class="filter-btn" data-filter="week">This Week</button>
+    <button class="filter-btn" data-filter="later">Later</button>
+    <button class="sort-btn" id="sortBtn">↕ Deadline</button>
+  </div>
+
+  <div class="tasks-container" id="tasksContainer">
+
+    <!-- WORK -->
+    <div class="category-card" id="cat-work">
+      <div class="category-header"><span class="cat-name">Work</span><span class="cat-count">3</span></div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Send proposal to client by EOD</div>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Prepare Q3 budget report for the team</div>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Follow up on the design review</div>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text">Add work task…</span></div>
+    </div>
+
+    <!-- HOME -->
+    <div class="category-card" id="cat-home">
+      <div class="category-header"><span class="cat-name">Home</span><span class="cat-count">2</span></div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Buy groceries — milk, eggs, bread</div>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Take out the trash</div>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text">Add home task…</span></div>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="category-card" id="cat-personal">
+      <div class="category-header"><span class="cat-name">Personal</span><span class="cat-count">3</span></div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Go for a 30 min run</div>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Book dentist appointment</div>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Read 20 pages of current book</div>
+          <span class="timing-chip" data-timing="Later">Later</span>
+        </div></div>
+      </div>
+      <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text">Add personal task…</span></div>
+    </div>
+
+    <!-- OTHER -->
+    <div class="category-card" id="cat-other">
+      <div class="category-header"><span class="cat-name">Other</span><span class="cat-count">1</span></div>
+      <div class="task-item">
+        <div class="task-bubble luminous bc-blue"></div>
+        <div class="task-body"><div class="task-top">
+          <div class="task-text" contenteditable="true">Research travel insurance options</div>
+          <span class="timing-chip" data-timing="Later">Later</span>
+        </div></div>
+      </div>
+      <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text">Add task…</span></div>
+    </div>
+
+  </div>
+
+  <!-- DEPLOY GUIDE -->
+  <div class="section-head">Deploy to App Store</div>
+  <div class="deploy-card">
+    <div class="deploy-header" id="deployToggle">
+      <div class="deploy-header-left">
+        <div class="deploy-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div>
+          <div class="deploy-title">Cursor → GitHub → App Store</div>
+          <div class="deploy-subtitle">Step-by-step deployment checklist</div>
+        </div>
+      </div>
+      <span class="deploy-chevron">▼</span>
+    </div>
+    <div class="deploy-body" id="deployBody">
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">1</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">GitHub repo — one time setup <span class="deploy-tag blue">Cursor terminal</span></div>
+          <div class="deploy-step-detail">Open this file in Cursor. In the terminal panel:</div>
+          <div class="deploy-code">git init
+git add .
+git commit -m "Initial commit — Poplist web preview"
+brew install gh &amp;&amp; gh auth login
+gh repo create poplist-app --private --source=. --push</div>
+          <div class="deploy-step-detail" style="margin-top:6px">Daily workflow after changes:</div>
+          <div class="deploy-code">git add .
+git commit -m "describe change"
+git push</div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">2</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">Firebase project setup <span class="deploy-tag orange">console.firebase.google.com</span></div>
+          <div class="deploy-step-detail">
+            1. New project → <strong>poplist-prod</strong><br>
+            2. Authentication → Enable: <strong>Sign In with Apple</strong> + Email/Password<br>
+            3. Firestore → Create database → <strong>Production mode</strong><br>
+            4. Paste the Firestore rules from the HTML comments below<br>
+            5. App Check → Enable <strong>DeviceCheck</strong> for iOS<br>
+            6. Upgrade to <strong>Blaze plan</strong> (free tier + pay-as-you-go)
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">3</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">Xcode project <span class="deploy-tag blue">Cursor prompt</span></div>
+          <div class="deploy-step-detail">In Cursor, open a new iOS project folder and paste this prompt:</div>
+          <div class="deploy-code">"Create a SwiftUI iOS app called Poplist.
+Data model: TaskItem(id, text, category, timing, style, colour, createdAt).
+Categories: Work, Home, Personal, Other.
+Use Firebase Auth (Sign In with Apple) and Firestore.
+Store tasks at /users/{uid}/tasks/{taskId}.
+Match the design tokens in CLAUDE.md exactly.
+Add App Check with DeviceCheck."</div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">4</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">Sign In with Apple <span class="deploy-tag orange">Required for App Store</span></div>
+          <div class="deploy-step-detail">
+            Xcode → Target → Signing &amp; Capabilities → <strong>+ Sign In with Apple</strong><br>
+            developer.apple.com → Certificates → your App ID → enable Sign In with Apple<br>
+            Firebase Console → Auth → Apple → add your Service ID + OAuth callback URL
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">5</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">Security checklist <span class="deploy-tag green">Before shipping</span></div>
+          <div class="deploy-step-detail">
+            ☑ Never commit <code>GoogleService-Info.plist</code> to GitHub<br>
+            ☑ Firestore rules: auth-gated (see HTML comments)<br>
+            ☑ App Check: DeviceCheck enabled in Firebase Console<br>
+            ☑ Input validation before every Firestore write<br>
+            ☑ Get a second engineer to review auth + security logic
+          </div>
+          <div class="deploy-code"># .gitignore additions:
+GoogleService-Info.plist
+*.xcconfig
+.env</div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-step-num">6</div>
+        <div class="deploy-step-body">
+          <div class="deploy-step-title">TestFlight → App Store <span class="deploy-tag blue">Final step</span></div>
+          <div class="deploy-step-detail">
+            Xcode → Product → Archive → Distribute → App Store Connect<br>
+            In App Store Connect → TestFlight → add testers<br>
+            Ask Cursor: <em>"What do I need to prepare for App Store submission? Check my entire codebase."</em>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /deploy-body -->
+  </div><!-- /deploy-card -->
+
+  <!-- QUICK ADD -->
+  <div class="section-head">Quick add</div>
+  <div class="add-task-preview-card">
+    <div class="add-task-active">
+      <div class="add-bubble-ph" id="addBubblePh"></div>
+      <div class="add-input-body">
+        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?">
+        <div class="add-row-label">Deadline</div>
+        <div class="add-chips" id="deadlineChips">
+          <span class="add-chip sel">Today</span>
+          <span class="add-chip">This Week</span>
+          <span class="add-chip">Later</span>
+        </div>
+        <div class="add-row-sep"></div>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+          <div class="add-row-label" style="margin:0">Category</div>
+          <span id="autoCatTag" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:var(--blue-lt);border:1px solid rgba(59,130,246,.2);color:var(--blue);letter-spacing:.3px">Other</span>
+          <span style="font-size:10px;color:var(--t3)">— auto detected</span>
+        </div>
+      </div>
+    </div>
+    <div class="add-task-actions">
+      <button class="btn-cancel">Cancel</button>
+      <button class="btn-add" id="addTaskBtn">Add Task</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ═══════ FAB ═══════ -->
+<div class="fab-wrap">
+  <button class="fab" id="fabBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Task
+  </button>
+</div>
+
+<!-- ═══════ MIC MODAL ═══════ -->
+<div class="mic-modal" id="micModal">
+  <div class="mic-card">
+    <div class="mic-modal-title">Listening…</div>
+    <div class="mic-wave">
+      <div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div>
+      <div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div>
+      <div class="mic-bar"></div>
+    </div>
+    <div class="mic-modal-hint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
+    <button class="mic-stop-btn" id="micStopBtn">Stop listening</button>
+  </div>
+</div>
+
+<!-- ═══════ EXPORT MODAL ═══════ -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <p class="modal-title">Export</p>
+    <p class="modal-sub">Save or share all active tasks.</p>
+    <div class="export-options">
+      <button class="export-btn" id="exportCSV">
+        <div class="export-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div>
+        <div><p class="export-btn-label">CSV Spreadsheet</p><p class="export-btn-desc">Excel, Numbers, Google Sheets</p></div>
+      </button>
+      <button class="export-btn" id="exportTXT">
+        <div class="export-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></div>
+        <div><p class="export-btn-label">Plain Text</p><p class="export-btn-desc">Paste-anywhere checklist</p></div>
+      </button>
+      <div class="export-divider">or</div>
+      <button class="export-btn" id="exportCopy">
+        <div class="export-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+        <div><p class="export-btn-label">Copy to Clipboard</p><p class="export-btn-desc">Paste into any app</p></div>
+      </button>
+    </div>
+    <button class="modal-cancel" id="closeExport">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════ SETTINGS MODAL ═══════ -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <p class="modal-title">Settings</p>
+    <p class="modal-sub" style="margin-bottom:36px"></p>
+
+    <!-- ── GENERAL ── -->
+    <div class="settings-section">
+      <div class="settings-section-label">General</div>
+
+      <!-- Language -->
+      <div class="settings-row">
+        <p class="settings-row-label">Language</p>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button class="colour-mode-btn active" id="sLangEN">EN</button>
+            <button class="colour-mode-btn" id="sLangJP">JP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Default deadline -->
+      <div class="settings-row">
+        <div><p class="settings-row-label">Default deadline</p><p class="settings-row-sub">When not stated by voice</p></div>
+        <div class="settings-row-right">
+          <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
+        </div>
+      </div>
+
+      <!-- Colour scheme — pill same style as Language -->
+      <div class="settings-row">
+        <p class="settings-row-label">Colour scheme</p>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button class="colour-scheme-btn active" id="colourModeBlue">Default</button>
+            <button class="colour-scheme-btn" id="colourModeGrey">Grey</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customise colour scheme PRO — bubbles row below -->
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+          <p class="settings-row-label">Customise colour scheme</p>
+          <span class="pro-badge">PRO</span>
+        </div>
+        <div class="colour-grid" id="schemeColourGrid" style="pointer-events:none;opacity:.55">
+          <div class="cswatch" style="background:#3B82F6"></div>
+          <div class="cswatch" style="background:#1E40AF"></div>
+          <div class="cswatch" style="background:#0D9488"></div>
+          <div class="cswatch" style="background:#16A34A"></div>
+          <div class="cswatch" style="background:#F97316"></div>
+          <div class="cswatch" style="background:#EF4444"></div>
+          <div class="cswatch" style="background:#EC4899"></div>
+          <div class="cswatch" style="background:#7C3AED"></div>
+          <div class="cswatch" style="background:#111111"></div>
+          <div class="cswatch" style="background:#475569"></div>
+          <div class="cswatch" style="background:#9CA3AF"></div>
+          <div class="cswatch" style="background:#E5E7EB"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── BUBBLE STYLE (PRO) ── -->
+    <div class="settings-section">
+      <div class="settings-section-label">Bubble Style <span class="pro-badge">PRO</span></div>
+      <div class="pro-picker-wrap locked" id="proPickerWrap">
+
+        <!-- Style tabs — no icons -->
+        <div class="bubble-style-tabs">
+          <button class="bst-tab active" data-style="luminous">Default</button>
+          <button class="bst-tab" data-style="solid">3D</button>
+          <button class="bst-tab" data-style="ring">Ring</button>
+          <button class="bst-tab" data-style="ink">Ink</button>
+        </div>
+
+        <!-- Live preview -->
+        <div class="bubble-preview-row">
+          <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:28px;height:28px"></div>
+          <div style="flex:1;padding-left:4px">
+            <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
+            <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
+          </div>
+        </div>
+
+        <!-- Colour swatches — order: blue navy black slate teal green orange red magenta purple grey white -->
+        <div class="add-row-label">Colour</div>
+        <div class="colour-grid" id="colourGrid">
+          <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
+          <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
+          <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
+          <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
+          <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
+          <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
+          <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
+          <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
+          <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
+          <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
+          <div class="cswatch"     data-colour="bc-grey"   style="background:#9CA3AF"></div>
+          <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;border:1px solid #BFC3CA"></div>
+        </div>
+
+        <!-- PRO upgrade banner — no lock icon -->
+        <div id="proUpgradeBanner" style="margin-top:14px;padding:10px 14px;background:var(--raised);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:10px">
+          <span style="flex:1;font-size:12px;font-weight:700;color:var(--t2)">Unlock to customise style &amp; colour</span>
+          <button class="pro-upgrade-btn" id="unlockProBtn" style="padding:6px 14px;font-size:11px">Upgrade</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── CATEGORIES ── -->
+    <div class="settings-section">
+      <div class="settings-section-label" style="display:flex;align-items:center;justify-content:space-between">
+        Categories
+        <span class="pro-badge">PRO</span>
+      </div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <div class="cat-item-dot" style="background:var(--border)"></div>
+          <span class="cat-item-name">Work</span>
+          <span class="cat-item-kw">emails, meetings, reports, clients…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-item-dot" style="background:var(--border)"></div>
+          <span class="cat-item-name">Home</span>
+          <span class="cat-item-kw">groceries, cleaning, bills, repairs…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-item-dot" style="background:var(--border)"></div>
+          <span class="cat-item-name">Personal</span>
+          <span class="cat-item-kw">gym, doctor, reading, friends…</span>
+        </div>
+        <div class="cat-item">
+          <div class="cat-item-dot" style="background:var(--border)"></div>
+          <span class="cat-item-name">Others</span>
+          <span class="cat-item-kw">anything that doesn't fit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HOW IT WORKS ── -->
+    <div class="settings-section">
+      <div class="settings-section-label">How it works</div>
+      <div class="guide-row">
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
+        <div><p class="guide-action">Tap the bubble — pop it done</p><p class="guide-detail">Particles burst outward. Task collapses away.</p></div>
+      </div>
+      <div class="guide-row">
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><p class="guide-action">Tap the deadline chip</p><p class="guide-detail">Today → This Week → Later → cycles back.</p></div>
+      </div>
+      <div class="guide-row">
+        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
+        <div><p class="guide-action">Speak your tasks</p><p class="guide-detail">Tap the mic. Say everything on your mind. AI classifies automatically.</p></div>
+      </div>
+    </div>
+
+    <button class="modal-cancel" id="closeSettings" style="padding:10px;font-size:12px;width:auto;align-self:center;padding-left:32px;padding-right:32px;display:block;margin:14px auto 0">Done</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+  DEPLOYMENT GUIDE: Cursor → GitHub → App Store
+  ═══════════════════════════════════════════════════════════
+
+  STEP 1 — GitHub repo setup (do this once)
+  ───────────────────────────────────
+  In Cursor terminal:
+    git init
+    git add .
+    git commit -m "Initial commit — Poplist web preview"
+    gh repo create poplist-app --private --source=. --push
+  (needs GitHub CLI: brew install gh && gh auth login)
+
+  Or via GitHub website:
+    1. github.com → New repository → name: poplist-app → Private
+    2. Copy the remote URL shown
+    3. In Cursor terminal:
+         git remote add origin https://github.com/YOUR_USERNAME/poplist-app.git
+         git branch -M main
+         git push -u origin main
+
+  Daily workflow in Cursor:
+    git add .
+    git commit -m "describe what you changed"
+    git push
+
+  STEP 2 — Xcode project setup
+  ───────────────────────────────────
+  In Xcode: File → New Project → iOS App
+    - Product Name: Poplist
+    - Interface: SwiftUI
+    - Language: Swift
+    - Bundle ID: com.yourname.poplist
+
+  Add Firebase to Xcode:
+    1. File → Add Package Dependencies
+       URL: https://github.com/firebase/firebase-ios-sdk
+       Add: FirebaseAuth, FirebaseFirestore, FirebaseAnalytics
+    2. Download GoogleService-Info.plist from Firebase Console
+       Drag it into Xcode project root
+    3. In App init:
+         import Firebase
+         FirebaseApp.configure()
+
+  IMPORTANT: Add GoogleService-Info.plist to .gitignore!
+    echo "GoogleService-Info.plist" >> .gitignore
+    echo "*.xcconfig" >> .gitignore
+
+  STEP 3 — Firebase Console setup
+  ───────────────────────────────────
+  console.firebase.google.com:
+    1. New project → name: poplist-prod
+    2. Authentication → Enable: Apple, Email/Password
+    3. Firestore → Create database → Production mode
+    4. Paste Firestore rules (see section below)
+    5. App Check → Enable DeviceCheck for iOS
+    6. Upgrade to Blaze plan (pay-as-you-go, needed for App Check)
+
+  STEP 4 — Sign In with Apple (required for App Store)
+  ───────────────────────────────────
+  In Xcode → target → Signing & Capabilities:
+    + Capability → Sign In with Apple
+  In Apple Developer Console (developer.apple.com):
+    Certificates → Identifiers → your App ID → enable "Sign In with Apple"
+  In Firebase Console:
+    Authentication → Sign-in providers → Apple → Enable
+    Add Service ID and configure OAuth callback URL
+
+  Cursor prompt to use:
+    "Add Sign In with Apple using Firebase Auth to the login screen.
+     On success navigate to the main task list view.
+     Store the user's uid in @AppStorage for persistence."
+
+  STEP 5 — TestFlight
+  ───────────────────────────────────
+  In Xcode: Product → Archive
+  Upload to App Store Connect (auto via Xcode Organizer)
+  In App Store Connect → TestFlight → add testers
+
+  STEP 6 — App Store submission
+  ───────────────────────────────────
+  Ask Cursor: "What do I need to prepare for App Store submission?
+              Check my entire codebase and give me a complete checklist."
+  Screenshots: use Gemini for ASO prompt chaining (see CLAUDE.md)
+  Privacy policy: required if you collect any user data (Firebase Auth = yes)
+
+  SECURITY REMINDERS
+  ───────────────────────────────────
+  ☑️ Never commit GoogleService-Info.plist to GitHub
+  ☑️ Firestore rules: auth-gated (see section below)
+  ☑️ App Check: DeviceCheck enabled before going live
+  ☑️ Get engineer second opinion on security (Vibe Coding guide tip)
+  ☑️ Input validation on every Firestore write
+  ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════════════════
+  FIREBASE INTEGRATION NOTES (for Cursor / iOS implementation)
+  ═══════════════════════════════════════════════════════════════
+  Firestore Security Rules (paste into Firebase Console):
+  ───────────────────────────────────────────────────────
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+
+      // Users can only read/write their own tasks
+      match /users/{userId}/tasks/{taskId} {
+        allow read, write: if request.auth != null
+                          && request.auth.uid == userId;
+      }
+
+      // User profile — read own only
+      match /users/{userId} {
+        allow read, write: if request.auth != null
+                          && request.auth.uid == userId;
+      }
+
+      // Block all other access
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+  }
+  ───────────────────────────────────────────────────────
+  Data Model (Firestore):
+    /users/{uid}/tasks/{taskId}
+      - text:     String
+      - category: String  (Work | Home | Personal | Other)
+      - timing:   String  (Today | This Week | Later)
+      - style:    String  (solid | ring | ink)
+      - colour:   String  (bc-blue | bc-navy | ...)
+      - createdAt: Timestamp
+      - updatedAt: Timestamp
+
+  Auth: Firebase Auth → Sign In With Apple (required for App Store)
+  Additional security:
+    - Rate limiting via Firebase App Check (DeviceCheck on iOS)
+    - Input validation before every write
+    - Never store sensitive data in Firestore (no passwords, no PII beyond display name)
+  ═══════════════════════════════════════════════════════════ -->
+
+<script>
+/* ══════════════════════════════════════════
+   STATE — mirrors Firestore data model
+══════════════════════════════════════════ */
+const state = {
+  bubbleStyle:  'luminous', // luminous | solid | ring | ink
+  bubbleColour: 'bc-blue',  // bc-* class
+  isProUser:    false,       // toggle to true for testing Pro features
+  greyBubbles:  false,       // FREE — greyscale mode
+  lang:         'en',
+  isListening:  false,
+};
+
+/* ══════════════════════════════════════════
+   DESIGN TOKEN helpers
+══════════════════════════════════════════ */
+const STYLE_META = {
+  luminous: { name:'Default',  desc:'Solid fill with subtle edge gradient and soft colour glow' },
+  solid:    { name:'3D',       desc:'Sphere look — bright specular cap, deep shading' },
+  ring:     { name:'Ring',     desc:'Colour outline only, transparent inside' },
+  ink:      { name:'Ink',      desc:'Soft colour gradient wash, no border' },
+};
+
+/* ══════════════════════════════════════════
+   BUBBLE HELPERS
+══════════════════════════════════════════ */
+function setBubbleClasses(el) {
+  // Remove old style + colour classes (ALL 4 styles must be listed)
+  el.classList.remove('luminous','solid','ring','ink');
+  ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green',
+   'bc-amber','bc-rose','bc-purple','bc-pink','bc-grey','bc-white'].forEach(c => el.classList.remove(c));
+  el.classList.add(state.bubbleStyle, state.bubbleColour);
+}
+
+function syncAllBubbles() {
+  document.querySelectorAll('.task-bubble').forEach(setBubbleClasses);
+  // Sync add-preview bubble
+  const ph = document.getElementById('addBubblePh');
+  if (ph) {
+    ph.className = '';
+    ph.classList.add('task-bubble', state.bubbleStyle, state.bubbleColour);
+    ph.style.opacity = '.3';
+    ph.style.pointerEvents = 'none';
+  }
+}
+
+/* ══════════════════════════════════════════
+   BURST — blue particle pop (on grey bg — more vivid)
+══════════════════════════════════════════ */
+function burstBubble(el, item) {
+  if (item.classList.contains('collapsing')) return;
+  const r  = el.getBoundingClientRect();
+  const cx = r.left + r.width  / 2;
+  const cy = r.top  + r.height / 2;
+
+  el.classList.add('popping');
+
+  const particles = [
+    'rgba(59,130,246,1)',
+    'rgba(96,165,250,.95)',
+    'rgba(147,197,253,.9)',
+    'rgba(29,78,216,.95)',
+    'rgba(191,219,254,.85)',
+    'rgba(255,255,255,.9)',
+    'rgba(59,130,246,.7)',
+  ];
+
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    const p    = document.createElement('div');
+    p.className = 'burst-p';
+    const size  = Math.random() * 11 + 3;
+    const col   = particles[~~(Math.random() * particles.length)];
+    const isRing = Math.random() > 0.55;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${isRing ? 'transparent' : col};
+      ${isRing ? `border:1.5px solid ${col};` : ''}
+      left:${cx - size/2}px; top:${cy - size/2}px;
+      box-shadow:${isRing ? 'none' : `0 0 ${size*1.2}px ${col}`};
+    `;
+    document.body.appendChild(p);
+
+    const ang  = (Math.PI * 2 * i) / count + (Math.random() - .5) * .55;
+    const dist = Math.random() * 95 + 42;
+    const tx   = Math.cos(ang) * dist;
+    const ty   = Math.sin(ang) * dist;
+    const rot  = Math.random() * 360;
+
+    p.animate([
+      { transform:`translate(0,0) scale(1)`,      opacity:1 },
+      { transform:`translate(${tx*.28}px,${ty*.28}px) scale(1.5) rotate(${rot*.3}deg)`, opacity:1, offset:.14 },
+      { transform:`translate(${tx}px,${ty}px) scale(0) rotate(${rot}deg)`, opacity:0 }
+    ], { duration:540 + ~~(Math.random() * 200), easing:'cubic-bezier(.25,.46,.45,.94)' }
+    ).onfinish = () => p.remove();
+  }
+
+  setTimeout(() => {
+    item.classList.add('collapsing');
+    setTimeout(() => {
+      const card = item.closest('.category-card');
+      item.remove();
+      const remaining = card.querySelectorAll('.task-item:not(.collapsing)').length;
+      const cnt = card.querySelector('.cat-count');
+      if (cnt) cnt.textContent = remaining;
+      if (remaining === 0) {
+        card.style.transition = 'opacity .28s ease, transform .28s ease';
+        card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+        setTimeout(() => card.classList.add('empty'), 280);
+      }
+    }, 380);
+  }, 210);
+}
+
+/* Attach click to a bubble element */
+function attachBubble(bubble) {
+  bubble.addEventListener('click', () => burstBubble(bubble, bubble.closest('.task-item')));
+}
+document.querySelectorAll('.task-bubble').forEach(attachBubble);
+
+/* ══════════════════════════════════════════
+   TIMING CHIP — cycle on click (no × icon)
+══════════════════════════════════════════ */
+const T_CYCLE = ['Today','This Week','Later'];
+
+function attachChip(chip) {
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    const cur  = chip.dataset.timing || 'This Week';
+    const next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
+    chip.dataset.timing = next;
+    chip.textContent    = next;
+  });
+}
+document.querySelectorAll('.timing-chip').forEach(attachChip);
+
+/* ══════════════════════════════════════════
+   FILTER BAR
+══════════════════════════════════════════ */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.task-item').forEach(item => {
+      if (f === 'all') { item.style.display = ''; return; }
+      const t  = item.querySelector('.timing-chip')?.dataset.timing || '';
+      const ok = (f==='today'&&t==='Today')||(f==='week'&&t==='This Week')||(f==='later'&&t==='Later');
+      item.style.display = ok ? '' : 'none';
+    });
+  });
+});
+
+/* Sort by deadline */
+document.getElementById('sortBtn')?.addEventListener('click', () => {
+  const order = { Today:0, 'This Week':1, Later:2 };
+  document.querySelectorAll('.category-card').forEach(card => {
+    const addRow = card.querySelector('.add-task-row');
+    const items  = [...card.querySelectorAll('.task-item')];
+    items.sort((a,b) => {
+      const ta = order[a.querySelector('.timing-chip')?.dataset.timing||'Later']??2;
+      const tb = order[b.querySelector('.timing-chip')?.dataset.timing||'Later']??2;
+      return ta - tb;
+    });
+    items.forEach(i => card.insertBefore(i, addRow));
+  });
+  showToast('Sorted by deadline');
+});
+
+/* ══════════════════════════════════════════
+   DEADLINE CHIPS
+══════════════════════════════════════════ */
+document.getElementById('deadlineChips')?.querySelectorAll('.add-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.closest('.add-chips').querySelectorAll('.add-chip').forEach(x => x.classList.remove('sel'));
+    c.classList.add('sel');
+  });
+});
+
+/* ══════════════════════════════════════════
+   AUTO-CATEGORISE (mirrors iOS keyword detection)
+══════════════════════════════════════════ */
+const CAT_KW = {
+  Work:     /meeting|email|report|client|project|deadline|invoice|proposal|presentation|call|boss|budget|strategy|slide|review/i,
+  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment/i,
+  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut/i,
+};
+function detectCat(t) {
+  for (const [c,r] of Object.entries(CAT_KW)) if (r.test(t)) return c;
+  return 'Other';
+}
+const addInput  = document.getElementById('addTaskInput');
+const autoCatEl = document.getElementById('autoCatTag');
+function updateCat() { if (autoCatEl && addInput) autoCatEl.textContent = detectCat(addInput.value) }
+addInput?.addEventListener('input', updateCat);
+updateCat();
+
+/* ══════════════════════════════════════════
+   ADD TASK
+══════════════════════════════════════════ */
+function makeTaskItem(text, timing, cat) {
+  const catId = 'cat-' + cat.toLowerCase();
+  const card  = document.getElementById(catId) || document.getElementById('cat-other');
+  if (!card) return;
+
+  const item = document.createElement('div');
+  item.className = 'task-item';
+  item.innerHTML = `
+    <div class="task-bubble ${state.bubbleStyle} ${state.bubbleColour}"></div>
+    <div class="task-body"><div class="task-top">
+      <div class="task-text" contenteditable="true">${text}</div>
+      <span class="timing-chip" data-timing="${timing}">${timing}</span>
+    </div></div>
+  `;
+  const addRow = card.querySelector('.add-task-row');
+  card.insertBefore(item, addRow);
+
+  attachBubble(item.querySelector('.task-bubble'));
+  attachChip(item.querySelector('.timing-chip'));
+  item.querySelector('.task-text').addEventListener('keydown', handleTextKey);
+
+  const cnt = card.querySelector('.cat-count');
+  if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
+  card.classList.remove('empty');
+  card.style.opacity = ''; card.style.transform = '';
+
+  /* Animate in */
+  item.style.opacity = '0'; item.style.transform = 'translateY(-6px)';
+  requestAnimationFrame(() => {
+    item.style.transition = 'opacity .2s ease, transform .2s ease';
+    item.style.opacity = '1'; item.style.transform = '';
+    setTimeout(() => { item.style.transition = ''; }, 220);
+  });
+}
+
+document.getElementById('addTaskBtn')?.addEventListener('click', () => {
+  const text = addInput?.value.trim();
+  if (!text) { addInput?.focus(); return; }
+  const timing = document.querySelector('#deadlineChips .add-chip.sel')?.textContent || 'Today';
+  const cat    = autoCatEl?.textContent || 'Other';
+  makeTaskItem(text, timing, cat);
+  addInput.value = '';
+  updateCat();
+  showToast('Task added ✓');
+});
+
+document.getElementById('fabBtn')?.addEventListener('click', () => {
+  addInput?.focus();
+  addInput?.scrollIntoView({ behavior:'smooth', block:'center' });
+});
+
+/* ══════════════════════════════════════════
+   INLINE EDIT
+══════════════════════════════════════════ */
+function handleTextKey(e) {
+  if (e.key === 'Enter')  { e.preventDefault(); e.target.blur() }
+  if (e.key === 'Escape') e.target.blur();
+}
+document.querySelectorAll('.task-text').forEach(el => el.addEventListener('keydown', handleTextKey));
+
+/* ══════════════════════════════════════════
+   VOICE INPUT (Web Speech API — mirrors iOS SFSpeechRecognizer)
+══════════════════════════════════════════ */
+const voiceBtn   = document.getElementById('voiceBtn');
+const micModal   = document.getElementById('micModal');
+const micStopBtn = document.getElementById('micStopBtn');
+const transcriptEl = document.getElementById('voiceTranscript');
+let recognition  = null;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-US'; recognition.interimResults = true; recognition.continuous = true;
+
+  recognition.onstart = () => {
+    state.isListening = true;
+    voiceBtn.classList.add('listening');
+    micModal.classList.add('show');
+    transcriptEl.textContent = 'Listening…';
+    transcriptEl.style.color = 'var(--blue)';
+  };
+  recognition.onend = () => {
+    state.isListening = false;
+    voiceBtn.classList.remove('listening');
+    micModal.classList.remove('show');
+    transcriptEl.style.color = '';
+    if (transcriptEl.textContent === 'Listening…') transcriptEl.textContent = 'Tap to add tasks by voice';
+  };
+  recognition.onresult = e => {
+    const t = [...e.results].map(r => r[0].transcript).join(' ');
+    transcriptEl.textContent = t;
+    if (e.results[e.results.length-1].isFinal) {
+      const tasks = t.split(/,|then|and then/i).map(s=>s.trim()).filter(Boolean);
+      tasks.forEach(task => {
+        const timing = /\btoday\b/i.test(task)?'Today':/\bweek\b/i.test(task)?'This Week':'Later';
+        makeTaskItem(task.replace(/\b(today|this week|later|next week)\b/gi,'').trim(), timing, detectCat(task));
+      });
+      if (tasks.length) showToast(`${tasks.length} task${tasks.length>1?'s':''} added ✓`);
+      recognition.stop();
+    }
+  };
+  recognition.onerror = () => {
+    recognition.stop();
+    transcriptEl.textContent = 'Tap to add tasks by voice';
+  };
+  voiceBtn.addEventListener('click', () => {
+    if (state.isListening) { recognition.stop(); return; }
+    recognition.start();
+  });
+  micStopBtn.addEventListener('click', () => recognition.stop());
+} else {
+  voiceBtn.addEventListener('click', () => {
+    addInput?.focus();
+    transcriptEl.textContent = 'Voice input: type below ↓';
+    showToast('Type your task below');
+  });
+}
+
+/* ══════════════════════════════════════════
+   PRO BUBBLE PICKER
+══════════════════════════════════════════ */
+// Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
+document.getElementById('unlockProBtn')?.addEventListener('click', () => {
+  state.isProUser = true;
+  const wrap   = document.getElementById('proPickerWrap');
+  const banner = document.getElementById('proUpgradeBanner');
+  wrap.classList.remove('locked');
+  if (banner) banner.style.display = 'none';
+  showToast('Pro unlocked! ✨ (demo mode)');
+});
+
+// Style tabs
+document.querySelectorAll('.bst-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.bst-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.bubbleStyle = tab.dataset.style;
+    updateBubblePreview();
+    syncAllBubbles();
+  });
+});
+
+// Colour swatches
+document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('#colourGrid .cswatch').forEach(s => s.classList.remove('sel'));
+    sw.classList.add('sel');
+    state.bubbleColour = sw.dataset.colour;
+    updateBubblePreview();
+    syncAllBubbles();
+  });
+});
+
+function updateBubblePreview() {
+  const preview = document.getElementById('previewBubble');
+  if (!preview) return;
+  setBubbleClasses(preview);
+  const meta = STYLE_META[state.bubbleStyle];
+  document.getElementById('previewStyleName').textContent = meta.name;
+  document.getElementById('previewStyleDesc').textContent = meta.desc;
+}
+
+/* ══════════════════════════════════════════
+   FIREBASE AUTH SIMULATION
+   (Replace with Firebase SDK calls in iOS)
+══════════════════════════════════════════ */
+document.getElementById('signInBtn')?.addEventListener('click', () => {
+  // In iOS: use Sign in with Apple → Firebase Auth
+  // firebase.auth().signInWithProvider(AppleAuthProvider)
+  const btn = document.getElementById('signInBtn');
+  btn.textContent = 'Signed In ✓';
+  btn.style.background = '#16A34A';
+  document.getElementById('fbStatusDot').className = 'fb-dot connected';
+  document.getElementById('fbStatusText').textContent = 'Firebase — connected';
+  document.getElementById('fbStatusSub').textContent  = 'Syncing in real-time';
+  showToast('Signed in — tasks now syncing');
+});
+
+/* ══════════════════════════════════════════
+   CLEAR ALL
+══════════════════════════════════════════ */
+document.getElementById('clearAllBtn')?.addEventListener('click', () => {
+  if (!confirm('Clear all tasks?')) return;
+  document.querySelectorAll('.task-item').forEach(item => item.remove());
+  document.querySelectorAll('.cat-count').forEach(c => c.textContent = '0');
+  document.querySelectorAll('.category-card').forEach(card => {
+    card.style.transition = 'opacity .25s ease, transform .25s ease';
+    card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+    setTimeout(() => card.classList.add('empty'), 250);
+  });
+  closeM('settingsModal');
+  showToast('All tasks cleared');
+});
+
+/* ══════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════ */
+const openM  = id => document.getElementById(id).classList.add('show');
+const closeM = id => document.getElementById(id).classList.remove('show');
+
+document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
+document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
+document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+
+/* ── Settings: default deadline chip cycles like task chips ── */
+document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
+  e.stopPropagation();
+  const chip = document.getElementById('defaultDeadlineChip');
+  const cur  = chip.dataset.timing || 'This Week';
+  const next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
+  chip.dataset.timing = next;
+  chip.textContent    = next;
+});
+
+/* ── Settings: colour mode toggle (Default blue / Greyscale) ── */
+document.getElementById('colourModeBlue')?.addEventListener('click', () => {
+  if (!state.greyBubbles) return;
+  state.greyBubbles = false;
+  document.getElementById('colourModeBlue').classList.add('active');
+  document.getElementById('colourModeGrey').classList.remove('active');
+  applyAccentVars(BLUE_VARS);
+  document.querySelectorAll('.task-bubble').forEach(b => {
+    b.classList.remove('bc-grey');
+    b.classList.add(b.dataset.origColour || state.bubbleColour);
+  });
+  showToast('Colour restored');
+});
+document.getElementById('colourModeGrey')?.addEventListener('click', () => {
+  if (state.greyBubbles) return;
+  state.greyBubbles = true;
+  document.getElementById('colourModeGrey').classList.add('active');
+  document.getElementById('colourModeBlue').classList.remove('active');
+  applyAccentVars(GREY_VARS);
+  document.querySelectorAll('.task-bubble').forEach(b => {
+    b.dataset.origColour = [...b.classList].find(c => c.startsWith('bc-')) || 'bc-blue';
+    b.classList.remove(b.dataset.origColour);
+    b.classList.add('bc-grey');
+  });
+  showToast('Greyscale on');
+});
+
+/* ── Greyscale vars & helper (used by colour mode toggle above) ── */
+const GREY_VARS = {
+  '--blue':      '#6B7280',
+  '--blue-dim':  '#4B5563',
+  '--blue-lt':   '#F3F4F6',
+  '--blue-glow': 'rgba(107,114,128,.18)',
+  '--shbtn':     '0 4px 16px rgba(107,114,128,.28)',
+};
+const BLUE_VARS = {
+  '--blue':      '#3B82F6',
+  '--blue-dim':  '#1D4ED8',
+  '--blue-lt':   '#EFF6FF',
+  '--blue-glow': 'rgba(59,130,246,.18)',
+  '--shbtn':     '0 4px 16px rgba(59,130,246,.38)',
+};
+function applyAccentVars(vars) {
+  Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+}
+/* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
+
+/* Deploy guide toggle */
+document.getElementById('deployToggle')?.addEventListener('click', () => {
+  const hdr  = document.getElementById('deployToggle');
+  const body = document.getElementById('deployBody');
+  const open = body.classList.toggle('open');
+  hdr.classList.toggle('open', open);
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => openM('exportModal'));
+document.getElementById('closeExport').addEventListener('click', () => closeM('exportModal'));
+document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
+
+/* Lang toggle — nav bar + settings (sLangEN/sLangJP) */
+['langEN','langJP','sLangEN','sLangJP'].forEach(id => {
+  document.getElementById(id)?.addEventListener('click', () => {
+    const isEN = id === 'langEN' || id === 'sLangEN';
+    // sync both nav and settings buttons
+    ['langEN','sLangEN'].forEach(i => document.getElementById(i)?.classList.toggle('active', isEN));
+    ['langJP','sLangJP'].forEach(i => document.getElementById(i)?.classList.toggle('active', !isEN));
+    state.lang = isEN ? 'en' : 'ja';
+    if (recognition) recognition.lang = isEN ? 'en-US' : 'ja-JP';
+  });
+});
+
+/* ══════════════════════════════════════════
+   EXPORT
+══════════════════════════════════════════ */
+function allTasks() {
+  return [...document.querySelectorAll('.task-item:not(.collapsing)')].map(item => ({
+    text:   item.querySelector('.task-text')?.textContent?.trim(),
+    cat:    item.closest('.category-card')?.querySelector('.cat-name')?.textContent || 'Other',
+    timing: item.querySelector('.timing-chip')?.dataset.timing || 'This Week',
+  })).filter(t => t.text);
+}
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+function dl(name, content, type) {
+  const a = Object.assign(document.createElement('a'), {
+    href:URL.createObjectURL(new Blob([content],{type})), download:name
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+document.getElementById('exportCSV').addEventListener('click', () => {
+  const rows = [['Task','Category','Deadline'], ...allTasks().map(t=>[`"${t.text.replace(/"/g,'""')}"`,t.cat,t.timing])];
+  dl('poplist.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
+  showToast('Exported as CSV'); closeM('exportModal');
+});
+document.getElementById('exportTXT').addEventListener('click', () => {
+  const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
+  let out = `POPLIST — ${new Date().toLocaleDateString()}\n${'─'.repeat(32)}\n`;
+  Object.entries(cats).forEach(([c,items]) => {
+    out += `\n${c.toUpperCase()}\n`;
+    items.forEach(t => { out += `  [ ] ${t.text}  (${t.timing})\n` });
+  });
+  dl('poplist.txt', out, 'text/plain');
+  showToast('Exported as text'); closeM('exportModal');
+});
+document.getElementById('exportCopy').addEventListener('click', () => {
+  const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
+  let out = '';
+  Object.entries(cats).forEach(([c,items]) => {
+    out += `${c}\n`; items.forEach(t => { out += `  - ${t.text} [${t.timing}]\n` }); out += '\n';
+  });
+  navigator.clipboard.writeText(out.trim())
+    .then(() => showToast('Copied to clipboard!'))
+    .catch(() => showToast('Try CSV instead'));
+  closeM('exportModal');
+});
+</script>
+</body>
+</html>

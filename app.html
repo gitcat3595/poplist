@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Poplist — Tasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --blue:      #3B82F6;
+  --blue-lt:   #EFF6FF;
+  --blue-glow: rgba(59,130,246,.18);
+  --black:     #111111;
+  --shcard:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shlift:    0 2px 8px rgba(0,0,0,.10);
+  --rc:   18px;
+  --rp:   50px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+
+  /* bubble colour (default blue) */
+  --bubble-color:          #3B82F6;
+  --bubble-color-glow:     rgba(59,130,246,.18);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding-bottom: 110px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--black);
+}
+.nav-logo em {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--blue); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
+}
+.nav-right { display: flex; align-items: center; gap: 8px }
+.nav-export {
+  display: flex; align-items: center; gap: 5px; padding: 7px 13px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rp); font-size: 11px; font-weight: 700;
+  color: var(--t2); transition: var(--tr); box-shadow: var(--shlift);
+}
+.nav-export:hover { border-color: var(--blue); color: var(--blue) }
+.nav-export svg { width: 12px; height: 12px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: var(--shlift);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--blue); color: #fff }
+.nav-icon-btn {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 11px; color: var(--t2);
+  transition: var(--tr); box-shadow: var(--shlift);
+}
+.nav-icon-btn:hover { border-color: var(--blue); color: var(--blue) }
+
+/* ── CONTAINER ── */
+.container { width: 100%; max-width: 480px; padding: 0 16px }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex; gap: 6px; padding: 14px 0 16px;
+  overflow-x: auto; scrollbar-width: none; align-items: center;
+}
+.filter-bar::-webkit-scrollbar { display: none }
+.filter-btn {
+  font-size: 12px; font-weight: 700; padding: 7px 15px;
+  border-radius: var(--rp);
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--t2); white-space: nowrap; flex-shrink: 0;
+  transition: var(--tr); box-shadow: var(--shlift);
+}
+.filter-btn.active {
+  background: var(--black); border-color: var(--black); color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.filter-btn:not(.active):hover { border-color: var(--blue); color: var(--blue) }
+.sort-btn {
+  margin-left: auto; font-size: 12px; font-weight: 700; padding: 7px 12px;
+  border-radius: var(--rp); background: var(--card); border: 1px solid var(--border);
+  color: var(--t2); white-space: nowrap; flex-shrink: 0;
+  transition: var(--tr); box-shadow: var(--shlift);
+}
+.sort-btn:hover { border-color: var(--blue); color: var(--blue) }
+
+/* ── CATEGORY CARDS ── */
+.tasks-container { display: flex; flex-direction: column; gap: 10px }
+
+.category-card {
+  background: var(--card); border-radius: var(--rc);
+  border: 1px solid var(--border); box-shadow: var(--shcard);
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  background: var(--raised);
+}
+.cat-name {
+  font-size: 11px; font-weight: 800; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--t2);
+}
+.cat-count {
+  font-size: 11px; font-weight: 700; color: var(--blue);
+  background: var(--blue-lt); border-radius: 20px;
+  padding: 2px 9px; border: 1px solid rgba(59,130,246,.18);
+}
+
+/* ── TASK ITEMS ── */
+.task-item {
+  display: flex; align-items: center;
+  padding: 13px 16px; gap: 13px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--tr);
+}
+.task-item:last-of-type { border-bottom: none }
+.task-item:hover { background: var(--raised) }
+
+/* ── TASK BUBBLE ── */
+.task-bubble {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  cursor: pointer; position: relative; overflow: visible;
+  transition: transform .14s ease;
+}
+.task-bubble:hover  { transform: scale(1.22) }
+.task-bubble:active { transform: scale(.80) }
+
+.task-bubble.luminous {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bubble-color) 55%,
+    color-mix(in srgb, var(--bubble-color) 82%, #000 18%) 100%
+  );
+  box-shadow:
+    0 0 0 2.5px var(--bubble-color-glow),
+    0 0 6px 1px var(--bubble-color-glow),
+    0 1px 3px rgba(0,0,0,.13);
+}
+
+/* ── TASK BODY ── */
+.task-body { flex: 1; min-width: 0 }
+.task-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.task-text {
+  font-size: 14px; font-weight: 600; color: var(--t1);
+  line-height: 1.45; word-break: break-word;
+  flex: 1; min-width: 0;
+}
+
+/* ── TIMING CHIPS ── */
+.timing-chip {
+  font-size: 10px; font-weight: 700; letter-spacing: .1px; padding: 4px 11px;
+  border-radius: var(--rp); white-space: nowrap; flex-shrink: 0;
+  cursor: pointer; transition: var(--tr);
+  border: 1px solid var(--border); background: var(--card); color: var(--t2);
+}
+.timing-chip[data-timing="Today"] {
+  color: var(--blue); background: var(--blue-lt);
+  border-color: rgba(59,130,246,.3);
+}
+.timing-chip[data-timing="Later"] { opacity: .6 }
+
+/* ── ADD TASK ROW ── */
+.add-task-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; cursor: pointer; opacity: .55;
+  transition: opacity var(--tr);
+}
+.add-task-row:hover { opacity: 1 }
+.add-task-plus {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px dashed var(--brim); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--t3); line-height: 1;
+  position: relative;
+}
+.add-task-plus::before {
+  content: '+'; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -52%);
+  font-size: 14px; font-weight: 400; color: var(--t3);
+}
+.add-task-text { font-size: 13px; color: var(--t3) }
+
+/* ── FAB ── */
+.fab-wrap {
+  position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; padding: 0 16px;
+  display: flex; justify-content: center;
+  pointer-events: none; z-index: 80;
+}
+.fab {
+  display: flex; align-items: center; gap: 8px; padding: 15px 32px;
+  background: var(--black); color: #fff; border-radius: var(--rp);
+  font-size: 14px; font-weight: 800; letter-spacing: -.2px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  pointer-events: all; transition: transform .14s ease, box-shadow .14s ease;
+}
+.fab:hover { box-shadow: 0 6px 28px rgba(0,0,0,.32) }
+.fab:active { transform: scale(.96) }
+.fab svg { width: 16px; height: 16px }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Poplist<em></em></div>
+  <div class="nav-right">
+    <button class="nav-export">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Export
+    </button>
+    <div class="lang-toggle">
+      <button class="lang-btn active">EN</button>
+      <button class="lang-btn">JP</button>
+    </div>
+    <div class="nav-icon-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="container">
+
+  <div class="filter-bar">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Today</button>
+    <button class="filter-btn">This Week</button>
+    <button class="filter-btn">Later</button>
+    <button class="sort-btn">↕ Due</button>
+  </div>
+
+  <div class="tasks-container">
+
+    <!-- WORK -->
+    <div class="category-card">
+      <div class="category-header">
+        <span class="cat-name">Work</span>
+        <span class="cat-count">3</span>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Send proposal to client by EOD</span>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Prepare Q3 budget report</span>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Follow up on the design review</span>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="add-task-row">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add work task…</span>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="category-card">
+      <div class="category-header">
+        <span class="cat-name">Home</span>
+        <span class="cat-count">2</span>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Buy groceries — milk, eggs, bread</span>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Take out the trash</span>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="add-task-row">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add home task…</span>
+      </div>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="category-card">
+      <div class="category-header">
+        <span class="cat-name">Personal</span>
+        <span class="cat-count">3</span>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Go for a 30 min run</span>
+          <span class="timing-chip" data-timing="Today">Today</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Book dentist appointment</span>
+          <span class="timing-chip" data-timing="This Week">This Week</span>
+        </div></div>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Read 20 pages of current book</span>
+          <span class="timing-chip" data-timing="Later">Later</span>
+        </div></div>
+      </div>
+      <div class="add-task-row">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add personal task…</span>
+      </div>
+    </div>
+
+    <!-- OTHER -->
+    <div class="category-card">
+      <div class="category-header">
+        <span class="cat-name">Other</span>
+        <span class="cat-count">1</span>
+      </div>
+      <div class="task-item">
+        <div class="task-bubble luminous"></div>
+        <div class="task-body"><div class="task-top">
+          <span class="task-text">Research travel insurance options</span>
+          <span class="timing-chip" data-timing="Later">Later</span>
+        </div></div>
+      </div>
+      <div class="add-task-row">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add task…</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FAB -->
+<div class="fab-wrap">
+  <button class="fab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Add Task
+  </button>
+</div>
+
+</body>
+</html>
