@@ -2202,9 +2202,10 @@ function localClassify(transcript, defaultTiming) {
     .replace(/今日|今週|そのうち|急ぎ|いつか|後で/g, '')
     .replace(/\s+/g, ' ').trim();
 
-  // Split on: ", and", " and ", "、", "。", ". ", "; "
+  // Split on commas, "and", Japanese connectors — no lookbehind (unsupported on older Safari)
   const parts = transcript
-    .split(/,\s*and\s+|\s+and\s+|[、。；;]\s*|(?<=[。、.!?！？])\s*/u)
+    .replace(/[。.!?！？]/g, '$&,')
+    .split(/,\s*and\s+|\s+and\s+|[、。；;,]\s*/)
     .map(s => s.replace(/^(and|also|そして|それから|あと|また)\s+/i, '').trim())
     .filter(s => s.length > 1);
 
