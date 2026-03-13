@@ -986,7 +986,7 @@ input  { font-family:inherit }
         </svg>
         <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
       </button>
-      <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして音声でタスクを追加">Tap to add tasks by voice</span>
+      <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
     </div>
     <div class="home-or" data-en="or" data-ja="または">or</div>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task manually" data-ja="＋ 手動でタスクを追加">+ Add task manually</button>
@@ -1943,7 +1943,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     voiceBtn.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
-    transcriptEl.textContent = state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice';
+    transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
   };
 
   recognition.onerror = e => {
@@ -1957,7 +1957,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     micModal.classList.remove('show');
     transcriptEl.textContent = e.error === 'not-allowed'
       ? (state.lang === 'ja' ? 'マイクへのアクセスが拒否されました' : 'Microphone access denied')
-      : (state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice');
+      : (state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice');
     transcriptEl.style.color = '';
   };
 
@@ -1988,7 +1988,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     micModal.classList.remove('show');
     if (modalTitle) modalTitle.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
     fullTranscript = '';
-    transcriptEl.textContent = state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice';
+    transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
 
     if (tasks.length === 0) {
       showToast(state.lang === 'ja' ? 'タスクを認識できませんでした。もう一度試してください' : 'Could not classify tasks — try again');
