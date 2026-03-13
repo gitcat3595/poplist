@@ -1478,23 +1478,6 @@ GoogleService-Info.plist
       </div><!-- /pro-wrap -->
     </div>
 
-    <!-- ══ AI SETTINGS ══ -->
-    <div class="settings-section" style="margin-top:24px">
-      <div class="settings-section-label">AI Classification</div>
-      <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px;border-bottom:none">
-        <p class="settings-row-label" style="margin-bottom:2px">OpenAI API Key</p>
-        <p class="settings-row-sub" style="margin-bottom:6px">Enables smart task splitting &amp; Japanese support. Without it, Poplist uses built-in keyword matching.</p>
-        <div style="position:relative;display:flex;gap:8px;align-items:center">
-          <input type="password" id="apiKeyInput"
-            placeholder="sk-..."
-            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--t1);outline:none;-webkit-appearance:none"/>
-          <button id="apiKeySave" style="padding:9px 16px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;touch-action:manipulation">Save</button>
-        </div>
-        <p id="apiKeyStatus" style="font-size:11px;color:var(--t3);margin-top:2px">No key saved — using built-in classifier</p>
-      </div>
-    </div>
-
     <!-- ══ HOW IT WORKS ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label">How it works</div>
@@ -2244,15 +2227,11 @@ async function classifyTranscript(transcript) {
   const categories    = ['Work', 'Home', 'Personal', 'Other'];
   const defaultTiming = state.defaultTiming || 'This Week';
 
-  // Try API (uses key saved in Settings → passed as header, or server-side env var)
-  const savedKey = localStorage.getItem('poplist_openai_key') || '';
+  // Try Cloudflare Worker → OpenAI (key lives in Cloudflare secrets, never in browser)
   try {
-    const headers = { 'Content-Type': 'application/json' };
-    if (savedKey) headers['X-OpenAI-Key'] = savedKey;
-
     const res = await fetch('/api/classify', {
       method: 'POST',
-      headers,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ transcript, categories, defaultTiming, lang: state.lang })
     });
     if (res.ok) {
@@ -2593,39 +2572,9 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
 const openM  = id => document.getElementById(id).classList.add('show');
 const closeM = id => document.getElementById(id).classList.remove('show');
 
-document.getElementById('settingsBtn').addEventListener('click', () => {
-  openM('settingsModal');
-  // Restore saved API key display
-  const savedKey = localStorage.getItem('poplist_openai_key') || '';
-  const inp = document.getElementById('apiKeyInput');
-  const st  = document.getElementById('apiKeyStatus');
-  if (inp) inp.value = savedKey ? '••••••••••••••••' : '';
-  if (st)  st.textContent = savedKey
-    ? '✅ Key saved — AI classification active'
-    : 'No key saved — using built-in classifier';
-  if (st)  st.style.color = savedKey ? '#16A34A' : 'var(--t3)';
-});
+document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
 document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
 document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
-
-/* ── API Key save/load ── */
-document.getElementById('apiKeySave')?.addEventListener('click', () => {
-  const inp = document.getElementById('apiKeyInput');
-  const st  = document.getElementById('apiKeyStatus');
-  const val = inp?.value.trim();
-  if (!val || val === '••••••••••••••••') {
-    if (st) { st.textContent = 'No key saved — using built-in classifier'; st.style.color = 'var(--t3)'; }
-    return;
-  }
-  if (!val.startsWith('sk-')) {
-    if (st) { st.textContent = '⚠️ Key should start with "sk-"'; st.style.color = '#F97316'; }
-    return;
-  }
-  localStorage.setItem('poplist_openai_key', val);
-  if (inp) inp.value = '••••••••••••••••';
-  if (st)  { st.textContent = '✅ Key saved — AI classification active'; st.style.color = '#16A34A'; }
-  showToast('API key saved ✓');
-});
 
 /* ── Settings: default deadline chip cycles like task chips ── */
 document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
