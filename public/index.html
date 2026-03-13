@@ -1741,7 +1741,13 @@ function burstBubble(el, item) {
       if (remaining === 0) {
         card.style.transition = 'opacity .28s ease, transform .28s ease';
         card.style.opacity = '0'; card.style.transform = 'scale(.97)';
-        setTimeout(() => card.classList.add('empty'), 280);
+        setTimeout(() => {
+          card.classList.add('empty');
+          card.style.opacity = ''; card.style.transform = '';
+          updateScreenState(); // ← check if all gone → show done screen
+        }, 300);
+      } else {
+        updateScreenState();
       }
     }, 380);
   }, 210);
@@ -1952,6 +1958,29 @@ function getTotalTasks() {
   return document.querySelectorAll('.task-item:not(.collapsing)').length;
 }
 
+function showDoneScreen() {
+  // Force re-trigger CSS animation by removing + re-adding the element
+  const el = document.getElementById('doneScreen');
+  if (!el) return;
+  el.style.display = 'none';
+  // Re-apply lang text since clone approach was unreliable
+  const title = el.querySelector('.done-title');
+  const sub   = el.querySelector('.done-sub');
+  if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
+  if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
+  // Restart animation: force reflow
+  el.style.animation = 'none';
+  el.querySelector('.done-emoji').style.animation  = 'none';
+  el.querySelector('.done-title').style.animation  = 'none';
+  el.querySelector('.done-sub').style.animation    = 'none';
+  el.offsetHeight; // trigger reflow
+  el.style.animation = '';
+  el.querySelector('.done-emoji').style.animation  = '';
+  el.querySelector('.done-title').style.animation  = '';
+  el.querySelector('.done-sub').style.animation    = '';
+  el.style.display = '';
+}
+
 function updateScreenState() {
   const total = getTotalTasks();
   if (total === 0) {
@@ -1960,21 +1989,17 @@ function updateScreenState() {
       homeScreen.style.display   = 'none';
       taskListView.style.display = 'none';
       bottomBar.style.display    = 'none';
-      // Re-trigger done animation by cloning node
-      const clone = doneScreen.cloneNode(true);
-      doneScreen.parentNode.replaceChild(clone, doneScreen);
-      Object.assign(window, { doneScreen: clone }); // update reference
-      clone.style.display = '';
+      showDoneScreen();
     } else {
       homeScreen.style.display   = '';
       taskListView.style.display = 'none';
-      doneScreen.style.display   = 'none';
+      document.getElementById('doneScreen').style.display = 'none';
       bottomBar.style.display    = 'none';
     }
   } else {
     homeScreen.style.display   = 'none';
     taskListView.style.display = '';
-    doneScreen.style.display   = 'none';
+    document.getElementById('doneScreen').style.display = 'none';
     bottomBar.style.display    = '';
   }
 }
@@ -2006,15 +2031,7 @@ document.querySelector('.btn-cancel')?.addEventListener('click', () => {
   if (card) { card.style.display = 'none'; }
 });
 
-/* Wire done-screen speak button to same voice flow */
-document.getElementById('voiceBtnDone')?.addEventListener('click', () => {
-  voiceBtn?.click();
-});
-
-/* Wire bottom-bar speak button */
-document.getElementById('voiceBtnBottom')?.addEventListener('click', () => {
-  voiceBtn?.click();
-});
+/* Voice buttons wired inside the SR block below */
 
 /* ══════════════════════════════════════════
    INLINE EDIT
@@ -2027,17 +2044,18 @@ document.querySelectorAll('.task-text').forEach(el => el.addEventListener('keydo
 
 /* ══════════════════════════════════════════
    VOICE INPUT  — Web Speech API + OpenAI classify
-   Flow: speak → accumulate transcript → stop → POST /api/classify → build tasks
+   Safari: recreates recognition object each start (required)
+   Chrome: reuses object, restart loop to accumulate multiple phrases
+   Flow: speak → accumulate → tap stop → POST /api/classify → tasks
 ══════════════════════════════════════════ */
 const voiceBtn     = document.getElementById('voiceBtn');
 const micModal     = document.getElementById('micModal');
 const micStopBtn   = document.getElementById('micStopBtn');
 const transcriptEl = document.getElementById('voiceTranscript');
-let recognition    = null;
 
-/* Send transcript to the secure Cloudflare Worker, get structured tasks back */
+/* Send transcript to Cloudflare Worker → OpenAI → structured task list */
 async function classifyTranscript(transcript) {
-  const categories = Array.from(document.querySelectorAll('.cat-name')).map(el => el.textContent.trim());
+  const categories   = ['Work', 'Home', 'Personal', 'Other']; // always English
   const defaultTiming = state.defaultTiming || 'This Week';
   try {
     const res = await fetch('/api/classify', {
@@ -2054,89 +2072,101 @@ async function classifyTranscript(transcript) {
   }
 }
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.lang         = 'en-US';
-  recognition.interimResults = false;  // only fire when Chrome is confident
-  recognition.continuous   = false;    // one utterance at a time — most reliable on HTTPS
-  recognition.maxAlternatives = 1;
+// Detect Safari / iOS (must recreate recognition object every time on Safari)
+const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || /iPad|iPhone|iPod/.test(navigator.userAgent));
 
-  let fullTranscript = '';   // accumulates across multiple utterances
-  let shouldRestart  = false;
-  let restartTimer   = null;
+let recognition    = null;
+let fullTranscript = '';
+let shouldRestart  = false;
+let restartTimer   = null;
 
-  recognition.onstart = () => {
-    state.isListening = true;
-    voiceBtn.classList.add('listening');
-    micModal.classList.add('show');
-    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
-    transcriptEl.style.color = 'var(--blue)';
-  };
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  recognition.onresult = e => {
-    // Append each confirmed utterance to the running transcript
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) {
-        fullTranscript += e.results[i][0].transcript + ' ';
+if (SR) {
+  function createRecognition() {
+    const r = new SR();
+    r.lang            = (state.lang === 'ja') ? 'ja-JP' : 'en-US';
+    r.interimResults  = false;
+    r.continuous      = false;   // false = most reliable on both Safari + Chrome HTTPS
+    r.maxAlternatives = 1;
+
+    r.onstart = () => {
+      state.isListening = true;
+      document.querySelectorAll('.voice-btn-all').forEach(b => b.classList.add('listening'));
+      voiceBtn?.classList.add('listening');
+      micModal.classList.add('show');
+      transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+      transcriptEl.style.color = 'var(--blue)';
+    };
+
+    r.onresult = e => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          fullTranscript += e.results[i][0].transcript + ' ';
+        }
       }
-    }
-  };
+    };
 
-  recognition.onend = () => {
-    if (shouldRestart) {
-      // Small delay prevents the "aborted" error on HTTPS restart
-      restartTimer = setTimeout(() => {
-        try { recognition.start(); } catch(err) {}
-      }, 300);
-      return;
-    }
-    // User stopped — close UI
+    r.onend = () => {
+      if (shouldRestart && state.isListening) {
+        // Safari needs a fresh object each restart; Chrome can reuse
+        if (isSafari) recognition = createRecognition();
+        restartTimer = setTimeout(() => {
+          try { recognition.start(); } catch(err) { console.warn('restart err', err); }
+        }, 250);
+        return;
+      }
+      // Stopped by user — tidy up UI
+      if (state.isListening) {
+        _clearListeningUI();
+      }
+    };
+
+    r.onerror = e => {
+      if (e.error === 'no-speech') return;  // silence — let restart continue
+      if (e.error === 'aborted')   return;  // deliberate stop — ignore
+      shouldRestart = false;
+      clearTimeout(restartTimer);
+      _clearListeningUI();
+      transcriptEl.textContent = e.error === 'not-allowed'
+        ? (state.lang === 'ja' ? 'マイクへのアクセスが拒否されました' : 'Microphone access denied')
+        : (state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice');
+    };
+
+    return r;
+  }
+
+  function _clearListeningUI() {
     state.isListening = false;
-    voiceBtn.classList.remove('listening');
+    voiceBtn?.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
     transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
-  };
+  }
 
-  recognition.onerror = e => {
-    if (e.error === 'no-speech') return; // silence is fine — let it restart
-    if (e.error === 'aborted')   return; // happens on restart, ignore
-    // Real error (not-allowed, network, etc.)
-    shouldRestart = false;
-    clearTimeout(restartTimer);
-    state.isListening = false;
-    voiceBtn.classList.remove('listening');
-    micModal.classList.remove('show');
-    transcriptEl.textContent = e.error === 'not-allowed'
-      ? (state.lang === 'ja' ? 'マイクへのアクセスが拒否されました' : 'Microphone access denied')
-      : (state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice');
-    transcriptEl.style.color = '';
-  };
+  recognition = createRecognition();
 
   function startListening() {
     fullTranscript = '';
     shouldRestart  = true;
     clearTimeout(restartTimer);
-    // Sync language to current setting
-    recognition.lang = (state.lang === 'ja') ? 'ja-JP' : 'en-US';
-    try { recognition.start(); } catch(e) {}
+    // Always recreate on Safari; update lang on Chrome
+    recognition = createRecognition();
+    try { recognition.start(); } catch(e) { console.warn('start err', e); }
   }
 
   async function stopListening() {
     shouldRestart = false;
     clearTimeout(restartTimer);
-    recognition.stop();
+    try { recognition.stop(); } catch(e) {}
+    _clearListeningUI();
 
     const t = fullTranscript.trim();
+    fullTranscript = '';
+
     if (!t) return;
 
-    // Hide mic modal, show compile overlay
-    micModal.classList.remove('show');
-    state.isListening = false;
-    voiceBtn.classList.remove('listening');
-    transcriptEl.style.color = '';
-
+    // Show compile overlay while AI works
     const compileOverlay = document.getElementById('compileOverlay');
     const compileTitle   = document.getElementById('compileTitle');
     const compileSub     = document.getElementById('compileSub');
@@ -2147,39 +2177,38 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const tasks = await classifyTranscript(t);
 
     if (compileOverlay) compileOverlay.classList.remove('show');
-    fullTranscript = '';
     transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
 
     if (tasks.length === 0) {
-      showToast(state.lang === 'ja' ? 'タスクを認識できませんでした。もう一度試してください' : 'Could not classify tasks — try again');
+      showToast(state.lang === 'ja' ? 'タスクを認識できませんでした。もう一度試してください' : 'Nothing recognised — please try again');
       return;
     }
 
-    // Stagger tasks in one by one for a satisfying reveal
     tasks.forEach((task, i) => {
       setTimeout(() => {
         makeTaskItem(task.text, task.timing || 'This Week', task.category || 'Other');
-      }, i * 80);
+      }, i * 90);
     });
     const n = tasks.length;
-    const msg = state.lang === 'ja'
-      ? `${n}件のタスクを追加しました ✓`
-      : `${n} task${n > 1 ? 's' : ''} added ✓`;
-    showToast(msg);
+    showToast(state.lang === 'ja' ? `${n}件のタスクを追加しました ✓` : `${n} task${n>1?'s':''} added ✓`);
   }
 
-  voiceBtn.addEventListener('click', () => {
+  // Wire all speak buttons to the same flow
+  function handleVoiceClick() {
     if (state.isListening) { stopListening(); return; }
     startListening();
-  });
-  micStopBtn.addEventListener('click', () => stopListening());
+  }
+  voiceBtn?.addEventListener('click', handleVoiceClick);
+  document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
+  document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
+  micStopBtn?.addEventListener('click', () => stopListening());
 
 } else {
-  // No speech API — fallback to type
-  voiceBtn.addEventListener('click', () => {
-    addInput?.focus();
-    transcriptEl.textContent = 'Voice not supported — type below ↓';
-    showToast('Type your task below');
+  // No Speech API — show manual input fallback
+  voiceBtn?.addEventListener('click', () => {
+    const card = document.getElementById('manualAddCard');
+    if (card) { card.style.display = ''; addInput?.focus(); }
+    transcriptEl.textContent = state.lang === 'ja' ? '音声未対応 — 入力してください ↓' : 'Voice not supported — type below ↓';
   });
 }
 
