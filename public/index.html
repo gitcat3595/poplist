@@ -284,33 +284,25 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .task-bubble:hover  { transform:scale(1.22) }
 .task-bubble:active { transform:scale(.80) }
 
-/* ── LUMINOUS / DEFAULT — solid fill, slight dark-edge gradient, faint same-colour glow ── */
+/* ── LUMINOUS / DEFAULT — solid fill + inner shadow overlay for depth (no color-mix, Safari-safe) ── */
 .task-bubble.luminous {
-  background: radial-gradient(
-    circle at 50% 50%,
-    var(--bubble-color,#3B82F6) 55%,
-    color-mix(in srgb, var(--bubble-color,#3B82F6) 82%, #000 18%) 100%
-  );
+  background: var(--bubble-color, #3B82F6);
   border: none;
   box-shadow:
     0 0 0 2.5px var(--bubble-color-glow, rgba(59,130,246,.18)),
     0 0 6px 1px var(--bubble-color-glow, rgba(59,130,246,.14)),
-    0 1px 3px rgba(0,0,0,.13);
+    0 1px 3px rgba(0,0,0,.13),
+    inset 0 -3px 6px rgba(0,0,0,.18);
   overflow: hidden;
 }
 .task-bubble.luminous::before { display:none }
 .task-bubble.luminous::after  { display:none }
 
-/* ── SOLID (3D) — sphere look, bright specular cap, no outer ring ── */
+/* ── SOLID (3D) — sphere look, bright specular cap (no color-mix, Safari-safe) ── */
 .task-bubble.solid {
-  background: radial-gradient(
-    circle at 34% 30%,
-    color-mix(in srgb, var(--bubble-color,#3B82F6) 40%, white 60%) 0%,
-    var(--bubble-color,#3B82F6) 50%,
-    color-mix(in srgb, var(--bubble-color,#3B82F6) 78%, black 22%) 100%
-  );
+  background: var(--bubble-color, #3B82F6);
   border:none;
-  box-shadow: 0 2px 8px rgba(0,0,0,.22), inset 0 -2px 4px rgba(0,0,0,.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,.22), inset 0 -2px 4px rgba(0,0,0,.18), inset 0 4px 8px rgba(255,255,255,.28);
   overflow:hidden;
 }
 .task-bubble.solid::before {
@@ -546,7 +538,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,.4); z-index:200;
   align-items:flex-end; justify-content:center;
-  backdrop-filter:blur(2px);
+  backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
 }
 .modal-overlay.show { display:flex }
 .modal-sheet {
@@ -866,7 +858,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 ════════════════════════════════════════ */
 .mic-modal {
   display:none; position:fixed; inset:0; z-index:500;
-  background:rgba(0,0,0,.5); backdrop-filter:blur(10px);
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   flex-direction:column; align-items:center; justify-content:center; gap:24px;
 }
 .mic-modal.show { display:flex }
@@ -965,8 +958,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 ════════════════════════════════════════ */
 .compile-overlay {
   display:none; position:fixed; inset:0; z-index:600;
-  background:rgba(0,0,0,.55); backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(18px) saturate(1.2);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);
   flex-direction:column; align-items:center; justify-content:center; gap:0;
 }
 .compile-overlay.show { display:flex }
@@ -1303,6 +1297,20 @@ GoogleService-Info.plist
     </div>
     <div class="mic-modal-hint" id="micModalHint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
     <button class="mic-stop-btn" id="micStopBtn" data-en="Stop listening" data-ja="停止">Stop listening</button>
+  </div>
+</div>
+
+<!-- ═══════ CATEGORY EDIT SHEET ═══════ -->
+<!-- Appears when user taps a task bubble — lets them move the task to a different category -->
+<div class="modal-overlay" id="catEditModal">
+  <div class="modal-sheet" style="padding-bottom:env(safe-area-inset-bottom,20px)">
+    <div class="modal-handle"></div>
+    <p class="modal-title" id="catEditTitle">Move to…</p>
+    <p class="modal-sub" id="catEditSub">Auto-detected category might be wrong — pick the right one.</p>
+    <div id="catEditOptions" style="display:flex;flex-direction:column;gap:0;margin-top:16px;border-radius:16px;overflow:hidden;border:1px solid var(--border)">
+      <!-- filled by JS -->
+    </div>
+    <button class="modal-cancel" id="closeCatEdit" style="margin-top:14px">Cancel</button>
   </div>
 </div>
 
@@ -1754,10 +1762,118 @@ function burstBubble(el, item) {
 }
 
 /* Attach click to a bubble element */
+/* ══════════════════════════════════════════
+   CATEGORY EDIT SHEET
+   • Short tap  → burst (complete) the task
+   • Long press → open "Move to…" category sheet
+══════════════════════════════════════════ */
+const CAT_META = [
+  { en:'Work',     ja:'仕事',    colour:'#3B82F6', icon:'💼' },
+  { en:'Home',     ja:'家の事',  colour:'#F97316', icon:'🏠' },
+  { en:'Personal', ja:'自分の事',colour:'#7C3AED', icon:'🙋' },
+  { en:'Other',    ja:'その他',  colour:'#9CA3AF', icon:'📌' },
+];
+
+let _catEditTarget = null; // the task-item DOM node currently being moved
+
+function openCatEdit(taskItem) {
+  _catEditTarget = taskItem;
+  const currentCatCard = taskItem.closest('.category-card');
+  const currentCatId   = currentCatCard?.id || '';   // e.g. "cat-work"
+
+  const isJA = state.lang === 'ja';
+  document.getElementById('catEditTitle').textContent = isJA ? 'カテゴリーを変更' : 'Move to…';
+  document.getElementById('catEditSub').textContent   = isJA
+    ? '自動分類が違う場合は正しいカテゴリーを選んでください。'
+    : 'Auto-detected category wrong? Pick the right one.';
+
+  const opts = document.getElementById('catEditOptions');
+  opts.innerHTML = '';
+  CAT_META.forEach((cat, idx) => {
+    const isCurrent = currentCatId === 'cat-' + cat.en.toLowerCase();
+    const btn = document.createElement('button');
+    btn.style.cssText = `display:flex;align-items:center;gap:14px;padding:14px 18px;
+      background:${isCurrent ? 'var(--raised)' : 'var(--card)'};
+      border:none;width:100%;text-align:left;cursor:pointer;
+      border-bottom:${idx < CAT_META.length-1 ? '1px solid var(--border)' : 'none'};
+      -webkit-tap-highlight-color:transparent;touch-action:manipulation;`;
+    btn.innerHTML = `
+      <span style="font-size:20px">${cat.icon}</span>
+      <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
+      ${isCurrent ? '<span style="font-size:11px;font-weight:800;color:var(--t3)">current</span>' : ''}
+      <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0"></span>
+    `;
+    btn.addEventListener('click', () => {
+      moveCatTaskItem(taskItem, cat.en);
+      closeM('catEditModal');
+    });
+    // Active press feedback
+    btn.addEventListener('touchstart', () => { btn.style.background = 'var(--raised)'; }, {passive:true});
+    btn.addEventListener('touchend',   () => { btn.style.background = isCurrent ? 'var(--raised)' : 'var(--card)'; }, {passive:true});
+    opts.appendChild(btn);
+  });
+
+  openM('catEditModal');
+}
+
+function moveCatTaskItem(item, newCatEn) {
+  const newCard = document.getElementById('cat-' + newCatEn.toLowerCase());
+  const oldCard = item.closest('.category-card');
+  if (!newCard || newCard === oldCard) return;
+
+  // Move DOM node before the add-task-row
+  const addRow = newCard.querySelector('.add-task-row');
+  newCard.insertBefore(item, addRow);
+  newCard.classList.add('was-used');
+  newCard.style.display = '';
+
+  // Update counts on both cards
+  [oldCard, newCard].forEach(card => {
+    if (!card) return;
+    const cnt = card.querySelector('.cat-count');
+    if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
+    // Hide old card if now empty
+    if (card === oldCard && card.querySelectorAll('.task-item').length === 0) {
+      card.style.display = 'none';
+    }
+  });
+
+  updateScreenState();
+  const isJA = state.lang === 'ja';
+  const catMeta = CAT_META.find(c => c.en === newCatEn);
+  const label = isJA ? catMeta?.ja : catMeta?.en;
+  showToast(isJA ? `${label}に移動しました` : `Moved to ${label}`);
+}
+
 function attachBubble(bubble) {
-  bubble.addEventListener('click', () => burstBubble(bubble, bubble.closest('.task-item')));
+  let pressTimer = null;
+  let didLongPress = false;
+
+  // Long-press: 450ms hold → open category sheet
+  bubble.addEventListener('pointerdown', e => {
+    didLongPress = false;
+    pressTimer = setTimeout(() => {
+      didLongPress = true;
+      bubble.releasePointerCapture(e.pointerId);
+      openCatEdit(bubble.closest('.task-item'));
+    }, 450);
+  });
+  bubble.addEventListener('pointerup',     () => clearTimeout(pressTimer));
+  bubble.addEventListener('pointercancel', () => clearTimeout(pressTimer));
+  bubble.addEventListener('pointermove',   () => clearTimeout(pressTimer));
+
+  // Short tap → burst
+  bubble.addEventListener('click', () => {
+    if (didLongPress) { didLongPress = false; return; }
+    burstBubble(bubble, bubble.closest('.task-item'));
+  });
 }
 document.querySelectorAll('.task-bubble').forEach(attachBubble);
+
+document.getElementById('closeCatEdit')?.addEventListener('click', () => closeM('catEditModal'));
+document.getElementById('catEditModal')?.addEventListener('click', e => {
+  if (e.target.id === 'catEditModal') closeM('catEditModal');
+});
 
 /* ══════════════════════════════════════════
    TIMING CHIP — cycle on click (no × icon)
@@ -2072,128 +2188,191 @@ async function classifyTranscript(transcript) {
   }
 }
 
-// Detect Safari / iOS (must recreate recognition object every time on Safari)
-const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || /iPad|iPhone|iPod/.test(navigator.userAgent));
+/* ══════════════════════════════════════════════════════
+   VOICE ENGINE
+   Works on Safari iOS/macOS + Chrome + Edge
+   Key Safari rules:
+     1. Must call navigator.mediaDevices.getUserMedia({audio:true})
+        FIRST (from a user-gesture) to warm up the mic permission.
+        Without this, webkitSpeechRecognition silently returns
+        empty results or fires onerror='not-allowed'.
+     2. Must create a FRESH SpeechRecognition object every single
+        time you call .start() — reusing the same object after
+        .stop() causes "invalid state" on Safari.
+     3. continuous:false is required on Safari/iOS; continuous:true
+        hangs or cuts off after ~5 sec.
+     4. onresult only fires isFinal:true on Safari — no interim.
+══════════════════════════════════════════════════════ */
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+              || /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 let recognition    = null;
 let fullTranscript = '';
 let shouldRestart  = false;
 let restartTimer   = null;
+let micPermGranted = false;   // Safari: track if getUserMedia was already approved
 
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+// Compile overlay helpers
+const compileOverlay = document.getElementById('compileOverlay');
+const compileTitle   = document.getElementById('compileTitle');
+const compileSub     = document.getElementById('compileSub');
+function showCompile() {
+  if (compileTitle) compileTitle.textContent = state.lang === 'ja' ? 'リスト作成中…'      : 'Compiling your list…';
+  if (compileSub)   compileSub.textContent   = state.lang === 'ja' ? 'タスクを分類中です…' : 'Organising by category & deadline…';
+  if (compileOverlay) compileOverlay.classList.add('show');
+}
+function hideCompile() {
+  if (compileOverlay) compileOverlay.classList.remove('show');
+}
 
-if (SR) {
-  function createRecognition() {
-    const r = new SR();
-    r.lang            = (state.lang === 'ja') ? 'ja-JP' : 'en-US';
-    r.interimResults  = false;
-    r.continuous      = false;   // false = most reliable on both Safari + Chrome HTTPS
-    r.maxAlternatives = 1;
-
-    r.onstart = () => {
-      state.isListening = true;
-      document.querySelectorAll('.voice-btn-all').forEach(b => b.classList.add('listening'));
-      voiceBtn?.classList.add('listening');
-      micModal.classList.add('show');
-      transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
-      transcriptEl.style.color = 'var(--blue)';
-    };
-
-    r.onresult = e => {
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) {
-          fullTranscript += e.results[i][0].transcript + ' ';
-        }
-      }
-    };
-
-    r.onend = () => {
-      if (shouldRestart && state.isListening) {
-        // Safari needs a fresh object each restart; Chrome can reuse
-        if (isSafari) recognition = createRecognition();
-        restartTimer = setTimeout(() => {
-          try { recognition.start(); } catch(err) { console.warn('restart err', err); }
-        }, 250);
-        return;
-      }
-      // Stopped by user — tidy up UI
-      if (state.isListening) {
-        _clearListeningUI();
-      }
-    };
-
-    r.onerror = e => {
-      if (e.error === 'no-speech') return;  // silence — let restart continue
-      if (e.error === 'aborted')   return;  // deliberate stop — ignore
-      shouldRestart = false;
-      clearTimeout(restartTimer);
-      _clearListeningUI();
-      transcriptEl.textContent = e.error === 'not-allowed'
-        ? (state.lang === 'ja' ? 'マイクへのアクセスが拒否されました' : 'Microphone access denied')
-        : (state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice');
-    };
-
-    return r;
-  }
-
-  function _clearListeningUI() {
-    state.isListening = false;
-    voiceBtn?.classList.remove('listening');
+function _setListeningUI(on) {
+  state.isListening = on;
+  [voiceBtn,
+   document.getElementById('voiceBtnDone'),
+   document.getElementById('voiceBtnBottom')
+  ].forEach(b => b?.classList.toggle('listening', on));
+  if (on) {
+    micModal.classList.add('show');
+    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+    transcriptEl.style.color = 'var(--blue)';
+  } else {
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
-    transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
+    transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to speak';
   }
+}
 
-  recognition = createRecognition();
+function buildRecognition() {
+  if (!SR) return null;
+  const r = new SR();
+  r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
+  r.continuous      = false;   // MUST be false on Safari
+  r.interimResults  = false;   // isFinal-only is most reliable cross-browser
+  r.maxAlternatives = 1;
 
-  function startListening() {
-    fullTranscript = '';
-    shouldRestart  = true;
-    clearTimeout(restartTimer);
-    // Always recreate on Safari; update lang on Chrome
-    recognition = createRecognition();
-    try { recognition.start(); } catch(e) { console.warn('start err', e); }
-  }
+  r.onstart  = () => _setListeningUI(true);
 
-  async function stopListening() {
-    shouldRestart = false;
-    clearTimeout(restartTimer);
-    try { recognition.stop(); } catch(e) {}
-    _clearListeningUI();
+  r.onresult = e => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) fullTranscript += e.results[i][0].transcript + ' ';
+    }
+  };
 
-    const t = fullTranscript.trim();
-    fullTranscript = '';
-
-    if (!t) return;
-
-    // Show compile overlay while AI works
-    const compileOverlay = document.getElementById('compileOverlay');
-    const compileTitle   = document.getElementById('compileTitle');
-    const compileSub     = document.getElementById('compileSub');
-    if (compileTitle) compileTitle.textContent = state.lang === 'ja' ? 'リスト作成中…' : 'Compiling your list…';
-    if (compileSub)   compileSub.textContent   = state.lang === 'ja' ? 'タスクを分類しています' : 'Organising by category & deadline';
-    if (compileOverlay) compileOverlay.classList.add('show');
-
-    const tasks = await classifyTranscript(t);
-
-    if (compileOverlay) compileOverlay.classList.remove('show');
-    transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
-
-    if (tasks.length === 0) {
-      showToast(state.lang === 'ja' ? 'タスクを認識できませんでした。もう一度試してください' : 'Nothing recognised — please try again');
+  r.onend = () => {
+    if (shouldRestart && state.isListening) {
+      // Safari: always recreate. Chrome: can reuse but recreating is safe too.
+      recognition = buildRecognition();
+      restartTimer = setTimeout(() => {
+        try { recognition.start(); } catch(err) { console.warn('restart:', err); }
+      }, isSafari ? 400 : 200);
       return;
     }
+    // Normal end — user tapped Stop or we called .stop()
+    if (state.isListening) _setListeningUI(false);
+  };
 
-    tasks.forEach((task, i) => {
-      setTimeout(() => {
-        makeTaskItem(task.text, task.timing || 'This Week', task.category || 'Other');
-      }, i * 90);
-    });
-    const n = tasks.length;
-    showToast(state.lang === 'ja' ? `${n}件のタスクを追加しました ✓` : `${n} task${n>1?'s':''} added ✓`);
+  r.onerror = e => {
+    console.warn('SR error:', e.error);
+    if (e.error === 'no-speech') return;   // silence is OK, keep restarting
+    if (e.error === 'aborted')  return;   // deliberate stop, ignore
+    shouldRestart = false;
+    clearTimeout(restartTimer);
+    _setListeningUI(false);
+    if (e.error === 'not-allowed') {
+      micPermGranted = false;
+      showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission denied');
+    }
+  };
+
+  return r;
+}
+
+async function requestMicPermission() {
+  if (micPermGranted) return true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Stop the stream immediately — we just needed the permission prompt
+    stream.getTracks().forEach(t => t.stop());
+    micPermGranted = true;
+    return true;
+  } catch(e) {
+    console.warn('mic permission denied:', e);
+    showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+    return false;
+  }
+}
+
+async function startListening() {
+  fullTranscript = '';
+  shouldRestart  = true;
+  clearTimeout(restartTimer);
+
+  // Safari REQUIRES getUserMedia before webkitSpeechRecognition.start()
+  const ok = await requestMicPermission();
+  if (!ok) return;
+
+  recognition = buildRecognition();
+  try {
+    recognition.start();
+  } catch(e) {
+    console.warn('start error:', e);
+    shouldRestart = false;
+  }
+}
+
+async function stopListening() {
+  shouldRestart = false;
+  clearTimeout(restartTimer);
+  _setListeningUI(false);
+  try { recognition?.stop(); } catch(e) {}
+
+  const t = fullTranscript.trim();
+  fullTranscript = '';
+
+  if (!t) return;
+
+  // Show compile overlay — small rAF delay so browser paints it before the await
+  showCompile();
+  await new Promise(r => requestAnimationFrame(r));
+
+  let tasks = [];
+  try {
+    tasks = await classifyTranscript(t);
+  } catch(e) {
+    console.error('classify failed:', e);
   }
 
-  // Wire all speak buttons to the same flow
+  hideCompile();
+
+  if (!tasks || tasks.length === 0) {
+    showToast(state.lang === 'ja'
+      ? 'タスクを認識できませんでした。もう一度お試しください'
+      : 'Nothing recognised — please try again');
+    return;
+  }
+
+  // Stagger tasks in one by one
+  tasks.forEach((task, i) => {
+    setTimeout(() => {
+      makeTaskItem(
+        task.text     || '',
+        task.timing   || state.defaultTiming || 'This Week',
+        task.category || 'Other'
+      );
+    }, i * 90);
+  });
+
+  const n = tasks.length;
+  showToast(state.lang === 'ja'
+    ? `${n}件追加しました ✓`
+    : `${n} task${n > 1 ? 's' : ''} added ✓`);
+}
+
+if (SR) {
+  recognition = buildRecognition();
+
   function handleVoiceClick() {
     if (state.isListening) { stopListening(); return; }
     startListening();
@@ -2204,12 +2383,15 @@ if (SR) {
   micStopBtn?.addEventListener('click', () => stopListening());
 
 } else {
-  // No Speech API — show manual input fallback
-  voiceBtn?.addEventListener('click', () => {
+  // No Speech API at all (very old browser)
+  function handleVoiceClick() {
     const card = document.getElementById('manualAddCard');
     if (card) { card.style.display = ''; addInput?.focus(); }
     transcriptEl.textContent = state.lang === 'ja' ? '音声未対応 — 入力してください ↓' : 'Voice not supported — type below ↓';
-  });
+  }
+  voiceBtn?.addEventListener('click', handleVoiceClick);
+  document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
+  document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
 }
 
 /* ══════════════════════════════════════════
