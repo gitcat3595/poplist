@@ -702,6 +702,48 @@ input  { font-family:inherit }
   gap:2px;
 }
 
+/* ── Settings row: label takes flex:1 to push right side to edge ── */
+.settings-row-label { flex:1 }
+.settings-row > div:first-child { flex:1; min-width:0 }
+
+/* ── PRO customise card (grey background, no inner boxes) ── */
+.pro-wrap {
+  margin:0 16px;
+  background:var(--raised);
+  border-radius:16px;
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+/* Style tabs and colour grid locked until PRO unlock */
+.pro-wrap .bubble-style-tabs,
+.pro-wrap .colour-grid {
+  pointer-events:none;
+}
+.pro-block { padding:12px 14px 14px }
+.pro-divider { height:1px; background:var(--border); margin:0 14px }
+.pro-block-title {
+  font-size:12px; font-weight:700; color:var(--t2); margin-bottom:10px;
+}
+.pro-label-row {
+  display:flex; align-items:center; gap:8px;
+  padding:0 16px 8px;
+}
+.upgrade-row { padding:12px 14px 14px }
+.upgrade-btn {
+  width:100%; padding:13px;
+  background:var(--black); color:#fff;
+  font-size:14px; font-weight:800; letter-spacing:.2px;
+  border-radius:var(--rp); border:none; cursor:pointer;
+  box-shadow:0 4px 20px rgba(17,17,17,.22);
+  transition:var(--tr);
+}
+.add-plus-row {
+  display:flex; align-items:center; gap:7px;
+  padding:8px 0 0;
+  font-size:12px; font-weight:700; color:var(--t3); cursor:default;
+}
+.add-plus-row-sign { font-size:16px; line-height:1; color:var(--t3) }
+
 /* ════════════════════════════════════════
    FIREBASE / AUTH SECTION (in Settings)
 ════════════════════════════════════════ */
@@ -1165,13 +1207,11 @@ GoogleService-Info.plist
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <p class="modal-title">Settings</p>
-    <p class="modal-sub" style="margin-bottom:36px"></p>
 
-    <!-- ── GENERAL ── -->
-    <div class="settings-section">
+    <!-- ══ GENERAL ══ -->
+    <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label">General</div>
 
-      <!-- Language -->
       <div class="settings-row">
         <p class="settings-row-label">Language</p>
         <div class="settings-row-right">
@@ -1182,16 +1222,17 @@ GoogleService-Info.plist
         </div>
       </div>
 
-      <!-- Default deadline -->
       <div class="settings-row">
-        <div><p class="settings-row-label">Default deadline</p><p class="settings-row-sub">When not stated by voice</p></div>
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label">Default due date</p>
+          <p class="settings-row-sub">When not stated by voice</p>
+        </div>
         <div class="settings-row-right">
           <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
         </div>
       </div>
 
-      <!-- Colour scheme — pill same style as Language -->
-      <div class="settings-row">
+      <div class="settings-row" style="border-bottom:none">
         <p class="settings-row-label">Colour scheme</p>
         <div class="settings-row-right">
           <div class="pill-toggle">
@@ -1200,111 +1241,108 @@ GoogleService-Info.plist
           </div>
         </div>
       </div>
-
-      <!-- Customise colour scheme PRO — bubbles row below -->
-      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-          <p class="settings-row-label">Customise colour scheme</p>
-          <span class="pro-badge">PRO</span>
-        </div>
-        <div class="colour-grid" id="schemeColourGrid" style="pointer-events:none;opacity:.55">
-          <div class="cswatch" style="background:#3B82F6"></div>
-          <div class="cswatch" style="background:#1E40AF"></div>
-          <div class="cswatch" style="background:#0D9488"></div>
-          <div class="cswatch" style="background:#16A34A"></div>
-          <div class="cswatch" style="background:#F97316"></div>
-          <div class="cswatch" style="background:#EF4444"></div>
-          <div class="cswatch" style="background:#EC4899"></div>
-          <div class="cswatch" style="background:#7C3AED"></div>
-          <div class="cswatch" style="background:#111111"></div>
-          <div class="cswatch" style="background:#475569"></div>
-          <div class="cswatch" style="background:#9CA3AF"></div>
-          <div class="cswatch" style="background:#E5E7EB"></div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ── BUBBLE STYLE (PRO) ── -->
-    <div class="settings-section">
-      <div class="settings-section-label">Bubble Style <span class="pro-badge">PRO</span></div>
-      <div class="pro-picker-wrap locked" id="proPickerWrap">
+    <!-- ══ CUSTOMISE PRO ══ -->
+    <div class="settings-section" style="margin-top:24px">
+      <div class="pro-label-row">
+        <span class="settings-section-label" style="margin:0;padding:0">Customise</span>
+        <span class="pro-badge">PRO</span>
+      </div>
 
-        <!-- Style tabs — no icons -->
-        <div class="bubble-style-tabs">
-          <button class="bst-tab active" data-style="luminous">Default</button>
-          <button class="bst-tab" data-style="solid">3D</button>
-          <button class="bst-tab" data-style="ring">Ring</button>
-          <button class="bst-tab" data-style="ink">Ink</button>
-        </div>
+      <div style="height:8px"></div>
 
-        <!-- Live preview -->
-        <div class="bubble-preview-row">
-          <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:28px;height:28px"></div>
-          <div style="flex:1;padding-left:4px">
-            <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
-            <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
+      <div class="pro-wrap" id="proPickerWrap">
+
+        <!-- Bubble Style -->
+        <div class="pro-block">
+          <div class="pro-block-title">Bubble Style</div>
+          <div class="bubble-style-tabs">
+            <button class="bst-tab active" data-style="luminous">Default</button>
+            <button class="bst-tab" data-style="solid">3D</button>
+            <button class="bst-tab" data-style="ring">Ring</button>
+            <button class="bst-tab" data-style="ink">Ink</button>
+          </div>
+          <div class="bubble-preview-row" style="margin-top:10px">
+            <div class="task-bubble luminous bc-blue" id="previewBubble"></div>
+            <div style="flex:1;padding-left:4px">
+              <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
+              <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
+            </div>
           </div>
         </div>
 
-        <!-- Colour swatches — order: blue navy black slate teal green orange red magenta purple grey white -->
-        <div class="add-row-label">Colour</div>
-        <div class="colour-grid" id="colourGrid">
-          <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
-          <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
-          <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
-          <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
-          <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
-          <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
-          <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
-          <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
-          <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
-          <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
-          <div class="cswatch"     data-colour="bc-grey"   style="background:#9CA3AF"></div>
-          <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;border:1px solid #BFC3CA"></div>
+        <!-- Colour Scheme -->
+        <div class="pro-block">
+          <div class="pro-block-title">Colour Scheme</div>
+          <div class="colour-grid" id="colourGrid">
+            <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
+            <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
+            <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
+            <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
+            <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
+            <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
+            <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
+            <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
+            <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
+            <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
+            <div class="cswatch"     data-colour="bc-grey"   style="background:#9CA3AF"></div>
+            <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB"></div>
+          </div>
         </div>
 
-        <!-- PRO upgrade banner — no lock icon -->
-        <div id="proUpgradeBanner" style="margin-top:14px;padding:10px 14px;background:var(--raised);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:10px">
-          <span style="flex:1;font-size:12px;font-weight:700;color:var(--t2)">Unlock to customise style &amp; colour</span>
-          <button class="pro-upgrade-btn" id="unlockProBtn" style="padding:6px 14px;font-size:11px">Upgrade</button>
+        <div class="pro-divider"></div>
+
+        <!-- Categories -->
+        <div class="pro-block">
+          <div class="pro-block-title">Categories</div>
+          <div class="cat-list">
+            <div class="cat-item">
+              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <span class="cat-item-name">Work</span>
+              <span class="cat-item-kw">emails, meetings, reports…</span>
+            </div>
+            <div class="cat-item">
+              <div class="cat-item-dot" style="background:#475569"></div>
+              <span class="cat-item-name">Home</span>
+              <span class="cat-item-kw">groceries, cleaning, bills…</span>
+            </div>
+            <div class="cat-item">
+              <div class="cat-item-dot" style="background:#0D9488"></div>
+              <span class="cat-item-name">Personal</span>
+              <span class="cat-item-kw">gym, doctor, reading…</span>
+            </div>
+            <div class="cat-item">
+              <div class="cat-item-dot" style="background:#9CA3AF"></div>
+              <span class="cat-item-name">Others</span>
+              <span class="cat-item-kw">anything that doesn't fit</span>
+            </div>
+          </div>
+          <div class="add-plus-row">
+            <span class="add-plus-row-sign">+</span> Add category
+          </div>
         </div>
 
-      </div>
+        <div class="pro-divider"></div>
+
+        <!-- Rules -->
+        <div class="pro-block">
+          <div class="pro-block-title">Rules</div>
+          <div class="add-plus-row" style="padding-top:0">
+            <span class="add-plus-row-sign">+</span> Add rule
+          </div>
+        </div>
+
+        <!-- Upgrade CTA -->
+        <div class="upgrade-row">
+          <button class="upgrade-btn" id="unlockProBtn">Upgrade to PRO</button>
+        </div>
+
+      </div><!-- /pro-wrap -->
     </div>
 
-    <!-- ── CATEGORIES ── -->
-    <div class="settings-section">
-      <div class="settings-section-label" style="display:flex;align-items:center;justify-content:space-between">
-        Categories
-        <span class="pro-badge">PRO</span>
-      </div>
-      <div class="cat-list">
-        <div class="cat-item">
-          <div class="cat-item-dot" style="background:var(--border)"></div>
-          <span class="cat-item-name">Work</span>
-          <span class="cat-item-kw">emails, meetings, reports, clients…</span>
-        </div>
-        <div class="cat-item">
-          <div class="cat-item-dot" style="background:var(--border)"></div>
-          <span class="cat-item-name">Home</span>
-          <span class="cat-item-kw">groceries, cleaning, bills, repairs…</span>
-        </div>
-        <div class="cat-item">
-          <div class="cat-item-dot" style="background:var(--border)"></div>
-          <span class="cat-item-name">Personal</span>
-          <span class="cat-item-kw">gym, doctor, reading, friends…</span>
-        </div>
-        <div class="cat-item">
-          <div class="cat-item-dot" style="background:var(--border)"></div>
-          <span class="cat-item-name">Others</span>
-          <span class="cat-item-kw">anything that doesn't fit</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── HOW IT WORKS ── -->
-    <div class="settings-section">
+    <!-- ══ HOW IT WORKS ══ -->
+    <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label">How it works</div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
@@ -1312,7 +1350,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><p class="guide-action">Tap the deadline chip</p><p class="guide-detail">Today → This Week → Later → cycles back.</p></div>
+        <div><p class="guide-action">Tap the due date chip</p><p class="guide-detail">Today → This Week → Later → cycles back.</p></div>
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
@@ -1320,7 +1358,7 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <button class="modal-cancel" id="closeSettings" style="padding:10px;font-size:12px;width:auto;align-self:center;padding-left:32px;padding-right:32px;display:block;margin:14px auto 0">Done</button>
+    <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0">Done</button>
   </div>
 </div>
 
@@ -1738,44 +1776,86 @@ let recognition  = null;
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SR();
-  recognition.lang = 'en-US'; recognition.interimResults = true; recognition.continuous = true;
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;
+  recognition.continuous = true;
+  recognition.maxAlternatives = 1;
+
+  let finalTranscript = '';
+  let shouldRestart   = false; // set true while user is still listening
 
   recognition.onstart = () => {
     state.isListening = true;
     voiceBtn.classList.add('listening');
     micModal.classList.add('show');
-    transcriptEl.textContent = 'Listening…';
-    transcriptEl.style.color = 'var(--blue)';
+    if (!finalTranscript) {
+      transcriptEl.textContent = 'Listening…';
+      transcriptEl.style.color = 'var(--blue)';
+    }
   };
+
+  // Chrome kills continuous recognition after ~60s of silence or network hiccup.
+  // Auto-restart as long as shouldRestart is true.
   recognition.onend = () => {
+    if (shouldRestart) {
+      try { recognition.start(); } catch(e) {}
+      return;
+    }
     state.isListening = false;
     voiceBtn.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
-    if (transcriptEl.textContent === 'Listening…') transcriptEl.textContent = 'Tap to add tasks by voice';
+    if (!finalTranscript) transcriptEl.textContent = 'Tap to add tasks by voice';
   };
+
   recognition.onresult = e => {
-    const t = [...e.results].map(r => r[0].transcript).join(' ');
-    transcriptEl.textContent = t;
-    if (e.results[e.results.length-1].isFinal) {
-      const tasks = t.split(/,|then|and then/i).map(s=>s.trim()).filter(Boolean);
-      tasks.forEach(task => {
-        const timing = /\btoday\b/i.test(task)?'Today':/\bweek\b/i.test(task)?'This Week':'Later';
-        makeTaskItem(task.replace(/\b(today|this week|later|next week)\b/gi,'').trim(), timing, detectCat(task));
-      });
-      if (tasks.length) showToast(`${tasks.length} task${tasks.length>1?'s':''} added ✓`);
-      recognition.stop();
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
     }
+    // Show live transcript while speaking
+    transcriptEl.textContent = (finalTranscript + interim).trim() || 'Listening…';
   };
-  recognition.onerror = () => {
+
+  recognition.onerror = e => {
+    // 'no-speech' is not fatal — just let onend restart it
+    if (e.error === 'no-speech') return;
+    // Real error: stop cleanly
+    shouldRestart = false;
     recognition.stop();
     transcriptEl.textContent = 'Tap to add tasks by voice';
+    transcriptEl.style.color = '';
   };
+
+  function startListening() {
+    finalTranscript = '';
+    shouldRestart   = true;
+    try { recognition.start(); } catch(e) {}
+  }
+
+  function stopListening() {
+    shouldRestart = false;
+    recognition.stop();
+    // Process whatever was captured
+    const t = finalTranscript.trim();
+    if (t) {
+      const tasks = t.split(/,|and then|then/i).map(s => s.trim()).filter(Boolean);
+      tasks.forEach(task => {
+        const timing = /\btoday\b/i.test(task) ? 'Today' : /\bweek\b/i.test(task) ? 'This Week' : state.defaultTiming || 'This Week';
+        makeTaskItem(task.replace(/\b(today|this week|later|next week)\b/gi, '').trim(), timing, detectCat(task));
+      });
+      if (tasks.length) showToast(`${tasks.length} task${tasks.length > 1 ? 's' : ''} added ✓`);
+      finalTranscript = '';
+      transcriptEl.textContent = 'Tap to add tasks by voice';
+    }
+  }
+
   voiceBtn.addEventListener('click', () => {
-    if (state.isListening) { recognition.stop(); return; }
-    recognition.start();
+    if (state.isListening) { stopListening(); return; }
+    startListening();
   });
-  micStopBtn.addEventListener('click', () => recognition.stop());
+  micStopBtn.addEventListener('click', () => stopListening());
 } else {
   voiceBtn.addEventListener('click', () => {
     addInput?.focus();
@@ -1790,10 +1870,16 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 // Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
 document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   state.isProUser = true;
-  const wrap   = document.getElementById('proPickerWrap');
-  const banner = document.getElementById('proUpgradeBanner');
-  wrap.classList.remove('locked');
-  if (banner) banner.style.display = 'none';
+  // Remove pointer-events lock from bubble tabs and colour grid
+  const wrap = document.getElementById('proPickerWrap');
+  if (wrap) {
+    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid').forEach(el => {
+      el.style.pointerEvents = 'all';
+    });
+    // Hide the upgrade button row
+    const upgradeRow = wrap.querySelector('.upgrade-row');
+    if (upgradeRow) upgradeRow.style.display = 'none';
+  }
   showToast('Pro unlocked! ✨ (demo mode)');
 });
 
