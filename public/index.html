@@ -1766,90 +1766,132 @@ function handleTextKey(e) {
 document.querySelectorAll('.task-text').forEach(el => el.addEventListener('keydown', handleTextKey));
 
 /* ══════════════════════════════════════════
-   VOICE INPUT (Web Speech API — mirrors iOS SFSpeechRecognizer)
+   VOICE INPUT  — Web Speech API + OpenAI classify
+   Flow: speak → accumulate transcript → stop → POST /api/classify → build tasks
 ══════════════════════════════════════════ */
-const voiceBtn   = document.getElementById('voiceBtn');
-const micModal   = document.getElementById('micModal');
-const micStopBtn = document.getElementById('micStopBtn');
+const voiceBtn     = document.getElementById('voiceBtn');
+const micModal     = document.getElementById('micModal');
+const micStopBtn   = document.getElementById('micStopBtn');
 const transcriptEl = document.getElementById('voiceTranscript');
-let recognition  = null;
+let recognition    = null;
+
+/* Send transcript to the secure Cloudflare Worker, get structured tasks back */
+async function classifyTranscript(transcript) {
+  const categories = Array.from(document.querySelectorAll('.cat-name')).map(el => el.textContent.trim());
+  const defaultTiming = state.defaultTiming || 'This Week';
+  try {
+    const res = await fetch('/api/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript, categories, defaultTiming })
+    });
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    return data.tasks || [];
+  } catch(e) {
+    console.error('classify error:', e);
+    return [];
+  }
+}
 
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.interimResults = true;
-  recognition.continuous = true;
+  recognition.lang         = 'en-US';
+  recognition.interimResults = false;  // only fire when Chrome is confident
+  recognition.continuous   = false;    // one utterance at a time — most reliable on HTTPS
   recognition.maxAlternatives = 1;
 
-  let finalTranscript = '';
-  let shouldRestart   = false; // set true while user is still listening
+  let fullTranscript = '';   // accumulates across multiple utterances
+  let shouldRestart  = false;
+  let restartTimer   = null;
 
   recognition.onstart = () => {
     state.isListening = true;
     voiceBtn.classList.add('listening');
     micModal.classList.add('show');
-    if (!finalTranscript) {
-      transcriptEl.textContent = 'Listening…';
-      transcriptEl.style.color = 'var(--blue)';
+    transcriptEl.textContent = 'Listening…';
+    transcriptEl.style.color = 'var(--blue)';
+  };
+
+  recognition.onresult = e => {
+    // Append each confirmed utterance to the running transcript
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        fullTranscript += e.results[i][0].transcript + ' ';
+      }
     }
   };
 
-  // Chrome kills continuous recognition after ~60s of silence or network hiccup.
-  // Auto-restart as long as shouldRestart is true.
   recognition.onend = () => {
     if (shouldRestart) {
-      try { recognition.start(); } catch(e) {}
+      // Small delay prevents the "aborted" error on HTTPS restart
+      restartTimer = setTimeout(() => {
+        try { recognition.start(); } catch(err) {}
+      }, 300);
       return;
     }
+    // User stopped — close UI
     state.isListening = false;
     voiceBtn.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
-    if (!finalTranscript) transcriptEl.textContent = 'Tap to add tasks by voice';
-  };
-
-  recognition.onresult = e => {
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
-      else interim += e.results[i][0].transcript;
-    }
-    // Show live transcript while speaking
-    transcriptEl.textContent = (finalTranscript + interim).trim() || 'Listening…';
+    transcriptEl.textContent = 'Tap to add tasks by voice';
   };
 
   recognition.onerror = e => {
-    // 'no-speech' is not fatal — just let onend restart it
-    if (e.error === 'no-speech') return;
-    // Real error: stop cleanly
+    if (e.error === 'no-speech') return; // silence is fine — let it restart
+    if (e.error === 'aborted')   return; // happens on restart, ignore
+    // Real error (not-allowed, network, etc.)
     shouldRestart = false;
-    recognition.stop();
-    transcriptEl.textContent = 'Tap to add tasks by voice';
+    clearTimeout(restartTimer);
+    state.isListening = false;
+    voiceBtn.classList.remove('listening');
+    micModal.classList.remove('show');
+    transcriptEl.textContent = e.error === 'not-allowed'
+      ? 'Microphone access denied'
+      : 'Tap to add tasks by voice';
     transcriptEl.style.color = '';
   };
 
   function startListening() {
-    finalTranscript = '';
-    shouldRestart   = true;
+    fullTranscript = '';
+    shouldRestart  = true;
+    clearTimeout(restartTimer);
+    // Sync language to current setting
+    recognition.lang = (state.lang === 'jp') ? 'ja-JP' : 'en-US';
     try { recognition.start(); } catch(e) {}
   }
 
-  function stopListening() {
+  async function stopListening() {
     shouldRestart = false;
+    clearTimeout(restartTimer);
     recognition.stop();
-    // Process whatever was captured
-    const t = finalTranscript.trim();
-    if (t) {
-      const tasks = t.split(/,|and then|then/i).map(s => s.trim()).filter(Boolean);
-      tasks.forEach(task => {
-        const timing = /\btoday\b/i.test(task) ? 'Today' : /\bweek\b/i.test(task) ? 'This Week' : state.defaultTiming || 'This Week';
-        makeTaskItem(task.replace(/\b(today|this week|later|next week)\b/gi, '').trim(), timing, detectCat(task));
-      });
-      if (tasks.length) showToast(`${tasks.length} task${tasks.length > 1 ? 's' : ''} added ✓`);
-      finalTranscript = '';
-      transcriptEl.textContent = 'Tap to add tasks by voice';
+
+    const t = fullTranscript.trim();
+    if (!t) return;
+
+    // Show processing state in modal
+    const modalTitle = micModal.querySelector('.mic-modal-title');
+    if (modalTitle) modalTitle.textContent = 'Classifying…';
+    micModal.classList.add('show');
+
+    const tasks = await classifyTranscript(t);
+
+    micModal.classList.remove('show');
+    if (modalTitle) modalTitle.textContent = 'Listening…';
+    fullTranscript = '';
+    transcriptEl.textContent = 'Tap to add tasks by voice';
+
+    if (tasks.length === 0) {
+      showToast('Could not classify tasks — try again');
+      return;
     }
+
+    tasks.forEach(task => {
+      makeTaskItem(task.text, task.timing || 'This Week', task.category || 'Other');
+    });
+    showToast(`${tasks.length} task${tasks.length > 1 ? 's' : ''} added ✓`);
   }
 
   voiceBtn.addEventListener('click', () => {
@@ -1857,10 +1899,12 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     startListening();
   });
   micStopBtn.addEventListener('click', () => stopListening());
+
 } else {
+  // No speech API — fallback to type
   voiceBtn.addEventListener('click', () => {
     addInput?.focus();
-    transcriptEl.textContent = 'Voice input: type below ↓';
+    transcriptEl.textContent = 'Voice not supported — type below ↓';
     showToast('Type your task below');
   });
 }

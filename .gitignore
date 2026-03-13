@@ -1,6 +1,13 @@
 node_modules/
-.env
-*.log
-.DS_Store
-.wrangler/
 dist/
+.wrangler/
+.dev.vars
+*.log
+*.zip
+*.tar.gz
+_html_backup/
+CLAUDE.md
+bubble-test.html
+colour-test.html
+done.html
+server.js
