@@ -85,8 +85,11 @@ body {
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
-input  { font-family:inherit }
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit;
+         -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
+/* Prevent iOS zoom on input focus (requires font-size >= 16px on the input) */
+.add-task-field { font-size:16px !important }
 
 /* ════════════════════════════════════════
    NAV
@@ -411,10 +414,12 @@ input  { font-family:inherit }
   cursor:pointer; user-select:none; white-space:nowrap;
   transition:var(--tr); display:inline-flex; align-items:center; flex-shrink:0;
   box-shadow:var(--shlift);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:rgba(59,130,246,.3); background:var(--blue-lt) }
-.timing-chip[data-timing="This Week"] { color:var(--t2);    border-color:var(--border);       background:var(--card)    }
-.timing-chip[data-timing="Later"]     { color:var(--t3);    border-color:var(--border);       background:var(--card);  opacity:.7 }
+.timing-chip[data-timing="This Week"] { color:var(--t1);    border-color:var(--brim);         background:var(--raised); font-weight:800 }
+.timing-chip[data-timing="Later"]     { color:var(--t2);    border-color:var(--border);       background:var(--card) }
 .timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
 
 /* ════════════════════════════════════════
@@ -458,7 +463,7 @@ input  { font-family:inherit }
   width:42%; height:28%; border-radius:50%;
   background:rgba(255,255,255,.5); filter:blur(1px); transform:rotate(-20deg);
 }
-.add-input-body { flex:1; min-width:0; position:relative }
+.add-input-body { flex:1; min-width:0; position:relative; overflow:visible }
 .add-task-field {
   font-size:14px; font-weight:600; color:var(--t1);
   width:100%; border:none; background:transparent; outline:none;
@@ -480,6 +485,28 @@ input  { font-family:inherit }
 .add-chip:hover:not(.sel) { border-color:var(--blue); color:var(--blue) }
 
 .add-row-sep { height:1px; background:var(--border); margin:10px 0 }
+
+/* Category picker button */
+.cat-picker-btn {
+  display:inline-flex; align-items:center;
+  font-size:10px; font-weight:800; padding:3px 9px; border-radius:20px;
+  background:var(--blue-lt); border:1px solid rgba(59,130,246,.25);
+  color:var(--blue); letter-spacing:.3px; cursor:pointer;
+  transition:var(--tr); touch-action:manipulation;
+}
+.cat-picker-btn:active { transform:scale(.97) }
+/* Cat popover items */
+.cat-picker-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 16px; font-size:13px; font-weight:700; color:var(--t1);
+  cursor:pointer; transition:background var(--tr); border-bottom:1px solid var(--border);
+  touch-action:manipulation;
+}
+.cat-picker-item:last-child { border-bottom:none }
+.cat-picker-item:active { background:var(--raised) }
+.cat-picker-dot {
+  width:10px; height:10px; border-radius:50%; flex-shrink:0;
+}
 .add-task-actions { display:flex; justify-content:flex-end; gap:8px; padding:10px 16px 14px }
 .btn-cancel {
   font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
@@ -909,10 +936,69 @@ input  { font-family:inherit }
 .done-screen {
   display:flex; flex-direction:column; align-items:center;
   padding:80px 0 40px; gap:0; text-align:center;
+  opacity:0; transform:translateY(24px);
+  animation:done-enter .55s cubic-bezier(.32,.72,0,1) forwards;
 }
-.done-emoji  { font-size:48px; margin-bottom:20px }
-.done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px }
-.done-sub    { font-size:13px; color:var(--t2); line-height:1.6; margin-bottom:32px }
+@keyframes done-enter {
+  0%   { opacity:0; transform:translateY(24px) }
+  100% { opacity:1; transform:translateY(0) }
+}
+.done-emoji  { font-size:52px; margin-bottom:20px; display:inline-block;
+               animation:emoji-bounce .7s cubic-bezier(.36,.07,.19,.97) .25s both }
+@keyframes emoji-bounce {
+  0%   { transform:scale(0) rotate(-15deg) }
+  60%  { transform:scale(1.25) rotate(5deg) }
+  80%  { transform:scale(.92) rotate(-2deg) }
+  100% { transform:scale(1) rotate(0deg) }
+}
+.done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
+               opacity:0; animation:fade-up .4s ease .45s forwards }
+.done-sub    { font-size:13px; color:var(--t2); line-height:1.6; margin-bottom:32px;
+               opacity:0; animation:fade-up .4s ease .6s forwards }
+@keyframes fade-up {
+  from { opacity:0; transform:translateY(8px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+
+/* ════════════════════════════════════════
+   COMPILING OVERLAY (shown while AI classifies)
+════════════════════════════════════════ */
+.compile-overlay {
+  display:none; position:fixed; inset:0; z-index:600;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  flex-direction:column; align-items:center; justify-content:center; gap:0;
+}
+.compile-overlay.show { display:flex }
+.compile-card {
+  background:var(--card); border-radius:28px;
+  padding:36px 44px 32px; min-width:260px; max-width:320px;
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+  box-shadow:0 24px 80px rgba(0,0,0,.28);
+  border:1px solid var(--border);
+  animation:slide-up .28s cubic-bezier(.32,.72,0,1);
+}
+.compile-dots {
+  display:flex; align-items:center; gap:9px; height:32px;
+}
+.compile-dot {
+  width:10px; height:10px; border-radius:50%;
+  background:var(--blue);
+  animation:dot-bounce 1.2s ease infinite;
+}
+.compile-dot:nth-child(1) { animation-delay:0s }
+.compile-dot:nth-child(2) { animation-delay:.18s }
+.compile-dot:nth-child(3) { animation-delay:.36s }
+@keyframes dot-bounce {
+  0%,80%,100% { transform:scale(.7); opacity:.5 }
+  40%          { transform:scale(1.3); opacity:1 }
+}
+.compile-title {
+  font-size:17px; font-weight:900; color:var(--black); letter-spacing:-.3px; text-align:center;
+}
+.compile-sub {
+  font-size:12px; color:var(--t2); text-align:center; line-height:1.6; margin-top:-10px;
+}
 
 /* ════════════════════════════════════════
    BOTTOM ACTION BAR (shown when tasks exist)
@@ -1060,10 +1146,15 @@ input  { font-family:inherit }
           <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
         </div>
         <div class="add-row-sep"></div>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+        <div style="display:flex;align-items:center;gap:7px;margin-top:2px;flex-wrap:wrap">
           <div class="add-row-label" style="margin:0" data-en="Category" data-ja="カテゴリー">Category</div>
-          <span id="autoCatTag" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:var(--blue-lt);border:1px solid rgba(59,130,246,.2);color:var(--blue);letter-spacing:.3px">Other</span>
-          <span class="auto-detect-label" style="font-size:10px;color:var(--t3)" data-en="— auto detected" data-ja="— 自動検出">— auto detected</span>
+          <button id="autoCatTag" class="cat-picker-btn" data-cat-en="Other">Other
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left:3px;opacity:.6"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <span class="auto-detect-label" id="autoDetectLabel" style="font-size:10px;color:var(--t3)" data-en="— auto detected" data-ja="— 自動検出">— auto detected</span>
+        </div>
+        <!-- Category picker popover -->
+        <div id="catPickerMenu" style="display:none;position:absolute;left:0;right:0;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shcard);z-index:200;overflow:hidden">
         </div>
       </div>
     </div>
@@ -1186,6 +1277,19 @@ GoogleService-Info.plist
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     <span data-en="Add Task" data-ja="追加する">Add Task</span>
   </button>
+</div>
+
+<!-- ═══════ COMPILE OVERLAY (shown while AI builds task list) ═══════ -->
+<div class="compile-overlay" id="compileOverlay">
+  <div class="compile-card">
+    <div class="compile-dots">
+      <div class="compile-dot"></div>
+      <div class="compile-dot"></div>
+      <div class="compile-dot"></div>
+    </div>
+    <div class="compile-title" id="compileTitle">Compiling your list…</div>
+    <div class="compile-sub" id="compileSub">Organising tasks by category &amp; deadline</div>
+  </div>
 </div>
 
 <!-- ═══════ MIC MODAL ═══════ -->
@@ -1727,14 +1831,58 @@ function detectCat(t) {
 const addInput  = document.getElementById('addTaskInput');
 const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
+const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#F97316', 'Personal':'#7C3AED', 'Other':'#9CA3AF' };
 function updateCat() {
   if (!autoCatEl || !addInput) return;
   const cat = detectCat(addInput.value);
+  setCatDisplay(cat, true);
+}
+function setCatDisplay(cat, autoDetected) {
+  if (!autoCatEl) return;
   autoCatEl.dataset.catEn = cat;
-  autoCatEl.textContent = state.lang === 'ja' ? (CAT_LABELS_JA[cat] || cat) : cat;
+  const label = state.lang === 'ja' ? (CAT_LABELS_JA[cat] || cat) : cat;
+  // Update button text (keep the chevron SVG)
+  const svg = autoCatEl.querySelector('svg');
+  autoCatEl.textContent = label;
+  if (svg) autoCatEl.appendChild(svg);
+  // Show/hide "auto detected" label
+  const autoLabel = document.getElementById('autoDetectLabel');
+  if (autoLabel) autoLabel.style.display = autoDetected ? '' : 'none';
 }
 addInput?.addEventListener('input', updateCat);
 updateCat();
+
+/* ── Category Picker Popover ── */
+const CAT_LIST_EN = ['Work', 'Home', 'Personal', 'Other'];
+const catMenu = document.getElementById('catPickerMenu');
+function buildCatMenu() {
+  if (!catMenu) return;
+  catMenu.innerHTML = '';
+  CAT_LIST_EN.forEach(cat => {
+    const item = document.createElement('button');
+    item.className = 'cat-picker-item';
+    item.type = 'button';
+    item.innerHTML = `<span class="cat-picker-dot" style="background:${CAT_COLOURS[cat]||'#9CA3AF'}"></span>${state.lang==='ja'?(CAT_LABELS_JA[cat]||cat):cat}`;
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCatDisplay(cat, false);
+      catMenu.style.display = 'none';
+    });
+    catMenu.appendChild(item);
+  });
+}
+autoCatEl?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  buildCatMenu();
+  catMenu.style.display = catMenu.style.display === 'none' || catMenu.style.display === '' ? '' : 'none';
+  // Show the menu — position it below the button
+  if (catMenu.style.display !== 'none') {
+    catMenu.style.display = 'block';
+  }
+});
+document.addEventListener('click', () => {
+  if (catMenu) catMenu.style.display = 'none';
+});
 
 /* ══════════════════════════════════════════
    ADD TASK
@@ -1744,10 +1892,12 @@ function makeTaskItem(text, timing, cat) {
   const card  = document.getElementById(catId) || document.getElementById('cat-other');
   if (!card) return;
 
+  // When grey mode is active, new bubbles get bc-grey too
+  const colourClass = state.greyBubbles ? 'bc-grey' : state.bubbleColour;
   const item = document.createElement('div');
   item.className = 'task-item';
   item.innerHTML = `
-    <div class="task-bubble ${state.bubbleStyle} ${state.bubbleColour}"></div>
+    <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
       <div class="task-text" contenteditable="true">${text}</div>
       <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
@@ -1805,13 +1955,16 @@ function getTotalTasks() {
 function updateScreenState() {
   const total = getTotalTasks();
   if (total === 0) {
-    // Check if any tasks were ever added (i.e. cards have been used before)
     const everHadTasks = document.querySelector('.category-card.was-used');
     if (everHadTasks) {
       homeScreen.style.display   = 'none';
       taskListView.style.display = 'none';
-      doneScreen.style.display   = '';
       bottomBar.style.display    = 'none';
+      // Re-trigger done animation by cloning node
+      const clone = doneScreen.cloneNode(true);
+      doneScreen.parentNode.replaceChild(clone, doneScreen);
+      Object.assign(window, { doneScreen: clone }); // update reference
+      clone.style.display = '';
     } else {
       homeScreen.style.display   = '';
       taskListView.style.display = 'none';
@@ -1890,7 +2043,7 @@ async function classifyTranscript(transcript) {
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript, categories, defaultTiming })
+      body: JSON.stringify({ transcript, categories, defaultTiming, lang: state.lang })
     });
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
@@ -1978,15 +2131,22 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const t = fullTranscript.trim();
     if (!t) return;
 
-    // Show processing state in modal
-    const modalTitle = micModal.querySelector('.mic-modal-title');
-    if (modalTitle) modalTitle.textContent = state.lang === 'ja' ? '分類中…' : 'Classifying…';
-    micModal.classList.add('show');
+    // Hide mic modal, show compile overlay
+    micModal.classList.remove('show');
+    state.isListening = false;
+    voiceBtn.classList.remove('listening');
+    transcriptEl.style.color = '';
+
+    const compileOverlay = document.getElementById('compileOverlay');
+    const compileTitle   = document.getElementById('compileTitle');
+    const compileSub     = document.getElementById('compileSub');
+    if (compileTitle) compileTitle.textContent = state.lang === 'ja' ? 'リスト作成中…' : 'Compiling your list…';
+    if (compileSub)   compileSub.textContent   = state.lang === 'ja' ? 'タスクを分類しています' : 'Organising by category & deadline';
+    if (compileOverlay) compileOverlay.classList.add('show');
 
     const tasks = await classifyTranscript(t);
 
-    micModal.classList.remove('show');
-    if (modalTitle) modalTitle.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+    if (compileOverlay) compileOverlay.classList.remove('show');
     fullTranscript = '';
     transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
 
@@ -1995,10 +2155,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       return;
     }
 
-    tasks.forEach(task => {
-      makeTaskItem(task.text, task.timing || 'This Week', task.category || 'Other');
+    // Stagger tasks in one by one for a satisfying reveal
+    tasks.forEach((task, i) => {
+      setTimeout(() => {
+        makeTaskItem(task.text, task.timing || 'This Week', task.category || 'Other');
+      }, i * 80);
     });
-    showToast(`${tasks.length} task${tasks.length > 1 ? 's' : ''} added ✓`);
+    const n = tasks.length;
+    const msg = state.lang === 'ja'
+      ? `${n}件のタスクを追加しました ✓`
+      : `${n} task${n > 1 ? 's' : ''} added ✓`;
+    showToast(msg);
   }
 
   voiceBtn.addEventListener('click', () => {
@@ -2210,9 +2377,13 @@ function applyLang(lang) {
   // Update autoCatTag display (keep English cat stored in data-cat-en)
   const autoCatEl2 = document.getElementById('autoCatTag');
   if (autoCatEl2) {
-    const catEn = autoCatEl2.dataset.catEn || autoCatEl2.textContent;
-    autoCatEl2.textContent = isJA ? (CAT_LABELS_JA[catEn] || catEn) : catEn;
+    const catEn = autoCatEl2.dataset.catEn || 'Other';
+    setCatDisplay(catEn, document.getElementById('autoDetectLabel')?.style.display !== 'none');
   }
+  // Update cat names in task list headers
+  document.querySelectorAll('.cat-name[data-en]').forEach(el => {
+    el.textContent = isJA ? el.dataset.ja : el.dataset.en;
+  });
   // Update defaultDeadlineChip text
   const ddc = document.getElementById('defaultDeadlineChip');
   if (ddc) {
