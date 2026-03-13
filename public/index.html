@@ -958,7 +958,7 @@ input  { font-family:inherit }
   <div class="nav-right">
     <button class="nav-export" id="exportBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export
+      <span data-en="Export" data-ja="エクスポート">Export</span>
     </button>
     <div class="lang-toggle">
       <button class="lang-btn active" id="langEN">EN</button>
@@ -975,7 +975,7 @@ input  { font-family:inherit }
 
   <!-- HOME SCREEN — shown when no tasks exist -->
   <div id="homeScreen" class="home-screen">
-    <h1 class="home-title">What's on your mind?</h1>
+    <h1 class="home-title" data-en="What's on your mind?" data-ja="今日のタスクは？">What's on your mind?</h1>
     <div class="voice-wrap">
       <button class="voice-btn" id="voiceBtn">
         <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -984,12 +984,12 @@ input  { font-family:inherit }
           <line x1="12" y1="19" x2="12" y2="22"/>
           <line x1="9" y1="22" x2="15" y2="22"/>
         </svg>
-        <span class="voice-label">Speak</span>
+        <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
       </button>
-      <span class="voice-transcript" id="voiceTranscript">Tap to add tasks by voice</span>
+      <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして音声でタスクを追加">Tap to add tasks by voice</span>
     </div>
-    <div class="home-or">or</div>
-    <button class="home-manual-btn" id="homeManualBtn">+ Add task manually</button>
+    <div class="home-or" data-en="or" data-ja="または">or</div>
+    <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task manually" data-ja="＋ 手動でタスクを追加">+ Add task manually</button>
   </div>
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
@@ -1004,7 +1004,7 @@ input  { font-family:inherit }
         <line x1="12" y1="19" x2="12" y2="22"/>
         <line x1="9" y1="22" x2="15" y2="22"/>
       </svg>
-      <span class="voice-label">Speak</span>
+      <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
     </button>
   </div>
 
@@ -1012,37 +1012,37 @@ input  { font-family:inherit }
   <div id="taskListView" style="display:none">
 
   <div class="filter-bar">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="today">Today</button>
-    <button class="filter-btn" data-filter="week">This Week</button>
-    <button class="filter-btn" data-filter="later">Later</button>
-    <button class="sort-btn" id="sortBtn">↕ Due</button>
+    <button class="filter-btn active" data-filter="all" data-en="All" data-ja="すべて">All</button>
+    <button class="filter-btn" data-filter="today" data-en="Today" data-ja="今日">Today</button>
+    <button class="filter-btn" data-filter="week" data-en="This Week" data-ja="今週">This Week</button>
+    <button class="filter-btn" data-filter="later" data-en="Later" data-ja="そのうち">Later</button>
+    <button class="sort-btn" id="sortBtn" data-en="↕ Due" data-ja="↕ 期限">↕ Due</button>
   </div>
 
   <div class="tasks-container" id="tasksContainer">
 
     <!-- WORK -->
     <div class="category-card" id="cat-work" style="display:none">
-      <div class="category-header"><span class="cat-name">Work</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text">Add work task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Work" data-ja="仕事">Work</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add work task…" data-ja="仕事のタスクを追加…">Add work task…</span></div>
     </div>
 
     <!-- HOME -->
     <div class="category-card" id="cat-home" style="display:none">
-      <div class="category-header"><span class="cat-name">Home</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text">Add home task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Home" data-ja="家の事">Home</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add home task…" data-ja="家のタスクを追加…">Add home task…</span></div>
     </div>
 
     <!-- PERSONAL -->
     <div class="category-card" id="cat-personal" style="display:none">
-      <div class="category-header"><span class="cat-name">Personal</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text">Add personal task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Personal" data-ja="自分の事">Personal</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add personal task…" data-ja="個人のタスクを追加…">Add personal task…</span></div>
     </div>
 
     <!-- OTHER -->
     <div class="category-card" id="cat-other" style="display:none">
-      <div class="category-header"><span class="cat-name">Other</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text">Add task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Other" data-ja="その他">Other</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add task…" data-ja="タスクを追加…">Add task…</span></div>
     </div>
 
   </div>
@@ -1052,24 +1052,24 @@ input  { font-family:inherit }
     <div class="add-task-active">
       <div class="add-bubble-ph" id="addBubblePh"></div>
       <div class="add-input-body">
-        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?">
-        <div class="add-row-label">Due date</div>
+        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？">
+        <div class="add-row-label" data-en="Due date" data-ja="期限">Due date</div>
         <div class="add-chips" id="deadlineChips">
-          <span class="add-chip sel">Today</span>
-          <span class="add-chip">This Week</span>
-          <span class="add-chip">Later</span>
+          <span class="add-chip sel" data-en="Today" data-ja="今日">Today</span>
+          <span class="add-chip" data-en="This Week" data-ja="今週">This Week</span>
+          <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
         </div>
         <div class="add-row-sep"></div>
         <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
-          <div class="add-row-label" style="margin:0">Category</div>
+          <div class="add-row-label" style="margin:0" data-en="Category" data-ja="カテゴリー">Category</div>
           <span id="autoCatTag" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:var(--blue-lt);border:1px solid rgba(59,130,246,.2);color:var(--blue);letter-spacing:.3px">Other</span>
-          <span style="font-size:10px;color:var(--t3)">— auto detected</span>
+          <span class="auto-detect-label" style="font-size:10px;color:var(--t3)" data-en="— auto detected" data-ja="— 自動検出">— auto detected</span>
         </div>
       </div>
     </div>
     <div class="add-task-actions">
-      <button class="btn-cancel">Cancel</button>
-      <button class="btn-add" id="addTaskBtn">Add Task</button>
+      <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+      <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加する">Add Task</button>
     </div>
   </div>
 
@@ -1191,14 +1191,14 @@ GoogleService-Info.plist
 <!-- ═══════ MIC MODAL ═══════ -->
 <div class="mic-modal" id="micModal">
   <div class="mic-card">
-    <div class="mic-modal-title">Listening…</div>
+    <div class="mic-modal-title" data-en="Listening…" data-ja="聞いています…">Listening…</div>
     <div class="mic-wave">
       <div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div>
       <div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div>
       <div class="mic-bar"></div>
     </div>
-    <div class="mic-modal-hint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
-    <button class="mic-stop-btn" id="micStopBtn">Stop listening</button>
+    <div class="mic-modal-hint" id="micModalHint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
+    <button class="mic-stop-btn" id="micStopBtn" data-en="Stop listening" data-ja="停止">Stop listening</button>
   </div>
 </div>
 
@@ -1654,13 +1654,17 @@ document.querySelectorAll('.task-bubble').forEach(attachBubble);
 ══════════════════════════════════════════ */
 const T_CYCLE = ['Today','This Week','Later'];
 
+const T_LABELS_JA = { 'Today': '今日', 'This Week': '今週', 'Later': 'そのうち' };
+function chipLabel(timing) {
+  return state.lang === 'ja' ? (T_LABELS_JA[timing] || timing) : timing;
+}
 function attachChip(chip) {
   chip.addEventListener('click', e => {
     e.stopPropagation();
     const cur  = chip.dataset.timing || 'This Week';
     const next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
     chip.dataset.timing = next;
-    chip.textContent    = next;
+    chip.textContent    = chipLabel(next);
   });
 }
 document.querySelectorAll('.timing-chip').forEach(attachChip);
@@ -1722,7 +1726,13 @@ function detectCat(t) {
 }
 const addInput  = document.getElementById('addTaskInput');
 const autoCatEl = document.getElementById('autoCatTag');
-function updateCat() { if (autoCatEl && addInput) autoCatEl.textContent = detectCat(addInput.value) }
+const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
+function updateCat() {
+  if (!autoCatEl || !addInput) return;
+  const cat = detectCat(addInput.value);
+  autoCatEl.dataset.catEn = cat;
+  autoCatEl.textContent = state.lang === 'ja' ? (CAT_LABELS_JA[cat] || cat) : cat;
+}
 addInput?.addEventListener('input', updateCat);
 updateCat();
 
@@ -1740,7 +1750,7 @@ function makeTaskItem(text, timing, cat) {
     <div class="task-bubble ${state.bubbleStyle} ${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
       <div class="task-text" contenteditable="true">${text}</div>
-      <span class="timing-chip" data-timing="${timing}">${timing}</span>
+      <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
     </div></div>
   `;
   const addRow = card.querySelector('.add-task-row');
@@ -1771,8 +1781,9 @@ function makeTaskItem(text, timing, cat) {
 document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
-  const timing = document.querySelector('#deadlineChips .add-chip.sel')?.textContent || 'Today';
-  const cat    = autoCatEl?.textContent || 'Other';
+  const selChip = document.querySelector('#deadlineChips .add-chip.sel');
+  const timing = selChip?.dataset.en || selChip?.textContent || 'Today';
+  const cat    = autoCatEl?.dataset.catEn || autoCatEl?.textContent || 'Other';
   makeTaskItem(text, timing, cat);
   addInput.value = '';
   updateCat();
@@ -1906,7 +1917,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     state.isListening = true;
     voiceBtn.classList.add('listening');
     micModal.classList.add('show');
-    transcriptEl.textContent = 'Listening…';
+    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
     transcriptEl.style.color = 'var(--blue)';
   };
 
@@ -1932,7 +1943,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     voiceBtn.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.style.color = '';
-    transcriptEl.textContent = 'Tap to add tasks by voice';
+    transcriptEl.textContent = state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice';
   };
 
   recognition.onerror = e => {
@@ -1945,8 +1956,8 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     voiceBtn.classList.remove('listening');
     micModal.classList.remove('show');
     transcriptEl.textContent = e.error === 'not-allowed'
-      ? 'Microphone access denied'
-      : 'Tap to add tasks by voice';
+      ? (state.lang === 'ja' ? 'マイクへのアクセスが拒否されました' : 'Microphone access denied')
+      : (state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice');
     transcriptEl.style.color = '';
   };
 
@@ -1955,7 +1966,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     shouldRestart  = true;
     clearTimeout(restartTimer);
     // Sync language to current setting
-    recognition.lang = (state.lang === 'jp') ? 'ja-JP' : 'en-US';
+    recognition.lang = (state.lang === 'ja') ? 'ja-JP' : 'en-US';
     try { recognition.start(); } catch(e) {}
   }
 
@@ -1969,18 +1980,18 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
     // Show processing state in modal
     const modalTitle = micModal.querySelector('.mic-modal-title');
-    if (modalTitle) modalTitle.textContent = 'Classifying…';
+    if (modalTitle) modalTitle.textContent = state.lang === 'ja' ? '分類中…' : 'Classifying…';
     micModal.classList.add('show');
 
     const tasks = await classifyTranscript(t);
 
     micModal.classList.remove('show');
-    if (modalTitle) modalTitle.textContent = 'Listening…';
+    if (modalTitle) modalTitle.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
     fullTranscript = '';
-    transcriptEl.textContent = 'Tap to add tasks by voice';
+    transcriptEl.textContent = state.lang === 'ja' ? 'タップして音声でタスクを追加' : 'Tap to add tasks by voice';
 
     if (tasks.length === 0) {
-      showToast('Could not classify tasks — try again');
+      showToast(state.lang === 'ja' ? 'タスクを認識できませんでした。もう一度試してください' : 'Could not classify tasks — try again');
       return;
     }
 
@@ -2104,7 +2115,7 @@ document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
   const cur  = chip.dataset.timing || 'This Week';
   const next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
   chip.dataset.timing = next;
-  chip.textContent    = next;
+  chip.textContent    = chipLabel(next);
 });
 
 /* ── Settings: colour mode toggle (Default blue / Greyscale) ── */
@@ -2166,6 +2177,51 @@ document.getElementById('exportBtn').addEventListener('click', () => openM('expo
 document.getElementById('closeExport').addEventListener('click', () => closeM('exportModal'));
 document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
+/* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
+function applyLang(lang) {
+  const isJA = lang === 'ja';
+  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+    const txt = isJA ? el.dataset.ja : el.dataset.en;
+    // For elements that contain only text (no child elements), set textContent
+    // For buttons/divs that might have SVGs inside, only touch the text node if possible
+    if (el.children.length === 0) {
+      el.textContent = txt;
+    } else {
+      el.innerHTML = txt; // only used for mic-modal-hint which has <br>
+    }
+  });
+  // Special: input placeholder
+  const inp = document.getElementById('addTaskInput');
+  if (inp) inp.placeholder = isJA ? inp.dataset.placeholderJa : inp.dataset.placeholderEn;
+  // Special: html lang attribute
+  document.documentElement.lang = isJA ? 'ja' : 'en';
+  // Special: mic modal hint (uses innerHTML for <br>)
+  const hint = document.getElementById('micModalHint');
+  if (hint) hint.innerHTML = isJA
+    ? '自然に話してください。<br>「今日クライアントにメール、今週食料品を買う」'
+    : 'Say your tasks naturally.<br>"Email the client today, buy groceries this week"';
+  // Update timing chips in the task list view (they store timing in data-timing)
+  document.querySelectorAll('.timing-chip').forEach(chip => {
+    const timing = chip.dataset.timing;
+    if (!timing) return;
+    const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
+    if (map[timing]) chip.textContent = map[timing];
+  });
+  // Update autoCatTag display (keep English cat stored in data-cat-en)
+  const autoCatEl2 = document.getElementById('autoCatTag');
+  if (autoCatEl2) {
+    const catEn = autoCatEl2.dataset.catEn || autoCatEl2.textContent;
+    autoCatEl2.textContent = isJA ? (CAT_LABELS_JA[catEn] || catEn) : catEn;
+  }
+  // Update defaultDeadlineChip text
+  const ddc = document.getElementById('defaultDeadlineChip');
+  if (ddc) {
+    const timing = ddc.dataset.timing;
+    const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
+    if (map[timing]) ddc.textContent = map[timing];
+  }
+}
+
 /* Lang toggle — nav bar + settings (sLangEN/sLangJP) */
 ['langEN','langJP','sLangEN','sLangJP'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', () => {
@@ -2174,9 +2230,16 @@ document.getElementById('exportModal').addEventListener('click', e => { if(e.tar
     ['langEN','sLangEN'].forEach(i => document.getElementById(i)?.classList.toggle('active', isEN));
     ['langJP','sLangJP'].forEach(i => document.getElementById(i)?.classList.toggle('active', !isEN));
     state.lang = isEN ? 'en' : 'ja';
+    // Apply language to all UI elements
+    applyLang(state.lang);
     // Update recognition language immediately
-    // (takes effect on next startListening() call since recognition.lang is read at start)
-    if (recognition) recognition.lang = isEN ? 'en-US' : 'ja-JP';
+    if (recognition) {
+      recognition.lang = isEN ? 'en-US' : 'ja-JP';
+      // If currently listening, restart with new language
+      if (state.isListening) {
+        try { recognition.stop(); } catch(e) {}
+      }
+    }
     showToast(isEN ? 'Language: English' : '言語：日本語');
   });
 });
