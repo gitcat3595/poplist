@@ -606,12 +606,12 @@ input  { font-family:inherit }
   font-size:11px; color:var(--t3); font-weight:600; margin-left:auto;
 }
 
-/* Colour swatches — 28px to match preview bubble size, NO outer rim */
+/* Colour swatches — 24px circles, NO outer rim */
 .colour-grid {
   display:flex; flex-wrap:wrap; gap:10px;
 }
 .cswatch {
-  width:28px; height:28px; border-radius:50%; cursor:pointer;
+  width:24px; height:24px; border-radius:50%; cursor:pointer;
   transition:transform .13s ease; position:relative;
   border:none; flex-shrink:0; outline:none;
 }
@@ -708,7 +708,7 @@ input  { font-family:inherit }
 
 /* ── PRO customise card (grey background, no inner boxes) ── */
 .pro-wrap {
-  margin:0 16px;
+  margin:0;                   /* aligns with General rows — no extra indent */
   background:var(--raised);
   border-radius:16px;
   border:1px solid var(--border);
@@ -719,14 +719,15 @@ input  { font-family:inherit }
 .pro-wrap .colour-grid {
   pointer-events:none;
 }
-.pro-block { padding:12px 14px 14px }
-.pro-divider { height:1px; background:var(--border); margin:0 14px }
+.pro-block { padding:14px 16px 16px }    /* same horizontal as settings-row */
+.pro-divider { height:1px; background:var(--border); margin:0 }  /* full-width divider */
 .pro-block-title {
-  font-size:12px; font-weight:700; color:var(--t2); margin-bottom:10px;
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:12px;  /* same as section-label */
 }
 .pro-label-row {
   display:flex; align-items:center; gap:8px;
-  padding:0 16px 8px;
+  padding:0 0 8px;            /* no extra left padding — flush with section-label */
 }
 .upgrade-row { padding:12px 14px 14px }
 .upgrade-btn {
@@ -1250,8 +1251,6 @@ GoogleService-Info.plist
         <span class="pro-badge">PRO</span>
       </div>
 
-      <div style="height:8px"></div>
-
       <div class="pro-wrap" id="proPickerWrap">
 
         <!-- Bubble Style -->
@@ -1263,8 +1262,8 @@ GoogleService-Info.plist
             <button class="bst-tab" data-style="ring">Ring</button>
             <button class="bst-tab" data-style="ink">Ink</button>
           </div>
-          <div class="bubble-preview-row" style="margin-top:10px">
-            <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:28px;height:28px"></div>
+          <div class="bubble-preview-row" style="margin-top:10px;margin-bottom:0">
+            <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:24px;height:24px"></div>
             <div style="flex:1;padding-left:4px">
               <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
               <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
@@ -1272,14 +1271,24 @@ GoogleService-Info.plist
           </div>
         </div>
 
+        <div class="pro-divider"></div>
+
         <!-- Colour Scheme -->
         <div class="pro-block">
           <div class="pro-block-title">Colour Scheme</div>
           <div class="colour-grid" id="colourGrid">
-            <div class="cswatch sel" data-colour="bc-amber"  style="background:#F97316"></div>
+            <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
+            <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
+            <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
+            <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
+            <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
             <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
             <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
             <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
+            <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
+            <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
+            <div class="cswatch"     data-colour="bc-grey"   style="background:#9CA3AF"></div>
+            <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;outline:1px solid var(--border)"></div>
           </div>
         </div>
 
