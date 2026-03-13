@@ -720,7 +720,7 @@ input  { font-family:inherit }
   pointer-events:none;
 }
 .pro-block { padding:14px 16px 16px }    /* same horizontal as settings-row */
-.pro-divider { height:1px; background:var(--border); margin:0 }  /* full-width divider */
+.pro-divider { height:1px; background:var(--border); margin:0 16px } /* inset 16px each side — same spacing as general rows */
 .pro-block-title {
   font-size:10px; font-weight:800; text-transform:uppercase;
   letter-spacing:.8px; color:var(--t3); margin-bottom:12px;  /* same as section-label */
@@ -878,6 +878,76 @@ input  { font-family:inherit }
 ::-webkit-scrollbar { width:4px }
 ::-webkit-scrollbar-track { background:transparent }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px }
+
+/* ════════════════════════════════════════
+   HOME SCREEN (no tasks yet)
+════════════════════════════════════════ */
+.home-screen {
+  display:flex; flex-direction:column; align-items:center;
+  padding:72px 0 40px;
+  gap:0;
+}
+.home-title {
+  font-size:22px; font-weight:900; letter-spacing:-.6px;
+  color:var(--black); margin-bottom:32px; text-align:center;
+}
+.home-or {
+  font-size:12px; font-weight:700; color:var(--t3);
+  margin:24px 0;
+}
+.home-manual-btn {
+  font-size:13px; font-weight:700; color:var(--t2);
+  padding:10px 24px; border-radius:var(--rp);
+  background:var(--card); border:1.5px solid var(--border);
+  transition:var(--tr);
+}
+.home-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
+
+/* ════════════════════════════════════════
+   DONE SCREEN (all tasks cleared)
+════════════════════════════════════════ */
+.done-screen {
+  display:flex; flex-direction:column; align-items:center;
+  padding:80px 0 40px; gap:0; text-align:center;
+}
+.done-emoji  { font-size:48px; margin-bottom:20px }
+.done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px }
+.done-sub    { font-size:13px; color:var(--t2); line-height:1.6; margin-bottom:32px }
+
+/* ════════════════════════════════════════
+   BOTTOM ACTION BAR (shown when tasks exist)
+════════════════════════════════════════ */
+.bottom-bar {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px;
+  display:flex; gap:10px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(236,238,242,.94); backdrop-filter:blur(12px);
+  border-top:1px solid var(--border); z-index:80;
+}
+.bottom-bar-speak {
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px; font-size:14px; font-weight:800;
+  background:var(--blue); color:#fff;
+  border-radius:var(--rp); border:none; cursor:pointer;
+  box-shadow:0 4px 16px var(--blue-glow); transition:var(--tr);
+}
+.bottom-bar-speak:hover  { filter:brightness(1.08) }
+.bottom-bar-speak:active { transform:scale(.97) }
+.bottom-bar-add {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:13px 20px; font-size:14px; font-weight:800;
+  background:var(--card); color:var(--black);
+  border-radius:var(--rp); border:1.5px solid var(--border);
+  cursor:pointer; transition:var(--tr);
+}
+.bottom-bar-add:hover  { border-color:var(--brim); box-shadow:var(--shlift) }
+.bottom-bar-add:active { transform:scale(.97) }
+
+/* ════════════════════════════════════════
+   TASK LIST SPACING (room for bottom bar)
+════════════════════════════════════════ */
+#taskListView { padding-bottom: 100px }
 </style>
 </head>
 <body>
@@ -903,8 +973,9 @@ input  { font-family:inherit }
 <!-- ═══════ MAIN ═══════ -->
 <div class="container">
 
-  <div class="hero-compact">
-    <h1>What's on your mind?</h1>
+  <!-- HOME SCREEN — shown when no tasks exist -->
+  <div id="homeScreen" class="home-screen">
+    <h1 class="home-title">What's on your mind?</h1>
     <div class="voice-wrap">
       <button class="voice-btn" id="voiceBtn">
         <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -917,123 +988,95 @@ input  { font-family:inherit }
       </button>
       <span class="voice-transcript" id="voiceTranscript">Tap to add tasks by voice</span>
     </div>
+    <div class="home-or">or</div>
+    <button class="home-manual-btn" id="homeManualBtn">+ Add task manually</button>
   </div>
+
+  <!-- DONE SCREEN — shown when all tasks are cleared -->
+  <div id="doneScreen" class="done-screen" style="display:none">
+    <div class="done-emoji">🎉</div>
+    <div class="done-title">You're done for today</div>
+    <div class="done-sub">All clear. Add more whenever you're ready.</div>
+    <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
+      <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="11" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="9" y1="22" x2="15" y2="22"/>
+      </svg>
+      <span class="voice-label">Speak</span>
+    </button>
+  </div>
+
+  <!-- TASK LIST — shown when tasks exist -->
+  <div id="taskListView" style="display:none">
 
   <div class="filter-bar">
     <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="today">Today</button>
     <button class="filter-btn" data-filter="week">This Week</button>
     <button class="filter-btn" data-filter="later">Later</button>
-    <button class="sort-btn" id="sortBtn">↕ Deadline</button>
+    <button class="sort-btn" id="sortBtn">↕ Due</button>
   </div>
 
   <div class="tasks-container" id="tasksContainer">
 
     <!-- WORK -->
-    <div class="category-card" id="cat-work">
-      <div class="category-header"><span class="cat-name">Work</span><span class="cat-count">3</span></div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Send proposal to client by EOD</div>
-          <span class="timing-chip" data-timing="Today">Today</span>
-        </div></div>
-      </div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Prepare Q3 budget report for the team</div>
-          <span class="timing-chip" data-timing="Today">Today</span>
-        </div></div>
-      </div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Follow up on the design review</div>
-          <span class="timing-chip" data-timing="This Week">This Week</span>
-        </div></div>
-      </div>
+    <div class="category-card" id="cat-work" style="display:none">
+      <div class="category-header"><span class="cat-name">Work</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text">Add work task…</span></div>
     </div>
 
     <!-- HOME -->
-    <div class="category-card" id="cat-home">
-      <div class="category-header"><span class="cat-name">Home</span><span class="cat-count">2</span></div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Buy groceries — milk, eggs, bread</div>
-          <span class="timing-chip" data-timing="Today">Today</span>
-        </div></div>
-      </div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Take out the trash</div>
-          <span class="timing-chip" data-timing="This Week">This Week</span>
-        </div></div>
-      </div>
+    <div class="category-card" id="cat-home" style="display:none">
+      <div class="category-header"><span class="cat-name">Home</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text">Add home task…</span></div>
     </div>
 
     <!-- PERSONAL -->
-    <div class="category-card" id="cat-personal">
-      <div class="category-header"><span class="cat-name">Personal</span><span class="cat-count">3</span></div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Go for a 30 min run</div>
-          <span class="timing-chip" data-timing="Today">Today</span>
-        </div></div>
-      </div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Book dentist appointment</div>
-          <span class="timing-chip" data-timing="This Week">This Week</span>
-        </div></div>
-      </div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Read 20 pages of current book</div>
-          <span class="timing-chip" data-timing="Later">Later</span>
-        </div></div>
-      </div>
+    <div class="category-card" id="cat-personal" style="display:none">
+      <div class="category-header"><span class="cat-name">Personal</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text">Add personal task…</span></div>
     </div>
 
     <!-- OTHER -->
-    <div class="category-card" id="cat-other">
-      <div class="category-header"><span class="cat-name">Other</span><span class="cat-count">1</span></div>
-      <div class="task-item">
-        <div class="task-bubble luminous bc-blue"></div>
-        <div class="task-body"><div class="task-top">
-          <div class="task-text" contenteditable="true">Research travel insurance options</div>
-          <span class="timing-chip" data-timing="Later">Later</span>
-        </div></div>
-      </div>
+    <div class="category-card" id="cat-other" style="display:none">
+      <div class="category-header"><span class="cat-name">Other</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text">Add task…</span></div>
     </div>
 
   </div>
 
-  <!-- DEPLOY GUIDE -->
-  <div class="section-head">Deploy to App Store</div>
-  <div class="deploy-card">
-    <div class="deploy-header" id="deployToggle">
-      <div class="deploy-header-left">
-        <div class="deploy-header-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+  <!-- MANUAL ADD CARD — lives inside task list view -->
+  <div class="add-task-preview-card" id="manualAddCard" style="display:none">
+    <div class="add-task-active">
+      <div class="add-bubble-ph" id="addBubblePh"></div>
+      <div class="add-input-body">
+        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?">
+        <div class="add-row-label">Due date</div>
+        <div class="add-chips" id="deadlineChips">
+          <span class="add-chip sel">Today</span>
+          <span class="add-chip">This Week</span>
+          <span class="add-chip">Later</span>
         </div>
-        <div>
-          <div class="deploy-title">Cursor → GitHub → App Store</div>
-          <div class="deploy-subtitle">Step-by-step deployment checklist</div>
+        <div class="add-row-sep"></div>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+          <div class="add-row-label" style="margin:0">Category</div>
+          <span id="autoCatTag" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:var(--blue-lt);border:1px solid rgba(59,130,246,.2);color:var(--blue);letter-spacing:.3px">Other</span>
+          <span style="font-size:10px;color:var(--t3)">— auto detected</span>
         </div>
       </div>
-      <span class="deploy-chevron">▼</span>
     </div>
-    <div class="deploy-body" id="deployBody">
+    <div class="add-task-actions">
+      <button class="btn-cancel">Cancel</button>
+      <button class="btn-add" id="addTaskBtn">Add Task</button>
+    </div>
+  </div>
+
+  </div><!-- /taskListView -->
+
+  <!-- old deploy section hidden -->
+  <div style="display:none" id="_deployRemoved">
 
       <div class="deploy-step">
         <div class="deploy-step-num">1</div>
@@ -1124,42 +1167,23 @@ GoogleService-Info.plist
         </div>
       </div>
 
-    </div><!-- /deploy-body -->
-  </div><!-- /deploy-card -->
-
-  <!-- QUICK ADD -->
-  <div class="section-head">Quick add</div>
-  <div class="add-task-preview-card">
-    <div class="add-task-active">
-      <div class="add-bubble-ph" id="addBubblePh"></div>
-      <div class="add-input-body">
-        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?">
-        <div class="add-row-label">Deadline</div>
-        <div class="add-chips" id="deadlineChips">
-          <span class="add-chip sel">Today</span>
-          <span class="add-chip">This Week</span>
-          <span class="add-chip">Later</span>
-        </div>
-        <div class="add-row-sep"></div>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
-          <div class="add-row-label" style="margin:0">Category</div>
-          <span id="autoCatTag" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:var(--blue-lt);border:1px solid rgba(59,130,246,.2);color:var(--blue);letter-spacing:.3px">Other</span>
-          <span style="font-size:10px;color:var(--t3)">— auto detected</span>
-        </div>
-      </div>
-    </div>
-    <div class="add-task-actions">
-      <button class="btn-cancel">Cancel</button>
-      <button class="btn-add" id="addTaskBtn">Add Task</button>
-    </div>
   </div>
 
 </div><!-- /container -->
 
-<!-- ═══════ FAB ═══════ -->
-<div class="fab-wrap">
-  <button class="fab" id="fabBtn">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+<!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
+<div class="bottom-bar" id="bottomBar" style="display:none">
+  <button class="bottom-bar-speak" id="voiceBtnBottom">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="2" width="6" height="11" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="9" y1="22" x2="15" y2="22"/>
+    </svg>
+    Speak
+  </button>
+  <button class="bottom-bar-add" id="fabBtn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Add Task
   </button>
 </div>
@@ -1671,7 +1695,7 @@ document.getElementById('sortBtn')?.addEventListener('click', () => {
     });
     items.forEach(i => card.insertBefore(i, addRow));
   });
-  showToast('Sorted by deadline');
+  showToast('Sorted by due date');
 });
 
 /* ══════════════════════════════════════════
@@ -1729,6 +1753,8 @@ function makeTaskItem(text, timing, cat) {
   const cnt = card.querySelector('.cat-count');
   if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
   card.classList.remove('empty');
+  card.classList.add('was-used');   /* marks card as ever having had tasks */
+  card.style.display = '';          /* make sure card is visible */
   card.style.opacity = ''; card.style.transform = '';
 
   /* Animate in */
@@ -1738,6 +1764,8 @@ function makeTaskItem(text, timing, cat) {
     item.style.opacity = '1'; item.style.transform = '';
     setTimeout(() => { item.style.transition = ''; }, 220);
   });
+
+  updateScreenState(); /* switch home → task list as soon as first task added */
 }
 
 document.getElementById('addTaskBtn')?.addEventListener('click', () => {
@@ -1751,9 +1779,77 @@ document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   showToast('Task added ✓');
 });
 
+/* ══════════════════════════════════════════
+   SCREEN STATE — home / task list / done
+══════════════════════════════════════════ */
+const homeScreen   = document.getElementById('homeScreen');
+const taskListView = document.getElementById('taskListView');
+const doneScreen   = document.getElementById('doneScreen');
+const bottomBar    = document.getElementById('bottomBar');
+
+function getTotalTasks() {
+  return document.querySelectorAll('.task-item:not(.collapsing)').length;
+}
+
+function updateScreenState() {
+  const total = getTotalTasks();
+  if (total === 0) {
+    // Check if any tasks were ever added (i.e. cards have been used before)
+    const everHadTasks = document.querySelector('.category-card.was-used');
+    if (everHadTasks) {
+      homeScreen.style.display   = 'none';
+      taskListView.style.display = 'none';
+      doneScreen.style.display   = '';
+      bottomBar.style.display    = 'none';
+    } else {
+      homeScreen.style.display   = '';
+      taskListView.style.display = 'none';
+      doneScreen.style.display   = 'none';
+      bottomBar.style.display    = 'none';
+    }
+  } else {
+    homeScreen.style.display   = 'none';
+    taskListView.style.display = '';
+    doneScreen.style.display   = 'none';
+    bottomBar.style.display    = '';
+  }
+}
+
+/* Show manual add card */
 document.getElementById('fabBtn')?.addEventListener('click', () => {
-  addInput?.focus();
-  addInput?.scrollIntoView({ behavior:'smooth', block:'center' });
+  const card = document.getElementById('manualAddCard');
+  if (card) {
+    card.style.display = '';
+    addInput?.focus();
+    card.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+});
+
+document.getElementById('homeManualBtn')?.addEventListener('click', () => {
+  /* Switch to task list view so the add card is visible */
+  homeScreen.style.display   = 'none';
+  taskListView.style.display = '';
+  bottomBar.style.display    = '';
+  const card = document.getElementById('manualAddCard');
+  if (card) {
+    card.style.display = '';
+    addInput?.focus();
+  }
+});
+
+document.querySelector('.btn-cancel')?.addEventListener('click', () => {
+  const card = document.getElementById('manualAddCard');
+  if (card) { card.style.display = 'none'; }
+});
+
+/* Wire done-screen speak button to same voice flow */
+document.getElementById('voiceBtnDone')?.addEventListener('click', () => {
+  voiceBtn?.click();
+});
+
+/* Wire bottom-bar speak button */
+document.getElementById('voiceBtnBottom')?.addEventListener('click', () => {
+  voiceBtn?.click();
 });
 
 /* ══════════════════════════════════════════
@@ -2074,11 +2170,14 @@ document.getElementById('exportModal').addEventListener('click', e => { if(e.tar
 ['langEN','langJP','sLangEN','sLangJP'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', () => {
     const isEN = id === 'langEN' || id === 'sLangEN';
-    // sync both nav and settings buttons
+    // sync ALL four buttons
     ['langEN','sLangEN'].forEach(i => document.getElementById(i)?.classList.toggle('active', isEN));
     ['langJP','sLangJP'].forEach(i => document.getElementById(i)?.classList.toggle('active', !isEN));
     state.lang = isEN ? 'en' : 'ja';
+    // Update recognition language immediately
+    // (takes effect on next startListening() call since recognition.lang is read at start)
     if (recognition) recognition.lang = isEN ? 'en-US' : 'ja-JP';
+    showToast(isEN ? 'Language: English' : '言語：日本語');
   });
 });
 
