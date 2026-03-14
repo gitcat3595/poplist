@@ -936,18 +936,66 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   0%   { opacity:0; transform:translateY(24px) }
   100% { opacity:1; transform:translateY(0) }
 }
-.done-emoji  { font-size:52px; margin-bottom:20px; display:inline-block;
-               animation:emoji-bounce .7s cubic-bezier(.36,.07,.19,.97) .25s both }
-@keyframes emoji-bounce {
-  0%   { transform:scale(0) rotate(-15deg) }
-  60%  { transform:scale(1.25) rotate(5deg) }
-  80%  { transform:scale(.92) rotate(-2deg) }
-  100% { transform:scale(1) rotate(0deg) }
+
+/* Bubble-burst celebration — replaces emoji */
+.done-bubbles {
+  position:relative; width:80px; height:80px; margin-bottom:24px;
 }
+.done-bubble {
+  position:absolute; border-radius:50%;
+  background:var(--bubble-color, var(--blue));
+  animation:done-bubble-pop 0.7s cubic-bezier(.36,.07,.19,.97) both;
+}
+.done-bubble:nth-child(1){width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
+.done-bubble:nth-child(2){width:12px;height:12px;top:50%;left:50%;animation-delay:.12s}
+.done-bubble:nth-child(3){width:16px;height:16px;top:50%;left:50%;animation-delay:.18s}
+.done-bubble:nth-child(4){width:10px;height:10px;top:50%;left:50%;animation-delay:.24s}
+.done-bubble:nth-child(5){width:14px;height:14px;top:50%;left:50%;animation-delay:.10s}
+.done-bubble:nth-child(6){width:8px; height:8px; top:50%;left:50%;animation-delay:.28s}
+.done-bubble:nth-child(7){width:20px;height:20px;top:50%;left:50%;animation-delay:.06s}
+.done-bubble:nth-child(8){width:11px;height:11px;top:50%;left:50%;animation-delay:.20s}
+@keyframes done-bubble-pop {
+  0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
+  30%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.4); opacity:1 }
+  70%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
+  100% { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(0); opacity:0 }
+}
+.done-bubble:nth-child(1){--tx:-30px;--ty:-28px;--tx2:-38px;--ty2:-36px}
+.done-bubble:nth-child(2){--tx: 32px;--ty:-18px;--tx2: 40px;--ty2:-24px}
+.done-bubble:nth-child(3){--tx: -8px;--ty: 34px;--tx2:-10px;--ty2: 44px}
+.done-bubble:nth-child(4){--tx: 28px;--ty: 26px;--tx2: 36px;--ty2: 34px}
+.done-bubble:nth-child(5){--tx:-34px;--ty: 14px;--tx2:-44px;--ty2: 18px}
+.done-bubble:nth-child(6){--tx: 18px;--ty:-34px;--tx2: 24px;--ty2:-44px}
+.done-bubble:nth-child(7){--tx:-18px;--ty:-10px;--tx2:-24px;--ty2:-14px}
+.done-bubble:nth-child(8){--tx: 10px;--ty: 10px;--tx2: 14px;--ty2: 14px}
+
+/* Central big bubble */
+.done-bubble-center {
+  width:36px; height:36px; border-radius:50%; position:relative;
+  margin-bottom:24px;
+  background:var(--blue);
+  box-shadow:0 0 0 3px rgba(59,130,246,.18), 0 0 12px 2px rgba(59,130,246,.2);
+  animation:done-center-pop .6s cubic-bezier(.36,.07,.19,.97) .0s both;
+}
+@keyframes done-center-pop {
+  0%   { transform:scale(0);   opacity:0 }
+  45%  { transform:scale(1.35); opacity:1 }
+  70%  { transform:scale(.85); opacity:1 }
+  100% { transform:scale(1);   opacity:1 }
+}
+
 .done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
                opacity:0; animation:fade-up .4s ease .45s forwards }
 .done-sub    { font-size:13px; color:var(--t2); line-height:1.6; margin-bottom:32px;
                opacity:0; animation:fade-up .4s ease .6s forwards }
+.done-manual-btn {
+  font-size:13px; font-weight:700; color:var(--t2);
+  padding:10px 24px; border-radius:var(--rp);
+  background:var(--card); border:1.5px solid var(--border);
+  transition:var(--tr); margin-top:8px;
+  opacity:0; animation:fade-up .4s ease .75s forwards;
+}
+.done-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
 @keyframes fade-up {
   from { opacity:0; transform:translateY(8px) }
   to   { opacity:1; transform:translateY(0) }
@@ -1074,7 +1122,18 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
   <div id="doneScreen" class="done-screen" style="display:none">
-    <div class="done-emoji">🎉</div>
+    <!-- Bubble burst animation instead of emoji -->
+    <div class="done-bubbles" aria-hidden="true">
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+    </div>
+    <div class="done-bubble-center" id="doneBubbleCenter"></div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
@@ -1086,6 +1145,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       </svg>
       <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
     </button>
+    <button class="done-manual-btn" id="doneManualBtn" data-en="+ Add task manually" data-ja="＋ 手動でタスクを追加">+ Add task manually</button>
   </div>
 
   <!-- TASK LIST — shown when tasks exist -->
@@ -1440,17 +1500,17 @@ GoogleService-Info.plist
               <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#F97316"></div>
+              <div class="cat-item-dot" style="background:#3B82F6"></div>
               <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
               <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#7C3AED"></div>
+              <div class="cat-item-dot" style="background:#3B82F6"></div>
               <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
               <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#9CA3AF"></div>
+              <div class="cat-item-dot" style="background:#3B82F6"></div>
               <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
               <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
             </div>
@@ -1773,9 +1833,9 @@ function burstBubble(el, item) {
 ══════════════════════════════════════════ */
 const CAT_META = [
   { en:'Work',     ja:'仕事',    colour:'#3B82F6' },
-  { en:'Home',     ja:'家の事',  colour:'#F97316' },
-  { en:'Personal', ja:'自分の事',colour:'#7C3AED' },
-  { en:'Other',    ja:'その他',  colour:'#9CA3AF' },
+  { en:'Home',     ja:'家の事',  colour:'#3B82F6' },
+  { en:'Personal', ja:'自分の事',colour:'#3B82F6' },
+  { en:'Other',    ja:'その他',  colour:'#3B82F6' },
 ];
 
 let _catEditTarget = null; // the task-item DOM node currently being moved
@@ -1963,7 +2023,7 @@ function detectCat(t) {
 const addInput  = document.getElementById('addTaskInput');
 const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
-const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#F97316', 'Personal':'#7C3AED', 'Other':'#9CA3AF' };
+const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#3B82F6', 'Personal':'#3B82F6', 'Other':'#3B82F6' };
 function updateCat() {
   if (!autoCatEl || !addInput) return;
   const cat = detectCat(addInput.value);
@@ -2024,14 +2084,12 @@ function makeTaskItem(text, timing, cat) {
   const card  = document.getElementById(catId) || document.getElementById('cat-other');
   if (!card) return;
 
-  // Bubble colour matches category; grey mode overrides all to bc-grey
-  const CAT_BUBBLE = { Work:'bc-blue', Home:'bc-amber', Personal:'bc-purple', Other:'bc-blue' };
-  const catColour   = CAT_BUBBLE[cat] || 'bc-blue';
-  const colourClass = state.greyBubbles ? 'bc-grey' : catColour;
+  // All bubbles use the global colour choice (bc-blue by default); grey mode overrides
+  const colourClass = state.greyBubbles ? 'bc-grey' : state.bubbleColour;
   const item = document.createElement('div');
   item.className = 'task-item';
   item.innerHTML = `
-    <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${catColour}"></div>
+    <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
       <div class="task-text" contenteditable="true">${text}</div>
       <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
@@ -2088,25 +2146,48 @@ function getTotalTasks() {
 }
 
 function showDoneScreen() {
-  // Force re-trigger CSS animation by removing + re-adding the element
   const el = document.getElementById('doneScreen');
   if (!el) return;
   el.style.display = 'none';
-  // Re-apply lang text since clone approach was unreliable
+
+  // Update text content for current language
   const title = el.querySelector('.done-title');
   const sub   = el.querySelector('.done-sub');
   if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
   if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
-  // Restart animation: force reflow
+
+  // Sync bubble colors to match the chosen colour scheme
+  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (() => {
+    const colorMap = {
+      'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488',
+      'bc-green':'#16A34A','bc-amber':'#F97316','bc-rose':'#EF4444',
+      'bc-pink':'#EC4899','bc-purple':'#7C3AED','bc-black':'#374151',
+      'bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+    };
+    return colorMap[state.bubbleColour] || '#3B82F6';
+  })();
+  el.querySelectorAll('.done-bubble, .done-bubble-center').forEach(b => {
+    b.style.background = bubbleColor;
+    b.style.setProperty('--bubble-color', bubbleColor);
+  });
+  const center = el.querySelector('.done-bubble-center');
+  if (center) {
+    const rgb = bubbleColor.replace('#','');
+    const r = parseInt(rgb.slice(0,2),16), g = parseInt(rgb.slice(2,4),16), bv = parseInt(rgb.slice(4,6),16);
+    center.style.boxShadow = `0 0 0 3px rgba(${r},${g},${bv},.18), 0 0 12px 2px rgba(${r},${g},${bv},.2)`;
+  }
+
+  // Restart all animations: force reflow
+  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+    c.style.animation = 'none';
+  });
   el.style.animation = 'none';
-  el.querySelector('.done-emoji').style.animation  = 'none';
-  el.querySelector('.done-title').style.animation  = 'none';
-  el.querySelector('.done-sub').style.animation    = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelector('.done-emoji').style.animation  = '';
-  el.querySelector('.done-title').style.animation  = '';
-  el.querySelector('.done-sub').style.animation    = '';
+  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+    c.style.animation = '';
+  });
+
   el.style.display = '';
 }
 
@@ -2146,6 +2227,18 @@ document.getElementById('fabBtn')?.addEventListener('click', () => {
 document.getElementById('homeManualBtn')?.addEventListener('click', () => {
   /* Switch to task list view so the add card is visible */
   homeScreen.style.display   = 'none';
+  taskListView.style.display = '';
+  bottomBar.style.display    = '';
+  const card = document.getElementById('manualAddCard');
+  if (card) {
+    card.style.display = '';
+    addInput?.focus();
+  }
+});
+
+document.getElementById('doneManualBtn')?.addEventListener('click', () => {
+  /* From done screen → switch to task list view and open add card */
+  document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
   const card = document.getElementById('manualAddCard');
@@ -2386,8 +2479,11 @@ if (SR) {
     clearTimeout(restartTimer);
 
     // Safari REQUIRES getUserMedia before webkitSpeechRecognition.start()
-    const ok = await requestMicPermission();
-    if (!ok) return;
+    // BUT: if already granted, skip the async call to keep in gesture stack
+    if (!micPermGranted) {
+      const ok = await requestMicPermission();
+      if (!ok) return;
+    }
 
     recognition = createRecognition();
     try {
@@ -2459,9 +2555,37 @@ if (SR) {
   }
 
   // Wire all speak buttons to the same handler
+  // NOTE: handleVoiceClick must be synchronous for Safari gesture requirement.
+  // On first tap, getUserMedia runs then recognition.start() fires in its .then()
+  // — still counts as user gesture on iOS Safari because it's a microtask.
   function handleVoiceClick() {
     if (state.isListening) { stopListening(); return; }
-    startListening();
+
+    fullTranscript = '';
+    shouldRestart  = true;
+    clearTimeout(restartTimer);
+
+    if (micPermGranted) {
+      // Permission already granted — start immediately (synchronous, keeps gesture chain)
+      recognition = createRecognition();
+      try { recognition.start(); }
+      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+    } else {
+      // First time — request permission then start in .then() (still within gesture microtask)
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          stream.getTracks().forEach(t => t.stop());
+          micPermGranted = true;
+          recognition = createRecognition();
+          try { recognition.start(); }
+          catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+        })
+        .catch(e => {
+          console.warn('mic permission denied:', e);
+          shouldRestart = false;
+          showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+        });
+    }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
