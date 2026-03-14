@@ -277,7 +277,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
    Ink      : soft tinted wash + inner feather glow
 ════════════════════════════════════════ */
 .task-bubble {
-  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  width:20px; height:20px; border-radius:50%; flex-shrink:0;
   cursor:pointer; position:relative; overflow:visible;
   transition:transform .14s ease;
 }
@@ -2025,7 +2025,7 @@ function makeTaskItem(text, timing, cat) {
   if (!card) return;
 
   // Bubble colour matches category; grey mode overrides all to bc-grey
-  const CAT_BUBBLE = { Work:'bc-blue', Home:'bc-amber', Personal:'bc-purple', Other:'bc-grey' };
+  const CAT_BUBBLE = { Work:'bc-blue', Home:'bc-amber', Personal:'bc-purple', Other:'bc-blue' };
   const catColour   = CAT_BUBBLE[cat] || 'bc-blue';
   const colourClass = state.greyBubbles ? 'bc-grey' : catColour;
   const item = document.createElement('div');
