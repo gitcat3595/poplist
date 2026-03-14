@@ -675,27 +675,53 @@
     });
   });
 
-  // Base swatch demo — changes accent + logo colour
+  // Base swatch: changes accent, logo, AND all task preview bubbles (shows "base color" concept)
   document.querySelectorAll('.swatch:not(.locked)').forEach(sw => {
     sw.addEventListener('click', () => {
       document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
       sw.classList.add('selected');
       const color = sw.style.background;
       document.documentElement.style.setProperty('--accent', color);
+      // Logo
       document.querySelector('.logo-bubble').style.background = color;
       document.querySelector('.logo-bubble').style.boxShadow = `0 4px 12px ${color}55`;
+      // Task preview strip — all bubbles shift to the base colour
+      document.querySelectorAll('.bubble-dot').forEach(dot => dot.style.background = color);
+      document.querySelectorAll('.bubble-chip').forEach(chip => {
+        chip.style.color = color;
+        chip.style.borderColor = color + '44';
+      });
+      document.querySelectorAll('.preview-bubble').forEach(b => b.style.borderColor = color + '44');
+      // Category preview dots also reset to base colour (per-category is a PRO override)
+      document.querySelectorAll('.cat-bubble-preview').forEach(dot => dot.style.background = color);
+      document.querySelectorAll('.cat-swatch').forEach(s => s.classList.remove('selected'));
+      document.querySelectorAll('.cat-row').forEach(row => {
+        row.querySelectorAll('.cat-swatch')[0]?.classList.add('selected');
+      });
     });
   });
 
-  // Category swatch demo
-  document.querySelectorAll('.cat-row').forEach(row => {
+  // Category swatch: overrides just that category's colour (PRO feature demo)
+  document.querySelectorAll('.cat-row').forEach((row, rowIdx) => {
     const swatches = row.querySelectorAll('.cat-swatch');
     const dot = row.querySelector('.cat-bubble-preview');
+    // Match to preview bubble dot by index
+    const previewDots = document.querySelectorAll('.bubble-dot');
+    const previewChips = document.querySelectorAll('.bubble-chip');
+    const previewBubbles = document.querySelectorAll('.preview-bubble');
     swatches.forEach(sw => {
       sw.addEventListener('click', () => {
         swatches.forEach(s => s.classList.remove('selected'));
         sw.classList.add('selected');
-        dot.style.background = sw.style.background;
+        const color = sw.style.background;
+        dot.style.background = color;
+        // Also update the matching preview bubble in the task strip
+        if (previewDots[rowIdx]) previewDots[rowIdx].style.background = color;
+        if (previewChips[rowIdx]) {
+          previewChips[rowIdx].style.color = color;
+          previewChips[rowIdx].style.borderColor = color + '44';
+        }
+        if (previewBubbles[rowIdx]) previewBubbles[rowIdx].style.borderColor = color + '44';
       });
     });
   });

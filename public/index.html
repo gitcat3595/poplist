@@ -937,51 +937,71 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   100% { opacity:1; transform:translateY(0) }
 }
 
-/* Bubble-burst celebration — replaces emoji */
+/* Bubble-burst celebration — 16 bubbles, ~3s total, colour follows theme */
 .done-bubbles {
   position:relative; width:80px; height:80px; margin-bottom:24px;
 }
 .done-bubble {
   position:absolute; border-radius:50%;
   background:var(--bubble-color, var(--blue));
-  animation:done-bubble-pop 0.7s cubic-bezier(.36,.07,.19,.97) both;
+  animation:done-bubble-pop 1.0s cubic-bezier(.36,.07,.19,.97) both;
 }
-.done-bubble:nth-child(1){width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
-.done-bubble:nth-child(2){width:12px;height:12px;top:50%;left:50%;animation-delay:.12s}
-.done-bubble:nth-child(3){width:16px;height:16px;top:50%;left:50%;animation-delay:.18s}
-.done-bubble:nth-child(4){width:10px;height:10px;top:50%;left:50%;animation-delay:.24s}
-.done-bubble:nth-child(5){width:14px;height:14px;top:50%;left:50%;animation-delay:.10s}
-.done-bubble:nth-child(6){width:8px; height:8px; top:50%;left:50%;animation-delay:.28s}
-.done-bubble:nth-child(7){width:20px;height:20px;top:50%;left:50%;animation-delay:.06s}
-.done-bubble:nth-child(8){width:11px;height:11px;top:50%;left:50%;animation-delay:.20s}
+/* sizes + staggered delays across ~1.8s → total burst lasts ~2.8s */
+.done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
+.done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.10s}
+.done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.16s}
+.done-bubble:nth-child(4) {width:10px;height:10px;top:50%;left:50%;animation-delay:.22s}
+.done-bubble:nth-child(5) {width:14px;height:14px;top:50%;left:50%;animation-delay:.30s}
+.done-bubble:nth-child(6) {width:20px;height:20px;top:50%;left:50%;animation-delay:.40s}
+.done-bubble:nth-child(7) {width:8px; height:8px; top:50%;left:50%;animation-delay:.52s}
+.done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.64s}
+.done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.78s}
+.done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.92s}
+.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:1.06s}
+.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:1.20s}
+.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:1.35s}
+.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:1.50s}
+.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:1.64s}
+.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:1.78s}
 @keyframes done-bubble-pop {
   0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
-  30%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.4); opacity:1 }
-  70%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
+  25%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.5); opacity:1 }
+  65%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
   100% { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(0); opacity:0 }
 }
-.done-bubble:nth-child(1){--tx:-30px;--ty:-28px;--tx2:-38px;--ty2:-36px}
-.done-bubble:nth-child(2){--tx: 32px;--ty:-18px;--tx2: 40px;--ty2:-24px}
-.done-bubble:nth-child(3){--tx: -8px;--ty: 34px;--tx2:-10px;--ty2: 44px}
-.done-bubble:nth-child(4){--tx: 28px;--ty: 26px;--tx2: 36px;--ty2: 34px}
-.done-bubble:nth-child(5){--tx:-34px;--ty: 14px;--tx2:-44px;--ty2: 18px}
-.done-bubble:nth-child(6){--tx: 18px;--ty:-34px;--tx2: 24px;--ty2:-44px}
-.done-bubble:nth-child(7){--tx:-18px;--ty:-10px;--tx2:-24px;--ty2:-14px}
-.done-bubble:nth-child(8){--tx: 10px;--ty: 10px;--tx2: 14px;--ty2: 14px}
+/* 16 evenly-spaced radial directions (every 22.5°) — inner ~45px, outer ~62px */
+.done-bubble:nth-child(1) {--tx: 45px;--ty:  0px;--tx2: 62px;--ty2:  0px}
+.done-bubble:nth-child(2) {--tx: 42px;--ty: 17px;--tx2: 57px;--ty2: 23px}
+.done-bubble:nth-child(3) {--tx: 32px;--ty: 32px;--tx2: 44px;--ty2: 44px}
+.done-bubble:nth-child(4) {--tx: 17px;--ty: 42px;--tx2: 23px;--ty2: 57px}
+.done-bubble:nth-child(5) {--tx:  0px;--ty: 45px;--tx2:  0px;--ty2: 62px}
+.done-bubble:nth-child(6) {--tx:-17px;--ty: 42px;--tx2:-23px;--ty2: 57px}
+.done-bubble:nth-child(7) {--tx:-32px;--ty: 32px;--tx2:-44px;--ty2: 44px}
+.done-bubble:nth-child(8) {--tx:-42px;--ty: 17px;--tx2:-57px;--ty2: 23px}
+.done-bubble:nth-child(9) {--tx:-45px;--ty:  0px;--tx2:-62px;--ty2:  0px}
+.done-bubble:nth-child(10){--tx:-42px;--ty:-17px;--tx2:-57px;--ty2:-23px}
+.done-bubble:nth-child(11){--tx:-32px;--ty:-32px;--tx2:-44px;--ty2:-44px}
+.done-bubble:nth-child(12){--tx:-17px;--ty:-42px;--tx2:-23px;--ty2:-57px}
+.done-bubble:nth-child(13){--tx:  0px;--ty:-45px;--tx2:  0px;--ty2:-62px}
+.done-bubble:nth-child(14){--tx: 17px;--ty:-42px;--tx2: 23px;--ty2:-57px}
+.done-bubble:nth-child(15){--tx: 32px;--ty:-32px;--tx2: 44px;--ty2:-44px}
+.done-bubble:nth-child(16){--tx: 42px;--ty:-17px;--tx2: 57px;--ty2:-23px}
 
-/* Central big bubble */
+/* Central big bubble — pops up then fades out so nothing lingers */
 .done-bubble-center {
   width:36px; height:36px; border-radius:50%; position:relative;
   margin-bottom:24px;
   background:var(--blue);
   box-shadow:0 0 0 3px rgba(59,130,246,.18), 0 0 12px 2px rgba(59,130,246,.2);
-  animation:done-center-pop .6s cubic-bezier(.36,.07,.19,.97) .0s both;
+  animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
 }
 @keyframes done-center-pop {
-  0%   { transform:scale(0);   opacity:0 }
-  45%  { transform:scale(1.35); opacity:1 }
-  70%  { transform:scale(.85); opacity:1 }
-  100% { transform:scale(1);   opacity:1 }
+  0%   { transform:scale(0);    opacity:0 }
+  12%  { transform:scale(1.35); opacity:1 }
+  25%  { transform:scale(.9);   opacity:1 }
+  35%  { transform:scale(1);    opacity:1 }
+  78%  { transform:scale(1);    opacity:1 }
+  100% { transform:scale(1.1);  opacity:0 }
 }
 
 .done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
@@ -1124,6 +1144,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   <div id="doneScreen" class="done-screen" style="display:none">
     <!-- Bubble burst animation instead of emoji -->
     <div class="done-bubbles" aria-hidden="true">
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
@@ -1762,14 +1790,19 @@ function burstBubble(el, item) {
 
   el.classList.add('popping');
 
+  /* Read actual bubble colour so particles match whatever theme is active */
+  const rawHex = getComputedStyle(el).getPropertyValue('--bubble-color').trim() || '#3B82F6';
+  const hx = rawHex.replace('#','');
+  const cr = parseInt(hx.slice(0,2),16), cg = parseInt(hx.slice(2,4),16), cb = parseInt(hx.slice(4,6),16);
+  const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
   const particles = [
-    'rgba(59,130,246,1)',
-    'rgba(96,165,250,.95)',
-    'rgba(147,197,253,.9)',
-    'rgba(29,78,216,.95)',
-    'rgba(191,219,254,.85)',
+    `rgba(${cr},${cg},${cb},1)`,
+    `rgba(${lt(cr,40)},${lt(cg,40)},${lt(cb,40)},.95)`,
+    `rgba(${lt(cr,80)},${lt(cg,80)},${lt(cb,80)},.9)`,
+    `rgba(${dk(cr,30)},${dk(cg,30)},${dk(cb,30)},.95)`,
+    `rgba(${lt(cr,110)},${lt(cg,110)},${lt(cb,110)},.85)`,
     'rgba(255,255,255,.9)',
-    'rgba(59,130,246,.7)',
+    `rgba(${cr},${cg},${cb},.7)`,
   ];
 
   const count = 24;
@@ -2023,7 +2056,7 @@ function detectCat(t) {
 const addInput  = document.getElementById('addTaskInput');
 const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
-const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#3B82F6', 'Personal':'#3B82F6', 'Other':'#3B82F6' };
+const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#16A34A', 'Personal':'#7C3AED', 'Other':'#F97316' };
 function updateCat() {
   if (!autoCatEl || !addInput) return;
   const cat = detectCat(addInput.value);
@@ -2042,6 +2075,24 @@ function setCatDisplay(cat, autoDetected) {
   if (autoLabel) autoLabel.style.display = autoDetected ? '' : 'none';
 }
 addInput?.addEventListener('input', updateCat);
+
+/* Debounced AI classify while typing — kicks in 650ms after user stops */
+let _catAiDebounce;
+addInput?.addEventListener('input', () => {
+  clearTimeout(_catAiDebounce);
+  const val = addInput.value.trim();
+  if (val.length < 4) return;
+  _catAiDebounce = setTimeout(async () => {
+    if (addInput.value.trim() !== val) return; // text changed, skip stale result
+    try {
+      const tasks = await classifyTranscript(val);
+      if (tasks.length > 0 && addInput.value.trim() === val) {
+        setCatDisplay(tasks[0].category, true);
+      }
+    } catch (_) { /* keep local keyword result on failure */ }
+  }, 650);
+});
+
 updateCat();
 
 /* ── Category Picker Popover ── */
