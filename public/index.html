@@ -872,7 +872,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .mic-modal-title { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px }
 .mic-modal-hint  { font-size:12px; color:var(--t2); text-align:center; max-width:240px; line-height:1.6 }
 .mic-wave { display:flex; align-items:center; gap:5px; height:40px }
-.mic-bar  { width:4px; border-radius:4px; background:var(--blue); animation:wave-bar 1s ease infinite }
+.mic-bar  { width:4px; border-radius:4px; background:var(--bubble-color, var(--blue)); animation:wave-bar 1s ease infinite }
 .mic-bar:nth-child(1){animation-delay:0s;   height:12px}
 .mic-bar:nth-child(2){animation-delay:.12s; height:24px}
 .mic-bar:nth-child(3){animation-delay:.24s; height:36px}
@@ -2436,29 +2436,36 @@ if (SR) {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
     r.continuous      = false;   // MUST be false on Safari
-    r.interimResults  = false;   // isFinal-only, most reliable cross-browser
+    r.interimResults  = true;    // show words live as user speaks
     r.maxAlternatives = 1;
 
     r.onstart = () => {
+      // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
        document.getElementById('voiceBtnBottom')
       ].forEach(b => b?.classList.add('listening'));
-      micModal.classList.add('show');
+      micModal?.classList.add('show');
       transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
-      transcriptEl.style.color = 'var(--blue)';
+      transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
     };
 
     r.onresult = e => {
+      let interim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           fullTranscript += res[0].transcript + ' ';
-          // Show accumulated transcript live in the mic modal
-          const hint = document.getElementById('micModalHint');
-          if (hint) hint.textContent = fullTranscript.trim();
+        } else {
+          interim += res[0].transcript;
         }
+      }
+      // Show live words — final so far + current interim phrase
+      const hint = document.getElementById('micModalHint');
+      if (hint) {
+        const display = (fullTranscript + interim).trim();
+        if (display) hint.textContent = display;
       }
     };
 
@@ -2616,6 +2623,20 @@ if (SR) {
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
+    // Show mic UI immediately — don't wait for onstart (iOS Safari can take ~1s, feels broken)
+    state.isListening = true;
+    micModal?.classList.add('show');
+    [voiceBtn,
+     document.getElementById('voiceBtnDone'),
+     document.getElementById('voiceBtnBottom')
+    ].forEach(b => b?.classList.add('listening'));
+    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+    transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
+    const hint = document.getElementById('micModalHint');
+    if (hint) hint.textContent = state.lang === 'ja'
+      ? '自然に話してください…'
+      : 'Say your tasks naturally…';
+
     if (micPermGranted) {
       // Permission already granted — start immediately (synchronous, keeps gesture chain)
       recognition = createRecognition();
@@ -2634,6 +2655,7 @@ if (SR) {
         .catch(e => {
           console.warn('mic permission denied:', e);
           shouldRestart = false;
+          _clearListeningUI(); // undo optimistic UI
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
     }
