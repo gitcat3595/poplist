@@ -74,7 +74,7 @@
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html { -webkit-tap-highlight-color:transparent }
+html { -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none }
 body {
   font-family:var(--font);
   background:var(--bg);
@@ -84,6 +84,7 @@ body {
   padding-bottom:140px;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+  overscroll-behavior-y: none;   /* prevent iOS pull-down rubber-band hiding content */
 }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit;
          -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
@@ -409,7 +410,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
 }
-.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:rgba(59,130,246,.3); background:var(--blue-lt) }
+.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow); background:var(--blue-lt) }
 .timing-chip[data-timing="This Week"] { color:var(--t1);    border-color:var(--brim);         background:var(--raised); font-weight:800 }
 .timing-chip[data-timing="Later"]     { color:var(--t2);    border-color:var(--border);       background:var(--card) }
 .timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
@@ -445,10 +446,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   background:var(--card); border-radius:var(--rc);
   box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
 }
-.add-task-active { display:flex; align-items:flex-start; padding:14px 16px 12px; gap:13px }
+.add-task-active { display:flex; align-items:center; padding:14px 16px 12px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
   background:var(--blue); opacity:.25; pointer-events:none;
+  position:relative; align-self:flex-start; margin-top:1px;
 }
 .add-bubble-ph::before {
   content:''; position:absolute; top:3px; left:5px;
@@ -473,7 +475,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1px solid var(--border); background:var(--card); color:var(--t2);
   cursor:pointer; transition:var(--tr); box-shadow:var(--shlift);
 }
-.add-chip.sel { background:var(--black); color:#fff; border-color:var(--black) }
+.add-chip.sel { background:var(--blue); color:#fff; border-color:var(--blue) }
 .add-chip:hover:not(.sel) { border-color:var(--blue); color:var(--blue) }
 
 .add-row-sep { height:1px; background:var(--border); margin:10px 0 }
@@ -872,7 +874,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .mic-modal-title { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px }
 .mic-modal-hint  { font-size:12px; color:var(--t2); text-align:center; max-width:240px; line-height:1.6 }
 .mic-wave { display:flex; align-items:center; gap:5px; height:40px }
-.mic-bar  { width:4px; border-radius:4px; background:var(--blue); animation:wave-bar 1s ease infinite }
+.mic-bar  { width:4px; border-radius:4px; background:var(--bubble-color, var(--blue)); animation:wave-bar 1s ease infinite }
 .mic-bar:nth-child(1){animation-delay:0s;   height:12px}
 .mic-bar:nth-child(2){animation-delay:.12s; height:24px}
 .mic-bar:nth-child(3){animation-delay:.24s; height:36px}
@@ -937,51 +939,71 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   100% { opacity:1; transform:translateY(0) }
 }
 
-/* Bubble-burst celebration — replaces emoji */
+/* Bubble-burst celebration — 16 bubbles, ~3s total, colour follows theme */
 .done-bubbles {
   position:relative; width:80px; height:80px; margin-bottom:24px;
 }
 .done-bubble {
   position:absolute; border-radius:50%;
   background:var(--bubble-color, var(--blue));
-  animation:done-bubble-pop 0.7s cubic-bezier(.36,.07,.19,.97) both;
+  animation:done-bubble-pop 1.0s cubic-bezier(.36,.07,.19,.97) both;
 }
-.done-bubble:nth-child(1){width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
-.done-bubble:nth-child(2){width:12px;height:12px;top:50%;left:50%;animation-delay:.12s}
-.done-bubble:nth-child(3){width:16px;height:16px;top:50%;left:50%;animation-delay:.18s}
-.done-bubble:nth-child(4){width:10px;height:10px;top:50%;left:50%;animation-delay:.24s}
-.done-bubble:nth-child(5){width:14px;height:14px;top:50%;left:50%;animation-delay:.10s}
-.done-bubble:nth-child(6){width:8px; height:8px; top:50%;left:50%;animation-delay:.28s}
-.done-bubble:nth-child(7){width:20px;height:20px;top:50%;left:50%;animation-delay:.06s}
-.done-bubble:nth-child(8){width:11px;height:11px;top:50%;left:50%;animation-delay:.20s}
+/* sizes + staggered delays across ~1.8s → total burst lasts ~2.8s */
+.done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
+.done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.10s}
+.done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.16s}
+.done-bubble:nth-child(4) {width:10px;height:10px;top:50%;left:50%;animation-delay:.22s}
+.done-bubble:nth-child(5) {width:14px;height:14px;top:50%;left:50%;animation-delay:.30s}
+.done-bubble:nth-child(6) {width:20px;height:20px;top:50%;left:50%;animation-delay:.40s}
+.done-bubble:nth-child(7) {width:8px; height:8px; top:50%;left:50%;animation-delay:.52s}
+.done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.64s}
+.done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.78s}
+.done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.92s}
+.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:1.06s}
+.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:1.20s}
+.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:1.35s}
+.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:1.50s}
+.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:1.64s}
+.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:1.78s}
 @keyframes done-bubble-pop {
   0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
-  30%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.4); opacity:1 }
-  70%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
+  25%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.5); opacity:1 }
+  65%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
   100% { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(0); opacity:0 }
 }
-.done-bubble:nth-child(1){--tx:-30px;--ty:-28px;--tx2:-38px;--ty2:-36px}
-.done-bubble:nth-child(2){--tx: 32px;--ty:-18px;--tx2: 40px;--ty2:-24px}
-.done-bubble:nth-child(3){--tx: -8px;--ty: 34px;--tx2:-10px;--ty2: 44px}
-.done-bubble:nth-child(4){--tx: 28px;--ty: 26px;--tx2: 36px;--ty2: 34px}
-.done-bubble:nth-child(5){--tx:-34px;--ty: 14px;--tx2:-44px;--ty2: 18px}
-.done-bubble:nth-child(6){--tx: 18px;--ty:-34px;--tx2: 24px;--ty2:-44px}
-.done-bubble:nth-child(7){--tx:-18px;--ty:-10px;--tx2:-24px;--ty2:-14px}
-.done-bubble:nth-child(8){--tx: 10px;--ty: 10px;--tx2: 14px;--ty2: 14px}
+/* 16 evenly-spaced radial directions (every 22.5°) — inner ~45px, outer ~62px */
+.done-bubble:nth-child(1) {--tx: 45px;--ty:  0px;--tx2: 62px;--ty2:  0px}
+.done-bubble:nth-child(2) {--tx: 42px;--ty: 17px;--tx2: 57px;--ty2: 23px}
+.done-bubble:nth-child(3) {--tx: 32px;--ty: 32px;--tx2: 44px;--ty2: 44px}
+.done-bubble:nth-child(4) {--tx: 17px;--ty: 42px;--tx2: 23px;--ty2: 57px}
+.done-bubble:nth-child(5) {--tx:  0px;--ty: 45px;--tx2:  0px;--ty2: 62px}
+.done-bubble:nth-child(6) {--tx:-17px;--ty: 42px;--tx2:-23px;--ty2: 57px}
+.done-bubble:nth-child(7) {--tx:-32px;--ty: 32px;--tx2:-44px;--ty2: 44px}
+.done-bubble:nth-child(8) {--tx:-42px;--ty: 17px;--tx2:-57px;--ty2: 23px}
+.done-bubble:nth-child(9) {--tx:-45px;--ty:  0px;--tx2:-62px;--ty2:  0px}
+.done-bubble:nth-child(10){--tx:-42px;--ty:-17px;--tx2:-57px;--ty2:-23px}
+.done-bubble:nth-child(11){--tx:-32px;--ty:-32px;--tx2:-44px;--ty2:-44px}
+.done-bubble:nth-child(12){--tx:-17px;--ty:-42px;--tx2:-23px;--ty2:-57px}
+.done-bubble:nth-child(13){--tx:  0px;--ty:-45px;--tx2:  0px;--ty2:-62px}
+.done-bubble:nth-child(14){--tx: 17px;--ty:-42px;--tx2: 23px;--ty2:-57px}
+.done-bubble:nth-child(15){--tx: 32px;--ty:-32px;--tx2: 44px;--ty2:-44px}
+.done-bubble:nth-child(16){--tx: 42px;--ty:-17px;--tx2: 57px;--ty2:-23px}
 
-/* Central big bubble */
+/* Central big bubble — pops up then fades out so nothing lingers */
 .done-bubble-center {
   width:36px; height:36px; border-radius:50%; position:relative;
   margin-bottom:24px;
   background:var(--blue);
-  box-shadow:0 0 0 3px rgba(59,130,246,.18), 0 0 12px 2px rgba(59,130,246,.2);
-  animation:done-center-pop .6s cubic-bezier(.36,.07,.19,.97) .0s both;
+  box-shadow:0 0 0 3px var(--blue-glow), 0 0 12px 2px var(--blue-glow);
+  animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
 }
 @keyframes done-center-pop {
-  0%   { transform:scale(0);   opacity:0 }
-  45%  { transform:scale(1.35); opacity:1 }
-  70%  { transform:scale(.85); opacity:1 }
-  100% { transform:scale(1);   opacity:1 }
+  0%   { transform:scale(0);    opacity:0 }
+  12%  { transform:scale(1.35); opacity:1 }
+  25%  { transform:scale(.9);   opacity:1 }
+  35%  { transform:scale(1);    opacity:1 }
+  78%  { transform:scale(1);    opacity:1 }
+  100% { transform:scale(1.1);  opacity:0 }
 }
 
 .done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
@@ -1124,6 +1146,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   <div id="doneScreen" class="done-screen" style="display:none">
     <!-- Bubble burst animation instead of emoji -->
     <div class="done-bubbles" aria-hidden="true">
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
@@ -1493,30 +1523,44 @@ GoogleService-Info.plist
         <!-- Categories -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
-          <div class="cat-list">
+          <div class="cat-list" id="catList">
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Work" data-ja="仕事">Work</span>
               <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
               <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
               <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
               <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
             </div>
           </div>
-          <div class="add-plus-row">
+          <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
             <span class="add-plus-row-sign">+</span> Add category
+          </div>
+          <!-- Inline new-category form (shown on click) -->
+          <div id="newCatForm" style="display:none;padding:0 0 10px;display:none">
+            <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
+              <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+              <input id="newCatInput" type="text" placeholder="Category name…"
+                style="flex:1;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;
+                       padding:7px 12px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">
+              <button id="newCatConfirmBtn"
+                style="font-size:12px;font-weight:800;padding:7px 14px;border-radius:10px;
+                       background:var(--blue);color:#fff;border:none;cursor:pointer;font-family:inherit;flex-shrink:0">
+                Add
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1525,7 +1569,7 @@ GoogleService-Info.plist
         <!-- Rules -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Rules" data-ja="ルール">Rules</div>
-          <div class="add-plus-row" style="padding-top:0">
+          <div class="add-plus-row" id="addRuleRow" style="padding-top:0;cursor:pointer">
             <span class="add-plus-row-sign">+</span> Add rule
           </div>
         </div>
@@ -1762,14 +1806,24 @@ function burstBubble(el, item) {
 
   el.classList.add('popping');
 
+  /* Read actual bubble colour so particles match whatever theme is active */
+  // Read colour from the bubble element's --bubble-color CSS var.
+  // Fall back to --blue on the root (kept in sync by applyAccentVars) so
+  // bursts always match the chosen colour even if class resolution lags.
+  const rawHex = (getComputedStyle(el).getPropertyValue('--bubble-color').trim() ||
+                  getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() ||
+                  '#3B82F6');
+  const hx = rawHex.replace('#','');
+  const cr = parseInt(hx.slice(0,2),16), cg = parseInt(hx.slice(2,4),16), cb = parseInt(hx.slice(4,6),16);
+  const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
   const particles = [
-    'rgba(59,130,246,1)',
-    'rgba(96,165,250,.95)',
-    'rgba(147,197,253,.9)',
-    'rgba(29,78,216,.95)',
-    'rgba(191,219,254,.85)',
+    `rgba(${cr},${cg},${cb},1)`,
+    `rgba(${lt(cr,40)},${lt(cg,40)},${lt(cb,40)},.95)`,
+    `rgba(${lt(cr,80)},${lt(cg,80)},${lt(cb,80)},.9)`,
+    `rgba(${dk(cr,30)},${dk(cg,30)},${dk(cb,30)},.95)`,
+    `rgba(${lt(cr,110)},${lt(cg,110)},${lt(cb,110)},.85)`,
     'rgba(255,255,255,.9)',
-    'rgba(59,130,246,.7)',
+    `rgba(${cr},${cg},${cb},.7)`,
   ];
 
   const count = 24;
@@ -1804,20 +1858,24 @@ function burstBubble(el, item) {
 
   setTimeout(() => {
     item.classList.add('collapsing');
+    const card = item.closest('.category-card');
+    // Count remaining *before* the remove — collapsing item is already excluded
+    const willRemain = card.querySelectorAll('.task-item:not(.collapsing)').length;
+    if (willRemain === 0) {
+      // Start fading the whole card section immediately — don't wait for collapse to finish
+      card.style.transition = 'opacity .3s ease, transform .3s ease';
+      card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+    }
     setTimeout(() => {
-      const card = item.closest('.category-card');
       item.remove();
       const remaining = card.querySelectorAll('.task-item:not(.collapsing)').length;
       const cnt = card.querySelector('.cat-count');
       if (cnt) cnt.textContent = remaining;
       if (remaining === 0) {
-        card.style.transition = 'opacity .28s ease, transform .28s ease';
-        card.style.opacity = '0'; card.style.transform = 'scale(.97)';
-        setTimeout(() => {
-          card.classList.add('empty');
-          card.style.opacity = ''; card.style.transform = '';
-          updateScreenState(); // ← check if all gone → show done screen
-        }, 300);
+        card.style.transition = '';
+        card.classList.add('empty');
+        card.style.opacity = ''; card.style.transform = '';
+        updateScreenState(); // ← check if all gone → show done screen
       } else {
         updateScreenState();
       }
@@ -2023,7 +2081,7 @@ function detectCat(t) {
 const addInput  = document.getElementById('addTaskInput');
 const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
-const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#3B82F6', 'Personal':'#3B82F6', 'Other':'#3B82F6' };
+const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#16A34A', 'Personal':'#7C3AED', 'Other':'#F97316' };
 function updateCat() {
   if (!autoCatEl || !addInput) return;
   const cat = detectCat(addInput.value);
@@ -2042,6 +2100,24 @@ function setCatDisplay(cat, autoDetected) {
   if (autoLabel) autoLabel.style.display = autoDetected ? '' : 'none';
 }
 addInput?.addEventListener('input', updateCat);
+
+/* Debounced AI classify while typing — kicks in 650ms after user stops */
+let _catAiDebounce;
+addInput?.addEventListener('input', () => {
+  clearTimeout(_catAiDebounce);
+  const val = addInput.value.trim();
+  if (val.length < 4) return;
+  _catAiDebounce = setTimeout(async () => {
+    if (addInput.value.trim() !== val) return; // text changed, skip stale result
+    try {
+      const tasks = await classifyTranscript(val);
+      if (tasks.length > 0 && addInput.value.trim() === val) {
+        setCatDisplay(tasks[0].category, true);
+      }
+    } catch (_) { /* keep local keyword result on failure */ }
+  }, 650);
+});
+
 updateCat();
 
 /* ── Category Picker Popover ── */
@@ -2172,9 +2248,9 @@ function showDoneScreen() {
   });
   const center = el.querySelector('.done-bubble-center');
   if (center) {
-    const rgb = bubbleColor.replace('#','');
-    const r = parseInt(rgb.slice(0,2),16), g = parseInt(rgb.slice(2,4),16), bv = parseInt(rgb.slice(4,6),16);
-    center.style.boxShadow = `0 0 0 3px rgba(${r},${g},${bv},.18), 0 0 12px 2px rgba(${r},${g},${bv},.2)`;
+    // Use updated CSS vars — box-shadow now uses var(--blue-glow) in CSS, just clear inline override
+    center.style.boxShadow = '';
+    center.style.display   = '';  // unhide in case it was hidden from a previous cycle
   }
 
   // Restart all animations: force reflow
@@ -2187,6 +2263,13 @@ function showDoneScreen() {
   el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
+
+  // Hide center bubble from layout once its animation finishes (so text moves up)
+  if (center) {
+    center.addEventListener('animationend', () => {
+      center.style.display = 'none';
+    }, { once: true });
+  }
 
   el.style.display = '';
 }
@@ -2385,29 +2468,36 @@ if (SR) {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
     r.continuous      = false;   // MUST be false on Safari
-    r.interimResults  = false;   // isFinal-only, most reliable cross-browser
+    r.interimResults  = true;    // show words live as user speaks
     r.maxAlternatives = 1;
 
     r.onstart = () => {
+      // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
        document.getElementById('voiceBtnBottom')
       ].forEach(b => b?.classList.add('listening'));
-      micModal.classList.add('show');
+      micModal?.classList.add('show');
       transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
-      transcriptEl.style.color = 'var(--blue)';
+      transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
     };
 
     r.onresult = e => {
+      let interim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           fullTranscript += res[0].transcript + ' ';
-          // Show accumulated transcript live in the mic modal
-          const hint = document.getElementById('micModalHint');
-          if (hint) hint.textContent = fullTranscript.trim();
+        } else {
+          interim += res[0].transcript;
         }
+      }
+      // Show live words — final so far + current interim phrase
+      const hint = document.getElementById('micModalHint');
+      if (hint) {
+        const display = (fullTranscript + interim).trim();
+        if (display) hint.textContent = display;
       }
     };
 
@@ -2565,6 +2655,20 @@ if (SR) {
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
+    // Show mic UI immediately — don't wait for onstart (iOS Safari can take ~1s, feels broken)
+    state.isListening = true;
+    micModal?.classList.add('show');
+    [voiceBtn,
+     document.getElementById('voiceBtnDone'),
+     document.getElementById('voiceBtnBottom')
+    ].forEach(b => b?.classList.add('listening'));
+    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+    transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
+    const hint = document.getElementById('micModalHint');
+    if (hint) hint.textContent = state.lang === 'ja'
+      ? '自然に話してください…'
+      : 'Say your tasks naturally…';
+
     if (micPermGranted) {
       // Permission already granted — start immediately (synchronous, keeps gesture chain)
       recognition = createRecognition();
@@ -2583,6 +2687,7 @@ if (SR) {
         .catch(e => {
           console.warn('mic permission denied:', e);
           shouldRestart = false;
+          _clearListeningUI(); // undo optimistic UI
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
     }
@@ -2612,17 +2717,95 @@ if (SR) {
 // Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
 document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   state.isProUser = true;
-  // Remove pointer-events lock from bubble tabs and colour grid
+  // Remove pointer-events lock from all Pro controls
   const wrap = document.getElementById('proPickerWrap');
   if (wrap) {
-    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid').forEach(el => {
+    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid,.bubble-preview-row,.add-plus-row').forEach(el => {
       el.style.pointerEvents = 'all';
     });
     // Hide the upgrade button row
     const upgradeRow = wrap.querySelector('.upgrade-row');
     if (upgradeRow) upgradeRow.style.display = 'none';
   }
-  showToast('Pro unlocked! ✨ (demo mode)');
+  // Apply current selected colour to entire UI immediately
+  if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+    applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+  }
+  syncAllBubbles();
+  showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
+});
+
+// Pro: Add category — show inline form
+document.getElementById('addCategoryRow')?.addEventListener('click', () => {
+  if (!state.isProUser) { showToast('Unlock Pro to add custom categories'); return; }
+  const form = document.getElementById('newCatForm');
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? '' : 'none';
+  if (form.style.display !== 'none') document.getElementById('newCatInput')?.focus();
+});
+
+function addCustomCategory(name) {
+  name = name.trim();
+  if (!name) return;
+  const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const cardId = 'cat-' + slug;
+  if (document.getElementById(cardId)) { showToast('Category already exists'); return; }
+
+  // Add dot entry to settings cat-list
+  const catList = document.getElementById('catList');
+  if (catList) {
+    const row = document.createElement('div');
+    row.className = 'cat-item';
+    row.innerHTML = `<div class="cat-item-dot" style="background:var(--blue)"></div>
+      <span class="cat-item-name">${name}</span>
+      <span class="cat-item-kw">custom</span>`;
+    catList.appendChild(row);
+  }
+
+  // Create a new category card in the task list
+  const tasksContainer = document.getElementById('tasksContainer');
+  const manualAddCard  = document.getElementById('manualAddCard');
+  if (tasksContainer) {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.id = cardId;
+    card.style.display = 'none';
+    card.innerHTML = `
+      <div class="category-header">
+        <span class="cat-name">${name}</span><span class="cat-count">0</span>
+      </div>
+      <div class="add-task-row" data-cat="${slug}">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add ${name} task…</span>
+      </div>`;
+    tasksContainer.insertBefore(card, manualAddCard || null);
+    // Wire add-task-row to open the manual add card
+    card.querySelector('.add-task-row')?.addEventListener('click', () => {
+      const mc = document.getElementById('manualAddCard');
+      if (mc) { mc.style.display = ''; document.getElementById('addTaskInput')?.focus(); }
+    });
+  }
+
+  showToast(`"${name}" added ✓`);
+  // Hide form + clear input
+  const form = document.getElementById('newCatForm');
+  const inp  = document.getElementById('newCatInput');
+  if (form) form.style.display = 'none';
+  if (inp)  inp.value = '';
+}
+
+document.getElementById('newCatConfirmBtn')?.addEventListener('click', () => {
+  addCustomCategory(document.getElementById('newCatInput')?.value || '');
+});
+document.getElementById('newCatInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') addCustomCategory(e.target.value);
+  if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
+});
+
+// Pro: Add rule — toast for now (rules engine in full release)
+document.getElementById('addRuleRow')?.addEventListener('click', () => {
+  if (!state.isProUser) { showToast('Unlock Pro to add auto-rules'); return; }
+  showToast(state.lang === 'ja' ? 'ルール設定 — 正式リリースで公開' : 'Auto-rules — coming in full release');
 });
 
 // Style tabs
@@ -2644,6 +2827,10 @@ document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
     state.bubbleColour = sw.dataset.colour;
     updateBubblePreview();
     syncAllBubbles();
+    // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    }
   });
 });
 
@@ -2714,7 +2901,9 @@ document.getElementById('colourModeBlue')?.addEventListener('click', () => {
   state.greyBubbles = false;
   document.getElementById('colourModeBlue').classList.add('active');
   document.getElementById('colourModeGrey').classList.remove('active');
-  applyAccentVars(BLUE_VARS);
+  // Restore to the selected Pro colour if available, otherwise default blue
+  const restoreVars = COLOUR_ACCENT_VARS[state.bubbleColour] || BLUE_VARS;
+  applyAccentVars(restoreVars);
   document.querySelectorAll('.task-bubble').forEach(b => {
     b.classList.remove('bc-grey');
     b.classList.add(b.dataset.origColour || state.bubbleColour);
@@ -2753,6 +2942,23 @@ const BLUE_VARS = {
 function applyAccentVars(vars) {
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
 }
+
+/* Per-colour accent vars — used by Pro colour picker to tint the whole UI */
+const COLOUR_ACCENT_VARS = {
+  'bc-blue':   {'--blue':'#3B82F6','--blue-dim':'#1D4ED8','--blue-lt':'#EFF6FF','--blue-glow':'rgba(59,130,246,.18)','--shbtn':'0 4px 16px rgba(59,130,246,.38)'},
+  'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
+  'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
+  'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
+  'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
+  'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
+  'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
+  'bc-purple': {'--blue':'#7C3AED','--blue-dim':'#6d28d9','--blue-lt':'#F5F3FF','--blue-glow':'rgba(124,58,237,.18)','--shbtn':'0 4px 16px rgba(124,58,237,.38)'},
+  'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
+  'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
+  'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
+  'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
+};
+
 /* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
 
 /* Deploy guide toggle */

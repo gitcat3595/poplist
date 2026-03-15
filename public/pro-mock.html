@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Poplist Pro — Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: 'Plus Jakarta Sans', sans-serif;
+    --bg:      #ECEEF2;
+    --surface: #E2E4E9;
+    --card:    #F4F5F8;
+    --border:  #D4D7DD;
+    --t1:      #1A1C20;
+    --t2:      #6B7280;
+    --t3:      #9CA3AF;
+    --rp:      14px;
+    --accent:  #3B82F6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--t1);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 20px 20px 0;
+    text-align: center;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-bottom: 4px;
+  }
+  .logo-bubble {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(59,130,246,.35);
+  }
+  .logo-bubble svg { width: 18px; height: 18px; fill: #fff }
+  .logo-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .pro-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 4px;
+    position: relative;
+    top: -2px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--t2);
+    margin-top: 4px;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--t3);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 20px 20px 8px;
+  }
+
+  /* ── Feature rows ── */
+  .feature-card {
+    margin: 0 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--rp);
+    overflow: hidden;
+  }
+  .feature-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .feature-row:last-child { border-bottom: none }
+  .feat-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .feat-text { flex: 1; min-width: 0 }
+  .feat-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .feat-desc {
+    font-size: 11.5px;
+    color: var(--t2);
+    line-height: 1.35;
+  }
+  .feat-compare {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .pill-free {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--t2);
+  }
+  .pill-pro {
+    background: var(--accent);
+    color: #fff;
+  }
+  .pill-dash {
+    background: transparent;
+    color: var(--t3);
+    font-size: 13px;
+  }
+
+  /* ── Color section ── */
+  .color-card {
+    margin: 0 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--rp);
+    overflow: hidden;
+  }
+  .color-block {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .color-block:last-child { border-bottom: none }
+  .color-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .color-block-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .color-block-sub {
+    font-size: 11px;
+    color: var(--t2);
+    margin-top: 1px;
+  }
+  .swatch-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: transform .15s;
+  }
+  .swatch.locked::after {
+    content: '🔒';
+    position: absolute;
+    font-size: 8px;
+    bottom: -1px; right: -1px;
+  }
+  .swatch.selected::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid var(--t1);
+  }
+
+  /* Category color pickers */
+  .cat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-row:last-child { border-bottom: none }
+  .cat-bubble-preview {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  }
+  .cat-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .cat-swatches {
+    display: flex;
+    gap: 6px;
+  }
+  .cat-swatch {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+  }
+  .cat-swatch.selected::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1.5px solid var(--t1);
+  }
+  .pro-lock-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 2px;
+  }
+  .pro-lock-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .pro-lock-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(59,130,246,.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* Task preview strip */
+  .preview-strip {
+    margin: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .preview-bubble {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .bubble-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .bubble-chip {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: auto;
+    border: 1px solid;
+  }
+
+  /* ── Pricing ── */
+  .pricing-stack {
+    margin: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .plan-card {
+    border-radius: var(--rp);
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: border-color .15s;
+  }
+  .plan-card.selected {
+    border-color: var(--t1);
+    background: #fff;
+  }
+  .plan-radio {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .plan-card.selected .plan-radio {
+    border-color: var(--t1);
+    background: var(--t1);
+  }
+  .plan-card.selected .plan-radio::after {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  .plan-info { flex: 1 }
+  .plan-name {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .plan-note {
+    font-size: 11px;
+    color: var(--t2);
+    margin-top: 1px;
+  }
+  .plan-price {
+    text-align: right;
+  }
+  .plan-price-main {
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .plan-price-per {
+    font-size: 11px;
+    color: var(--t2);
+  }
+  .plan-badge {
+    position: absolute;
+    top: -10px; right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    color: #fff;
+  }
+  .badge-save   { background: var(--t1) }
+  .badge-launch { background: #EF4444 }
+
+  /* ── CTA ── */
+  .cta-area {
+    padding: 20px 16px 8px;
+  }
+  .cta-btn {
+    width: 100%;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--t1);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: var(--font);
+    border: none;
+    cursor: pointer;
+    letter-spacing: -0.2px;
+    transition: opacity .15s;
+  }
+  .cta-btn:active { opacity: .85 }
+  .restore-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--t2);
+    padding: 12px 0 4px;
+    cursor: pointer;
+  }
+  .legal {
+    text-align: center;
+    font-size: 11px;
+    color: var(--t3);
+    padding: 8px 24px 40px;
+    line-height: 1.5;
+  }
+
+  /* accent toggle demo */
+  .accent-note {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-bubble">
+        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3zm7 10a1 1 0 0 1 2 0 9 9 0 0 1-8 8.94V22h2a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2h2v-1.06A9 9 0 0 1 3 12a1 1 0 0 1 2 0 7 7 0 0 0 14 0z"/></svg>
+      </div>
+      <span class="logo-name">Poplist <span class="pro-badge">PRO</span></span>
+    </div>
+    <div class="header-sub">Unlock everything. Think less, do more.</div>
+  </div>
+
+  <!-- Features -->
+  <div class="section-label">What you get</div>
+  <div class="feature-card">
+
+    <div class="feature-row">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-text">
+        <div class="feat-name">Base colour themes</div>
+        <div class="feat-desc">Change the whole app's look to match your mood</div>
+      </div>
+      <div class="feat-compare">
+        <span class="pill pill-free">2</span>
+        <span class="pill pill-pro">12</span>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🔵</div>
+      <div class="feat-text">
+        <div class="feat-name">Category bubble colours</div>
+        <div class="feat-desc">Set a different colour for Work, Home, Personal & Other</div>
+      </div>
+      <div class="feat-compare">
+        <span class="pill pill-dash">—</span>
+        <span class="pill pill-pro">✓</span>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🔁</div>
+      <div class="feat-text">
+        <div class="feat-name">Task rollover</div>
+        <div class="feat-desc">Unfinished tasks carry forward to tomorrow automatically</div>
+      </div>
+      <div class="feat-compare">
+        <span class="pill pill-dash">—</span>
+        <span class="pill pill-pro">✓</span>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">📅</div>
+      <div class="feat-text">
+        <div class="feat-name">Custom due dates</div>
+        <div class="feat-desc">Set an exact date on any task, your way</div>
+      </div>
+      <div class="feat-compare">
+        <span class="pill pill-dash">—</span>
+        <span class="pill pill-pro">✓</span>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">📊</div>
+      <div class="feat-text">
+        <div class="feat-name">Weekly stats</div>
+        <div class="feat-desc">See what you're getting done, week by week</div>
+      </div>
+      <div class="feat-compare">
+        <span class="pill pill-free">Today</span>
+        <span class="pill pill-pro">Full</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Colour section ── -->
+  <div class="section-label">Colour — how it works</div>
+  <div class="color-card">
+
+    <!-- Type 1: Base colour -->
+    <div class="color-block">
+      <div class="color-block-header">
+        <div>
+          <div class="color-block-title">① Base colour</div>
+          <div class="color-block-sub">Changes all bubbles + logo accent at once</div>
+        </div>
+        <span class="pill pill-free" style="font-size:10px">Free: 2</span>
+      </div>
+      <div class="swatch-row">
+        <!-- Free (2) -->
+        <div class="swatch selected" style="background:#3B82F6" title="Blue (free)"></div>
+        <div class="swatch" style="background:#475569" title="Slate (free)"></div>
+        <!-- Pro locked -->
+        <div class="swatch locked" style="background:#1E40AF;opacity:.5" title="Navy (pro)"></div>
+        <div class="swatch locked" style="background:#0D9488;opacity:.5" title="Teal (pro)"></div>
+        <div class="swatch locked" style="background:#16A34A;opacity:.5" title="Green (pro)"></div>
+        <div class="swatch locked" style="background:#F97316;opacity:.5" title="Amber (pro)"></div>
+        <div class="swatch locked" style="background:#EF4444;opacity:.5" title="Rose (pro)"></div>
+        <div class="swatch locked" style="background:#7C3AED;opacity:.5" title="Purple (pro)"></div>
+        <div class="swatch locked" style="background:#EC4899;opacity:.5" title="Pink (pro)"></div>
+        <div class="swatch locked" style="background:#374151;opacity:.5" title="Black (pro)"></div>
+        <div class="swatch locked" style="background:#9CA3AF;opacity:.5" title="Grey (pro)"></div>
+        <div class="swatch locked" style="background:#CBD5E1;opacity:.5;border:1px solid #D4D7DD" title="White (pro)"></div>
+      </div>
+      <div class="accent-note">→ Changing this shifts the mic button, bubble glow & logo tint</div>
+    </div>
+
+    <!-- Type 2: Per-category colour -->
+    <div class="color-block">
+      <div class="color-block-header">
+        <div>
+          <div class="color-block-title">② Category bubble colour <span class="pill pill-pro" style="font-size:10px;vertical-align:middle">PRO</span></div>
+          <div class="color-block-sub">Each AI category gets its own colour, set by you</div>
+        </div>
+      </div>
+
+      <!-- Category rows -->
+      <div class="cat-row">
+        <div class="cat-bubble-preview" style="background:#3B82F6"></div>
+        <div class="cat-name">Work</div>
+        <div class="cat-swatches">
+          <div class="cat-swatch selected" style="background:#3B82F6"></div>
+          <div class="cat-swatch" style="background:#1E40AF"></div>
+          <div class="cat-swatch" style="background:#0D9488"></div>
+          <div class="cat-swatch" style="background:#374151"></div>
+          <div class="cat-swatch" style="background:#7C3AED"></div>
+        </div>
+      </div>
+
+      <div class="cat-row">
+        <div class="cat-bubble-preview" style="background:#16A34A"></div>
+        <div class="cat-name">Home</div>
+        <div class="cat-swatches">
+          <div class="cat-swatch selected" style="background:#16A34A"></div>
+          <div class="cat-swatch" style="background:#0D9488"></div>
+          <div class="cat-swatch" style="background:#F97316"></div>
+          <div class="cat-swatch" style="background:#3B82F6"></div>
+          <div class="cat-swatch" style="background:#EC4899"></div>
+        </div>
+      </div>
+
+      <div class="cat-row">
+        <div class="cat-bubble-preview" style="background:#7C3AED"></div>
+        <div class="cat-name">Personal</div>
+        <div class="cat-swatches">
+          <div class="cat-swatch selected" style="background:#7C3AED"></div>
+          <div class="cat-swatch" style="background:#EC4899"></div>
+          <div class="cat-swatch" style="background:#EF4444"></div>
+          <div class="cat-swatch" style="background:#F97316"></div>
+          <div class="cat-swatch" style="background:#3B82F6"></div>
+        </div>
+      </div>
+
+      <div class="cat-row">
+        <div class="cat-bubble-preview" style="background:#F97316"></div>
+        <div class="cat-name">Other</div>
+        <div class="cat-swatches">
+          <div class="cat-swatch selected" style="background:#F97316"></div>
+          <div class="cat-swatch" style="background:#EF4444"></div>
+          <div class="cat-swatch" style="background:#9CA3AF"></div>
+          <div class="cat-swatch" style="background:#16A34A"></div>
+          <div class="cat-swatch" style="background:#7C3AED"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Task preview showing both colour types -->
+  <div class="section-label">How your list looks</div>
+  <div class="preview-strip">
+    <div class="preview-bubble" style="border-color:rgba(59,130,246,.3)">
+      <div class="bubble-dot" style="background:#3B82F6"></div>
+      Send proposal to client
+      <span class="bubble-chip" style="color:#3B82F6;border-color:rgba(59,130,246,.3)">Work</span>
+    </div>
+    <div class="preview-bubble" style="border-color:rgba(22,163,74,.3)">
+      <div class="bubble-dot" style="background:#16A34A"></div>
+      Buy groceries
+      <span class="bubble-chip" style="color:#16A34A;border-color:rgba(22,163,74,.3)">Home</span>
+    </div>
+    <div class="preview-bubble" style="border-color:rgba(124,58,237,.3)">
+      <div class="bubble-dot" style="background:#7C3AED"></div>
+      Go for a run
+      <span class="bubble-chip" style="color:#7C3AED;border-color:rgba(124,58,237,.3)">Personal</span>
+    </div>
+  </div>
+  <div style="padding:6px 16px 0;font-size:11px;color:var(--t2)">
+    ↑ AI sorted these automatically. You just spoke them — no categories or timing needed.
+  </div>
+
+  <!-- Pricing -->
+  <div class="section-label">Choose your plan</div>
+  <div class="pricing-stack">
+
+    <div class="plan-card" id="monthly">
+      <div class="plan-radio"></div>
+      <div class="plan-info">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-note">Cancel any time</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-price-main">¥480</div>
+        <div class="plan-price-per">per month</div>
+      </div>
+    </div>
+
+    <div class="plan-card selected" id="annual">
+      <div class="plan-badge badge-save">Save ¥3,170</div>
+      <div class="plan-radio"></div>
+      <div class="plan-info">
+        <div class="plan-name">Annual</div>
+        <div class="plan-note">¥216/month · best value</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-price-main">¥2,590</div>
+        <div class="plan-price-per">per year</div>
+      </div>
+    </div>
+
+    <div class="plan-card" id="lifetime">
+      <div class="plan-badge badge-launch">Launch price</div>
+      <div class="plan-radio"></div>
+      <div class="plan-info">
+        <div class="plan-name">Lifetime</div>
+        <div class="plan-note">One-time purchase, yours forever</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-price-main">¥9,800</div>
+        <div class="plan-price-per">one-time</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <button class="cta-btn">Start PRO</button>
+  </div>
+  <div class="restore-link">Restore purchase</div>
+  <div class="legal">
+    Subscriptions renew automatically. Cancel any time in App Store settings.<br>
+    Lifetime plan is a one-time purchase — no recurring charges.
+  </div>
+
+</div>
+
+<script>
+  // Plan selection demo
+  document.querySelectorAll('.plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+
+  // Base swatch: changes accent, logo, AND all task preview bubbles (shows "base color" concept)
+  document.querySelectorAll('.swatch:not(.locked)').forEach(sw => {
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+      const color = sw.style.background;
+      document.documentElement.style.setProperty('--accent', color);
+      // Logo
+      document.querySelector('.logo-bubble').style.background = color;
+      document.querySelector('.logo-bubble').style.boxShadow = `0 4px 12px ${color}55`;
+      // Task preview strip — all bubbles shift to the base colour
+      document.querySelectorAll('.bubble-dot').forEach(dot => dot.style.background = color);
+      document.querySelectorAll('.bubble-chip').forEach(chip => {
+        chip.style.color = color;
+        chip.style.borderColor = color + '44';
+      });
+      document.querySelectorAll('.preview-bubble').forEach(b => b.style.borderColor = color + '44');
+      // Category preview dots also reset to base colour (per-category is a PRO override)
+      document.querySelectorAll('.cat-bubble-preview').forEach(dot => dot.style.background = color);
+      document.querySelectorAll('.cat-swatch').forEach(s => s.classList.remove('selected'));
+      document.querySelectorAll('.cat-row').forEach(row => {
+        row.querySelectorAll('.cat-swatch')[0]?.classList.add('selected');
+      });
+    });
+  });
+
+  // Category swatch: overrides just that category's colour (PRO feature demo)
+  document.querySelectorAll('.cat-row').forEach((row, rowIdx) => {
+    const swatches = row.querySelectorAll('.cat-swatch');
+    const dot = row.querySelector('.cat-bubble-preview');
+    // Match to preview bubble dot by index
+    const previewDots = document.querySelectorAll('.bubble-dot');
+    const previewChips = document.querySelectorAll('.bubble-chip');
+    const previewBubbles = document.querySelectorAll('.preview-bubble');
+    swatches.forEach(sw => {
+      sw.addEventListener('click', () => {
+        swatches.forEach(s => s.classList.remove('selected'));
+        sw.classList.add('selected');
+        const color = sw.style.background;
+        dot.style.background = color;
+        // Also update the matching preview bubble in the task strip
+        if (previewDots[rowIdx]) previewDots[rowIdx].style.background = color;
+        if (previewChips[rowIdx]) {
+          previewChips[rowIdx].style.color = color;
+          previewChips[rowIdx].style.borderColor = color + '44';
+        }
+        if (previewBubbles[rowIdx]) previewBubbles[rowIdx].style.borderColor = color + '44';
+      });
+    });
+  });
+</script>
+</body>
+</html>
