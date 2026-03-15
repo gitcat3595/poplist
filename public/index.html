@@ -410,7 +410,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
 }
-.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:rgba(59,130,246,.3); background:var(--blue-lt) }
+.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow); background:var(--blue-lt) }
 .timing-chip[data-timing="This Week"] { color:var(--t1);    border-color:var(--brim);         background:var(--raised); font-weight:800 }
 .timing-chip[data-timing="Later"]     { color:var(--t2);    border-color:var(--border);       background:var(--card) }
 .timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
@@ -475,7 +475,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1px solid var(--border); background:var(--card); color:var(--t2);
   cursor:pointer; transition:var(--tr); box-shadow:var(--shlift);
 }
-.add-chip.sel { background:var(--black); color:#fff; border-color:var(--black) }
+.add-chip.sel { background:var(--blue); color:#fff; border-color:var(--blue) }
 .add-chip:hover:not(.sel) { border-color:var(--blue); color:var(--blue) }
 
 .add-row-sep { height:1px; background:var(--border); margin:10px 0 }
@@ -994,7 +994,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   width:36px; height:36px; border-radius:50%; position:relative;
   margin-bottom:24px;
   background:var(--blue);
-  box-shadow:0 0 0 3px rgba(59,130,246,.18), 0 0 12px 2px rgba(59,130,246,.2);
+  box-shadow:0 0 0 3px var(--blue-glow), 0 0 12px 2px var(--blue-glow);
   animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
 }
 @keyframes done-center-pop {
@@ -1523,30 +1523,44 @@ GoogleService-Info.plist
         <!-- Categories -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
-          <div class="cat-list">
+          <div class="cat-list" id="catList">
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Work" data-ja="仕事">Work</span>
               <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
               <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
               <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
             </div>
             <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
+              <div class="cat-item-dot" style="background:var(--blue)"></div>
               <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
               <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
             </div>
           </div>
           <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
             <span class="add-plus-row-sign">+</span> Add category
+          </div>
+          <!-- Inline new-category form (shown on click) -->
+          <div id="newCatForm" style="display:none;padding:0 0 10px;display:none">
+            <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
+              <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+              <input id="newCatInput" type="text" placeholder="Category name…"
+                style="flex:1;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;
+                       padding:7px 12px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">
+              <button id="newCatConfirmBtn"
+                style="font-size:12px;font-weight:800;padding:7px 14px;border-radius:10px;
+                       background:var(--blue);color:#fff;border:none;cursor:pointer;font-family:inherit;flex-shrink:0">
+                Add
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1793,7 +1807,12 @@ function burstBubble(el, item) {
   el.classList.add('popping');
 
   /* Read actual bubble colour so particles match whatever theme is active */
-  const rawHex = getComputedStyle(el).getPropertyValue('--bubble-color').trim() || '#3B82F6';
+  // Read colour from the bubble element's --bubble-color CSS var.
+  // Fall back to --blue on the root (kept in sync by applyAccentVars) so
+  // bursts always match the chosen colour even if class resolution lags.
+  const rawHex = (getComputedStyle(el).getPropertyValue('--bubble-color').trim() ||
+                  getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() ||
+                  '#3B82F6');
   const hx = rawHex.replace('#','');
   const cr = parseInt(hx.slice(0,2),16), cg = parseInt(hx.slice(2,4),16), cb = parseInt(hx.slice(4,6),16);
   const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
@@ -2229,9 +2248,9 @@ function showDoneScreen() {
   });
   const center = el.querySelector('.done-bubble-center');
   if (center) {
-    const rgb = bubbleColor.replace('#','');
-    const r = parseInt(rgb.slice(0,2),16), g = parseInt(rgb.slice(2,4),16), bv = parseInt(rgb.slice(4,6),16);
-    center.style.boxShadow = `0 0 0 3px rgba(${r},${g},${bv},.18), 0 0 12px 2px rgba(${r},${g},${bv},.2)`;
+    // Use updated CSS vars — box-shadow now uses var(--blue-glow) in CSS, just clear inline override
+    center.style.boxShadow = '';
+    center.style.display   = '';  // unhide in case it was hidden from a previous cycle
   }
 
   // Restart all animations: force reflow
@@ -2244,6 +2263,13 @@ function showDoneScreen() {
   el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
+
+  // Hide center bubble from layout once its animation finishes (so text moves up)
+  if (center) {
+    center.addEventListener('animationend', () => {
+      center.style.display = 'none';
+    }, { once: true });
+  }
 
   el.style.display = '';
 }
@@ -2709,14 +2735,77 @@ document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
 });
 
-// Pro: Add category / Add rule — show a coming-soon prompt in demo mode
+// Pro: Add category — show inline form
 document.getElementById('addCategoryRow')?.addEventListener('click', () => {
-  if (!state.isProUser) return;
-  showToast(state.lang === 'ja' ? 'カスタムカテゴリ — 近日公開' : 'Custom categories — coming in full release');
+  if (!state.isProUser) { showToast('Unlock Pro to add custom categories'); return; }
+  const form = document.getElementById('newCatForm');
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? '' : 'none';
+  if (form.style.display !== 'none') document.getElementById('newCatInput')?.focus();
 });
+
+function addCustomCategory(name) {
+  name = name.trim();
+  if (!name) return;
+  const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const cardId = 'cat-' + slug;
+  if (document.getElementById(cardId)) { showToast('Category already exists'); return; }
+
+  // Add dot entry to settings cat-list
+  const catList = document.getElementById('catList');
+  if (catList) {
+    const row = document.createElement('div');
+    row.className = 'cat-item';
+    row.innerHTML = `<div class="cat-item-dot" style="background:var(--blue)"></div>
+      <span class="cat-item-name">${name}</span>
+      <span class="cat-item-kw">custom</span>`;
+    catList.appendChild(row);
+  }
+
+  // Create a new category card in the task list
+  const tasksContainer = document.getElementById('tasksContainer');
+  const manualAddCard  = document.getElementById('manualAddCard');
+  if (tasksContainer) {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.id = cardId;
+    card.style.display = 'none';
+    card.innerHTML = `
+      <div class="category-header">
+        <span class="cat-name">${name}</span><span class="cat-count">0</span>
+      </div>
+      <div class="add-task-row" data-cat="${slug}">
+        <div class="add-task-plus"></div>
+        <span class="add-task-text">Add ${name} task…</span>
+      </div>`;
+    tasksContainer.insertBefore(card, manualAddCard || null);
+    // Wire add-task-row to open the manual add card
+    card.querySelector('.add-task-row')?.addEventListener('click', () => {
+      const mc = document.getElementById('manualAddCard');
+      if (mc) { mc.style.display = ''; document.getElementById('addTaskInput')?.focus(); }
+    });
+  }
+
+  showToast(`"${name}" added ✓`);
+  // Hide form + clear input
+  const form = document.getElementById('newCatForm');
+  const inp  = document.getElementById('newCatInput');
+  if (form) form.style.display = 'none';
+  if (inp)  inp.value = '';
+}
+
+document.getElementById('newCatConfirmBtn')?.addEventListener('click', () => {
+  addCustomCategory(document.getElementById('newCatInput')?.value || '');
+});
+document.getElementById('newCatInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') addCustomCategory(e.target.value);
+  if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
+});
+
+// Pro: Add rule — toast for now (rules engine in full release)
 document.getElementById('addRuleRow')?.addEventListener('click', () => {
-  if (!state.isProUser) return;
-  showToast(state.lang === 'ja' ? 'ルール設定 — 近日公開' : 'Auto-rules — coming in full release');
+  if (!state.isProUser) { showToast('Unlock Pro to add auto-rules'); return; }
+  showToast(state.lang === 'ja' ? 'ルール設定 — 正式リリースで公開' : 'Auto-rules — coming in full release');
 });
 
 // Style tabs
