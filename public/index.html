@@ -74,7 +74,7 @@
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html { -webkit-tap-highlight-color:transparent }
+html { -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none }
 body {
   font-family:var(--font);
   background:var(--bg);
@@ -84,6 +84,7 @@ body {
   padding-bottom:140px;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+  overscroll-behavior-y: none;   /* prevent iOS pull-down rubber-band hiding content */
 }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit;
          -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
@@ -445,10 +446,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   background:var(--card); border-radius:var(--rc);
   box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
 }
-.add-task-active { display:flex; align-items:flex-start; padding:14px 16px 12px; gap:13px }
+.add-task-active { display:flex; align-items:center; padding:14px 16px 12px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
   background:var(--blue); opacity:.25; pointer-events:none;
+  position:relative; align-self:flex-start; margin-top:1px;
 }
 .add-bubble-ph::before {
   content:''; position:absolute; top:3px; left:5px;
@@ -1543,7 +1545,7 @@ GoogleService-Info.plist
               <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
             </div>
           </div>
-          <div class="add-plus-row">
+          <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
             <span class="add-plus-row-sign">+</span> Add category
           </div>
         </div>
@@ -1553,7 +1555,7 @@ GoogleService-Info.plist
         <!-- Rules -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Rules" data-ja="ルール">Rules</div>
-          <div class="add-plus-row" style="padding-top:0">
+          <div class="add-plus-row" id="addRuleRow" style="padding-top:0;cursor:pointer">
             <span class="add-plus-row-sign">+</span> Add rule
           </div>
         </div>
@@ -1837,20 +1839,24 @@ function burstBubble(el, item) {
 
   setTimeout(() => {
     item.classList.add('collapsing');
+    const card = item.closest('.category-card');
+    // Count remaining *before* the remove — collapsing item is already excluded
+    const willRemain = card.querySelectorAll('.task-item:not(.collapsing)').length;
+    if (willRemain === 0) {
+      // Start fading the whole card section immediately — don't wait for collapse to finish
+      card.style.transition = 'opacity .3s ease, transform .3s ease';
+      card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+    }
     setTimeout(() => {
-      const card = item.closest('.category-card');
       item.remove();
       const remaining = card.querySelectorAll('.task-item:not(.collapsing)').length;
       const cnt = card.querySelector('.cat-count');
       if (cnt) cnt.textContent = remaining;
       if (remaining === 0) {
-        card.style.transition = 'opacity .28s ease, transform .28s ease';
-        card.style.opacity = '0'; card.style.transform = 'scale(.97)';
-        setTimeout(() => {
-          card.classList.add('empty');
-          card.style.opacity = ''; card.style.transform = '';
-          updateScreenState(); // ← check if all gone → show done screen
-        }, 300);
+        card.style.transition = '';
+        card.classList.add('empty');
+        card.style.opacity = ''; card.style.transform = '';
+        updateScreenState(); // ← check if all gone → show done screen
       } else {
         updateScreenState();
       }
@@ -2685,17 +2691,32 @@ if (SR) {
 // Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
 document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   state.isProUser = true;
-  // Remove pointer-events lock from bubble tabs and colour grid
+  // Remove pointer-events lock from all Pro controls
   const wrap = document.getElementById('proPickerWrap');
   if (wrap) {
-    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid').forEach(el => {
+    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid,.bubble-preview-row,.add-plus-row').forEach(el => {
       el.style.pointerEvents = 'all';
     });
     // Hide the upgrade button row
     const upgradeRow = wrap.querySelector('.upgrade-row');
     if (upgradeRow) upgradeRow.style.display = 'none';
   }
-  showToast('Pro unlocked! ✨ (demo mode)');
+  // Apply current selected colour to entire UI immediately
+  if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+    applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+  }
+  syncAllBubbles();
+  showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
+});
+
+// Pro: Add category / Add rule — show a coming-soon prompt in demo mode
+document.getElementById('addCategoryRow')?.addEventListener('click', () => {
+  if (!state.isProUser) return;
+  showToast(state.lang === 'ja' ? 'カスタムカテゴリ — 近日公開' : 'Custom categories — coming in full release');
+});
+document.getElementById('addRuleRow')?.addEventListener('click', () => {
+  if (!state.isProUser) return;
+  showToast(state.lang === 'ja' ? 'ルール設定 — 近日公開' : 'Auto-rules — coming in full release');
 });
 
 // Style tabs
@@ -2717,6 +2738,10 @@ document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
     state.bubbleColour = sw.dataset.colour;
     updateBubblePreview();
     syncAllBubbles();
+    // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    }
   });
 });
 
@@ -2787,7 +2812,9 @@ document.getElementById('colourModeBlue')?.addEventListener('click', () => {
   state.greyBubbles = false;
   document.getElementById('colourModeBlue').classList.add('active');
   document.getElementById('colourModeGrey').classList.remove('active');
-  applyAccentVars(BLUE_VARS);
+  // Restore to the selected Pro colour if available, otherwise default blue
+  const restoreVars = COLOUR_ACCENT_VARS[state.bubbleColour] || BLUE_VARS;
+  applyAccentVars(restoreVars);
   document.querySelectorAll('.task-bubble').forEach(b => {
     b.classList.remove('bc-grey');
     b.classList.add(b.dataset.origColour || state.bubbleColour);
@@ -2826,6 +2853,23 @@ const BLUE_VARS = {
 function applyAccentVars(vars) {
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
 }
+
+/* Per-colour accent vars — used by Pro colour picker to tint the whole UI */
+const COLOUR_ACCENT_VARS = {
+  'bc-blue':   {'--blue':'#3B82F6','--blue-dim':'#1D4ED8','--blue-lt':'#EFF6FF','--blue-glow':'rgba(59,130,246,.18)','--shbtn':'0 4px 16px rgba(59,130,246,.38)'},
+  'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
+  'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
+  'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
+  'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
+  'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
+  'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
+  'bc-purple': {'--blue':'#7C3AED','--blue-dim':'#6d28d9','--blue-lt':'#F5F3FF','--blue-glow':'rgba(124,58,237,.18)','--shbtn':'0 4px 16px rgba(124,58,237,.38)'},
+  'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
+  'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
+  'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
+  'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
+};
+
 /* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
 
 /* Deploy guide toggle */
