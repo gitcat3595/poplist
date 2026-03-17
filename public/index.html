@@ -2470,8 +2470,9 @@ if (SR) {
   function createRecognition() {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
-    r.continuous      = false;   // MUST be false on Safari
-    r.interimResults  = true;    // show words live as user speaks
+    r.continuous      = false;           // MUST be false on Safari
+    r.interimResults  = !isSafari;       // Safari: false (only fires isFinal, interim breaks it)
+                                         // Chrome: true  (live words as user speaks)
     r.maxAlternatives = 1;
 
     r.onstart = () => {
