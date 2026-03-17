@@ -2446,10 +2446,12 @@ const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navig
 
 let recognition    = null;
 let fullTranscript = '';
-let interimText    = '';   // Chrome fix: track live interim so onend can promote it
+let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-let micPermGranted = false;
+// Safari needs getUserMedia called first before webkitSpeechRecognition.start().
+// Chrome/Edge handle mic permission internally — skip getUserMedia on those.
+let micPermGranted = !isSafari;  // Chrome: skip getUserMedia entirely
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -2683,13 +2685,9 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    if (micPermGranted) {
-      // Permission already granted — start immediately (synchronous, keeps gesture chain)
-      recognition = createRecognition();
-      try { recognition.start(); }
-      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-    } else {
-      // First time — request permission then start in .then() (still within gesture microtask)
+    if (isSafari && !micPermGranted) {
+      // Safari REQUIRES a getUserMedia call before webkitSpeechRecognition.start().
+      // Must happen inside this .then() microtask — still counts as the user gesture.
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
           stream.getTracks().forEach(t => t.stop());
@@ -2701,17 +2699,22 @@ if (SR) {
         .catch(e => {
           console.warn('mic permission denied:', e);
           shouldRestart = false;
-          _clearListeningUI(); // undo optimistic UI
+          _clearListeningUI();
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
+    } else {
+      // Chrome / Edge / every subsequent Safari tap:
+      // SpeechRecognition handles its own mic permission — start directly.
+      // Calling getUserMedia first on Chrome causes an audio-capture conflict.
+      recognition = createRecognition();
+      try { recognition.start(); }
+      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
     }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
   micStopBtn?.addEventListener('click', () => stopListening());
-
-  recognition = createRecognition();  // pre-warm on page load
 
 } else {
   // No Speech API at all (very old browser / Firefox without flag)
