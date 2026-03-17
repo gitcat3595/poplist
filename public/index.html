@@ -2446,6 +2446,7 @@ const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navig
 
 let recognition    = null;
 let fullTranscript = '';
+let interimText    = '';   // Chrome fix: track live interim so onend can promote it
 let shouldRestart  = false;
 let restartTimer   = null;
 let micPermGranted = false;
@@ -2484,24 +2485,34 @@ if (SR) {
     };
 
     r.onresult = e => {
-      let interim = '';
+      let newInterim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           fullTranscript += res[0].transcript + ' ';
+          interimText = '';            // final arrived — clear interim
         } else {
-          interim += res[0].transcript;
+          newInterim += res[0].transcript;
         }
       }
+      if (newInterim) interimText = newInterim;  // keep latest interim
+
       // Show live words — final so far + current interim phrase
       const hint = document.getElementById('micModalHint');
       if (hint) {
-        const display = (fullTranscript + interim).trim();
+        const display = (fullTranscript + interimText).trim();
         if (display) hint.textContent = display;
       }
     };
 
     r.onend = () => {
+      // Chrome fix: session can end without ever firing isFinal.
+      // Promote any pending interim text into fullTranscript now.
+      if (interimText) {
+        fullTranscript += interimText + ' ';
+        interimText = '';
+      }
+
       if (shouldRestart && state.isListening) {
         // Keep listening — Safari needs fresh object each time
         recognition = createRecognition();
@@ -2590,9 +2601,11 @@ if (SR) {
     shouldRestart = false;
     clearTimeout(restartTimer);
 
-    // 2. Grab transcript BEFORE stopping (stop may clear state on some browsers)
-    const t = fullTranscript.trim();
+    // 2. Grab transcript BEFORE stopping — combine final + any pending interim
+    //    (Chrome often ends session without isFinal, so interimText holds the words)
+    const t = (fullTranscript + interimText).trim();
     fullTranscript = '';
+    interimText    = '';
 
     // 3. Stop recognition and clear UI
     try { recognition?.stop(); } catch(e) {}
@@ -2652,6 +2665,7 @@ if (SR) {
     if (state.isListening) { stopListening(); return; }
 
     fullTranscript = '';
+    interimText    = '';
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
