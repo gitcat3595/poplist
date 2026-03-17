@@ -571,6 +571,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border-bottom:1px solid var(--border); gap:12px;
 }
 .settings-row:last-child { border-bottom:none }
+.legal-copyright { text-align:center; font-size:11px; color:var(--t3); margin:4px 0 16px }
+.legal-row:active { opacity:.6 }
 .settings-row-label { flex:1; font-size:14px; font-weight:600; color:var(--t1) }
 .settings-row-sub   { font-size:11px; color:var(--t3); margin-top:2px }
 .settings-row-right { font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px }
@@ -1603,7 +1605,52 @@ GoogleService-Info.plist
       </div>
     </div>
 
+    <!-- ── Legal section ── -->
+    <div class="settings-section" style="margin-top:24px">
+      <div class="settings-section-label" data-en="Legal" data-ja="法的情報">Legal</div>
+
+      <div class="settings-row legal-row" id="legalRowPrivacy" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowTerms" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Terms of Service" data-ja="利用規約">Terms of Service</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowEula" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="End User Licence Agreement" data-ja="エンドユーザーライセンス契約">End User Licence Agreement</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowData" style="cursor:pointer;border-bottom:none">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Data Deletion Request" data-ja="データ削除リクエスト">Data Deletion Request</p>
+          <p class="settings-row-sub" data-en="Request removal of your account &amp; data" data-ja="アカウントとデータの削除をリクエスト">Request removal of your account &amp; data</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+
+    <p class="legal-copyright" data-en="© 2025 Allerise Pte. Ltd. All rights reserved." data-ja="© 2025 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2025 Allerise Pte. Ltd. All rights reserved.</p>
+
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
+  </div>
+</div>
+
+<!-- ═══════ LEGAL DOCUMENT MODAL ═══════ -->
+<div class="modal-overlay" id="legalModal">
+  <div class="modal-card" style="max-height:88vh;overflow-y:auto;padding:24px 20px 28px">
+    <p class="modal-title" id="legalTitle" style="margin-bottom:16px">Privacy Policy</p>
+    <div id="legalBody" style="font-size:13px;line-height:1.7;color:var(--t2)"></div>
+    <button class="modal-cancel" id="closeLegal" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:24px auto 0" data-en="Close" data-ja="閉じる">Close</button>
   </div>
 </div>
 
@@ -2902,6 +2949,173 @@ const closeM = id => document.getElementById(id).classList.remove('show');
 document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
 document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
 document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+
+/* ── Legal document modal ── */
+const LEGAL_CONTENT = {
+  privacy: {
+    en: { title: 'Privacy Policy',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">This Privacy Policy describes how <strong>Allerise Pte. Ltd.</strong> ("Allerise", "we", "us", or "our"), a company incorporated in Singapore (UEN: pending), collects, uses, and shares information in connection with your use of the Poplist application ("App").</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Information We Collect</h4>
+<p style="margin-bottom:8px"><strong>Account data:</strong> When you sign in, we collect your email address and a unique user identifier via Firebase Authentication.</p>
+<p style="margin-bottom:8px"><strong>Usage data:</strong> We collect anonymised information about how you interact with the App (e.g. features used, session duration) to improve the service.</p>
+<p style="margin-bottom:8px"><strong>Voice data:</strong> Voice recognition is processed entirely on-device via your browser's Web Speech API. We do not receive, store, or transmit your voice recordings.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. How We Use Your Information</h4>
+<p style="margin-bottom:8px">We use the information we collect to provide, maintain, and improve the App; to manage your account and subscription; to send transactional communications (e.g. purchase receipts); and to comply with applicable laws, including Singapore's Personal Data Protection Act 2012 ("PDPA").</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Sharing of Information</h4>
+<p style="margin-bottom:8px">We do not sell your personal data. We may share data with service providers (including Google Firebase) who process data on our behalf under strict confidentiality obligations. We may disclose information if required by law or to protect the rights of Allerise or its users.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Data Retention</h4>
+<p style="margin-bottom:8px">We retain your personal data for as long as your account is active or as necessary to provide services. You may request deletion of your data at any time (see "Data Deletion Request" in Settings).</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Your Rights (PDPA)</h4>
+<p style="margin-bottom:8px">Under the PDPA you have the right to access and correct your personal data. To exercise these rights, contact us at <strong>privacy@allerise.com</strong>.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Children</h4>
+<p style="margin-bottom:8px">The App is not directed to children under 13. We do not knowingly collect data from children.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Changes</h4>
+<p style="margin-bottom:8px">We may update this policy from time to time. Continued use of the App after changes constitutes acceptance of the revised policy.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Contact</h4>
+<p>Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+    ja: { title: 'プライバシーポリシー',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本プライバシーポリシーは、シンガポールに登記された会社である <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」「当社」）が、Poplistアプリケーション（以下「本アプリ」）の利用に関して情報をどのように収集・利用・共有するかを説明するものです。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. 収集する情報</h4>
+<p style="margin-bottom:8px"><strong>アカウントデータ：</strong>サインイン時に、Firebase Authenticationを通じてメールアドレスと一意のユーザーIDを収集します。</p>
+<p style="margin-bottom:8px"><strong>利用データ：</strong>サービス改善のため、本アプリの利用状況（使用機能、セッション時間等）を匿名化して収集します。</p>
+<p style="margin-bottom:8px"><strong>音声データ：</strong>音声認識はブラウザのWeb Speech APIによりデバイス上で処理されます。当社は音声録音を受信・保存・送信しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. 情報の利用目的</h4>
+<p style="margin-bottom:8px">収集した情報は、本アプリの提供・維持・改善、アカウントおよびサブスクリプションの管理、取引に関する通知（購入確認等）の送信、ならびにシンガポール個人情報保護法（PDPA）を含む適用法令の遵守のために使用します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. 情報の共有</h4>
+<p style="margin-bottom:8px">当社は個人データを販売しません。Google Firebaseを含むサービスプロバイダーと、厳格な機密保持義務のもとでデータを共有する場合があります。法律上の要請がある場合、またはAlleriseやユーザーの権利を保護するために必要な場合には情報を開示することがあります。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. データ保存期間</h4>
+<p style="margin-bottom:8px">お客様のアカウントが有効な期間、またはサービス提供に必要な期間、個人データを保存します。いつでもデータの削除をリクエストできます（設定の「データ削除リクエスト」をご参照ください）。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. お客様の権利（PDPA）</h4>
+<p style="margin-bottom:8px">PDPAに基づき、お客様は個人データへのアクセスおよび訂正を求める権利を有します。これらの権利を行使するには、<strong>privacy@allerise.com</strong> までご連絡ください。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 子どものプライバシー</h4>
+<p style="margin-bottom:8px">本アプリは13歳未満の子どもを対象としていません。当社は意図的に子どものデータを収集しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. ポリシーの変更</h4>
+<p style="margin-bottom:8px">本ポリシーは随時更新されることがあります。変更後も引き続き本アプリを利用された場合は、改訂後のポリシーに同意したものとみなします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. お問い合わせ</h4>
+<p>Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+  },
+  terms: {
+    en: { title: 'Terms of Service',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">These Terms of Service ("Terms") govern your access to and use of the Poplist application provided by <strong>Allerise Pte. Ltd.</strong> ("Allerise"), a company incorporated in Singapore. By using the App you agree to these Terms.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Eligibility</h4>
+<p style="margin-bottom:8px">You must be at least 13 years old to use the App. By agreeing to these Terms you confirm you meet this requirement.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. Licence</h4>
+<p style="margin-bottom:8px">Allerise grants you a limited, non-exclusive, non-transferable, revocable licence to use the App for personal, non-commercial purposes in accordance with these Terms.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Pro Subscription</h4>
+<p style="margin-bottom:8px">Certain features require a Poplist Pro subscription. Subscriptions are billed through the App Store or Google Play. All fees are non-refundable except as required by applicable law. You may cancel auto-renewal at any time via your App Store / Google Play account settings.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Prohibited Conduct</h4>
+<p style="margin-bottom:8px">You must not: reverse engineer or decompile the App; use the App for any unlawful purpose; attempt to gain unauthorised access to our systems; or resell or sublicence the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Intellectual Property</h4>
+<p style="margin-bottom:8px">All rights, title, and interest in the App (including all software, content, and trademarks) are owned by Allerise or its licensors. Nothing in these Terms transfers any intellectual property rights to you.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Disclaimers</h4>
+<p style="margin-bottom:8px">The App is provided "as is" without warranties of any kind. Allerise does not warrant that the App will be error-free or uninterrupted.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Limitation of Liability</h4>
+<p style="margin-bottom:8px">To the maximum extent permitted by law, Allerise's total liability to you for any claim arising from these Terms or your use of the App shall not exceed the amount you paid to Allerise in the 12 months preceding the claim.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
+<p style="margin-bottom:8px">These Terms are governed by the laws of Singapore. Any disputes shall be subject to the exclusive jurisdiction of the courts of Singapore.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">9. Contact</h4>
+<p>Allerise Pte. Ltd., Singapore · <strong>legal@allerise.com</strong></p>` },
+    ja: { title: '利用規約',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本利用規約（以下「本規約」）は、シンガポールに登記された会社 <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」）が提供するPoplistアプリケーションのご利用に適用されます。本アプリをご利用いただくことで、本規約に同意したものとみなされます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. 利用資格</h4>
+<p style="margin-bottom:8px">本アプリをご利用いただくには13歳以上である必要があります。本規約に同意することで、この条件を満たすことを確認したものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. ライセンス</h4>
+<p style="margin-bottom:8px">Alleriseは、本規約に従い、個人的・非商業的目的での本アプリ利用に対し、限定的・非独占的・譲渡不可・取消可能なライセンスを付与します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Proサブスクリプション</h4>
+<p style="margin-bottom:8px">一部の機能はPoplist Proサブスクリプションが必要です。サブスクリプションはApp StoreまたはGoogle Playを通じて課金されます。適用法令で義務付けられる場合を除き、料金は返金されません。App Store / Google Playのアカウント設定からいつでも自動更新をキャンセルできます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. 禁止事項</h4>
+<p style="margin-bottom:8px">以下の行為を禁止します：本アプリのリバースエンジニアリングまたは逆コンパイル；違法目的での利用；当社システムへの不正アクセスの試み；本アプリの再販または再ライセンス。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. 知的財産</h4>
+<p style="margin-bottom:8px">本アプリに関するすべての権利（ソフトウェア、コンテンツ、商標を含む）はAlleriseまたはそのライセンサーに帰属します。本規約によりお客様に知的財産権が移転することはありません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 免責事項</h4>
+<p style="margin-bottom:8px">本アプリは「現状のまま」提供されます。Alleriseは本アプリがエラーなく中断なく動作することを保証しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. 責任の制限</h4>
+<p style="margin-bottom:8px">法令の定める最大限の範囲において、本規約または本アプリの利用に関するいかなる請求についても、Alleriseの総責任額は、請求前12ヶ月間にお客様がAlleriseに支払った金額を超えないものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. 準拠法</h4>
+<p style="margin-bottom:8px">本規約はシンガポール法に準拠します。紛争はシンガポールの裁判所の専属管轄に服するものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">9. お問い合わせ</h4>
+<p>Allerise Pte. Ltd.、シンガポール · <strong>legal@allerise.com</strong></p>` }
+  },
+  eula: {
+    en: { title: 'End User Licence Agreement',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">This End User Licence Agreement ("EULA") is between you and <strong>Allerise Pte. Ltd.</strong>, Singapore, for your use of the Poplist App downloaded via Apple App Store or Google Play.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Licence Grant</h4>
+<p style="margin-bottom:8px">Allerise grants you a non-transferable licence to use the App on any Apple-branded or Android device that you own or control, subject to the Usage Rules in the applicable App Store Terms of Service.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. Scope of Licence</h4>
+<p style="margin-bottom:8px">You may not distribute or make the App available over a network where it could be used by multiple devices at the same time. You may not rent, lease, lend, sell, redistribute, or sublicence the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Maintenance and Support</h4>
+<p style="margin-bottom:8px">Allerise is solely responsible for providing maintenance and support services for the App, as specified in these Terms. Apple Inc. and Google LLC have no obligation to furnish any maintenance or support services.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Warranty</h4>
+<p style="margin-bottom:8px">In the event of any failure of the App to conform to any applicable warranty, you may notify Apple or Google (as applicable), and the purchase price (if any) will be refunded. To the maximum extent permitted by law, Apple and Google have no other warranty obligation with respect to the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Product Claims</h4>
+<p style="margin-bottom:8px">Allerise, not Apple or Google, is responsible for addressing any claims by you or any third party relating to the App or your possession and/or use of the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Third-Party Terms</h4>
+<p style="margin-bottom:8px">You must comply with applicable third-party terms of agreement when using the App (e.g. you must not violate your wireless data service agreement when using the App).</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Third-Party Beneficiary (Apple)</h4>
+<p style="margin-bottom:8px">Apple Inc. and its subsidiaries are third-party beneficiaries of this EULA. Upon your acceptance of these Terms, Apple will have the right to enforce this EULA against you as a third-party beneficiary.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
+<p>This EULA is governed by the laws of Singapore.</p>` },
+    ja: { title: 'エンドユーザーライセンス契約',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本エンドユーザーライセンス契約（以下「本EULA」）は、Apple App StoreまたはGoogle PlayからダウンロードされたPoplistアプリのご利用に関して、お客様と <strong>Allerise Pte. Ltd.</strong>（シンガポール）との間で締結されます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. ライセンスの付与</h4>
+<p style="margin-bottom:8px">Alleriseは、お客様が所有または管理するAppleブランドまたはAndroidデバイスにて本アプリを使用する、譲渡不可のライセンスを付与します。なお、該当するApp Storeの利用規約の使用ルールに従うものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. ライセンスの範囲</h4>
+<p style="margin-bottom:8px">複数のデバイスで同時に使用できるようなネットワーク上での本アプリの配布は禁止されています。本アプリのレンタル、リース、貸与、販売、再配布、またはサブライセンスは禁止されています。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. メンテナンスとサポート</h4>
+<p style="margin-bottom:8px">本アプリのメンテナンスおよびサポートサービスの提供はAlleriseのみが責任を負います。Apple Inc.およびGoogle LLCにはメンテナンスまたはサポートサービスを提供する義務はありません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. 保証</h4>
+<p style="margin-bottom:8px">本アプリが適用される保証に適合しない場合、お客様はAppleまたはGoogle（該当する方）に通知でき、購入代金（該当する場合）は返金されます。法令の定める最大限の範囲において、AppleおよびGoogleは本アプリに関してその他の保証義務を負いません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. 製品に関する申告</h4>
+<p style="margin-bottom:8px">本アプリまたはお客様の本アプリの所持・使用に関するお客様または第三者からの申告への対応は、AppleまたはGoogleではなく、Alleriseが責任を負います。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 第三者の規約</h4>
+<p style="margin-bottom:8px">本アプリのご利用にあたっては、適用される第三者の規約に準拠する必要があります（例：本アプリ利用時に携帯データサービス契約に違反しないこと）。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. 第三者受益者（Apple）</h4>
+<p style="margin-bottom:8px">Apple Inc.およびその子会社は本EULAの第三者受益者です。お客様が本規約に同意することで、Appleは第三者受益者としてお客様に対して本EULAを執行する権利を有します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. 準拠法</h4>
+<p>本EULAはシンガポール法に準拠します。</p>` }
+  },
+  datadeletion: {
+    en: { title: 'Data Deletion Request',
+      body: `<p style="margin-bottom:14px">You have the right to request deletion of your personal data held by Allerise Pte. Ltd. at any time.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">What will be deleted</h4>
+<p style="margin-bottom:8px">Upon a verified deletion request, we will permanently delete: your account credentials; your task and category data stored in our database; and any other personal data associated with your account.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">How to request</h4>
+<p style="margin-bottom:8px">Send an email to <strong>privacy@allerise.com</strong> with the subject line <em>"Data Deletion Request"</em> from the email address associated with your account. We will process your request within 30 days in accordance with Singapore's PDPA.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">Note</h4>
+<p>Deletion is irreversible. Once deleted, your data and any active Pro subscription benefits cannot be recovered.</p>
+<p style="margin-top:14px">Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+    ja: { title: 'データ削除リクエスト',
+      body: `<p style="margin-bottom:14px">お客様は、Allerise Pte. Ltd.が保有するご自身の個人データの削除をいつでもリクエストする権利を有します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">削除されるデータ</h4>
+<p style="margin-bottom:8px">本人確認が完了した削除リクエストを受領後、以下を完全に削除します：アカウントの認証情報、データベースに保存されたタスクおよびカテゴリデータ、その他アカウントに関連する個人データ。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">リクエスト方法</h4>
+<p style="margin-bottom:8px">アカウントに登録されたメールアドレスから、件名を <em>「Data Deletion Request（データ削除リクエスト）」</em> として <strong>privacy@allerise.com</strong> にメールをお送りください。シンガポールのPDPAに従い、30日以内にリクエストを処理します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">注意事項</h4>
+<p>削除は取り消せません。削除後は、データおよびアクティブなProサブスクリプションの特典を復元することはできません。</p>
+<p style="margin-top:14px">Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+  }
+};
+
+function openLegal(key) {
+  const lang = state.lang === 'ja' ? 'ja' : 'en';
+  const doc  = LEGAL_CONTENT[key][lang];
+  document.getElementById('legalTitle').textContent = doc.title;
+  document.getElementById('legalBody').innerHTML    = doc.body;
+  openM('legalModal');
+}
+
+document.getElementById('legalRowPrivacy').addEventListener('click', () => openLegal('privacy'));
+document.getElementById('legalRowTerms').addEventListener('click',   () => openLegal('terms'));
+document.getElementById('legalRowEula').addEventListener('click',    () => openLegal('eula'));
+document.getElementById('legalRowData').addEventListener('click',    () => openLegal('datadeletion'));
+document.getElementById('closeLegal').addEventListener('click',      () => closeM('legalModal'));
+document.getElementById('legalModal').addEventListener('click', e => { if(e.target.id==='legalModal') closeM('legalModal') });
 
 /* ── Settings: default deadline chip cycles like task chips ── */
 document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
