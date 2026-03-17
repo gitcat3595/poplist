@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var authVM = AuthViewModel()
+    @StateObject private var authVM   = AuthViewModel()
+    @StateObject private var proStore = ProStore.shared
 
     var body: some View {
         Group {
@@ -12,6 +13,7 @@ struct ContentView: View {
             } else if authVM.user != nil {
                 TaskListView()
                     .environmentObject(authVM)
+                    .environmentObject(proStore)
             } else {
                 SignInView()
                     .environmentObject(authVM)

@@ -7,5 +7,14 @@
     <array>
         <string>Default</string>
     </array>
+
+    <!-- Required for StoreKit / In-App Purchases (Pro subscription) -->
+    <!-- Note: Xcode adds this automatically when you add the In-App Purchase capability.
+         If you add the capability via Xcode UI, this key is inserted for you. -->
+    <key>com.apple.developer.in-app-payments</key>
+    <array>
+        <string>com.allerise.poplist.pro.monthly</string>
+        <string>com.allerise.poplist.pro.annual</string>
+    </array>
 </dict>
 </plist>

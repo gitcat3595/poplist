@@ -1,0 +1,3 @@
+/* System permission dialogs — English (matches Info.plist values) */
+"NSMicrophoneUsageDescription"       = "Poplist uses your microphone to capture spoken tasks.";
+"NSSpeechRecognitionUsageDescription" = "Poplist transcribes your speech to create tasks automatically.";

@@ -3,10 +3,12 @@ import FirebaseAuth
 
 struct TaskListView: View {
     @EnvironmentObject private var authVM: AuthViewModel
+    @EnvironmentObject private var proStore: ProStore
     @StateObject private var store = FirestoreService()
     @StateObject private var voice = VoiceService()
     @State private var showVoiceInput = false
-    @State private var showSettings = false
+    @State private var showSettings   = false
+    @State private var showProGate    = false
 
     private var groupedTasks: [(TaskTiming, [PopTask])] {
         let order: [TaskTiming] = [.today, .thisWeek, .later]
@@ -38,6 +40,24 @@ struct TaskListView: View {
             }
             .navigationTitle("Poplist")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if proStore.isPro {
+                        Label("Pro", systemImage: "star.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.yellow)
+                            .labelStyle(.iconOnly)
+                    } else {
+                        Button { showProGate = true } label: {
+                            Text(String(localized: "try_pro"))
+                                .font(.caption.weight(.bold))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.blue.opacity(0.1))
+                                .foregroundStyle(.blue)
+                                .cornerRadius(8)
+                        }
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: {
                         Image(systemName: "person.circle")
@@ -53,6 +73,11 @@ struct TaskListView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environmentObject(authVM)
+                .environmentObject(proStore)
+        }
+        .sheet(isPresented: $showProGate) {
+            ProGateView()
+                .environmentObject(proStore)
         }
         .onAppear {
             if let uid = authVM.user?.uid {
@@ -86,7 +111,6 @@ struct TaskListView: View {
                         timingHeader(timing)
                     }
                 }
-                // Bottom padding so last tasks clear the FAB
                 Color.clear.frame(height: 110)
             }
         }
@@ -97,10 +121,10 @@ struct TaskListView: View {
             Image(systemName: "mic.circle")
                 .font(.system(size: 72))
                 .foregroundStyle(.blue.opacity(0.35))
-            Text("Tap the mic to add tasks")
+            Text(String(localized: "empty_title"))
                 .font(.title3.weight(.medium))
                 .foregroundStyle(.secondary)
-            Text("Speak naturally — AI will sort them for you")
+            Text(String(localized: "empty_subtitle"))
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)

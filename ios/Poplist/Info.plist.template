@@ -1,30 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  TEMPLATE — copy contents into your Xcode project's Info.plist.
-  Replace REVERSED_CLIENT_ID with the value from GoogleService-Info.plist.
+  TEMPLATE — copy these keys into your Xcode project's Info.plist.
+  Replace REVERSED_CLIENT_ID with the value from GoogleService-Info.plist
+  (looks like com.googleusercontent.apps.XXXX).
 -->
 <plist version="1.0">
 <dict>
 
-    <!-- Microphone — required for voice input -->
+    <!-- ── Permissions ───────────────────────────────────────────────── -->
+
+    <!-- Microphone: required for voice task input -->
     <key>NSMicrophoneUsageDescription</key>
     <string>Poplist uses your microphone to capture spoken tasks.</string>
 
-    <!-- Speech Recognition — required for SFSpeechRecognizer -->
+    <!-- Speech Recognition: required for SFSpeechRecognizer -->
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>Poplist transcribes your speech to create tasks automatically.</string>
 
-    <!-- Google Sign-In URL scheme (find REVERSED_CLIENT_ID in GoogleService-Info.plist) -->
+    <!-- ── Encryption export compliance ──────────────────────────────
+         Firebase/Google only use standard HTTPS/TLS — no proprietary crypto.
+         This key is REQUIRED by App Store Connect to avoid the compliance prompt. -->
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+
+    <!-- ── Google Sign-In URL scheme ─────────────────────────────────
+         Find REVERSED_CLIENT_ID in GoogleService-Info.plist -->
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>REVERSED_CLIENT_ID</string>
             </array>
         </dict>
     </array>
+
+    <!-- ── Supported localisations ───────────────────────────────────
+         Tells the App Store this app supports English and Japanese. -->
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ja</string>
+    </array>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+
+    <!-- ── Notes (not Info.plist keys — set these in Xcode directly) ─
+         • Deployment Target:      iOS 16.0
+           (StoreKit 2 needs iOS 15+; Firebase SDK requires 13+; iOS 16 is safest)
+         • Sign in with Apple:     Signing & Capabilities → + Capability → Sign in with Apple
+         • In-App Purchases:       Signing & Capabilities → + Capability → In-App Purchase
+         • App icon:               Assets.xcassets → AppIcon (1024×1024 store icon required)
+         • Launch screen:          LaunchScreen.storyboard or Info.plist UILaunchStoryboardName
+    -->
 
 </dict>
 </plist>

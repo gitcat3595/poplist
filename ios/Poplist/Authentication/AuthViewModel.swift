@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import FirebaseAuth
+import FirebaseFirestore
 import GoogleSignIn
 import AuthenticationServices
 import CryptoKit
@@ -52,7 +53,7 @@ final class AuthViewModel: NSObject, ObservableObject {
                 let tokenData = credential.identityToken,
                 let idTokenString = String(data: tokenData, encoding: .utf8)
             else {
-                errorMessage = "Unable to process Apple Sign In."
+                errorMessage = String(localized: "apple_signin_error")
                 return
             }
             let firebaseCredential = OAuthProvider.appleCredential(
@@ -76,13 +77,13 @@ final class AuthViewModel: NSObject, ObservableObject {
             let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
             let rootVC = windowScene.windows.first?.rootViewController
         else {
-            errorMessage = "Unable to present Google Sign In."
+            errorMessage = String(localized: "google_signin_error")
             return
         }
         do {
             let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootVC)
             guard let idToken = result.user.idToken?.tokenString else {
-                errorMessage = "Google Sign In failed: missing ID token."
+                errorMessage = String(localized: "google_signin_error")
                 return
             }
             let credential = GoogleAuthProvider.credential(
@@ -133,6 +134,39 @@ final class AuthViewModel: NSObject, ObservableObject {
         GIDSignIn.sharedInstance.signOut()
     }
 
+    // MARK: - Delete Account  (Apple mandatory requirement since Jun 30 2022)
+    // Erases all Firestore data for this user, then deletes the Firebase Auth account.
+    // If recent login is required, errorMessage is set so the caller can re-authenticate.
+
+    func deleteAccount() async {
+        errorMessage = nil
+        guard let user = Auth.auth().currentUser else { return }
+        let uid = user.uid
+        let db  = Firestore.firestore()
+
+        do {
+            // Delete all task documents owned by this user
+            let snapshot = try await db.collection("tasks")
+                .whereField("userId", isEqualTo: uid)
+                .getDocuments()
+
+            let batch = db.batch()
+            snapshot.documents.forEach { batch.deleteDocument($0.reference) }
+            try await batch.commit()
+
+            // Delete Firebase Auth account
+            try await user.delete()
+
+        } catch let error as NSError
+            where AuthErrorCode(rawValue: error.code) == .requiresRecentLogin {
+            // Apple Sign-In or Google require re-authentication before deletion.
+            // Surface this so the UI can prompt a fresh sign-in then retry.
+            errorMessage = String(localized: "delete_reauth_required")
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     // MARK: - Private helpers
 
     private func signIn(with credential: AuthCredential) async {
@@ -150,15 +184,15 @@ final class AuthViewModel: NSObject, ObservableObject {
         }
         switch code {
         case .wrongPassword, .invalidCredential:
-            return "Incorrect email or password."
+            return String(localized: "auth_wrong_password")
         case .userNotFound:
-            return "No account found with that email."
+            return String(localized: "auth_user_not_found")
         case .emailAlreadyInUse:
-            return "An account with this email already exists."
+            return String(localized: "auth_email_in_use")
         case .weakPassword:
-            return "Password must be at least 6 characters."
+            return String(localized: "auth_weak_password")
         case .invalidEmail:
-            return "Please enter a valid email address."
+            return String(localized: "auth_invalid_email")
         default:
             return error.localizedDescription
         }
