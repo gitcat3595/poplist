@@ -651,13 +651,39 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 /* ── Guide rows ── */
 .cat-list { display:flex; flex-direction:column; gap:6px; margin-top:4px }
 .cat-item {
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; background:var(--raised);
-  border-radius:12px; border:1px solid var(--border);
+  background:var(--raised); border-radius:12px; border:1px solid var(--border);
+  margin-bottom:6px; overflow:hidden;
+}
+.cat-item-row {
+  display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
 .cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0 }
 .cat-item-name { flex:1; font-size:13px; font-weight:700 }
 .cat-item-kw   { font-size:11px; color:var(--t3) }
+.cat-item-chevron { font-size:10px; color:var(--t3); transition:transform .2s; line-height:1 }
+.cat-item.open .cat-item-chevron { transform:rotate(180deg) }
+.cat-item-keywords {
+  display:none; padding:0 12px 10px; flex-wrap:wrap; gap:6px;
+}
+.cat-item.open .cat-item-keywords { display:flex }
+.kw-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:700; padding:3px 8px;
+  background:var(--blue-lt); border:1px solid var(--blue-glow);
+  color:var(--blue); border-radius:20px;
+}
+.kw-pill-x {
+  cursor:pointer; opacity:.6; font-size:12px; line-height:1;
+  -webkit-tap-highlight-color:transparent;
+}
+.kw-add-input {
+  font-size:11px; font-weight:600; padding:3px 8px;
+  border:1.5px dashed var(--border); border-radius:20px;
+  background:transparent; color:var(--t1); outline:none;
+  font-family:inherit; width:90px;
+}
+.kw-add-input::placeholder { color:var(--t3); font-weight:500 }
 
 .guide-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border) }
 .guide-row:last-child { border-bottom:none; padding-bottom:0 }
@@ -1165,7 +1191,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
     </div>
-    <div class="done-bubble-center" id="doneBubbleCenter"></div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
@@ -1232,15 +1257,12 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
           <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
         </div>
         <div class="add-row-sep"></div>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:2px;flex-wrap:wrap">
-          <div class="add-row-label" style="margin:0" data-en="Category" data-ja="カテゴリー">Category</div>
-          <button id="autoCatTag" class="cat-picker-btn" data-cat-en="Other">Other
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left:3px;opacity:.6"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <span class="auto-detect-label" id="autoDetectLabel" style="font-size:10px;color:var(--t3)" data-en="— auto detected" data-ja="— 自動検出">— auto detected</span>
-        </div>
-        <!-- Category picker popover -->
-        <div id="catPickerMenu" style="display:none;position:absolute;left:0;right:0;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shcard);z-index:200;overflow:hidden">
+        <div class="add-row-label" data-en="Category" data-ja="カテゴリー">Category</div>
+        <div class="add-chips" id="catChips">
+          <span class="add-chip" data-cat-en="Work"     data-en="Work"     data-ja="仕事">Work</span>
+          <span class="add-chip" data-cat-en="Home"     data-en="Home"     data-ja="家の事">Home</span>
+          <span class="add-chip" data-cat-en="Personal" data-en="Personal" data-ja="自分の事">Personal</span>
+          <span class="add-chip sel" data-cat-en="Other"    data-en="Other"    data-ja="その他">Other</span>
         </div>
       </div>
     </div>
@@ -1525,33 +1547,12 @@ GoogleService-Info.plist
         <!-- Categories -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
-          <div class="cat-list" id="catList">
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:var(--blue)"></div>
-              <span class="cat-item-name" data-en="Work" data-ja="仕事">Work</span>
-              <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:var(--blue)"></div>
-              <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
-              <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:var(--blue)"></div>
-              <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
-              <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:var(--blue)"></div>
-              <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
-              <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
-            </div>
-          </div>
+          <!-- Category list built dynamically by JS from state.categories -->
+          <div id="catList"></div>
           <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
-            <span class="add-plus-row-sign">+</span> Add category
+            <span class="add-plus-row-sign">+</span> <span data-en="Add category" data-ja="カテゴリーを追加">Add category</span>
           </div>
-          <!-- Inline new-category form (shown on click) -->
-          <div id="newCatForm" style="display:none;padding:0 0 10px;display:none">
+          <div id="newCatForm" style="display:none;padding:0 0 10px">
             <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
               <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
               <input id="newCatInput" type="text" placeholder="Category name…"
@@ -1563,16 +1564,6 @@ GoogleService-Info.plist
                 Add
               </button>
             </div>
-          </div>
-        </div>
-
-        <div class="pro-divider"></div>
-
-        <!-- Rules -->
-        <div class="pro-block">
-          <div class="pro-block-title" data-en="Rules" data-ja="ルール">Rules</div>
-          <div class="add-plus-row" id="addRuleRow" style="padding-top:0;cursor:pointer">
-            <span class="add-plus-row-sign">+</span> Add rule
           </div>
         </div>
 
@@ -1853,13 +1844,14 @@ function burstBubble(el, item) {
 
   el.classList.add('popping');
 
-  /* Read actual bubble colour so particles match whatever theme is active */
-  // Read colour from the bubble element's --bubble-color CSS var.
-  // Fall back to --blue on the root (kept in sync by applyAccentVars) so
-  // bursts always match the chosen colour even if class resolution lags.
-  const rawHex = (getComputedStyle(el).getPropertyValue('--bubble-color').trim() ||
-                  getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() ||
-                  '#3B82F6');
+  /* Reliable class-based colour lookup — avoids getComputedStyle Safari quirks */
+  const _bcMap = {
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+  };
+  const _bcClass = [...el.classList].find(c => c.startsWith('bc-'));
+  const rawHex = _bcMap[_bcClass] || _bcMap[state.bubbleColour] || '#3B82F6';
   const hx = rawHex.replace('#','');
   const cr = parseInt(hx.slice(0,2),16), cg = parseInt(hx.slice(2,4),16), cb = parseInt(hx.slice(4,6),16);
   const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
@@ -2025,6 +2017,12 @@ function attachTaskText(taskText) {
   let didLongPress = false;
 
   // Long-press on text → open category sheet
+  // Cache text edits in the correct language slot
+  taskText.addEventListener('blur', () => {
+    if (state.lang === 'ja') taskText.dataset.textJa = taskText.textContent;
+    else taskText.dataset.textEn = taskText.textContent;
+  });
+
   taskText.addEventListener('pointerdown', e => {
     didLongPress = false;
     pressTimer = setTimeout(() => {
@@ -2121,30 +2119,31 @@ const CAT_KW = {
   Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment/i,
   Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut/i,
 };
-function detectCat(t) {
-  for (const [c,r] of Object.entries(CAT_KW)) if (r.test(t)) return c;
-  return 'Other';
-}
 const addInput  = document.getElementById('addTaskInput');
-const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
 const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#16A34A', 'Personal':'#7C3AED', 'Other':'#F97316' };
+
+/* ── Category chips in manual-add form ── */
+function getSelectedCat() {
+  const sel = document.querySelector('#catChips .add-chip.sel');
+  return sel?.dataset.catEn || 'Other';
+}
+function setSelectedCat(catEn) {
+  document.querySelectorAll('#catChips .add-chip').forEach(c => {
+    c.classList.toggle('sel', c.dataset.catEn === catEn);
+  });
+}
+document.querySelectorAll('#catChips .add-chip').forEach(chip => {
+  chip.addEventListener('click', () => setSelectedCat(chip.dataset.catEn));
+});
+
 function updateCat() {
-  if (!autoCatEl || !addInput) return;
+  if (!addInput) return;
   const cat = detectCat(addInput.value);
   setCatDisplay(cat, true);
 }
 function setCatDisplay(cat, autoDetected) {
-  if (!autoCatEl) return;
-  autoCatEl.dataset.catEn = cat;
-  const label = state.lang === 'ja' ? (CAT_LABELS_JA[cat] || cat) : cat;
-  // Update button text (keep the chevron SVG)
-  const svg = autoCatEl.querySelector('svg');
-  autoCatEl.textContent = label;
-  if (svg) autoCatEl.appendChild(svg);
-  // Show/hide "auto detected" label
-  const autoLabel = document.getElementById('autoDetectLabel');
-  if (autoLabel) autoLabel.style.display = autoDetected ? '' : 'none';
+  setSelectedCat(cat);
 }
 addInput?.addEventListener('input', updateCat);
 
@@ -2167,37 +2166,7 @@ addInput?.addEventListener('input', () => {
 
 updateCat();
 
-/* ── Category Picker Popover ── */
 const CAT_LIST_EN = ['Work', 'Home', 'Personal', 'Other'];
-const catMenu = document.getElementById('catPickerMenu');
-function buildCatMenu() {
-  if (!catMenu) return;
-  catMenu.innerHTML = '';
-  CAT_LIST_EN.forEach(cat => {
-    const item = document.createElement('button');
-    item.className = 'cat-picker-item';
-    item.type = 'button';
-    item.innerHTML = `<span class="cat-picker-dot" style="background:${CAT_COLOURS[cat]||'#9CA3AF'}"></span>${state.lang==='ja'?(CAT_LABELS_JA[cat]||cat):cat}`;
-    item.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setCatDisplay(cat, false);
-      catMenu.style.display = 'none';
-    });
-    catMenu.appendChild(item);
-  });
-}
-autoCatEl?.addEventListener('click', (e) => {
-  e.stopPropagation();
-  buildCatMenu();
-  catMenu.style.display = catMenu.style.display === 'none' || catMenu.style.display === '' ? '' : 'none';
-  // Show the menu — position it below the button
-  if (catMenu.style.display !== 'none') {
-    catMenu.style.display = 'block';
-  }
-});
-document.addEventListener('click', () => {
-  if (catMenu) catMenu.style.display = 'none';
-});
 
 /* ══════════════════════════════════════════
    ADD TASK
@@ -2214,17 +2183,22 @@ function makeTaskItem(text, timing, cat) {
   item.innerHTML = `
     <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
-      <div class="task-text" contenteditable="true">${text}</div>
+      <div class="task-text" contenteditable="true" data-text-en="" data-text-ja="">${text}</div>
       <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
     </div></div>
   `;
   const addRow = card.querySelector('.add-task-row');
   card.insertBefore(item, addRow);
 
+  // Cache text in the appropriate language slot
+  const textEl = item.querySelector('.task-text');
+  if (state.lang === 'ja') textEl.dataset.textJa = text;
+  else textEl.dataset.textEn = text;
+
   attachBubble(item.querySelector('.task-bubble'));
-  attachTaskText(item.querySelector('.task-text'));
+  attachTaskText(textEl);
   attachChip(item.querySelector('.timing-chip'));
-  item.querySelector('.task-text').addEventListener('keydown', handleTextKey);
+  textEl.addEventListener('keydown', handleTextKey);
 
   const cnt = card.querySelector('.cat-count');
   if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
@@ -2249,7 +2223,7 @@ document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   if (!text) { addInput?.focus(); return; }
   const selChip = document.querySelector('#deadlineChips .add-chip.sel');
   const timing = selChip?.dataset.en || selChip?.textContent || 'Today';
-  const cat    = autoCatEl?.dataset.catEn || autoCatEl?.textContent || 'Other';
+  const cat    = getSelectedCat();
   makeTaskItem(text, timing, cat);
   addInput.value = '';
   updateCat();
@@ -2279,44 +2253,28 @@ function showDoneScreen() {
   if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
   if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
 
-  // Sync bubble colors to match the chosen colour scheme
-  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (() => {
-    const colorMap = {
-      'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488',
-      'bc-green':'#16A34A','bc-amber':'#F97316','bc-rose':'#EF4444',
-      'bc-pink':'#EC4899','bc-purple':'#7C3AED','bc-black':'#374151',
-      'bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
-    };
-    return colorMap[state.bubbleColour] || '#3B82F6';
-  })();
-  el.querySelectorAll('.done-bubble, .done-bubble-center').forEach(b => {
+  // Sync burst bubble colours to match the chosen colour scheme
+  const _dcMap = {
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+  };
+  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
+  el.querySelectorAll('.done-bubble').forEach(b => {
     b.style.background = bubbleColor;
     b.style.setProperty('--bubble-color', bubbleColor);
   });
-  const center = el.querySelector('.done-bubble-center');
-  if (center) {
-    // Use updated CSS vars — box-shadow now uses var(--blue-glow) in CSS, just clear inline override
-    center.style.boxShadow = '';
-    center.style.display   = '';  // unhide in case it was hidden from a previous cycle
-  }
 
   // Restart all animations: force reflow
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
-
-  // Hide center bubble from layout once its animation finishes (so text moves up)
-  if (center) {
-    center.addEventListener('animationend', () => {
-      center.style.display = 'none';
-    }, { once: true });
-  }
 
   el.style.display = '';
 }
@@ -2456,15 +2414,19 @@ function localClassify(transcript, defaultTiming) {
 /* Send transcript to Cloudflare Worker → OpenAI → structured task list
    Falls back to local keyword classification if API key is not set */
 async function classifyTranscript(transcript) {
-  const categories    = ['Work', 'Home', 'Personal', 'Other'];
+  const categories    = state.categories.map(c => c.en);
   const defaultTiming = state.defaultTiming || 'This Week';
+
+  // Build custom keyword map for AI: { Work: ['client1', 'boss'], Home: ['mom', 'cleaner'] }
+  const categoryKeywords = {};
+  state.categories.forEach(c => { if (c.keywords.length) categoryKeywords[c.en] = c.keywords; });
 
   // Try Cloudflare Worker → OpenAI (key lives in Cloudflare secrets, never in browser)
   try {
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript, categories, defaultTiming, lang: state.lang })
+      body: JSON.stringify({ transcript, categories, categoryKeywords, defaultTiming, lang: state.lang })
     });
     if (res.ok) {
       const data = await res.json();
@@ -2800,9 +2762,132 @@ document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
 });
 
-// Pro: Add category — show inline form
+/* ══════════════════════════════════════════
+   PRO CATEGORY MANAGEMENT
+   state.categories = [{ id, en, ja, keywords:[] }, ...]
+══════════════════════════════════════════ */
+state.categories = [
+  { id:'work',     en:'Work',     ja:'仕事',    keywords:['meeting','email','report','client','project','deadline','invoice','proposal','presentation','call','boss','budget'] },
+  { id:'home',     en:'Home',     ja:'家の事',  keywords:['groceri','supermarket','clean','trash','laundry','repair','fix','bill','rent','cook','dinner','delivery'] },
+  { id:'personal', en:'Personal', ja:'自分の事',keywords:['gym','run','jog','doctor','dentist','hospital','read','book','friend','family','travel','hobby','yoga','haircut'] },
+  { id:'other',    en:'Other',    ja:'その他',  keywords:[] },
+];
+
+function buildCatList() {
+  const list = document.getElementById('catList');
+  if (!list) return;
+  list.innerHTML = '';
+  state.categories.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'cat-item';
+    item.dataset.id = cat.id;
+
+    // Header row
+    const row = document.createElement('div');
+    row.className = 'cat-item-row';
+    row.innerHTML = `
+      <div class="cat-item-dot" style="background:var(--blue)"></div>
+      <span class="cat-item-name">${state.lang==='ja' ? cat.ja : cat.en}</span>
+      <span class="cat-item-kw">${cat.keywords.length ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'') : (state.lang==='ja'?'キーワード追加':'add keywords')}</span>
+      <span class="cat-item-chevron">▾</span>`;
+    row.addEventListener('click', () => item.classList.toggle('open'));
+    item.appendChild(row);
+
+    // Keyword section (shown when open)
+    const kwSection = document.createElement('div');
+    kwSection.className = 'cat-item-keywords';
+    function renderKws() {
+      kwSection.innerHTML = '';
+      cat.keywords.forEach((kw, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'kw-pill';
+        pill.innerHTML = `${kw} <span class="kw-pill-x" data-i="${i}">✕</span>`;
+        pill.querySelector('.kw-pill-x').addEventListener('click', e => {
+          e.stopPropagation();
+          cat.keywords.splice(i, 1);
+          renderKws();
+          rebuildDetectRegex();
+          row.querySelector('.cat-item-kw').textContent = cat.keywords.length
+            ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'')
+            : (state.lang==='ja'?'キーワード追加':'add keywords');
+        });
+        kwSection.appendChild(pill);
+      });
+      // Add keyword input
+      const inp = document.createElement('input');
+      inp.className = 'kw-add-input';
+      inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
+      inp.type = 'text';
+      inp.addEventListener('keydown', e => {
+        if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
+          e.preventDefault();
+          const kw = inp.value.trim().replace(/,$/, '');
+          if (kw && !cat.keywords.includes(kw)) {
+            cat.keywords.push(kw);
+            rebuildDetectRegex();
+            renderKws();
+            row.querySelector('.cat-item-kw').textContent = cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'');
+          } else { inp.value = ''; }
+        }
+      });
+      kwSection.appendChild(inp);
+
+      // Rename row (for non-Other cats)
+      if (cat.id !== 'other') {
+        const renameRow = document.createElement('div');
+        renameRow.style.cssText = 'width:100%;display:flex;align-items:center;gap:6px;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)';
+        renameRow.innerHTML = `<span style="font-size:11px;color:var(--t3);font-weight:600">${state.lang==='ja'?'名前を変更:':'Rename:'}</span>
+          <input type="text" value="${state.lang==='ja'?cat.ja:cat.en}" style="flex:1;font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">`;
+        const renameInp = renameRow.querySelector('input');
+        renameInp.addEventListener('change', () => {
+          const newName = renameInp.value.trim();
+          if (!newName) return;
+          if (state.lang==='ja') cat.ja = newName; else cat.en = newName;
+          row.querySelector('.cat-item-name').textContent = newName;
+          refreshCatChips();
+        });
+        kwSection.appendChild(renameRow);
+      }
+    }
+    renderKws();
+    item.appendChild(kwSection);
+    list.appendChild(item);
+  });
+}
+
+function rebuildDetectRegex() {
+  // Rebuild CAT_KW-like detection from state.categories
+  window._catDetectFn = text => {
+    for (const cat of state.categories) {
+      if (cat.id === 'other') continue;
+      if (cat.keywords.some(kw => new RegExp(kw, 'i').test(text))) return cat.en;
+    }
+    return 'Other';
+  };
+}
+rebuildDetectRegex();
+
+// Override detectCat to use dynamic keywords
+function detectCat(t) {
+  return window._catDetectFn ? window._catDetectFn(t) : 'Other';
+}
+
+function refreshCatChips() {
+  // Update category picker chips in the add-task form
+  const chips = document.querySelectorAll('#catChips .add-chip');
+  const catData = state.categories;
+  chips.forEach((chip, i) => {
+    if (catData[i]) {
+      chip.dataset.catEn = catData[i].en;
+      chip.textContent = state.lang==='ja' ? catData[i].ja : catData[i].en;
+    }
+  });
+}
+
+buildCatList();
+
+// Add category
 document.getElementById('addCategoryRow')?.addEventListener('click', () => {
-  if (!state.isProUser) { showToast('Unlock Pro to add custom categories'); return; }
   const form = document.getElementById('newCatForm');
   if (!form) return;
   form.style.display = form.style.display === 'none' ? '' : 'none';
@@ -2812,39 +2897,34 @@ document.getElementById('addCategoryRow')?.addEventListener('click', () => {
 function addCustomCategory(name) {
   name = name.trim();
   if (!name) return;
-  const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const cardId = 'cat-' + slug;
-  if (document.getElementById(cardId)) { showToast('Category already exists'); return; }
+  const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  if (state.categories.find(c => c.id === id)) { showToast(state.lang==='ja'?'既に存在します':'Category already exists'); return; }
 
-  // Add dot entry to settings cat-list
-  const catList = document.getElementById('catList');
-  if (catList) {
-    const row = document.createElement('div');
-    row.className = 'cat-item';
-    row.innerHTML = `<div class="cat-item-dot" style="background:var(--blue)"></div>
-      <span class="cat-item-name">${name}</span>
-      <span class="cat-item-kw">custom</span>`;
-    catList.appendChild(row);
+  // Add to state
+  state.categories.splice(state.categories.length - 1, 0, { id, en:name, ja:name, keywords:[] });
+  buildCatList();
+
+  // Add chip to cat picker
+  const catChips = document.getElementById('catChips');
+  if (catChips) {
+    const chip = document.createElement('span');
+    chip.className = 'add-chip';
+    chip.dataset.catEn = name;
+    chip.dataset.en = name; chip.dataset.ja = name;
+    chip.textContent = name;
+    chip.addEventListener('click', () => setSelectedCat(name));
+    catChips.appendChild(chip);
   }
 
-  // Create a new category card in the task list
+  // Add category card to task list
   const tasksContainer = document.getElementById('tasksContainer');
   const manualAddCard  = document.getElementById('manualAddCard');
-  if (tasksContainer) {
+  if (tasksContainer && !document.getElementById('cat-'+id)) {
     const card = document.createElement('div');
-    card.className = 'category-card';
-    card.id = cardId;
-    card.style.display = 'none';
-    card.innerHTML = `
-      <div class="category-header">
-        <span class="cat-name">${name}</span><span class="cat-count">0</span>
-      </div>
-      <div class="add-task-row" data-cat="${slug}">
-        <div class="add-task-plus"></div>
-        <span class="add-task-text">Add ${name} task…</span>
-      </div>`;
+    card.className = 'category-card'; card.id = 'cat-'+id; card.style.display = 'none';
+    card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>`;
     tasksContainer.insertBefore(card, manualAddCard || null);
-    // Wire add-task-row to open the manual add card
     card.querySelector('.add-task-row')?.addEventListener('click', () => {
       const mc = document.getElementById('manualAddCard');
       if (mc) { mc.style.display = ''; document.getElementById('addTaskInput')?.focus(); }
@@ -2852,7 +2932,6 @@ function addCustomCategory(name) {
   }
 
   showToast(`"${name}" added ✓`);
-  // Hide form + clear input
   const form = document.getElementById('newCatForm');
   const inp  = document.getElementById('newCatInput');
   if (form) form.style.display = 'none';
@@ -2865,12 +2944,6 @@ document.getElementById('newCatConfirmBtn')?.addEventListener('click', () => {
 document.getElementById('newCatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') addCustomCategory(e.target.value);
   if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
-});
-
-// Pro: Add rule — toast for now (rules engine in full release)
-document.getElementById('addRuleRow')?.addEventListener('click', () => {
-  if (!state.isProUser) { showToast('Unlock Pro to add auto-rules'); return; }
-  showToast(state.lang === 'ja' ? 'ルール設定 — 正式リリースで公開' : 'Auto-rules — coming in full release');
 });
 
 // Style tabs
@@ -3172,7 +3245,12 @@ const BLUE_VARS = {
   '--shbtn':     '0 4px 16px rgba(59,130,246,.38)',
 };
 function applyAccentVars(vars) {
+  // Method 1: inline style on <html> (Chrome/Edge)
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  // Method 2: injected <style> with :root override (Safari — more reliable)
+  let s = document.getElementById('_accentVars');
+  if (!s) { s = document.createElement('style'); s.id = '_accentVars'; document.head.appendChild(s); }
+  s.textContent = `:root{${Object.entries(vars).map(([k,v])=>`${k}:${v}`).join(';')}}`;
 }
 
 /* Per-colour accent vars — used by Pro colour picker to tint the whole UI */
@@ -3206,7 +3284,7 @@ document.getElementById('closeExport').addEventListener('click', () => closeM('e
 document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
-function applyLang(lang) {
+async function applyLang(lang) {
   const isJA = lang === 'ja';
   document.querySelectorAll('[data-en][data-ja]').forEach(el => {
     const txt = isJA ? el.dataset.ja : el.dataset.en;
@@ -3235,12 +3313,10 @@ function applyLang(lang) {
     const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
     if (map[timing]) chip.textContent = map[timing];
   });
-  // Update autoCatTag display (keep English cat stored in data-cat-en)
-  const autoCatEl2 = document.getElementById('autoCatTag');
-  if (autoCatEl2) {
-    const catEn = autoCatEl2.dataset.catEn || 'Other';
-    setCatDisplay(catEn, document.getElementById('autoDetectLabel')?.style.display !== 'none');
-  }
+  // Update category chip labels in the add-task form
+  document.querySelectorAll('#catChips .add-chip').forEach(chip => {
+    chip.textContent = isJA ? (chip.dataset.ja || chip.dataset.catEn) : (chip.dataset.en || chip.dataset.catEn);
+  });
   // Update cat names in task list headers
   document.querySelectorAll('.cat-name[data-en]').forEach(el => {
     el.textContent = isJA ? el.dataset.ja : el.dataset.en;
@@ -3252,6 +3328,38 @@ function applyLang(lang) {
     const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
     if (map[timing]) ddc.textContent = map[timing];
   }
+
+  // Translate task texts — use cached translation if available, else fetch from API
+  const dataKey = isJA ? 'textJa' : 'textEn';
+  const taskTexts = [...document.querySelectorAll('.task-text')];
+  if (taskTexts.length === 0) return;
+
+  // Apply any already-cached translations immediately
+  taskTexts.forEach(el => { if (el.dataset[dataKey]) el.textContent = el.dataset[dataKey]; });
+
+  // Find tasks that still need translation
+  const needTx = taskTexts.filter(el => !el.dataset[dataKey]);
+  if (!needTx.length) return;
+
+  const origTexts = needTx.map(el => el.textContent.trim()).filter(t => t.length > 0);
+  if (!origTexts.length) return;
+
+  try {
+    const res = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texts: origTexts, targetLang: isJA ? 'ja' : 'en' })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.texts && data.texts.length === needTx.length) {
+        needTx.forEach((el, i) => {
+          el.dataset[dataKey] = data.texts[i];
+          el.textContent = data.texts[i];
+        });
+      }
+    }
+  } catch (e) { /* silently skip if translation fails */ }
 }
 
 /* Lang toggle — nav bar + settings (sLangEN/sLangJP) */
