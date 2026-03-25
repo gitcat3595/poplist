@@ -1694,7 +1694,6 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <p class="legal-copyright" data-en="© 2026 Allerise Pte. Ltd. All rights reserved." data-ja="© 2026 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2026 Allerise Pte. Ltd. All rights reserved.</p>
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
@@ -3266,7 +3265,7 @@ function buildCatList() {
     row.innerHTML = `
       <div class="cat-item-dot" style="background:var(--blue)"></div>
       <span class="cat-item-name">${state.lang==='ja' ? cat.ja : cat.en}</span>
-      <span class="cat-item-kw">${cat.keywords.length ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'') : (state.lang==='ja'?'キーワード追加':'add keywords')}</span>
+      <span class="cat-item-kw">${cat.keywords.length ? (state.lang==='ja' ? `${cat.keywords.length}件` : `${cat.keywords.length} keyword${cat.keywords.length>1?'s':''}`) : (state.lang==='ja'?'キーワード追加':'add keywords')}</span>
       <span class="cat-item-chevron">▾</span>`;
     row.addEventListener('click', () => item.classList.toggle('open'));
     item.appendChild(row);
@@ -3276,36 +3275,45 @@ function buildCatList() {
     kwSection.className = 'cat-item-keywords';
     function renderKws() {
       kwSection.innerHTML = '';
-      cat.keywords.forEach((kw, i) => {
-        const pill = document.createElement('span');
-        pill.className = 'kw-pill';
-        pill.innerHTML = `${kw} <span class="kw-pill-x" data-i="${i}">✕</span>`;
-        pill.querySelector('.kw-pill-x').addEventListener('click', e => {
-          e.stopPropagation();
-          cat.keywords.splice(i, 1);
-          renderKws();
-          rebuildDetectRegex();
-          row.querySelector('.cat-item-kw').textContent = cat.keywords.length
-            ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'')
-            : (state.lang==='ja'?'キーワード追加':'add keywords');
-        });
-        kwSection.appendChild(pill);
-      });
-      // Add keyword input
+      // Only show the add-keyword input — no pills for existing keywords
       const inp = document.createElement('input');
       inp.className = 'kw-add-input';
       inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
       inp.type = 'text';
-      inp.addEventListener('keydown', e => {
+      inp.addEventListener('keydown', async e => {
         if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
           e.preventDefault();
           const kw = inp.value.trim().replace(/,$/, '');
-          if (kw && !cat.keywords.includes(kw)) {
-            cat.keywords.push(kw);
-            rebuildDetectRegex();
-            renderKws();
-            row.querySelector('.cat-item-kw').textContent = cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'');
-          } else { inp.value = ''; }
+          if (!kw || cat.keywords.includes(kw)) { inp.value = ''; return; }
+          cat.keywords.push(kw);
+          rebuildDetectRegex();
+          inp.value = '';
+          inp.placeholder = state.lang==='ja' ? '翻訳中…' : 'translating…';
+          inp.disabled = true;
+          // Auto-translate: add the keyword in the other language too so it works bilingually
+          const targetLang = state.lang === 'ja' ? 'en' : 'ja';
+          try {
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ texts: [kw], targetLang })
+            });
+            if (res.ok) {
+              const d = await res.json();
+              const translated = d?.texts?.[0]?.trim();
+              if (translated && translated.toLowerCase() !== kw.toLowerCase() && !cat.keywords.includes(translated)) {
+                cat.keywords.push(translated);
+                rebuildDetectRegex();
+              }
+            }
+          } catch(_) {}
+          inp.disabled = false;
+          inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
+          // Update row summary: show count
+          const n = cat.keywords.length;
+          row.querySelector('.cat-item-kw').textContent = n
+            ? (state.lang==='ja' ? `${n}件` : `${n} keyword${n>1?'s':''}`)
+            : (state.lang==='ja' ? 'キーワード追加' : 'add keywords');
         }
       });
       kwSection.appendChild(inp);
