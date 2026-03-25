@@ -15,6 +15,7 @@ export default defineConfig({
         '/welcome.html',
         '/app.html',
         '/settings-mock.html',
+        '/pro-mock.html',
         /^\/_routes\.json$/,
       ]
     })

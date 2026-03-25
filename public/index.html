@@ -74,7 +74,7 @@
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html { -webkit-tap-highlight-color:transparent }
+html { -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none }
 body {
   font-family:var(--font);
   background:var(--bg);
@@ -84,6 +84,7 @@ body {
   padding-bottom:140px;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+  overscroll-behavior-y: none;   /* prevent iOS pull-down rubber-band hiding content */
 }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit;
          -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
@@ -169,7 +170,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   width:68px; height:68px; border-radius:50%;
   background:var(--card);
   border:1.5px solid var(--border);
-  box-shadow:var(--shcard), 0 0 0 0 rgba(59,130,246,0);
+  box-shadow:var(--shcard), 0 0 0 0 transparent;
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:3px; color:var(--black);
   transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
@@ -177,7 +178,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .voice-btn:hover {
   border-color:var(--blue);
-  box-shadow:var(--shcard), 0 0 0 4px rgba(59,130,246,.12);
+  box-shadow:var(--shcard), 0 0 0 4px var(--blue-glow);
 }
 .voice-btn:active { transform:scale(.93) }
 .voice-btn.listening {
@@ -186,8 +187,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   color:var(--blue);
 }
 @keyframes mic-pulse {
-  0%,100% { box-shadow:var(--shcard), 0 0 0 4px rgba(59,130,246,.15), 0 0 0 8px rgba(59,130,246,.06) }
-  50%      { box-shadow:var(--shcard), 0 0 0 8px rgba(59,130,246,.2),  0 0 0 16px rgba(59,130,246,.04) }
+  0%,100% { box-shadow:var(--shcard), 0 0 0 4px var(--blue-glow), 0 0 0 8px var(--blue-glow) }
+  50%      { box-shadow:var(--shcard), 0 0 0 8px var(--blue-glow), 0 0 0 16px var(--blue-glow) }
 }
 .mic-icon { width:20px; height:20px }
 .voice-label { font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.45 }
@@ -248,7 +249,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .cat-count {
   font-size:11px; font-weight:700; color:var(--blue);
   background:var(--blue-lt); border-radius:20px;
-  padding:2px 9px; border:1px solid rgba(59,130,246,.18);
+  padding:2px 9px; border:1px solid var(--blue-glow);
 }
 
 /* ════════════════════════════════════════
@@ -409,7 +410,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
 }
-.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:rgba(59,130,246,.3); background:var(--blue-lt) }
+.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow); background:var(--blue-lt) }
 .timing-chip[data-timing="This Week"] { color:var(--t1);    border-color:var(--brim);         background:var(--raised); font-weight:800 }
 .timing-chip[data-timing="Later"]     { color:var(--t2);    border-color:var(--border);       background:var(--card) }
 .timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
@@ -445,10 +446,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   background:var(--card); border-radius:var(--rc);
   box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
 }
-.add-task-active { display:flex; align-items:flex-start; padding:14px 16px 12px; gap:13px }
+.add-task-active { display:flex; align-items:center; padding:14px 16px 12px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
   background:var(--blue); opacity:.25; pointer-events:none;
+  position:relative; align-self:flex-start; margin-top:1px;
 }
 .add-bubble-ph::before {
   content:''; position:absolute; top:3px; left:5px;
@@ -473,7 +475,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1px solid var(--border); background:var(--card); color:var(--t2);
   cursor:pointer; transition:var(--tr); box-shadow:var(--shlift);
 }
-.add-chip.sel { background:var(--black); color:#fff; border-color:var(--black) }
+.add-chip.sel { background:var(--blue); color:#fff; border-color:var(--blue) }
 .add-chip:hover:not(.sel) { border-color:var(--blue); color:var(--blue) }
 
 .add-row-sep { height:1px; background:var(--border); margin:10px 0 }
@@ -482,7 +484,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .cat-picker-btn {
   display:inline-flex; align-items:center;
   font-size:10px; font-weight:800; padding:3px 9px; border-radius:20px;
-  background:var(--blue-lt); border:1px solid rgba(59,130,246,.25);
+  background:var(--blue-lt); border:1px solid var(--blue-glow);
   color:var(--blue); letter-spacing:.3px; cursor:pointer;
   transition:var(--tr); touch-action:manipulation;
 }
@@ -510,7 +512,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border-radius:var(--rp); background:var(--blue); box-shadow:var(--shbtn);
   transition:transform .14s ease, box-shadow .14s ease;
 }
-.btn-add:hover { box-shadow:0 6px 24px rgba(59,130,246,.5) }
+.btn-add:hover { box-shadow:var(--shbtn) }
 .btn-add:active { transform:scale(.97) }
 
 /* ════════════════════════════════════════
@@ -569,13 +571,15 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border-bottom:1px solid var(--border); gap:12px;
 }
 .settings-row:last-child { border-bottom:none }
+.legal-copyright { text-align:center; font-size:11px; color:var(--t3); margin:4px 0 16px }
+.legal-row:active { opacity:.6 }
 .settings-row-label { flex:1; font-size:14px; font-weight:600; color:var(--t1) }
 .settings-row-sub   { font-size:11px; color:var(--t3); margin-top:2px }
 .settings-row-right { font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px }
 
 .pro-badge {
   font-size:10px; font-weight:800; padding:2px 8px;
-  background:var(--blue-lt); border:1px solid rgba(59,130,246,.2);
+  background:var(--blue-lt); border:1px solid var(--blue-glow);
   border-radius:20px; color:var(--blue); letter-spacing:.3px;
 }
 
@@ -647,13 +651,39 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 /* ── Guide rows ── */
 .cat-list { display:flex; flex-direction:column; gap:6px; margin-top:4px }
 .cat-item {
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; background:var(--raised);
-  border-radius:12px; border:1px solid var(--border);
+  background:var(--raised); border-radius:12px; border:1px solid var(--border);
+  margin-bottom:6px; overflow:hidden;
+}
+.cat-item-row {
+  display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
 .cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0 }
 .cat-item-name { flex:1; font-size:13px; font-weight:700 }
 .cat-item-kw   { font-size:11px; color:var(--t3) }
+.cat-item-chevron { font-size:10px; color:var(--t3); transition:transform .2s; line-height:1 }
+.cat-item.open .cat-item-chevron { transform:rotate(180deg) }
+.cat-item-keywords {
+  display:none; padding:0 12px 10px; flex-wrap:wrap; gap:6px;
+}
+.cat-item.open .cat-item-keywords { display:flex }
+.kw-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:700; padding:3px 8px;
+  background:var(--blue-lt); border:1px solid var(--blue-glow);
+  color:var(--blue); border-radius:20px;
+}
+.kw-pill-x {
+  cursor:pointer; opacity:.6; font-size:12px; line-height:1;
+  -webkit-tap-highlight-color:transparent;
+}
+.kw-add-input {
+  font-size:11px; font-weight:600; padding:3px 8px;
+  border:1.5px dashed var(--border); border-radius:20px;
+  background:transparent; color:var(--t1); outline:none;
+  font-family:inherit; width:90px;
+}
+.kw-add-input::placeholder { color:var(--t3); font-weight:500 }
 
 .guide-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border) }
 .guide-row:last-child { border-bottom:none; padding-bottom:0 }
@@ -733,10 +763,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1px solid var(--border);
   overflow:hidden;
 }
-/* Style tabs and colour grid locked until PRO unlock */
+/* Style tabs and colour grid — unlocked in web demo (iOS uses StoreKit gate) */
 .pro-wrap .bubble-style-tabs,
 .pro-wrap .colour-grid {
-  pointer-events:none;
+  pointer-events:auto;
 }
 .pro-block { padding:14px 16px 16px }    /* same horizontal as settings-row */
 .pro-divider { height:1px; background:var(--border); margin:0 16px } /* inset 16px each side — same spacing as general rows */
@@ -815,7 +845,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .deploy-header-left { display:flex; align-items:center; gap:10px }
 .deploy-header-icon {
   width:34px; height:34px; border-radius:10px;
-  background:var(--blue-lt); border:1px solid rgba(59,130,246,.2);
+  background:var(--blue-lt); border:1px solid var(--blue-glow);
   display:flex; align-items:center; justify-content:center; color:var(--blue); flex-shrink:0;
 }
 .deploy-header-icon svg { width:16px; height:16px }
@@ -850,7 +880,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border-radius:20px; letter-spacing:.2px;
 }
 .deploy-tag.green  { background:#DCFCE7; color:#16A34A; border:1px solid #86EFAC }
-.deploy-tag.blue   { background:var(--blue-lt); color:var(--blue); border:1px solid rgba(59,130,246,.2) }
+.deploy-tag.blue   { background:var(--blue-lt); color:var(--blue); border:1px solid var(--blue-glow) }
 .deploy-tag.orange { background:#FEF3C7; color:#D97706; border:1px solid #FCD34D }
 
 /* ════════════════════════════════════════
@@ -872,7 +902,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .mic-modal-title { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px }
 .mic-modal-hint  { font-size:12px; color:var(--t2); text-align:center; max-width:240px; line-height:1.6 }
 .mic-wave { display:flex; align-items:center; gap:5px; height:40px }
-.mic-bar  { width:4px; border-radius:4px; background:var(--blue); animation:wave-bar 1s ease infinite }
+.mic-bar  { width:4px; border-radius:4px; background:var(--bubble-color, var(--blue)); animation:wave-bar 1s ease infinite }
 .mic-bar:nth-child(1){animation-delay:0s;   height:12px}
 .mic-bar:nth-child(2){animation-delay:.12s; height:24px}
 .mic-bar:nth-child(3){animation-delay:.24s; height:36px}
@@ -937,51 +967,71 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   100% { opacity:1; transform:translateY(0) }
 }
 
-/* Bubble-burst celebration — replaces emoji */
+/* Bubble-burst celebration — 16 bubbles, ~3s total, colour follows theme */
 .done-bubbles {
   position:relative; width:80px; height:80px; margin-bottom:24px;
 }
 .done-bubble {
   position:absolute; border-radius:50%;
   background:var(--bubble-color, var(--blue));
-  animation:done-bubble-pop 0.7s cubic-bezier(.36,.07,.19,.97) both;
+  animation:done-bubble-pop 1.0s cubic-bezier(.36,.07,.19,.97) both;
 }
-.done-bubble:nth-child(1){width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
-.done-bubble:nth-child(2){width:12px;height:12px;top:50%;left:50%;animation-delay:.12s}
-.done-bubble:nth-child(3){width:16px;height:16px;top:50%;left:50%;animation-delay:.18s}
-.done-bubble:nth-child(4){width:10px;height:10px;top:50%;left:50%;animation-delay:.24s}
-.done-bubble:nth-child(5){width:14px;height:14px;top:50%;left:50%;animation-delay:.10s}
-.done-bubble:nth-child(6){width:8px; height:8px; top:50%;left:50%;animation-delay:.28s}
-.done-bubble:nth-child(7){width:20px;height:20px;top:50%;left:50%;animation-delay:.06s}
-.done-bubble:nth-child(8){width:11px;height:11px;top:50%;left:50%;animation-delay:.20s}
+/* sizes + staggered delays across ~1.8s → total burst lasts ~2.8s */
+.done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
+.done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.10s}
+.done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.16s}
+.done-bubble:nth-child(4) {width:10px;height:10px;top:50%;left:50%;animation-delay:.22s}
+.done-bubble:nth-child(5) {width:14px;height:14px;top:50%;left:50%;animation-delay:.30s}
+.done-bubble:nth-child(6) {width:20px;height:20px;top:50%;left:50%;animation-delay:.40s}
+.done-bubble:nth-child(7) {width:8px; height:8px; top:50%;left:50%;animation-delay:.52s}
+.done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.64s}
+.done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.78s}
+.done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.92s}
+.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:1.06s}
+.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:1.20s}
+.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:1.35s}
+.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:1.50s}
+.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:1.64s}
+.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:1.78s}
 @keyframes done-bubble-pop {
   0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
-  30%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.4); opacity:1 }
-  70%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
+  25%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.5); opacity:1 }
+  65%  { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(1); opacity:.8 }
   100% { transform:translate(calc(-50% + var(--tx2,0px)), calc(-50% + var(--ty2,0px))) scale(0); opacity:0 }
 }
-.done-bubble:nth-child(1){--tx:-30px;--ty:-28px;--tx2:-38px;--ty2:-36px}
-.done-bubble:nth-child(2){--tx: 32px;--ty:-18px;--tx2: 40px;--ty2:-24px}
-.done-bubble:nth-child(3){--tx: -8px;--ty: 34px;--tx2:-10px;--ty2: 44px}
-.done-bubble:nth-child(4){--tx: 28px;--ty: 26px;--tx2: 36px;--ty2: 34px}
-.done-bubble:nth-child(5){--tx:-34px;--ty: 14px;--tx2:-44px;--ty2: 18px}
-.done-bubble:nth-child(6){--tx: 18px;--ty:-34px;--tx2: 24px;--ty2:-44px}
-.done-bubble:nth-child(7){--tx:-18px;--ty:-10px;--tx2:-24px;--ty2:-14px}
-.done-bubble:nth-child(8){--tx: 10px;--ty: 10px;--tx2: 14px;--ty2: 14px}
+/* 16 evenly-spaced radial directions (every 22.5°) — inner ~45px, outer ~62px */
+.done-bubble:nth-child(1) {--tx: 45px;--ty:  0px;--tx2: 62px;--ty2:  0px}
+.done-bubble:nth-child(2) {--tx: 42px;--ty: 17px;--tx2: 57px;--ty2: 23px}
+.done-bubble:nth-child(3) {--tx: 32px;--ty: 32px;--tx2: 44px;--ty2: 44px}
+.done-bubble:nth-child(4) {--tx: 17px;--ty: 42px;--tx2: 23px;--ty2: 57px}
+.done-bubble:nth-child(5) {--tx:  0px;--ty: 45px;--tx2:  0px;--ty2: 62px}
+.done-bubble:nth-child(6) {--tx:-17px;--ty: 42px;--tx2:-23px;--ty2: 57px}
+.done-bubble:nth-child(7) {--tx:-32px;--ty: 32px;--tx2:-44px;--ty2: 44px}
+.done-bubble:nth-child(8) {--tx:-42px;--ty: 17px;--tx2:-57px;--ty2: 23px}
+.done-bubble:nth-child(9) {--tx:-45px;--ty:  0px;--tx2:-62px;--ty2:  0px}
+.done-bubble:nth-child(10){--tx:-42px;--ty:-17px;--tx2:-57px;--ty2:-23px}
+.done-bubble:nth-child(11){--tx:-32px;--ty:-32px;--tx2:-44px;--ty2:-44px}
+.done-bubble:nth-child(12){--tx:-17px;--ty:-42px;--tx2:-23px;--ty2:-57px}
+.done-bubble:nth-child(13){--tx:  0px;--ty:-45px;--tx2:  0px;--ty2:-62px}
+.done-bubble:nth-child(14){--tx: 17px;--ty:-42px;--tx2: 23px;--ty2:-57px}
+.done-bubble:nth-child(15){--tx: 32px;--ty:-32px;--tx2: 44px;--ty2:-44px}
+.done-bubble:nth-child(16){--tx: 42px;--ty:-17px;--tx2: 57px;--ty2:-23px}
 
-/* Central big bubble */
+/* Central big bubble — pops up then fades out so nothing lingers */
 .done-bubble-center {
   width:36px; height:36px; border-radius:50%; position:relative;
   margin-bottom:24px;
   background:var(--blue);
-  box-shadow:0 0 0 3px rgba(59,130,246,.18), 0 0 12px 2px rgba(59,130,246,.2);
-  animation:done-center-pop .6s cubic-bezier(.36,.07,.19,.97) .0s both;
+  box-shadow:0 0 0 3px var(--blue-glow), 0 0 12px 2px var(--blue-glow);
+  animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
 }
 @keyframes done-center-pop {
-  0%   { transform:scale(0);   opacity:0 }
-  45%  { transform:scale(1.35); opacity:1 }
-  70%  { transform:scale(.85); opacity:1 }
-  100% { transform:scale(1);   opacity:1 }
+  0%   { transform:scale(0);    opacity:0 }
+  12%  { transform:scale(1.35); opacity:1 }
+  25%  { transform:scale(.9);   opacity:1 }
+  35%  { transform:scale(1);    opacity:1 }
+  78%  { transform:scale(1);    opacity:1 }
+  100% { transform:scale(1.1);  opacity:0 }
 }
 
 .done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
@@ -1132,8 +1182,15 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
     </div>
-    <div class="done-bubble-center" id="doneBubbleCenter"></div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
@@ -1200,15 +1257,12 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
           <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
         </div>
         <div class="add-row-sep"></div>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:2px;flex-wrap:wrap">
-          <div class="add-row-label" style="margin:0" data-en="Category" data-ja="カテゴリー">Category</div>
-          <button id="autoCatTag" class="cat-picker-btn" data-cat-en="Other">Other
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left:3px;opacity:.6"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <span class="auto-detect-label" id="autoDetectLabel" style="font-size:10px;color:var(--t3)" data-en="— auto detected" data-ja="— 自動検出">— auto detected</span>
-        </div>
-        <!-- Category picker popover -->
-        <div id="catPickerMenu" style="display:none;position:absolute;left:0;right:0;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shcard);z-index:200;overflow:hidden">
+        <div class="add-row-label" data-en="Category" data-ja="カテゴリー">Category</div>
+        <div class="add-chips" id="catChips">
+          <span class="add-chip" data-cat-en="Work"     data-en="Work"     data-ja="仕事">Work</span>
+          <span class="add-chip" data-cat-en="Home"     data-en="Home"     data-ja="家の事">Home</span>
+          <span class="add-chip" data-cat-en="Personal" data-en="Personal" data-ja="自分の事">Personal</span>
+          <span class="add-chip sel" data-cat-en="Other"    data-en="Other"    data-ja="その他">Other</span>
         </div>
       </div>
     </div>
@@ -1493,45 +1547,28 @@ GoogleService-Info.plist
         <!-- Categories -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
-          <div class="cat-list">
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
-              <span class="cat-item-name" data-en="Work" data-ja="仕事">Work</span>
-              <span class="cat-item-kw" data-en="emails, meetings, reports…" data-ja="メール、会議、報告…">emails, meetings, reports…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
-              <span class="cat-item-name" data-en="Home" data-ja="家の事">Home</span>
-              <span class="cat-item-kw" data-en="groceries, cleaning, bills…" data-ja="買い物、掃除、光熱費…">groceries, cleaning, bills…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
-              <span class="cat-item-name" data-en="Personal" data-ja="自分の事">Personal</span>
-              <span class="cat-item-kw" data-en="gym, doctor, reading…" data-ja="ジム、医者、読書…">gym, doctor, reading…</span>
-            </div>
-            <div class="cat-item">
-              <div class="cat-item-dot" style="background:#3B82F6"></div>
-              <span class="cat-item-name" data-en="Other" data-ja="その他">Other</span>
-              <span class="cat-item-kw" data-en="anything that doesn't fit" data-ja="上記以外のタスク">anything that doesn't fit</span>
-            </div>
+          <!-- Category list built dynamically by JS from state.categories -->
+          <div id="catList"></div>
+          <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
+            <span class="add-plus-row-sign">+</span> <span data-en="Add category" data-ja="カテゴリーを追加">Add category</span>
           </div>
-          <div class="add-plus-row">
-            <span class="add-plus-row-sign">+</span> Add category
+          <div id="newCatForm" style="display:none;padding:0 0 10px">
+            <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
+              <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+              <input id="newCatInput" type="text" placeholder="Category name…"
+                style="flex:1;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;
+                       padding:7px 12px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">
+              <button id="newCatConfirmBtn"
+                style="font-size:12px;font-weight:800;padding:7px 14px;border-radius:10px;
+                       background:var(--blue);color:#fff;border:none;cursor:pointer;font-family:inherit;flex-shrink:0">
+                Add
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="pro-divider"></div>
-
-        <!-- Rules -->
-        <div class="pro-block">
-          <div class="pro-block-title" data-en="Rules" data-ja="ルール">Rules</div>
-          <div class="add-plus-row" style="padding-top:0">
-            <span class="add-plus-row-sign">+</span> Add rule
-          </div>
-        </div>
-
-        <!-- Upgrade CTA -->
-        <div class="upgrade-row">
+        <!-- Upgrade CTA — hidden in web demo (Pro unlocked; iOS uses StoreKit) -->
+        <div class="upgrade-row" id="upgradeRow" style="display:none">
           <button class="upgrade-btn" id="unlockProBtn" data-en="Upgrade to PRO" data-ja="PROにアップグレード">Upgrade to PRO</button>
         </div>
 
@@ -1559,7 +1596,52 @@ GoogleService-Info.plist
       </div>
     </div>
 
+    <!-- ── Legal section ── -->
+    <div class="settings-section" style="margin-top:24px">
+      <div class="settings-section-label" data-en="Legal" data-ja="法的情報">Legal</div>
+
+      <div class="settings-row legal-row" id="legalRowPrivacy" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowTerms" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Terms of Service" data-ja="利用規約">Terms of Service</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowEula" style="cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="End User Licence Agreement" data-ja="エンドユーザーライセンス契約">End User Licence Agreement</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="settings-row legal-row" id="legalRowData" style="cursor:pointer;border-bottom:none">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Data Deletion Request" data-ja="データ削除リクエスト">Data Deletion Request</p>
+          <p class="settings-row-sub" data-en="Request removal of your account &amp; data" data-ja="アカウントとデータの削除をリクエスト">Request removal of your account &amp; data</p>
+        </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+
+    <p class="legal-copyright" data-en="© 2025 Allerise Pte. Ltd. All rights reserved." data-ja="© 2025 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2025 Allerise Pte. Ltd. All rights reserved.</p>
+
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
+  </div>
+</div>
+
+<!-- ═══════ LEGAL DOCUMENT MODAL ═══════ -->
+<div class="modal-overlay" id="legalModal">
+  <div class="modal-card" style="max-height:88vh;overflow-y:auto;padding:24px 20px 28px">
+    <p class="modal-title" id="legalTitle" style="margin-bottom:16px">Privacy Policy</p>
+    <div id="legalBody" style="font-size:13px;line-height:1.7;color:var(--t2)"></div>
+    <button class="modal-cancel" id="closeLegal" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:24px auto 0" data-en="Close" data-ja="閉じる">Close</button>
   </div>
 </div>
 
@@ -1712,7 +1794,7 @@ GoogleService-Info.plist
 const state = {
   bubbleStyle:  'luminous', // luminous | solid | ring | ink
   bubbleColour: 'bc-blue',  // bc-* class
-  isProUser:    false,       // toggle to true for testing Pro features
+  isProUser:    true,        // Pro unlocked in web demo (gated by StoreKit on iOS)
   greyBubbles:  false,       // FREE — greyscale mode
   lang:         'en',
   isListening:  false,
@@ -1762,14 +1844,25 @@ function burstBubble(el, item) {
 
   el.classList.add('popping');
 
+  /* Reliable class-based colour lookup — avoids getComputedStyle Safari quirks */
+  const _bcMap = {
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+  };
+  const _bcClass = [...el.classList].find(c => c.startsWith('bc-'));
+  const rawHex = _bcMap[_bcClass] || _bcMap[state.bubbleColour] || '#3B82F6';
+  const hx = rawHex.replace('#','');
+  const cr = parseInt(hx.slice(0,2),16), cg = parseInt(hx.slice(2,4),16), cb = parseInt(hx.slice(4,6),16);
+  const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
   const particles = [
-    'rgba(59,130,246,1)',
-    'rgba(96,165,250,.95)',
-    'rgba(147,197,253,.9)',
-    'rgba(29,78,216,.95)',
-    'rgba(191,219,254,.85)',
+    `rgba(${cr},${cg},${cb},1)`,
+    `rgba(${lt(cr,40)},${lt(cg,40)},${lt(cb,40)},.95)`,
+    `rgba(${lt(cr,80)},${lt(cg,80)},${lt(cb,80)},.9)`,
+    `rgba(${dk(cr,30)},${dk(cg,30)},${dk(cb,30)},.95)`,
+    `rgba(${lt(cr,110)},${lt(cg,110)},${lt(cb,110)},.85)`,
     'rgba(255,255,255,.9)',
-    'rgba(59,130,246,.7)',
+    `rgba(${cr},${cg},${cb},.7)`,
   ];
 
   const count = 24;
@@ -1804,20 +1897,24 @@ function burstBubble(el, item) {
 
   setTimeout(() => {
     item.classList.add('collapsing');
+    const card = item.closest('.category-card');
+    // Count remaining *before* the remove — collapsing item is already excluded
+    const willRemain = card.querySelectorAll('.task-item:not(.collapsing)').length;
+    if (willRemain === 0) {
+      // Start fading the whole card section immediately — don't wait for collapse to finish
+      card.style.transition = 'opacity .3s ease, transform .3s ease';
+      card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+    }
     setTimeout(() => {
-      const card = item.closest('.category-card');
       item.remove();
       const remaining = card.querySelectorAll('.task-item:not(.collapsing)').length;
       const cnt = card.querySelector('.cat-count');
       if (cnt) cnt.textContent = remaining;
       if (remaining === 0) {
-        card.style.transition = 'opacity .28s ease, transform .28s ease';
-        card.style.opacity = '0'; card.style.transform = 'scale(.97)';
-        setTimeout(() => {
-          card.classList.add('empty');
-          card.style.opacity = ''; card.style.transform = '';
-          updateScreenState(); // ← check if all gone → show done screen
-        }, 300);
+        card.style.transition = '';
+        card.classList.add('empty');
+        card.style.opacity = ''; card.style.transform = '';
+        updateScreenState(); // ← check if all gone → show done screen
       } else {
         updateScreenState();
       }
@@ -1920,6 +2017,12 @@ function attachTaskText(taskText) {
   let didLongPress = false;
 
   // Long-press on text → open category sheet
+  // Cache text edits in the correct language slot
+  taskText.addEventListener('blur', () => {
+    if (state.lang === 'ja') taskText.dataset.textJa = taskText.textContent;
+    else taskText.dataset.textEn = taskText.textContent;
+  });
+
   taskText.addEventListener('pointerdown', e => {
     didLongPress = false;
     pressTimer = setTimeout(() => {
@@ -2016,65 +2119,54 @@ const CAT_KW = {
   Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment/i,
   Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut/i,
 };
-function detectCat(t) {
-  for (const [c,r] of Object.entries(CAT_KW)) if (r.test(t)) return c;
-  return 'Other';
-}
 const addInput  = document.getElementById('addTaskInput');
-const autoCatEl = document.getElementById('autoCatTag');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
-const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#3B82F6', 'Personal':'#3B82F6', 'Other':'#3B82F6' };
+const CAT_COLOURS = { 'Work':'#3B82F6', 'Home':'#16A34A', 'Personal':'#7C3AED', 'Other':'#F97316' };
+
+/* ── Category chips in manual-add form ── */
+function getSelectedCat() {
+  const sel = document.querySelector('#catChips .add-chip.sel');
+  return sel?.dataset.catEn || 'Other';
+}
+function setSelectedCat(catEn) {
+  document.querySelectorAll('#catChips .add-chip').forEach(c => {
+    c.classList.toggle('sel', c.dataset.catEn === catEn);
+  });
+}
+document.querySelectorAll('#catChips .add-chip').forEach(chip => {
+  chip.addEventListener('click', () => setSelectedCat(chip.dataset.catEn));
+});
+
 function updateCat() {
-  if (!autoCatEl || !addInput) return;
+  if (!addInput) return;
   const cat = detectCat(addInput.value);
   setCatDisplay(cat, true);
 }
 function setCatDisplay(cat, autoDetected) {
-  if (!autoCatEl) return;
-  autoCatEl.dataset.catEn = cat;
-  const label = state.lang === 'ja' ? (CAT_LABELS_JA[cat] || cat) : cat;
-  // Update button text (keep the chevron SVG)
-  const svg = autoCatEl.querySelector('svg');
-  autoCatEl.textContent = label;
-  if (svg) autoCatEl.appendChild(svg);
-  // Show/hide "auto detected" label
-  const autoLabel = document.getElementById('autoDetectLabel');
-  if (autoLabel) autoLabel.style.display = autoDetected ? '' : 'none';
+  setSelectedCat(cat);
 }
 addInput?.addEventListener('input', updateCat);
+
+/* Debounced AI classify while typing — kicks in 650ms after user stops */
+let _catAiDebounce;
+addInput?.addEventListener('input', () => {
+  clearTimeout(_catAiDebounce);
+  const val = addInput.value.trim();
+  if (val.length < 4) return;
+  _catAiDebounce = setTimeout(async () => {
+    if (addInput.value.trim() !== val) return; // text changed, skip stale result
+    try {
+      const tasks = await classifyTranscript(val);
+      if (tasks.length > 0 && addInput.value.trim() === val) {
+        setCatDisplay(tasks[0].category, true);
+      }
+    } catch (_) { /* keep local keyword result on failure */ }
+  }, 650);
+});
+
 updateCat();
 
-/* ── Category Picker Popover ── */
 const CAT_LIST_EN = ['Work', 'Home', 'Personal', 'Other'];
-const catMenu = document.getElementById('catPickerMenu');
-function buildCatMenu() {
-  if (!catMenu) return;
-  catMenu.innerHTML = '';
-  CAT_LIST_EN.forEach(cat => {
-    const item = document.createElement('button');
-    item.className = 'cat-picker-item';
-    item.type = 'button';
-    item.innerHTML = `<span class="cat-picker-dot" style="background:${CAT_COLOURS[cat]||'#9CA3AF'}"></span>${state.lang==='ja'?(CAT_LABELS_JA[cat]||cat):cat}`;
-    item.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setCatDisplay(cat, false);
-      catMenu.style.display = 'none';
-    });
-    catMenu.appendChild(item);
-  });
-}
-autoCatEl?.addEventListener('click', (e) => {
-  e.stopPropagation();
-  buildCatMenu();
-  catMenu.style.display = catMenu.style.display === 'none' || catMenu.style.display === '' ? '' : 'none';
-  // Show the menu — position it below the button
-  if (catMenu.style.display !== 'none') {
-    catMenu.style.display = 'block';
-  }
-});
-document.addEventListener('click', () => {
-  if (catMenu) catMenu.style.display = 'none';
-});
 
 /* ══════════════════════════════════════════
    ADD TASK
@@ -2091,17 +2183,22 @@ function makeTaskItem(text, timing, cat) {
   item.innerHTML = `
     <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
-      <div class="task-text" contenteditable="true">${text}</div>
+      <div class="task-text" contenteditable="true" data-text-en="" data-text-ja="">${text}</div>
       <span class="timing-chip" data-timing="${timing}">${state.lang==='ja'?({'Today':'今日','This Week':'今週','Later':'そのうち'}[timing]||timing):timing}</span>
     </div></div>
   `;
   const addRow = card.querySelector('.add-task-row');
   card.insertBefore(item, addRow);
 
+  // Cache text in the appropriate language slot
+  const textEl = item.querySelector('.task-text');
+  if (state.lang === 'ja') textEl.dataset.textJa = text;
+  else textEl.dataset.textEn = text;
+
   attachBubble(item.querySelector('.task-bubble'));
-  attachTaskText(item.querySelector('.task-text'));
+  attachTaskText(textEl);
   attachChip(item.querySelector('.timing-chip'));
-  item.querySelector('.task-text').addEventListener('keydown', handleTextKey);
+  textEl.addEventListener('keydown', handleTextKey);
 
   const cnt = card.querySelector('.cat-count');
   if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
@@ -2126,7 +2223,7 @@ document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   if (!text) { addInput?.focus(); return; }
   const selChip = document.querySelector('#deadlineChips .add-chip.sel');
   const timing = selChip?.dataset.en || selChip?.textContent || 'Today';
-  const cat    = autoCatEl?.dataset.catEn || autoCatEl?.textContent || 'Other';
+  const cat    = getSelectedCat();
   makeTaskItem(text, timing, cat);
   addInput.value = '';
   updateCat();
@@ -2156,35 +2253,26 @@ function showDoneScreen() {
   if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
   if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
 
-  // Sync bubble colors to match the chosen colour scheme
-  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (() => {
-    const colorMap = {
-      'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488',
-      'bc-green':'#16A34A','bc-amber':'#F97316','bc-rose':'#EF4444',
-      'bc-pink':'#EC4899','bc-purple':'#7C3AED','bc-black':'#374151',
-      'bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
-    };
-    return colorMap[state.bubbleColour] || '#3B82F6';
-  })();
-  el.querySelectorAll('.done-bubble, .done-bubble-center').forEach(b => {
+  // Sync burst bubble colours to match the chosen colour scheme
+  const _dcMap = {
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+  };
+  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
+  el.querySelectorAll('.done-bubble').forEach(b => {
     b.style.background = bubbleColor;
     b.style.setProperty('--bubble-color', bubbleColor);
   });
-  const center = el.querySelector('.done-bubble-center');
-  if (center) {
-    const rgb = bubbleColor.replace('#','');
-    const r = parseInt(rgb.slice(0,2),16), g = parseInt(rgb.slice(2,4),16), bv = parseInt(rgb.slice(4,6),16);
-    center.style.boxShadow = `0 0 0 3px rgba(${r},${g},${bv},.18), 0 0 12px 2px rgba(${r},${g},${bv},.2)`;
-  }
 
   // Restart all animations: force reflow
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
 
@@ -2326,15 +2414,19 @@ function localClassify(transcript, defaultTiming) {
 /* Send transcript to Cloudflare Worker → OpenAI → structured task list
    Falls back to local keyword classification if API key is not set */
 async function classifyTranscript(transcript) {
-  const categories    = ['Work', 'Home', 'Personal', 'Other'];
+  const categories    = state.categories.map(c => c.en);
   const defaultTiming = state.defaultTiming || 'This Week';
+
+  // Build custom keyword map for AI: { Work: ['client1', 'boss'], Home: ['mom', 'cleaner'] }
+  const categoryKeywords = {};
+  state.categories.forEach(c => { if (c.keywords.length) categoryKeywords[c.en] = c.keywords; });
 
   // Try Cloudflare Worker → OpenAI (key lives in Cloudflare secrets, never in browser)
   try {
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript, categories, defaultTiming, lang: state.lang })
+      body: JSON.stringify({ transcript, categories, categoryKeywords, defaultTiming, lang: state.lang })
     });
     if (res.ok) {
       const data = await res.json();
@@ -2363,9 +2455,12 @@ const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navig
 
 let recognition    = null;
 let fullTranscript = '';
+let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-let micPermGranted = false;
+// Safari needs getUserMedia called first before webkitSpeechRecognition.start().
+// Chrome/Edge handle mic permission internally — skip getUserMedia on those.
+let micPermGranted = !isSafari;  // Chrome: skip getUserMedia entirely
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -2384,34 +2479,52 @@ if (SR) {
   function createRecognition() {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
-    r.continuous      = false;   // MUST be false on Safari
-    r.interimResults  = false;   // isFinal-only, most reliable cross-browser
+    r.continuous      = false;           // MUST be false on Safari
+    r.interimResults  = !isSafari;       // Safari: false (only fires isFinal, interim breaks it)
+                                         // Chrome: true  (live words as user speaks)
     r.maxAlternatives = 1;
 
     r.onstart = () => {
+      // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
        document.getElementById('voiceBtnBottom')
       ].forEach(b => b?.classList.add('listening'));
-      micModal.classList.add('show');
+      micModal?.classList.add('show');
       transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
-      transcriptEl.style.color = 'var(--blue)';
+      transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
     };
 
     r.onresult = e => {
+      let newInterim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           fullTranscript += res[0].transcript + ' ';
-          // Show accumulated transcript live in the mic modal
-          const hint = document.getElementById('micModalHint');
-          if (hint) hint.textContent = fullTranscript.trim();
+          interimText = '';            // final arrived — clear interim
+        } else {
+          newInterim += res[0].transcript;
         }
+      }
+      if (newInterim) interimText = newInterim;  // keep latest interim
+
+      // Show live words — final so far + current interim phrase
+      const hint = document.getElementById('micModalHint');
+      if (hint) {
+        const display = (fullTranscript + interimText).trim();
+        if (display) hint.textContent = display;
       }
     };
 
     r.onend = () => {
+      // Chrome fix: session can end without ever firing isFinal.
+      // Promote any pending interim text into fullTranscript now.
+      if (interimText) {
+        fullTranscript += interimText + ' ';
+        interimText = '';
+      }
+
       if (shouldRestart && state.isListening) {
         // Keep listening — Safari needs fresh object each time
         recognition = createRecognition();
@@ -2500,9 +2613,11 @@ if (SR) {
     shouldRestart = false;
     clearTimeout(restartTimer);
 
-    // 2. Grab transcript BEFORE stopping (stop may clear state on some browsers)
-    const t = fullTranscript.trim();
+    // 2. Grab transcript BEFORE stopping — combine final + any pending interim
+    //    (Chrome often ends session without isFinal, so interimText holds the words)
+    const t = (fullTranscript + interimText).trim();
     fullTranscript = '';
+    interimText    = '';
 
     // 3. Stop recognition and clear UI
     try { recognition?.stop(); } catch(e) {}
@@ -2562,16 +2677,27 @@ if (SR) {
     if (state.isListening) { stopListening(); return; }
 
     fullTranscript = '';
+    interimText    = '';
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
-    if (micPermGranted) {
-      // Permission already granted — start immediately (synchronous, keeps gesture chain)
-      recognition = createRecognition();
-      try { recognition.start(); }
-      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-    } else {
-      // First time — request permission then start in .then() (still within gesture microtask)
+    // Show mic UI immediately — don't wait for onstart (iOS Safari can take ~1s, feels broken)
+    state.isListening = true;
+    micModal?.classList.add('show');
+    [voiceBtn,
+     document.getElementById('voiceBtnDone'),
+     document.getElementById('voiceBtnBottom')
+    ].forEach(b => b?.classList.add('listening'));
+    transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
+    transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
+    const hint = document.getElementById('micModalHint');
+    if (hint) hint.textContent = state.lang === 'ja'
+      ? '自然に話してください…'
+      : 'Say your tasks naturally…';
+
+    if (isSafari && !micPermGranted) {
+      // Safari REQUIRES a getUserMedia call before webkitSpeechRecognition.start().
+      // Must happen inside this .then() microtask — still counts as the user gesture.
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
           stream.getTracks().forEach(t => t.stop());
@@ -2583,16 +2709,22 @@ if (SR) {
         .catch(e => {
           console.warn('mic permission denied:', e);
           shouldRestart = false;
+          _clearListeningUI();
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
+    } else {
+      // Chrome / Edge / every subsequent Safari tap:
+      // SpeechRecognition handles its own mic permission — start directly.
+      // Calling getUserMedia first on Chrome causes an audio-capture conflict.
+      recognition = createRecognition();
+      try { recognition.start(); }
+      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
     }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
   micStopBtn?.addEventListener('click', () => stopListening());
-
-  recognition = createRecognition();  // pre-warm on page load
 
 } else {
   // No Speech API at all (very old browser / Firefox without flag)
@@ -2612,17 +2744,206 @@ if (SR) {
 // Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
 document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   state.isProUser = true;
-  // Remove pointer-events lock from bubble tabs and colour grid
+  // Remove pointer-events lock from all Pro controls
   const wrap = document.getElementById('proPickerWrap');
   if (wrap) {
-    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid').forEach(el => {
+    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid,.bubble-preview-row,.add-plus-row').forEach(el => {
       el.style.pointerEvents = 'all';
     });
     // Hide the upgrade button row
     const upgradeRow = wrap.querySelector('.upgrade-row');
     if (upgradeRow) upgradeRow.style.display = 'none';
   }
-  showToast('Pro unlocked! ✨ (demo mode)');
+  // Apply current selected colour to entire UI immediately
+  if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+    applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+  }
+  syncAllBubbles();
+  showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
+});
+
+/* ══════════════════════════════════════════
+   PRO CATEGORY MANAGEMENT
+   state.categories = [{ id, en, ja, keywords:[] }, ...]
+══════════════════════════════════════════ */
+state.categories = [
+  { id:'work',     en:'Work',     ja:'仕事',    keywords:['meeting','email','report','client','project','deadline','invoice','proposal','presentation','call','boss','budget'] },
+  { id:'home',     en:'Home',     ja:'家の事',  keywords:['groceri','supermarket','clean','trash','laundry','repair','fix','bill','rent','cook','dinner','delivery'] },
+  { id:'personal', en:'Personal', ja:'自分の事',keywords:['gym','run','jog','doctor','dentist','hospital','read','book','friend','family','travel','hobby','yoga','haircut'] },
+  { id:'other',    en:'Other',    ja:'その他',  keywords:[] },
+];
+
+function buildCatList() {
+  const list = document.getElementById('catList');
+  if (!list) return;
+  list.innerHTML = '';
+  state.categories.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'cat-item';
+    item.dataset.id = cat.id;
+
+    // Header row
+    const row = document.createElement('div');
+    row.className = 'cat-item-row';
+    row.innerHTML = `
+      <div class="cat-item-dot" style="background:var(--blue)"></div>
+      <span class="cat-item-name">${state.lang==='ja' ? cat.ja : cat.en}</span>
+      <span class="cat-item-kw">${cat.keywords.length ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'') : (state.lang==='ja'?'キーワード追加':'add keywords')}</span>
+      <span class="cat-item-chevron">▾</span>`;
+    row.addEventListener('click', () => item.classList.toggle('open'));
+    item.appendChild(row);
+
+    // Keyword section (shown when open)
+    const kwSection = document.createElement('div');
+    kwSection.className = 'cat-item-keywords';
+    function renderKws() {
+      kwSection.innerHTML = '';
+      cat.keywords.forEach((kw, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'kw-pill';
+        pill.innerHTML = `${kw} <span class="kw-pill-x" data-i="${i}">✕</span>`;
+        pill.querySelector('.kw-pill-x').addEventListener('click', e => {
+          e.stopPropagation();
+          cat.keywords.splice(i, 1);
+          renderKws();
+          rebuildDetectRegex();
+          row.querySelector('.cat-item-kw').textContent = cat.keywords.length
+            ? cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'')
+            : (state.lang==='ja'?'キーワード追加':'add keywords');
+        });
+        kwSection.appendChild(pill);
+      });
+      // Add keyword input
+      const inp = document.createElement('input');
+      inp.className = 'kw-add-input';
+      inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
+      inp.type = 'text';
+      inp.addEventListener('keydown', e => {
+        if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
+          e.preventDefault();
+          const kw = inp.value.trim().replace(/,$/, '');
+          if (kw && !cat.keywords.includes(kw)) {
+            cat.keywords.push(kw);
+            rebuildDetectRegex();
+            renderKws();
+            row.querySelector('.cat-item-kw').textContent = cat.keywords.slice(0,3).join(', ')+(cat.keywords.length>3?'…':'');
+          } else { inp.value = ''; }
+        }
+      });
+      kwSection.appendChild(inp);
+
+      // Rename row (for non-Other cats)
+      if (cat.id !== 'other') {
+        const renameRow = document.createElement('div');
+        renameRow.style.cssText = 'width:100%;display:flex;align-items:center;gap:6px;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)';
+        renameRow.innerHTML = `<span style="font-size:11px;color:var(--t3);font-weight:600">${state.lang==='ja'?'名前を変更:':'Rename:'}</span>
+          <input type="text" value="${state.lang==='ja'?cat.ja:cat.en}" style="flex:1;font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">`;
+        const renameInp = renameRow.querySelector('input');
+        renameInp.addEventListener('change', () => {
+          const newName = renameInp.value.trim();
+          if (!newName) return;
+          if (state.lang==='ja') cat.ja = newName; else cat.en = newName;
+          row.querySelector('.cat-item-name').textContent = newName;
+          refreshCatChips();
+        });
+        kwSection.appendChild(renameRow);
+      }
+    }
+    renderKws();
+    item.appendChild(kwSection);
+    list.appendChild(item);
+  });
+}
+
+function rebuildDetectRegex() {
+  // Rebuild CAT_KW-like detection from state.categories
+  window._catDetectFn = text => {
+    for (const cat of state.categories) {
+      if (cat.id === 'other') continue;
+      if (cat.keywords.some(kw => new RegExp(kw, 'i').test(text))) return cat.en;
+    }
+    return 'Other';
+  };
+}
+rebuildDetectRegex();
+
+// Override detectCat to use dynamic keywords
+function detectCat(t) {
+  return window._catDetectFn ? window._catDetectFn(t) : 'Other';
+}
+
+function refreshCatChips() {
+  // Update category picker chips in the add-task form
+  const chips = document.querySelectorAll('#catChips .add-chip');
+  const catData = state.categories;
+  chips.forEach((chip, i) => {
+    if (catData[i]) {
+      chip.dataset.catEn = catData[i].en;
+      chip.textContent = state.lang==='ja' ? catData[i].ja : catData[i].en;
+    }
+  });
+}
+
+buildCatList();
+
+// Add category
+document.getElementById('addCategoryRow')?.addEventListener('click', () => {
+  const form = document.getElementById('newCatForm');
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? '' : 'none';
+  if (form.style.display !== 'none') document.getElementById('newCatInput')?.focus();
+});
+
+function addCustomCategory(name) {
+  name = name.trim();
+  if (!name) return;
+  const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  if (state.categories.find(c => c.id === id)) { showToast(state.lang==='ja'?'既に存在します':'Category already exists'); return; }
+
+  // Add to state
+  state.categories.splice(state.categories.length - 1, 0, { id, en:name, ja:name, keywords:[] });
+  buildCatList();
+
+  // Add chip to cat picker
+  const catChips = document.getElementById('catChips');
+  if (catChips) {
+    const chip = document.createElement('span');
+    chip.className = 'add-chip';
+    chip.dataset.catEn = name;
+    chip.dataset.en = name; chip.dataset.ja = name;
+    chip.textContent = name;
+    chip.addEventListener('click', () => setSelectedCat(name));
+    catChips.appendChild(chip);
+  }
+
+  // Add category card to task list
+  const tasksContainer = document.getElementById('tasksContainer');
+  const manualAddCard  = document.getElementById('manualAddCard');
+  if (tasksContainer && !document.getElementById('cat-'+id)) {
+    const card = document.createElement('div');
+    card.className = 'category-card'; card.id = 'cat-'+id; card.style.display = 'none';
+    card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><span class="cat-count">0</span></div>
+      <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>`;
+    tasksContainer.insertBefore(card, manualAddCard || null);
+    card.querySelector('.add-task-row')?.addEventListener('click', () => {
+      const mc = document.getElementById('manualAddCard');
+      if (mc) { mc.style.display = ''; document.getElementById('addTaskInput')?.focus(); }
+    });
+  }
+
+  showToast(`"${name}" added ✓`);
+  const form = document.getElementById('newCatForm');
+  const inp  = document.getElementById('newCatInput');
+  if (form) form.style.display = 'none';
+  if (inp)  inp.value = '';
+}
+
+document.getElementById('newCatConfirmBtn')?.addEventListener('click', () => {
+  addCustomCategory(document.getElementById('newCatInput')?.value || '');
+});
+document.getElementById('newCatInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') addCustomCategory(e.target.value);
+  if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
 });
 
 // Style tabs
@@ -2644,6 +2965,10 @@ document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
     state.bubbleColour = sw.dataset.colour;
     updateBubblePreview();
     syncAllBubbles();
+    // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    }
   });
 });
 
@@ -2698,6 +3023,173 @@ document.getElementById('settingsBtn').addEventListener('click', () => openM('se
 document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
 document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
 
+/* ── Legal document modal ── */
+const LEGAL_CONTENT = {
+  privacy: {
+    en: { title: 'Privacy Policy',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">This Privacy Policy describes how <strong>Allerise Pte. Ltd.</strong> ("Allerise", "we", "us", or "our"), a company incorporated in Singapore (UEN: pending), collects, uses, and shares information in connection with your use of the Poplist application ("App").</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Information We Collect</h4>
+<p style="margin-bottom:8px"><strong>Account data:</strong> When you sign in, we collect your email address and a unique user identifier via Firebase Authentication.</p>
+<p style="margin-bottom:8px"><strong>Usage data:</strong> We collect anonymised information about how you interact with the App (e.g. features used, session duration) to improve the service.</p>
+<p style="margin-bottom:8px"><strong>Voice data:</strong> Voice recognition is processed entirely on-device via your browser's Web Speech API. We do not receive, store, or transmit your voice recordings.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. How We Use Your Information</h4>
+<p style="margin-bottom:8px">We use the information we collect to provide, maintain, and improve the App; to manage your account and subscription; to send transactional communications (e.g. purchase receipts); and to comply with applicable laws, including Singapore's Personal Data Protection Act 2012 ("PDPA").</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Sharing of Information</h4>
+<p style="margin-bottom:8px">We do not sell your personal data. We may share data with service providers (including Google Firebase) who process data on our behalf under strict confidentiality obligations. We may disclose information if required by law or to protect the rights of Allerise or its users.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Data Retention</h4>
+<p style="margin-bottom:8px">We retain your personal data for as long as your account is active or as necessary to provide services. You may request deletion of your data at any time (see "Data Deletion Request" in Settings).</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Your Rights (PDPA)</h4>
+<p style="margin-bottom:8px">Under the PDPA you have the right to access and correct your personal data. To exercise these rights, contact us at <strong>privacy@allerise.com</strong>.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Children</h4>
+<p style="margin-bottom:8px">The App is not directed to children under 13. We do not knowingly collect data from children.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Changes</h4>
+<p style="margin-bottom:8px">We may update this policy from time to time. Continued use of the App after changes constitutes acceptance of the revised policy.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Contact</h4>
+<p>Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+    ja: { title: 'プライバシーポリシー',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本プライバシーポリシーは、シンガポールに登記された会社である <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」「当社」）が、Poplistアプリケーション（以下「本アプリ」）の利用に関して情報をどのように収集・利用・共有するかを説明するものです。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. 収集する情報</h4>
+<p style="margin-bottom:8px"><strong>アカウントデータ：</strong>サインイン時に、Firebase Authenticationを通じてメールアドレスと一意のユーザーIDを収集します。</p>
+<p style="margin-bottom:8px"><strong>利用データ：</strong>サービス改善のため、本アプリの利用状況（使用機能、セッション時間等）を匿名化して収集します。</p>
+<p style="margin-bottom:8px"><strong>音声データ：</strong>音声認識はブラウザのWeb Speech APIによりデバイス上で処理されます。当社は音声録音を受信・保存・送信しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. 情報の利用目的</h4>
+<p style="margin-bottom:8px">収集した情報は、本アプリの提供・維持・改善、アカウントおよびサブスクリプションの管理、取引に関する通知（購入確認等）の送信、ならびにシンガポール個人情報保護法（PDPA）を含む適用法令の遵守のために使用します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. 情報の共有</h4>
+<p style="margin-bottom:8px">当社は個人データを販売しません。Google Firebaseを含むサービスプロバイダーと、厳格な機密保持義務のもとでデータを共有する場合があります。法律上の要請がある場合、またはAlleriseやユーザーの権利を保護するために必要な場合には情報を開示することがあります。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. データ保存期間</h4>
+<p style="margin-bottom:8px">お客様のアカウントが有効な期間、またはサービス提供に必要な期間、個人データを保存します。いつでもデータの削除をリクエストできます（設定の「データ削除リクエスト」をご参照ください）。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. お客様の権利（PDPA）</h4>
+<p style="margin-bottom:8px">PDPAに基づき、お客様は個人データへのアクセスおよび訂正を求める権利を有します。これらの権利を行使するには、<strong>privacy@allerise.com</strong> までご連絡ください。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 子どものプライバシー</h4>
+<p style="margin-bottom:8px">本アプリは13歳未満の子どもを対象としていません。当社は意図的に子どものデータを収集しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. ポリシーの変更</h4>
+<p style="margin-bottom:8px">本ポリシーは随時更新されることがあります。変更後も引き続き本アプリを利用された場合は、改訂後のポリシーに同意したものとみなします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. お問い合わせ</h4>
+<p>Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+  },
+  terms: {
+    en: { title: 'Terms of Service',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">These Terms of Service ("Terms") govern your access to and use of the Poplist application provided by <strong>Allerise Pte. Ltd.</strong> ("Allerise"), a company incorporated in Singapore. By using the App you agree to these Terms.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Eligibility</h4>
+<p style="margin-bottom:8px">You must be at least 13 years old to use the App. By agreeing to these Terms you confirm you meet this requirement.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. Licence</h4>
+<p style="margin-bottom:8px">Allerise grants you a limited, non-exclusive, non-transferable, revocable licence to use the App for personal, non-commercial purposes in accordance with these Terms.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Pro Subscription</h4>
+<p style="margin-bottom:8px">Certain features require a Poplist Pro subscription. Subscriptions are billed through the App Store or Google Play. All fees are non-refundable except as required by applicable law. You may cancel auto-renewal at any time via your App Store / Google Play account settings.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Prohibited Conduct</h4>
+<p style="margin-bottom:8px">You must not: reverse engineer or decompile the App; use the App for any unlawful purpose; attempt to gain unauthorised access to our systems; or resell or sublicence the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Intellectual Property</h4>
+<p style="margin-bottom:8px">All rights, title, and interest in the App (including all software, content, and trademarks) are owned by Allerise or its licensors. Nothing in these Terms transfers any intellectual property rights to you.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Disclaimers</h4>
+<p style="margin-bottom:8px">The App is provided "as is" without warranties of any kind. Allerise does not warrant that the App will be error-free or uninterrupted.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Limitation of Liability</h4>
+<p style="margin-bottom:8px">To the maximum extent permitted by law, Allerise's total liability to you for any claim arising from these Terms or your use of the App shall not exceed the amount you paid to Allerise in the 12 months preceding the claim.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
+<p style="margin-bottom:8px">These Terms are governed by the laws of Singapore. Any disputes shall be subject to the exclusive jurisdiction of the courts of Singapore.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">9. Contact</h4>
+<p>Allerise Pte. Ltd., Singapore · <strong>legal@allerise.com</strong></p>` },
+    ja: { title: '利用規約',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本利用規約（以下「本規約」）は、シンガポールに登記された会社 <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」）が提供するPoplistアプリケーションのご利用に適用されます。本アプリをご利用いただくことで、本規約に同意したものとみなされます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. 利用資格</h4>
+<p style="margin-bottom:8px">本アプリをご利用いただくには13歳以上である必要があります。本規約に同意することで、この条件を満たすことを確認したものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. ライセンス</h4>
+<p style="margin-bottom:8px">Alleriseは、本規約に従い、個人的・非商業的目的での本アプリ利用に対し、限定的・非独占的・譲渡不可・取消可能なライセンスを付与します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Proサブスクリプション</h4>
+<p style="margin-bottom:8px">一部の機能はPoplist Proサブスクリプションが必要です。サブスクリプションはApp StoreまたはGoogle Playを通じて課金されます。適用法令で義務付けられる場合を除き、料金は返金されません。App Store / Google Playのアカウント設定からいつでも自動更新をキャンセルできます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. 禁止事項</h4>
+<p style="margin-bottom:8px">以下の行為を禁止します：本アプリのリバースエンジニアリングまたは逆コンパイル；違法目的での利用；当社システムへの不正アクセスの試み；本アプリの再販または再ライセンス。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. 知的財産</h4>
+<p style="margin-bottom:8px">本アプリに関するすべての権利（ソフトウェア、コンテンツ、商標を含む）はAlleriseまたはそのライセンサーに帰属します。本規約によりお客様に知的財産権が移転することはありません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 免責事項</h4>
+<p style="margin-bottom:8px">本アプリは「現状のまま」提供されます。Alleriseは本アプリがエラーなく中断なく動作することを保証しません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. 責任の制限</h4>
+<p style="margin-bottom:8px">法令の定める最大限の範囲において、本規約または本アプリの利用に関するいかなる請求についても、Alleriseの総責任額は、請求前12ヶ月間にお客様がAlleriseに支払った金額を超えないものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. 準拠法</h4>
+<p style="margin-bottom:8px">本規約はシンガポール法に準拠します。紛争はシンガポールの裁判所の専属管轄に服するものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">9. お問い合わせ</h4>
+<p>Allerise Pte. Ltd.、シンガポール · <strong>legal@allerise.com</strong></p>` }
+  },
+  eula: {
+    en: { title: 'End User Licence Agreement',
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+<p style="margin-bottom:10px">This End User Licence Agreement ("EULA") is between you and <strong>Allerise Pte. Ltd.</strong>, Singapore, for your use of the Poplist App downloaded via Apple App Store or Google Play.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. Licence Grant</h4>
+<p style="margin-bottom:8px">Allerise grants you a non-transferable licence to use the App on any Apple-branded or Android device that you own or control, subject to the Usage Rules in the applicable App Store Terms of Service.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. Scope of Licence</h4>
+<p style="margin-bottom:8px">You may not distribute or make the App available over a network where it could be used by multiple devices at the same time. You may not rent, lease, lend, sell, redistribute, or sublicence the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. Maintenance and Support</h4>
+<p style="margin-bottom:8px">Allerise is solely responsible for providing maintenance and support services for the App, as specified in these Terms. Apple Inc. and Google LLC have no obligation to furnish any maintenance or support services.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. Warranty</h4>
+<p style="margin-bottom:8px">In the event of any failure of the App to conform to any applicable warranty, you may notify Apple or Google (as applicable), and the purchase price (if any) will be refunded. To the maximum extent permitted by law, Apple and Google have no other warranty obligation with respect to the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. Product Claims</h4>
+<p style="margin-bottom:8px">Allerise, not Apple or Google, is responsible for addressing any claims by you or any third party relating to the App or your possession and/or use of the App.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. Third-Party Terms</h4>
+<p style="margin-bottom:8px">You must comply with applicable third-party terms of agreement when using the App (e.g. you must not violate your wireless data service agreement when using the App).</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. Third-Party Beneficiary (Apple)</h4>
+<p style="margin-bottom:8px">Apple Inc. and its subsidiaries are third-party beneficiaries of this EULA. Upon your acceptance of these Terms, Apple will have the right to enforce this EULA against you as a third-party beneficiary.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
+<p>This EULA is governed by the laws of Singapore.</p>` },
+    ja: { title: 'エンドユーザーライセンス契約',
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+<p style="margin-bottom:10px">本エンドユーザーライセンス契約（以下「本EULA」）は、Apple App StoreまたはGoogle PlayからダウンロードされたPoplistアプリのご利用に関して、お客様と <strong>Allerise Pte. Ltd.</strong>（シンガポール）との間で締結されます。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">1. ライセンスの付与</h4>
+<p style="margin-bottom:8px">Alleriseは、お客様が所有または管理するAppleブランドまたはAndroidデバイスにて本アプリを使用する、譲渡不可のライセンスを付与します。なお、該当するApp Storeの利用規約の使用ルールに従うものとします。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">2. ライセンスの範囲</h4>
+<p style="margin-bottom:8px">複数のデバイスで同時に使用できるようなネットワーク上での本アプリの配布は禁止されています。本アプリのレンタル、リース、貸与、販売、再配布、またはサブライセンスは禁止されています。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">3. メンテナンスとサポート</h4>
+<p style="margin-bottom:8px">本アプリのメンテナンスおよびサポートサービスの提供はAlleriseのみが責任を負います。Apple Inc.およびGoogle LLCにはメンテナンスまたはサポートサービスを提供する義務はありません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">4. 保証</h4>
+<p style="margin-bottom:8px">本アプリが適用される保証に適合しない場合、お客様はAppleまたはGoogle（該当する方）に通知でき、購入代金（該当する場合）は返金されます。法令の定める最大限の範囲において、AppleおよびGoogleは本アプリに関してその他の保証義務を負いません。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">5. 製品に関する申告</h4>
+<p style="margin-bottom:8px">本アプリまたはお客様の本アプリの所持・使用に関するお客様または第三者からの申告への対応は、AppleまたはGoogleではなく、Alleriseが責任を負います。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">6. 第三者の規約</h4>
+<p style="margin-bottom:8px">本アプリのご利用にあたっては、適用される第三者の規約に準拠する必要があります（例：本アプリ利用時に携帯データサービス契約に違反しないこと）。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">7. 第三者受益者（Apple）</h4>
+<p style="margin-bottom:8px">Apple Inc.およびその子会社は本EULAの第三者受益者です。お客様が本規約に同意することで、Appleは第三者受益者としてお客様に対して本EULAを執行する権利を有します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">8. 準拠法</h4>
+<p>本EULAはシンガポール法に準拠します。</p>` }
+  },
+  datadeletion: {
+    en: { title: 'Data Deletion Request',
+      body: `<p style="margin-bottom:14px">You have the right to request deletion of your personal data held by Allerise Pte. Ltd. at any time.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">What will be deleted</h4>
+<p style="margin-bottom:8px">Upon a verified deletion request, we will permanently delete: your account credentials; your task and category data stored in our database; and any other personal data associated with your account.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">How to request</h4>
+<p style="margin-bottom:8px">Send an email to <strong>privacy@allerise.com</strong> with the subject line <em>"Data Deletion Request"</em> from the email address associated with your account. We will process your request within 30 days in accordance with Singapore's PDPA.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">Note</h4>
+<p>Deletion is irreversible. Once deleted, your data and any active Pro subscription benefits cannot be recovered.</p>
+<p style="margin-top:14px">Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+    ja: { title: 'データ削除リクエスト',
+      body: `<p style="margin-bottom:14px">お客様は、Allerise Pte. Ltd.が保有するご自身の個人データの削除をいつでもリクエストする権利を有します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">削除されるデータ</h4>
+<p style="margin-bottom:8px">本人確認が完了した削除リクエストを受領後、以下を完全に削除します：アカウントの認証情報、データベースに保存されたタスクおよびカテゴリデータ、その他アカウントに関連する個人データ。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">リクエスト方法</h4>
+<p style="margin-bottom:8px">アカウントに登録されたメールアドレスから、件名を <em>「Data Deletion Request（データ削除リクエスト）」</em> として <strong>privacy@allerise.com</strong> にメールをお送りください。シンガポールのPDPAに従い、30日以内にリクエストを処理します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">注意事項</h4>
+<p>削除は取り消せません。削除後は、データおよびアクティブなProサブスクリプションの特典を復元することはできません。</p>
+<p style="margin-top:14px">Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+  }
+};
+
+function openLegal(key) {
+  const lang = state.lang === 'ja' ? 'ja' : 'en';
+  const doc  = LEGAL_CONTENT[key][lang];
+  document.getElementById('legalTitle').textContent = doc.title;
+  document.getElementById('legalBody').innerHTML    = doc.body;
+  openM('legalModal');
+}
+
+document.getElementById('legalRowPrivacy').addEventListener('click', () => openLegal('privacy'));
+document.getElementById('legalRowTerms').addEventListener('click',   () => openLegal('terms'));
+document.getElementById('legalRowEula').addEventListener('click',    () => openLegal('eula'));
+document.getElementById('legalRowData').addEventListener('click',    () => openLegal('datadeletion'));
+document.getElementById('closeLegal').addEventListener('click',      () => closeM('legalModal'));
+document.getElementById('legalModal').addEventListener('click', e => { if(e.target.id==='legalModal') closeM('legalModal') });
+
 /* ── Settings: default deadline chip cycles like task chips ── */
 document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
   e.stopPropagation();
@@ -2714,7 +3206,9 @@ document.getElementById('colourModeBlue')?.addEventListener('click', () => {
   state.greyBubbles = false;
   document.getElementById('colourModeBlue').classList.add('active');
   document.getElementById('colourModeGrey').classList.remove('active');
-  applyAccentVars(BLUE_VARS);
+  // Restore to the selected Pro colour if available, otherwise default blue
+  const restoreVars = COLOUR_ACCENT_VARS[state.bubbleColour] || BLUE_VARS;
+  applyAccentVars(restoreVars);
   document.querySelectorAll('.task-bubble').forEach(b => {
     b.classList.remove('bc-grey');
     b.classList.add(b.dataset.origColour || state.bubbleColour);
@@ -2751,8 +3245,30 @@ const BLUE_VARS = {
   '--shbtn':     '0 4px 16px rgba(59,130,246,.38)',
 };
 function applyAccentVars(vars) {
+  // Method 1: inline style on <html> (Chrome/Edge)
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  // Method 2: injected <style> with :root override (Safari — more reliable)
+  let s = document.getElementById('_accentVars');
+  if (!s) { s = document.createElement('style'); s.id = '_accentVars'; document.head.appendChild(s); }
+  s.textContent = `:root{${Object.entries(vars).map(([k,v])=>`${k}:${v}`).join(';')}}`;
 }
+
+/* Per-colour accent vars — used by Pro colour picker to tint the whole UI */
+const COLOUR_ACCENT_VARS = {
+  'bc-blue':   {'--blue':'#3B82F6','--blue-dim':'#1D4ED8','--blue-lt':'#EFF6FF','--blue-glow':'rgba(59,130,246,.18)','--shbtn':'0 4px 16px rgba(59,130,246,.38)'},
+  'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
+  'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
+  'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
+  'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
+  'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
+  'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
+  'bc-purple': {'--blue':'#7C3AED','--blue-dim':'#6d28d9','--blue-lt':'#F5F3FF','--blue-glow':'rgba(124,58,237,.18)','--shbtn':'0 4px 16px rgba(124,58,237,.38)'},
+  'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
+  'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
+  'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
+  'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
+};
+
 /* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
 
 /* Deploy guide toggle */
@@ -2768,7 +3284,7 @@ document.getElementById('closeExport').addEventListener('click', () => closeM('e
 document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
-function applyLang(lang) {
+async function applyLang(lang) {
   const isJA = lang === 'ja';
   document.querySelectorAll('[data-en][data-ja]').forEach(el => {
     const txt = isJA ? el.dataset.ja : el.dataset.en;
@@ -2797,12 +3313,10 @@ function applyLang(lang) {
     const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
     if (map[timing]) chip.textContent = map[timing];
   });
-  // Update autoCatTag display (keep English cat stored in data-cat-en)
-  const autoCatEl2 = document.getElementById('autoCatTag');
-  if (autoCatEl2) {
-    const catEn = autoCatEl2.dataset.catEn || 'Other';
-    setCatDisplay(catEn, document.getElementById('autoDetectLabel')?.style.display !== 'none');
-  }
+  // Update category chip labels in the add-task form
+  document.querySelectorAll('#catChips .add-chip').forEach(chip => {
+    chip.textContent = isJA ? (chip.dataset.ja || chip.dataset.catEn) : (chip.dataset.en || chip.dataset.catEn);
+  });
   // Update cat names in task list headers
   document.querySelectorAll('.cat-name[data-en]').forEach(el => {
     el.textContent = isJA ? el.dataset.ja : el.dataset.en;
@@ -2814,6 +3328,38 @@ function applyLang(lang) {
     const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
     if (map[timing]) ddc.textContent = map[timing];
   }
+
+  // Translate task texts — use cached translation if available, else fetch from API
+  const dataKey = isJA ? 'textJa' : 'textEn';
+  const taskTexts = [...document.querySelectorAll('.task-text')];
+  if (taskTexts.length === 0) return;
+
+  // Apply any already-cached translations immediately
+  taskTexts.forEach(el => { if (el.dataset[dataKey]) el.textContent = el.dataset[dataKey]; });
+
+  // Find tasks that still need translation
+  const needTx = taskTexts.filter(el => !el.dataset[dataKey]);
+  if (!needTx.length) return;
+
+  const origTexts = needTx.map(el => el.textContent.trim()).filter(t => t.length > 0);
+  if (!origTexts.length) return;
+
+  try {
+    const res = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texts: origTexts, targetLang: isJA ? 'ja' : 'en' })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.texts && data.texts.length === needTx.length) {
+        needTx.forEach((el, i) => {
+          el.dataset[dataKey] = data.texts[i];
+          el.textContent = data.texts[i];
+        });
+      }
+    }
+  } catch (e) { /* silently skip if translation fails */ }
 }
 
 /* Lang toggle — nav bar + settings (sLangEN/sLangJP) */

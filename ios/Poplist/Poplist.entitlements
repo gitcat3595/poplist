@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Required for Sign in with Apple -->
+    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>
+
+    <!-- Required for StoreKit / In-App Purchases (Pro subscription) -->
+    <!-- Note: Xcode adds this automatically when you add the In-App Purchase capability.
+         If you add the capability via Xcode UI, this key is inserted for you. -->
+    <key>com.apple.developer.in-app-payments</key>
+    <array>
+        <string>com.allerise.poplist.pro.monthly</string>
+        <string>com.allerise.poplist.pro.annual</string>
+    </array>
+</dict>
+</plist>

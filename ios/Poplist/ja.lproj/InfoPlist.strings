@@ -1,0 +1,3 @@
+/* System permission dialogs — Japanese */
+"NSMicrophoneUsageDescription"       = "Poplistは話しかけるだけでタスクを追加するためにマイクを使用します。";
+"NSSpeechRecognitionUsageDescription" = "Poplistは音声を自動的にタスクとして認識するために音声認識を使用します。";

@@ -1,0 +1,70 @@
+/* ── General ── */
+"ok"                        = "OK";
+"cancel"                    = "Cancel";
+"done"                      = "Done";
+"error"                     = "Error";
+
+/* ── Navigation / Titles ── */
+"settings_title"            = "Settings";
+
+/* ── Account section ── */
+"section_account"           = "Account";
+"no_email"                  = "No email";
+"sign_out"                  = "Sign Out";
+
+/* ── Pro section ── */
+"section_pro"               = "Pro";
+"pro_active"                = "Poplist Pro — Active";
+"pro_active_badge"          = "PRO";
+"upgrade_to_pro"            = "Upgrade to Pro";
+"restore_purchases"         = "Restore Purchases";
+"try_pro"                   = "Try Pro";
+
+/* ── Pro paywall ── */
+"pro_subtitle"              = "Unlock the full Poplist experience";
+"pro_feature_colours"       = "Custom colour themes";
+"pro_feature_categories"    = "Add custom categories";
+"pro_feature_voice"         = "Unlimited voice tasks";
+"pro_feature_sync"          = "iCloud sync across all devices";
+"pro_feature_sort"          = "Advanced sorting & filters";
+"plan_monthly"              = "Monthly";
+"plan_annual"               = "Annual";
+"per_month"                 = " / month";
+"per_year"                  = " / year";
+"best_value"                = "Best Value";
+"purchase_pending"          = "Purchase is pending approval.";
+"restore_failed"            = "Restore failed. Please try again.";
+"iap_unavailable"           = "In-App Purchases are not available right now.";
+"iap_legal_notice"          = "Subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your App Store account settings.\nBy subscribing you agree to our Terms of Service and Privacy Policy.";
+
+/* ── Legal section ── */
+"section_legal"             = "Legal";
+"privacy_policy"            = "Privacy Policy";
+"terms_of_service"          = "Terms of Service";
+"eula"                      = "End User Licence Agreement";
+"data_deletion"             = "Data Deletion Request";
+
+/* ── Account deletion ── */
+"delete_account"            = "Delete Account";
+"delete_account_title"      = "Delete Account?";
+"delete_account_message"    = "This permanently deletes your account and all your tasks. This action cannot be undone.";
+"delete_account_footer"     = "Deleting your account removes all your data from Allerise servers.";
+"delete_confirm"            = "Delete";
+"delete_reauth_required"    = "For security, please sign out and sign back in before deleting your account.";
+
+/* ── About ── */
+"version"                   = "Version";
+"copyright"                 = "© 2025 Allerise Pte. Ltd. All rights reserved.";
+
+/* ── Task list ── */
+"empty_title"               = "Tap the mic to add tasks";
+"empty_subtitle"            = "Speak naturally — AI will sort them for you";
+
+/* ── Auth errors ── */
+"apple_signin_error"        = "Unable to process Apple Sign In.";
+"google_signin_error"       = "Unable to present Google Sign In.";
+"auth_wrong_password"       = "Incorrect email or password.";
+"auth_user_not_found"       = "No account found with that email.";
+"auth_email_in_use"         = "An account with this email already exists.";
+"auth_weak_password"        = "Password must be at least 6 characters.";
+"auth_invalid_email"        = "Please enter a valid email address.";
