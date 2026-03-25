@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <filter id="glow-large" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glow-small" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <radialGradient id="bubble-fill-large" cx="38%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="60%" stop-color="#e8e8e8" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#cccccc" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="bubble-fill-small" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="60%" stop-color="#e0e0e0" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#c0c0c0" stop-opacity="1"/>
+    </radialGradient>
+    <!-- inner shadow overlay for large bubble -->
+    <radialGradient id="inner-shadow-large" cx="50%" cy="85%" r="55%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="inner-shadow-small" cx="50%" cy="82%" r="55%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <!-- specular highlight -->
+    <radialGradient id="spec-large" cx="36%" cy="28%" r="38%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spec-small" cx="36%" cy="28%" r="38%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.62"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Black background -->
+  <rect width="500" height="500" fill="#000000"/>
+
+  <!-- Large circle bubble — positioned center-left, lower -->
+  <g filter="url(#glow-large)">
+    <circle cx="210" cy="285" r="168" fill="url(#bubble-fill-large)"/>
+  </g>
+  <!-- inner shadow -->
+  <circle cx="210" cy="285" r="168" fill="url(#inner-shadow-large)"/>
+  <!-- specular highlight cap -->
+  <ellipse cx="185" cy="220" rx="78" ry="54" fill="url(#spec-large)" transform="rotate(-18,185,220)"/>
+
+  <!-- Small rounded-square bubble — upper right, overlapping circle -->
+  <g filter="url(#glow-small)">
+    <rect x="268" y="72" width="158" height="158" rx="42" ry="42" fill="url(#bubble-fill-small)"/>
+  </g>
+  <!-- inner shadow small -->
+  <rect x="268" y="72" width="158" height="158" rx="42" ry="42" fill="url(#inner-shadow-small)"/>
+  <!-- specular highlight cap small -->
+  <ellipse cx="321" cy="118" rx="44" ry="30" fill="url(#spec-small)" transform="rotate(-18,321,118)"/>
+</svg>

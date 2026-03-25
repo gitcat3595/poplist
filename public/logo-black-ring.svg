@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <filter id="glow-rim" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glow-ring" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Black background -->
+  <rect width="500" height="500" fill="#000000"/>
+
+  <!-- Large circle — RIM style: thick stroke, no fill -->
+  <g filter="url(#glow-rim)">
+    <circle cx="210" cy="285" r="168"
+      fill="none"
+      stroke="#d0d0d0"
+      stroke-width="6"/>
+  </g>
+  <!-- second inner ring for the "rim" depth effect -->
+  <circle cx="210" cy="285" r="162"
+    fill="none"
+    stroke="#606060"
+    stroke-width="1.5"
+    opacity="0.5"/>
+
+  <!-- Small rounded-square — RING style: thin stroke, no fill -->
+  <g filter="url(#glow-ring)">
+    <rect x="268" y="72" width="158" height="158" rx="42" ry="42"
+      fill="none"
+      stroke="#888888"
+      stroke-width="3"/>
+  </g>
+</svg>
