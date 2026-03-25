@@ -525,6 +525,30 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .btn-add:hover { box-shadow:var(--shbtn) }
 .btn-add:active { transform:scale(.97) }
+.btn-paste-list {
+  font-size:13px; font-weight:700; color:var(--t2); padding:8px 14px;
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+  display:inline-flex; align-items:center; gap:5px;
+}
+.btn-paste-list:hover { color:var(--blue); border-color:var(--blue) }
+.btn-paste-list svg { width:13px; height:13px; flex-shrink:0 }
+.paste-list-area {
+  width:100%; min-height:150px; padding:12px 14px; margin-top:14px;
+  border-radius:14px; border:1.5px solid var(--border);
+  background:var(--raised); color:var(--t1);
+  font-size:14px; font-family:inherit; line-height:1.6;
+  resize:vertical; outline:none; box-sizing:border-box;
+}
+.paste-list-area:focus { border-color:var(--blue) }
+.paste-list-area::placeholder { color:var(--t3) }
+.paste-list-process {
+  width:100%; margin-top:12px; padding:14px;
+  border-radius:14px; border:none;
+  background:var(--blue); color:#fff;
+  font-size:15px; font-weight:800; font-family:inherit;
+  cursor:pointer; transition:transform .14s ease;
+}
+.paste-list-process:active { transform:scale(.97) }
 
 /* ════════════════════════════════════════
    FAB
@@ -985,7 +1009,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   background:var(--bubble-color, var(--blue));
   animation:done-bubble-pop 0.65s cubic-bezier(.36,.07,.19,.97) both;
 }
-/* sizes + staggered delays across ~0.9s → total burst lasts ~1.55s (~1s shorter) */
+/* 10 bubbles, delays 0.03–0.54s, each 0.65s → total burst ends at ~1.2s */
 .done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.03s}
 .done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.06s}
 .done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.10s}
@@ -996,12 +1020,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.38s}
 .done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.46s}
 .done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.54s}
-.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:.62s}
-.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:.70s}
-.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:.78s}
-.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:.86s}
-.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:.90s}
-.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:.90s}
 @keyframes done-bubble-pop {
   0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
   25%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.5); opacity:1 }
@@ -1019,12 +1037,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .done-bubble:nth-child(8) {--tx:-42px;--ty: 17px;--tx2:-57px;--ty2: 23px}
 .done-bubble:nth-child(9) {--tx:-45px;--ty:  0px;--tx2:-62px;--ty2:  0px}
 .done-bubble:nth-child(10){--tx:-42px;--ty:-17px;--tx2:-57px;--ty2:-23px}
-.done-bubble:nth-child(11){--tx:-32px;--ty:-32px;--tx2:-44px;--ty2:-44px}
-.done-bubble:nth-child(12){--tx:-17px;--ty:-42px;--tx2:-23px;--ty2:-57px}
-.done-bubble:nth-child(13){--tx:  0px;--ty:-45px;--tx2:  0px;--ty2:-62px}
-.done-bubble:nth-child(14){--tx: 17px;--ty:-42px;--tx2: 23px;--ty2:-57px}
-.done-bubble:nth-child(15){--tx: 32px;--ty:-32px;--tx2: 44px;--ty2:-44px}
-.done-bubble:nth-child(16){--tx: 42px;--ty:-17px;--tx2: 57px;--ty2:-23px}
+
 
 /* Central big bubble — pops up then fades out so nothing lingers */
 .done-bubble-center {
@@ -1191,12 +1204,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
     </div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
@@ -1274,6 +1281,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     </div>
     <div class="add-task-actions">
       <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+      <button class="btn-paste-list" id="pasteListBtn" title="Paste a list or brain dump">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        <span data-en="Paste list" data-ja="リスト貼付け">Paste list</span>
+      </button>
       <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加する">Add Task</button>
     </div>
   </div>
@@ -1458,58 +1469,36 @@ GoogleService-Info.plist
   </div>
 </div>
 
+<!-- ═══════ PASTE / BULK-ADD MODAL ═══════ -->
+<div class="modal-overlay" id="pasteListModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <p class="modal-title" data-en="Paste your list" data-ja="リストを貼り付け">Paste your list</p>
+    <p class="modal-sub" data-en="Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline." data-ja="メモ、音声テキスト、リストをそのまま貼り付け。タスクに分解してカテゴリ・期限を自動設定します。">Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline.</p>
+    <textarea class="paste-list-area" id="pasteListInput"
+      placeholder="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
+      data-placeholder-en="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
+      data-placeholder-ja="例：歯医者に電話、今週食料品を買う、月曜日にクライアントへレポート送付、土曜日にジム…"></textarea>
+    <p style="font-size:11px;color:var(--t3);margin:6px 2px 0;text-align:right" data-en="Ctrl+Enter to process" data-ja="Ctrl+Enterで処理">Ctrl+Enter to process</p>
+    <button class="paste-list-process" id="pasteListProcess" data-en="Process &amp; add tasks" data-ja="タスクを追加する">Process &amp; add tasks</button>
+    <button class="modal-cancel" id="closePasteList" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+  </div>
+</div>
+
 <!-- ═══════ SETTINGS MODAL ═══════ -->
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <p class="modal-title" data-en="Settings" data-ja="設定">Settings</p>
 
-    <!-- ══ GENERAL ══ -->
-    <div class="settings-section" style="margin-top:24px">
-      <div class="settings-section-label" data-en="General" data-ja="一般">General</div>
-
-      <div class="settings-row">
-        <p class="settings-row-label" data-en="Language" data-ja="言語">Language</p>
-        <div class="settings-row-right">
-          <div class="pill-toggle">
-            <button class="colour-mode-btn active" id="sLangEN">EN</button>
-            <button class="colour-mode-btn" id="sLangJP">JP</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-row">
-        <div style="flex:1;min-width:0">
-          <p class="settings-row-label" data-en="Default due date" data-ja="デフォルト期限">Default due date</p>
-          <p class="settings-row-sub" data-en="When not stated by voice" data-ja="音声で指定しない場合">When not stated by voice</p>
-        </div>
-        <div class="settings-row-right">
-          <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
-        </div>
-      </div>
-
-      <div class="settings-row" style="border-bottom:none">
-        <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
-        <div class="settings-row-right">
-          <div class="pill-toggle">
-            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="カラー">Default</button>
-            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Grey" data-ja="グレー">Grey</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- ══ ACCOUNT ══ -->
     <div class="settings-section" id="accountSection" style="margin-top:24px">
       <div class="settings-section-label" data-en="Account" data-ja="アカウント">Account</div>
-
       <div class="firebase-status">
         <div class="fb-dot disconnected" id="fbStatusDot"></div>
-        <p id="fbStatusText" data-en="Firebase — not connected" data-ja="Firebase — 未接続">Firebase — not connected</p>
+        <p id="fbStatusText" data-en="Not signed in" data-ja="未サインイン">Not signed in</p>
         <span id="fbStatusSub" data-en="Sign in to sync across devices" data-ja="サインインでデバイス間同期">Sign in to sync across devices</span>
       </div>
-
-      <!-- Sign-in options (shown when not signed in) -->
       <div id="authSignInRow">
         <div class="settings-row" id="googleSignInBtn" style="cursor:pointer">
           <div style="display:flex;align-items:center;gap:8px">
@@ -1523,8 +1512,6 @@ GoogleService-Info.plist
           <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </div>
-
-      <!-- Signed-in state -->
       <div id="authAccountRow" style="display:none">
         <div class="settings-row">
           <p class="settings-row-label" data-en="Signed in as" data-ja="サインイン中">Signed in as</p>
@@ -1536,16 +1523,78 @@ GoogleService-Info.plist
       </div>
     </div>
 
+    <!-- ══ SERVICE ══ -->
+    <div class="settings-section" id="serviceSection" style="margin-top:24px">
+      <div class="settings-section-label" data-en="Service" data-ja="サービス">Service</div>
+      <div id="serviceFreeRow">
+        <div class="settings-row">
+          <div style="flex:1;min-width:0">
+            <p class="settings-row-label" data-en="Free Plan" data-ja="フリープラン">Free Plan</p>
+            <p class="settings-row-sub" data-en="Up to 5 tasks · voice · manual add" data-ja="タスク最大5件・音声追加・手動追加">Up to 5 tasks · voice · manual add</p>
+          </div>
+          <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--raised);color:var(--t2);border:1px solid var(--border)">FREE</span>
+        </div>
+        <div class="settings-row" id="upgradeProBtn" style="cursor:pointer;border-bottom:none">
+          <div style="flex:1;min-width:0">
+            <p class="settings-row-label" data-en="Upgrade to Pro" data-ja="Proにアップグレード">Upgrade to Pro</p>
+            <p class="settings-row-sub" data-en="Unlimited tasks · sync · customisation" data-ja="タスク無制限・同期・カスタマイズ">Unlimited tasks · sync · customisation</p>
+          </div>
+          <div class="settings-row-right" style="gap:6px">
+            <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+      <div id="serviceProRow" style="display:none">
+        <div class="settings-row" style="border-bottom:none">
+          <div style="flex:1;min-width:0">
+            <p class="settings-row-label" data-en="Pro Plan" data-ja="プロプラン">Pro Plan</p>
+            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation" data-ja="タスク無制限・同期・全カスタマイズ">Unlimited tasks · sync · full customisation</p>
+          </div>
+          <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ GENERAL ══ -->
+    <div class="settings-section" style="margin-top:24px">
+      <div class="settings-section-label" data-en="General" data-ja="一般">General</div>
+      <div class="settings-row">
+        <p class="settings-row-label" data-en="Language" data-ja="言語">Language</p>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button class="colour-mode-btn active" id="sLangEN">EN</button>
+            <button class="colour-mode-btn" id="sLangJP">JP</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Default due date" data-ja="デフォルト期限">Default due date</p>
+          <p class="settings-row-sub" data-en="When not stated by voice" data-ja="音声で指定しない場合">When not stated by voice</p>
+        </div>
+        <div class="settings-row-right">
+          <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
+        </div>
+      </div>
+      <div class="settings-row" style="border-bottom:none">
+        <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="カラー">Default</button>
+            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Grey" data-ja="グレー">Grey</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ CUSTOMISE PRO ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
       </div>
-
       <div class="pro-wrap" id="proPickerWrap">
-
-        <!-- Bubble Style -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Bubble Style" data-ja="バブルスタイル">Bubble Style</div>
           <div class="bubble-style-tabs">
@@ -1562,10 +1611,7 @@ GoogleService-Info.plist
             </div>
           </div>
         </div>
-
         <div class="pro-divider"></div>
-
-        <!-- Colour Scheme -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Colour Scheme" data-ja="バブルカラー">Colour Scheme</div>
           <div class="colour-grid" id="colourGrid">
@@ -1573,6 +1619,7 @@ GoogleService-Info.plist
             <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
             <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
             <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
+            <div class="cswatch"     data-colour="bc-lime"   style="background:#65A30D"></div>
             <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
             <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
             <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
@@ -1583,13 +1630,9 @@ GoogleService-Info.plist
             <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;outline:1px solid var(--border)"></div>
           </div>
         </div>
-
         <div class="pro-divider"></div>
-
-        <!-- Categories -->
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
-          <!-- Category list built dynamically by JS from state.categories -->
           <div id="catList"></div>
           <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
             <span class="add-plus-row-sign">+</span> <span data-en="Add category" data-ja="カテゴリーを追加">Add category</span>
@@ -1597,7 +1640,7 @@ GoogleService-Info.plist
           <div id="newCatForm" style="display:none;padding:0 0 10px">
             <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
               <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
-              <input id="newCatInput" type="text" placeholder="Category name…"
+              <input id="newCatInput" type="text" placeholder="Category name..."
                 style="flex:1;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;
                        padding:7px 12px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">
               <button id="newCatConfirmBtn"
@@ -1608,13 +1651,7 @@ GoogleService-Info.plist
             </div>
           </div>
         </div>
-
-        <!-- Upgrade CTA — hidden in web demo (Pro unlocked; iOS uses StoreKit) -->
-        <div class="upgrade-row" id="upgradeRow" style="display:none">
-          <button class="upgrade-btn" id="unlockProBtn" data-en="Upgrade to PRO" data-ja="PROにアップグレード">Upgrade to PRO</button>
-        </div>
-
-      </div><!-- /pro-wrap -->
+      </div>
     </div>
 
     <!-- ══ HOW IT WORKS ══ -->
@@ -1626,11 +1663,11 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today → This Week → Later.</p></div>
+        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
-        <div><p class="guide-action" data-en="Hold the task to change category" data-ja="カテゴリーを変更する">Hold the task to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
+        <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
@@ -1638,32 +1675,28 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <!-- ── Legal section ── -->
+    <!-- ══ ABOUT THE APP ══ -->
     <div class="settings-section" style="margin-top:24px">
-      <div class="settings-section-label" data-en="Legal" data-ja="法的情報">Legal</div>
-
-      <div class="settings-row legal-row" id="legalRowPrivacy" style="cursor:pointer">
+      <div class="settings-section-label" data-en="About" data-ja="このアプリについて">About</div>
+      <div class="settings-row" style="pointer-events:none">
         <div style="flex:1;min-width:0">
-          <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
+          <p class="settings-row-label">Poplist</p>
+          <p class="settings-row-sub" data-en="Version 1.0 · Allerise Pte. Ltd." data-ja="バージョン 1.0 · Allerise Pte. Ltd.">Version 1.0 · Allerise Pte. Ltd.</p>
         </div>
+      </div>
+      <div class="settings-row" style="cursor:pointer" onclick="window.open('/privacy.html','_blank')">
+        <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
         <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
-
-      <div class="settings-row legal-row" id="legalRowTerms" style="cursor:pointer">
-        <div style="flex:1;min-width:0">
-          <p class="settings-row-label" data-en="Terms of Service" data-ja="利用規約">Terms of Service</p>
-        </div>
+      <div class="settings-row" style="cursor:pointer" onclick="window.open('/terms.html','_blank')">
+        <p class="settings-row-label" data-en="Terms of Service" data-ja="利用規約">Terms of Service</p>
         <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
-
-      <div class="settings-row legal-row" id="legalRowEula" style="cursor:pointer">
-        <div style="flex:1;min-width:0">
-          <p class="settings-row-label" data-en="End User Licence Agreement" data-ja="エンドユーザーライセンス契約">End User Licence Agreement</p>
-        </div>
+      <div class="settings-row" style="cursor:pointer" onclick="window.open('/eula.html','_blank')">
+        <p class="settings-row-label" data-en="End User Licence Agreement" data-ja="エンドユーザーライセンス契約">End User Licence Agreement</p>
         <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
-
-      <div class="settings-row legal-row" id="legalRowData" style="cursor:pointer;border-bottom:none">
+      <div class="settings-row" style="cursor:pointer;border-bottom:none" onclick="window.open('/data-deletion.html','_blank')">
         <div style="flex:1;min-width:0">
           <p class="settings-row-label" data-en="Data Deletion Request" data-ja="データ削除リクエスト">Data Deletion Request</p>
           <p class="settings-row-sub" data-en="Request removal of your account &amp; data" data-ja="アカウントとデータの削除をリクエスト">Request removal of your account &amp; data</p>
@@ -1673,7 +1706,6 @@ GoogleService-Info.plist
     </div>
 
     <p class="legal-copyright" data-en="© 2026 Allerise Pte. Ltd. All rights reserved." data-ja="© 2026 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2026 Allerise Pte. Ltd. All rights reserved.</p>
-
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
@@ -1973,18 +2005,24 @@ function updateAuthUI(user) {
 
   if (user) {
     if (dot)        dot.className       = 'fb-dot connected';
-    if (statusText) statusText.textContent = state.lang === 'ja' ? 'Firebase — 接続済み' : 'Firebase — connected';
-    if (statusSub)  statusSub.textContent  = user.email || user.displayName || '';
+    if (statusText) statusText.textContent = user.displayName || user.email || (state.lang === 'ja' ? 'サインイン済み' : 'Signed in');
+    if (statusSub)  statusSub.textContent  = user.email || '';
     if (signInRow)  signInRow.style.display  = 'none';
     if (accountRow) accountRow.style.display = '';
     if (emailLabel) emailLabel.textContent   = user.email || user.displayName || 'Signed in';
   } else {
     if (dot)        dot.className       = 'fb-dot disconnected';
-    if (statusText) statusText.textContent = state.lang === 'ja' ? 'Firebase — 未接続' : 'Firebase — not connected';
+    if (statusText) statusText.textContent = state.lang === 'ja' ? '未サインイン' : 'Not signed in';
     if (statusSub)  statusSub.textContent  = state.lang === 'ja' ? 'サインインでデバイス間同期' : 'Sign in to sync across devices';
     if (signInRow)  signInRow.style.display  = '';
     if (accountRow) accountRow.style.display = 'none';
   }
+
+  // Update Service section
+  const freeRow = document.getElementById('serviceFreeRow');
+  const proRow  = document.getElementById('serviceProRow');
+  if (freeRow) freeRow.style.display = state.isProUser ? 'none' : '';
+  if (proRow)  proRow.style.display  = state.isProUser ? '' : 'none';
 }
 
 /* ── Auth state listener ── */
@@ -2682,6 +2720,95 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
 /* Voice buttons wired inside the SR block below */
 
 /* ══════════════════════════════════════════
+   PASTE / BULK-ADD
+   Paste a brain dump, transcript, or bullet list.
+   Runs through the same classifyTranscript() pipeline as voice.
+══════════════════════════════════════════ */
+document.getElementById('pasteListBtn')?.addEventListener('click', () => {
+  openM('pasteListModal');
+  setTimeout(() => document.getElementById('pasteListInput')?.focus(), 300);
+});
+document.getElementById('closePasteList')?.addEventListener('click', () => closeM('pasteListModal'));
+
+// Intercept paste on the single-task input: if multi-line or long → redirect to bulk modal
+addInput?.addEventListener('paste', e => {
+  const pasted = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  if (pasted.includes('\n') || pasted.length > 120) {
+    e.preventDefault();
+    const ta = document.getElementById('pasteListInput');
+    if (ta) ta.value = pasted;
+    openM('pasteListModal');
+    setTimeout(() => document.getElementById('pasteListInput')?.focus(), 300);
+  }
+});
+
+async function processPasteList() {
+  const ta   = document.getElementById('pasteListInput');
+  const text = ta?.value.trim();
+  if (!text) {
+    showToast(state.lang === 'ja' ? 'テキストを入力してください' : 'Paste or type something first');
+    return;
+  }
+
+  closeM('pasteListModal');
+  if (ta) ta.value = '';
+
+  showCompile();
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const minShow = new Promise(r => setTimeout(r, 800));
+
+  let tasks = [];
+  try {
+    tasks = await classifyTranscript(text);
+  } catch(e) {
+    console.error('classify failed:', e);
+    tasks = localClassify(text, state.defaultTiming || 'This Week');
+  }
+
+  await minShow;
+  hideCompile();
+
+  if (!tasks || tasks.length === 0) {
+    showToast(state.lang === 'ja'
+      ? 'タスクを認識できませんでした。表現を変えてお試しください'
+      : 'Could not parse any tasks — try rewording');
+    return;
+  }
+
+  // Make sure task list view is visible
+  const homeScreen = document.getElementById('homeScreen');
+  const taskListView = document.getElementById('taskListView');
+  const bottomBar = document.getElementById('bottomBar');
+  if (homeScreen) homeScreen.style.display = 'none';
+  if (taskListView) taskListView.style.display = '';
+  if (bottomBar) bottomBar.style.display = '';
+
+  tasks.forEach((task, i) => {
+    setTimeout(() => {
+      const item = makeTaskItem(
+        task.text     || text,
+        task.timing   || state.defaultTiming || 'This Week',
+        task.category || 'Other'
+      );
+      if (state.isLoggedIn && item) {
+        fsAddTask(task.text || text, task.category || 'Other', task.timing || 'This Week')
+          .then(id => { if (id && item) item.dataset.fsId = id; });
+      }
+    }, i * 90);
+  });
+
+  const n = tasks.length;
+  showToast(state.lang === 'ja'
+    ? `${n}件のタスクを追加しました ✓`
+    : `${n} task${n > 1 ? 's' : ''} added ✓`);
+}
+
+document.getElementById('pasteListProcess')?.addEventListener('click', processPasteList);
+document.getElementById('pasteListInput')?.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); processPasteList(); }
+});
+
+/* ══════════════════════════════════════════
    INLINE EDIT
 ══════════════════════════════════════════ */
 function handleTextKey(e) {
@@ -2826,14 +2953,17 @@ if (SR) {
   function createRecognition() {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
-    r.continuous      = false;           // MUST be false on Safari
-    r.interimResults  = !isSafari;       // Safari: false (only fires isFinal, interim breaks it)
-                                         // Chrome: true  (live words as user speaks)
+    // iOS Safari: continuous:true keeps the session alive past the ~0.5s silence timeout.
+    //   With continuous:false, iOS fires onend after ~0.5s of silence, and restarting from
+    //   onend fails because recognition.start() requires a user-gesture context on iOS —
+    //   which the onend callback does NOT have. continuous:true eliminates this entirely.
+    // macOS Safari / Chrome / Edge: continuous:false + restart loop (works correctly).
+    r.continuous      = isIOS;
+    r.interimResults  = !isSafari;  // Safari (incl. iOS): only isFinal results; Chrome: live interim
     r.maxAlternatives = 1;
 
     r.onstart = () => {
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
-      voiceErrorCount = 0;   // successful start — reset transient error counter
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
@@ -2842,9 +2972,11 @@ if (SR) {
       micModal?.classList.add('show');
       transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
       transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
+      console.log('[SR] session started — continuous:', r.continuous, 'isIOS:', isIOS);
     };
 
     r.onresult = e => {
+      voiceErrorCount = 0;  // real speech received — reset transient error counter
       let newInterim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
@@ -2873,44 +3005,38 @@ if (SR) {
         interimText = '';
       }
 
+      console.log(`[SR] onend — shouldRestart=${shouldRestart} isListening=${state.isListening} transcript="${fullTranscript.slice(0,40)}"`);
+
       if (shouldRestart && state.isListening) {
-        recognition = createRecognition();
-        // Back off longer when there have been transient errors
-        const delay = isIOS ? 350 : isSafari ? 350 : (voiceErrorCount > 0 ? 400 : 150);
-        if (isIOS) {
-          // iOS needs getUserMedia probe before every recognition.start(), even restarts
-          navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-              stream.getTracks().forEach(t => t.stop());
-              restartTimer = setTimeout(() => {
-                try { recognition.start(); }
-                catch(err) {
-                  if (err.name === 'InvalidStateError') {
-                    // Previous session not fully torn down — wait longer and retry once
-                    clearTimeout(restartTimer);
-                    restartTimer = setTimeout(() => {
-                      recognition = createRecognition();
-                      try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
-                    }, 500);
-                  } else { shouldRestart = false; _clearListeningUI(); }
-                }
-              }, delay);
-            })
-            .catch(() => { shouldRestart = false; _clearListeningUI(); });
-        } else {
+        // On iOS with continuous:true, onend should only fire if the session crashed unexpectedly.
+        // On desktop (continuous:false), onend fires after every phrase — normal restart loop.
+        const delay = isSafari ? 400 : (voiceErrorCount > 0 ? 500 : 150);
+
+        function _doRestart() {
+          recognition = createRecognition();
           restartTimer = setTimeout(() => {
-            try { recognition.start(); }
-            catch(err) {
+            try {
+              recognition.start();
+              console.log('[SR] restarted');
+            } catch(err) {
               if (err.name === 'InvalidStateError') {
                 // Previous session not fully torn down — wait longer and retry once
-                clearTimeout(restartTimer);
                 restartTimer = setTimeout(() => {
                   recognition = createRecognition();
-                  try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
-                }, 500);
-              } else { shouldRestart = false; _clearListeningUI(); }
+                  try { recognition.start(); } catch(e2) { console.warn('[SR] restart failed:', e2); shouldRestart = false; _clearListeningUI(); }
+                }, 600);
+              } else { console.warn('[SR] restart error:', err); shouldRestart = false; _clearListeningUI(); }
             }
           }, delay);
+        }
+
+        if (isIOS) {
+          // Even on iOS, probe getUserMedia to ensure the audio session is live before restarting
+          navigator.mediaDevices?.getUserMedia({ audio: true })
+            .then(stream => { stream.getTracks().forEach(t => t.stop()); _doRestart(); })
+            .catch(err => { console.warn('[SR] getUserMedia failed on restart:', err); shouldRestart = false; _clearListeningUI(); });
+        } else {
+          _doRestart();
         }
         return;
       }
@@ -2921,22 +3047,24 @@ if (SR) {
     };
 
     r.onerror = e => {
-      console.warn('SR error:', e.error);
+      console.warn(`[SR] error: "${e.error}" | voiceErrorCount=${voiceErrorCount} | continuous=${r.continuous} | shouldRestart=${shouldRestart}`);
       if (e.error === 'no-speech') return;   // silence — keep restarting
       if (e.error === 'aborted')  return;    // deliberate stop — ignore
 
-      // Transient errors: retry up to 3 times before giving up
+      // Transient errors (network hiccup, mic briefly captured by OS):
+      // retry up to 4 times; counter only resets when real speech arrives (onresult)
       if ((e.error === 'audio-capture' || e.error === 'network') && shouldRestart && state.isListening) {
         voiceErrorCount++;
-        if (voiceErrorCount <= 3) {
-          console.warn(`SR ${e.error} (attempt ${voiceErrorCount}/3) — will retry`);
-          return;  // onend will fire next and trigger the restart loop
+        if (voiceErrorCount <= 4) {
+          console.warn(`[SR] transient ${e.error} — retry ${voiceErrorCount}/4`);
+          return;  // onend fires next → restart loop handles it
         }
       }
 
       shouldRestart = false;
       clearTimeout(restartTimer);
       _clearListeningUI();
+
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         micPermGranted = false;
         const msg = isIOS
@@ -2946,9 +3074,13 @@ if (SR) {
             : 'Allow mic: click the mic icon in the address bar → Allow');
         showToast(msg);
       } else if (e.error === 'audio-capture') {
-        showToast(state.lang === 'ja' ? 'マイクにアクセスできません' : 'Cannot access microphone — check browser settings');
+        showToast(state.lang === 'ja'
+          ? 'マイクにアクセスできません — ブラウザ設定を確認してください'
+          : 'Cannot access microphone — check browser settings');
       } else if (e.error === 'network') {
-        showToast(state.lang === 'ja' ? '音声認識にはインターネット接続が必要です' : 'Voice recognition needs an internet connection');
+        showToast(state.lang === 'ja'
+          ? '音声認識にはインターネット接続が必要です'
+          : 'Voice needs an internet connection (Chrome uses Google's servers)');
       }
     };
 

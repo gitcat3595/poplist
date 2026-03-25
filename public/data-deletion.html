@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Deletion Request — Poplist</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #f9f9fb; color: #1a1a1a; line-height: 1.7; padding: 0 }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px }
+  .back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px;
+          color: #3B82F6; text-decoration: none; margin-bottom: 32px }
+  .back svg { width: 16px; height: 16px }
+  h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px }
+  .meta { font-size: 13px; color: #888; margin-bottom: 36px }
+  h2 { font-size: 16px; font-weight: 700; margin: 32px 0 10px }
+  p  { font-size: 15px; color: #333; margin-bottom: 14px }
+  ul { padding-left: 20px; margin-bottom: 14px }
+  li { font-size: 15px; color: #333; margin-bottom: 6px }
+  a  { color: #3B82F6 }
+  .steps { counter-reset: steps; list-style: none; padding: 0 }
+  .steps li { counter-increment: steps; padding: 12px 16px 12px 52px; position: relative;
+              background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+              margin-bottom: 10px; font-size: 15px; color: #333 }
+  .steps li::before { content: counter(steps); position: absolute; left: 16px; top: 12px;
+                      width: 24px; height: 24px; background: #3B82F6; color: #fff;
+                      border-radius: 50%; display: flex; align-items: center;
+                      justify-content: center; font-size: 13px; font-weight: 700 }
+  .callout { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+             padding: 16px 20px; margin: 24px 0 }
+  .callout p { margin: 0; color: #1d4ed8; font-size: 14px }
+  .email-btn { display: inline-block; margin-top: 8px; padding: 12px 24px;
+               background: #3B82F6; color: #fff; border-radius: 10px;
+               text-decoration: none; font-size: 15px; font-weight: 600 }
+  .footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid #e5e7eb;
+            font-size: 12px; color: #aaa }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="javascript:history.back()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </a>
+
+  <h1>Data Deletion Request</h1>
+  <p class="meta">Last updated: March 2025</p>
+
+  <p>You have the right to request deletion of your personal data held by Poplist at any time. This page explains what data we hold, what gets deleted, and how to submit a request.</p>
+
+  <h2>What Data We Hold</h2>
+  <p>Depending on how you use Poplist, we may hold the following data associated with your account:</p>
+  <ul>
+    <li>Your email address and display name (from account registration or Google Sign-In).</li>
+    <li>Your tasks, categories, and app preferences stored in our database.</li>
+    <li>Usage analytics and crash reports (anonymised).</li>
+    <li>Subscription and billing information (managed by our payment processor; we hold only a customer reference ID).</li>
+  </ul>
+
+  <h2>What Happens When You Delete Your Data</h2>
+  <p>Upon a verified deletion request:</p>
+  <ul>
+    <li>Your account and all associated tasks and preferences will be permanently deleted within <strong>30 days</strong>.</li>
+    <li>Your email and profile data will be removed from our authentication system.</li>
+    <li>Anonymised, aggregated analytics data that cannot be linked to you may be retained.</li>
+    <li>Records required for legal or financial compliance (e.g. billing history) may be retained for up to 7 years as required by law, after which they are deleted.</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>Note:</strong> Deleting your data is permanent and cannot be undone. Your tasks, settings, and account will be irrecoverably removed.</p>
+  </div>
+
+  <h2>Option 1: Delete from Within the App</h2>
+  <p>The quickest way to delete your account and data is directly from the app:</p>
+  <ol class="steps">
+    <li>Open Poplist and tap the <strong>Settings</strong> icon.</li>
+    <li>Scroll to the <strong>Account</strong> section.</li>
+    <li>Tap <strong>Delete Account</strong> and confirm when prompted.</li>
+  </ol>
+  <p>This immediately queues your account for deletion. All data will be purged within 30 days.</p>
+
+  <h2>Option 2: Submit a Request by Email</h2>
+  <p>If you cannot access the app or prefer to submit a written request, email us at <a href="mailto:privacy@poplist.app">privacy@poplist.app</a> with the subject line <strong>"Data Deletion Request"</strong> and include:</p>
+  <ul>
+    <li>The email address associated with your Poplist account.</li>
+    <li>Your request to delete all personal data.</li>
+  </ul>
+  <p>We will verify your identity and confirm deletion within <strong>30 days</strong> of receiving your request.</p>
+  <a class="email-btn" href="mailto:privacy@poplist.app?subject=Data%20Deletion%20Request">Email Us to Request Deletion</a>
+
+  <h2>Data Portability</h2>
+  <p>Before deleting your account, you can request a copy of your data. Email <a href="mailto:privacy@poplist.app">privacy@poplist.app</a> with the subject line <strong>"Data Export Request"</strong> and we will provide your data in a machine-readable format within 30 days.</p>
+
+  <h2>Questions</h2>
+  <p>If you have questions about your data or the deletion process, please review our <a href="/privacy.html">Privacy Policy</a> or contact us at <a href="mailto:privacy@poplist.app">privacy@poplist.app</a>.</p>
+
+  <div class="footer">
+    &copy; 2025 Poplist. All rights reserved. &bull;
+    <a href="/privacy.html">Privacy Policy</a> &bull;
+    <a href="/terms.html">Terms of Service</a> &bull;
+    <a href="/eula.html">EULA</a>
+  </div>
+</div>
+</body>
+</html>
