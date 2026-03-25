@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poplist Logo Variants</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { background:#888; display:flex; flex-direction:column; align-items:center; padding:48px 24px; gap:48px; font-family:-apple-system,sans-serif }
+  .row { display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
+  .card { display:flex; flex-direction:column; align-items:center; gap:12px }
+  .card img { width:280px; height:280px; display:block }
+  .label { font-size:13px; font-weight:600; color:#fff; letter-spacing:.3px; text-align:center }
+  .section-title { font-size:15px; font-weight:700; color:#fff; letter-spacing:.5px; text-transform:uppercase; opacity:.7 }
+  hr { width:100%; max-width:680px; border:none; border-top:1px solid rgba(255,255,255,.2) }
+</style>
+</head>
+<body>
+  <p class="section-title">Type 1 — Filled / Luminous</p>
+  <div class="row">
+    <div class="card">
+      <img src="/logo-black-filled.svg" alt="Black filled">
+      <span class="label">Black background</span>
+    </div>
+    <div class="card">
+      <img src="/logo-white-filled.svg" alt="White filled" style="outline:1px solid rgba(255,255,255,.15)">
+      <span class="label">White background</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <p class="section-title">Type 2 — Greyscale Rim + Ring</p>
+  <div class="row">
+    <div class="card">
+      <img src="/logo-black-ring.svg" alt="Black ring">
+      <span class="label">Black background</span>
+    </div>
+    <div class="card">
+      <img src="/logo-white-ring.svg" alt="White ring" style="outline:1px solid rgba(255,255,255,.15)">
+      <span class="label">White background</span>
+    </div>
+  </div>
+</body>
+</html>
