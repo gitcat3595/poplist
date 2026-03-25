@@ -445,12 +445,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-preview-card {
   background:var(--card); border-radius:var(--rc);
   box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
+  margin-top:16px;
 }
-.add-task-active { display:flex; align-items:center; padding:14px 16px 12px; gap:13px }
+.add-task-active { display:flex; align-items:center; padding:14px 16px 14px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
   background:var(--blue); opacity:.25; pointer-events:none;
-  position:relative; align-self:flex-start; margin-top:1px;
+  position:relative; align-self:center;
 }
 .add-bubble-ph::before {
   content:''; position:absolute; top:3px; left:5px;
@@ -961,6 +962,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   padding:80px 0 40px; gap:0; text-align:center;
   opacity:0; transform:translateY(24px);
   animation:done-enter .55s cubic-bezier(.32,.72,0,1) forwards;
+  background:radial-gradient(ellipse at 50% 30%, var(--done-glow, transparent) 0%, transparent 65%);
 }
 @keyframes done-enter {
   0%   { opacity:0; transform:translateY(24px) }
@@ -1250,20 +1252,20 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <div class="add-bubble-ph" id="addBubblePh"></div>
       <div class="add-input-body">
         <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？">
-        <div class="add-row-label" data-en="Due date" data-ja="期限">Due date</div>
-        <div class="add-chips" id="deadlineChips">
-          <span class="add-chip" data-en="Today" data-ja="今日">Today</span>
-          <span class="add-chip sel" data-en="This Week" data-ja="今週">This Week</span>
-          <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
-        </div>
-        <div class="add-row-sep"></div>
-        <div class="add-row-label" data-en="Category" data-ja="カテゴリー">Category</div>
-        <div class="add-chips" id="catChips">
-          <span class="add-chip" data-cat-en="Work"     data-en="Work"     data-ja="仕事">Work</span>
-          <span class="add-chip" data-cat-en="Home"     data-en="Home"     data-ja="家の事">Home</span>
-          <span class="add-chip" data-cat-en="Personal" data-en="Personal" data-ja="自分の事">Personal</span>
-          <span class="add-chip sel" data-cat-en="Other"    data-en="Other"    data-ja="その他">Other</span>
-        </div>
+      </div>
+    </div>
+    <!-- Hidden chips kept in DOM so applyLang + JS detection still work -->
+    <div style="display:none" aria-hidden="true">
+      <div id="deadlineChips">
+        <span class="add-chip" data-en="Today" data-ja="今日">Today</span>
+        <span class="add-chip sel" data-en="This Week" data-ja="今週">This Week</span>
+        <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
+      </div>
+      <div id="catChips">
+        <span class="add-chip" data-cat-en="Work"     data-en="Work"     data-ja="仕事">Work</span>
+        <span class="add-chip" data-cat-en="Home"     data-en="Home"     data-ja="家の事">Home</span>
+        <span class="add-chip" data-cat-en="Personal" data-en="Personal" data-ja="自分の事">Personal</span>
+        <span class="add-chip sel" data-cat-en="Other"    data-en="Other"    data-ja="その他">Other</span>
       </div>
     </div>
     <div class="add-task-actions">
@@ -2116,8 +2118,8 @@ document.getElementById('deadlineChips')?.querySelectorAll('.add-chip').forEach(
 ══════════════════════════════════════════ */
 const CAT_KW = {
   Work:     /meeting|email|report|client|project|deadline|invoice|proposal|presentation|call|boss|budget|strategy|slide|review/i,
-  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment/i,
-  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut/i,
+  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment|mom|mum|dad|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|gramps|baby|mother|father|parent|sibling|brother|sister|family/i,
+  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|travel|hobby|learn|meditation|yoga|haircut/i,
 };
 const addInput  = document.getElementById('addTaskInput');
 const CAT_LABELS_JA = { 'Work': '仕事', 'Home': '家の事', 'Personal': '自分の事', 'Other': 'その他' };
@@ -2232,16 +2234,10 @@ function makeTaskItem(text, timing, cat) {
 document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
-  const selChip = document.querySelector('#deadlineChips .add-chip.sel');
-  const timing = selChip?.dataset.en || state.defaultTiming || 'This Week';
-  const cat    = getSelectedCat();
+  const timing = state.defaultTiming || 'This Week';
+  const cat    = detectCat(text) || 'Other';
   makeTaskItem(text, timing, cat);
   addInput.value = '';
-  // Reset deadline chip to app default after adding
-  const defaultT = state.defaultTiming || 'This Week';
-  document.querySelectorAll('#deadlineChips .add-chip').forEach(c => {
-    c.classList.toggle('sel', c.dataset.en === defaultT);
-  });
   setSelectedCat('Other');
   showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
 });
@@ -2280,15 +2276,23 @@ function showDoneScreen() {
     b.style.background = bubbleColor;
     b.style.setProperty('--bubble-color', bubbleColor);
   });
+  // Color the center bubble and its glow to match theme
+  const center = el.querySelector('.done-bubble-center');
+  if (center) {
+    center.style.background = bubbleColor;
+    center.style.boxShadow  = `0 0 0 3px ${bubbleColor}44, 0 0 28px 8px ${bubbleColor}33`;
+  }
+  // Subtle radial color wash on the done screen matching the bubble color
+  el.style.setProperty('--done-glow', bubbleColor + '18');
 
   // Restart all animations: force reflow
-  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-bubble,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
 
@@ -2318,20 +2322,14 @@ function updateScreenState() {
   }
 }
 
-/* Show manual add card — syncs deadline chip to app default + resets category */
+/* Show manual add card */
 function openManualAddCard(scrollIntoView) {
   const card = document.getElementById('manualAddCard');
   if (!card) return;
-  // Sync deadline chip to the app's default timing
-  const defaultT = state.defaultTiming || 'This Week';
-  document.querySelectorAll('#deadlineChips .add-chip').forEach(c => {
-    c.classList.toggle('sel', c.dataset.en === defaultT);
-  });
-  // Reset category to Other (will auto-update as user types)
   setSelectedCat('Other');
   card.style.display = '';
   addInput?.focus();
-  if (scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'center' });
+  if (scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
 document.getElementById('fabBtn')?.addEventListener('click', () => openManualAddCard(true));
@@ -2386,8 +2384,8 @@ const transcriptEl = document.getElementById('voiceTranscript');
 /* ── Local keyword-based classifier (fallback when no API key) ── */
 const LOCAL_CAT_KW = {
   Work:     /meeting|email|report|client|project|deadline|invoice|proposal|presentation|call|boss|budget|strategy|slide|review|打ち合わせ|メール|報告|クライアント|プロジェクト|締め切り|請求|提案|プレゼン|上司|予算|ミーティング/i,
-  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment|買い物|スーパー|掃除|ゴミ|洗濯|修理|光熱費|家賃|料理|夕食|荷物|配達/i,
-  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|family|travel|hobby|learn|meditation|yoga|haircut|ジム|ランニング|医者|歯医者|病院|読書|友達|家族|旅行|趣味|勉強|瞑想|ヨガ/i,
+  Home:     /groceri|supermarket|clean|trash|laundry|repair|fix|bill|rent|cook|dinner|plant|delivery|flat|apartment|mom|mum|dad|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|gramps|baby|mother|father|parent|sibling|brother|sister|family|買い物|スーパー|掃除|ゴミ|洗濯|修理|光熱費|家賃|料理|夕食|荷物|配達|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族/i,
+  Personal: /gym|run|jog|doctor|dentist|hospital|read|book|friend|travel|hobby|learn|meditation|yoga|haircut|ジム|ランニング|医者|歯医者|病院|読書|友達|旅行|趣味|勉強|瞑想|ヨガ/i,
 };
 const LOCAL_TIMING_KW = {
   Today: /\b(today|urgent|asap|now|immediately|tonight|今日|今すぐ|急ぎ|本日|今夜)\b/i,
@@ -2472,7 +2470,7 @@ async function classifyTranscript(transcript) {
 const SR       = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
                || /iPad|iPhone|iPod/.test(navigator.userAgent));
-// iOS detection: Chrome iOS and Safari iOS both need getUserMedia before EVERY SR start
+// iOS: Safari + Chrome iOS both need getUserMedia before every SR start (including restarts)
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 let recognition    = null;
@@ -2480,9 +2478,9 @@ let fullTranscript = '';
 let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-// Always probe getUserMedia first: ensures Chrome PC picks up permission changes,
-// and guarantees iOS works on every tap (not just the first).
-let micPermGranted = false;
+// Desktop browsers (Chrome/Edge/Safari macOS): SR handles its own mic permission — start directly.
+// iOS: requires getUserMedia before EVERY recognition.start() — never cache.
+let micPermGranted = !isIOS;
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -2548,11 +2546,22 @@ if (SR) {
       }
 
       if (shouldRestart && state.isListening) {
-        // Keep listening — Safari needs fresh object each time
         recognition = createRecognition();
-        restartTimer = setTimeout(() => {
-          try { recognition.start(); } catch(err) { console.warn('restart err:', err); }
-        }, isSafari ? 350 : 150);
+        if (isIOS) {
+          // iOS needs getUserMedia probe before every recognition.start(), even restarts
+          navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+              stream.getTracks().forEach(t => t.stop());
+              restartTimer = setTimeout(() => {
+                try { recognition.start(); } catch(err) { console.warn('restart err:', err); }
+              }, 350);
+            })
+            .catch(() => { shouldRestart = false; _clearListeningUI(); });
+        } else {
+          restartTimer = setTimeout(() => {
+            try { recognition.start(); } catch(err) { console.warn('restart err:', err); }
+          }, isSafari ? 350 : 150);
+        }
         return;
       }
       // Not restarting — tidy up UI if still marked listening
@@ -2570,7 +2579,12 @@ if (SR) {
       _clearListeningUI();
       if (e.error === 'not-allowed') {
         micPermGranted = false;
-        showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission denied');
+        const msg = isIOS
+          ? (state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed')
+          : (state.lang === 'ja'
+            ? 'マイク許可：アドレスバーの🎤をクリック→「許可」'
+            : 'Allow mic: click 🎤 in the address bar → Allow');
+        showToast(msg);
       }
     };
 
@@ -2597,7 +2611,6 @@ if (SR) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
-      if (!isIOS) micPermGranted = true;  // iOS always re-probes; desktop caches
       return true;
     } catch(e) {
       console.warn('mic permission denied:', e);
@@ -2613,8 +2626,7 @@ if (SR) {
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
-    // All browsers: probe getUserMedia when permission not confirmed, or always on iOS
-    if (!micPermGranted || isIOS) {
+    if (!micPermGranted) {
       const ok = await requestMicPermission();
       if (!ok) return;
     }
@@ -2716,28 +2728,24 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    if (!micPermGranted || isIOS) {
-      // Probe getUserMedia first:
-      //   - iOS (Safari/Chrome): required before every SR start
-      //   - All browsers: when permission not yet confirmed or was denied
+    if (isIOS) {
+      // iOS (Safari & Chrome): must call getUserMedia before EVERY recognition.start()
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
           stream.getTracks().forEach(t => t.stop());
-          if (!isIOS) micPermGranted = true;  // iOS always re-probes each session
           recognition = createRecognition();
           try { recognition.start(); }
           catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
         })
         .catch(e => {
           console.warn('mic permission denied:', e);
-          micPermGranted = false;
           shouldRestart = false;
           _clearListeningUI();
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
     } else {
-      // Desktop (Chrome/Edge/Safari) when mic permission already confirmed:
-      // Start SR directly — getUserMedia already succeeded on a previous tap.
+      // Desktop Chrome / Edge / Safari macOS: SR manages its own mic permission.
+      // Calling getUserMedia first conflicts with the SR stream on some Chrome versions.
       recognition = createRecognition();
       try { recognition.start(); }
       catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
