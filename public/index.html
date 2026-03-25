@@ -1252,8 +1252,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
         <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？">
         <div class="add-row-label" data-en="Due date" data-ja="期限">Due date</div>
         <div class="add-chips" id="deadlineChips">
-          <span class="add-chip sel" data-en="Today" data-ja="今日">Today</span>
-          <span class="add-chip" data-en="This Week" data-ja="今週">This Week</span>
+          <span class="add-chip" data-en="Today" data-ja="今日">Today</span>
+          <span class="add-chip sel" data-en="This Week" data-ja="今週">This Week</span>
           <span class="add-chip" data-en="Later" data-ja="そのうち">Later</span>
         </div>
         <div class="add-row-sep"></div>
@@ -1630,15 +1630,15 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <p class="legal-copyright" data-en="© 2025 Allerise Pte. Ltd. All rights reserved." data-ja="© 2025 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2025 Allerise Pte. Ltd. All rights reserved.</p>
+    <p class="legal-copyright" data-en="© 2026 Allerise Pte. Ltd. All rights reserved." data-ja="© 2026 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2026 Allerise Pte. Ltd. All rights reserved.</p>
 
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
 
 <!-- ═══════ LEGAL DOCUMENT MODAL ═══════ -->
-<div class="modal-overlay" id="legalModal">
-  <div class="modal-card" style="max-height:88vh;overflow-y:auto;padding:24px 20px 28px">
+<div class="modal-overlay" id="legalModal" style="z-index:800;align-items:center">
+  <div class="modal-card" style="background:var(--card);border-radius:20px;max-height:88vh;overflow-y:auto;padding:24px 20px 28px;width:calc(100% - 32px);max-width:480px;box-shadow:0 4px 40px rgba(0,0,0,.2)">
     <p class="modal-title" id="legalTitle" style="margin-bottom:16px">Privacy Policy</p>
     <div id="legalBody" style="font-size:13px;line-height:1.7;color:var(--t2)"></div>
     <button class="modal-cancel" id="closeLegal" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:24px auto 0" data-en="Close" data-ja="閉じる">Close</button>
@@ -2195,6 +2195,17 @@ function makeTaskItem(text, timing, cat) {
   if (state.lang === 'ja') textEl.dataset.textJa = text;
   else textEl.dataset.textEn = text;
 
+  // Pre-translate to the other language so switching is instant
+  const _otherLang = state.lang === 'ja' ? 'en' : 'ja';
+  const _otherKey  = state.lang === 'ja' ? 'textEn' : 'textJa';
+  fetch('/api/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ texts: [text], targetLang: _otherLang })
+  }).then(r => r.ok ? r.json() : null)
+    .then(d => { if (d?.texts?.length > 0) textEl.dataset[_otherKey] = d.texts[0]; })
+    .catch(() => {});
+
   attachBubble(item.querySelector('.task-bubble'));
   attachTaskText(textEl);
   attachChip(item.querySelector('.timing-chip'));
@@ -2222,12 +2233,17 @@ document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
   const selChip = document.querySelector('#deadlineChips .add-chip.sel');
-  const timing = selChip?.dataset.en || selChip?.textContent || 'Today';
+  const timing = selChip?.dataset.en || state.defaultTiming || 'This Week';
   const cat    = getSelectedCat();
   makeTaskItem(text, timing, cat);
   addInput.value = '';
-  updateCat();
-  showToast('Task added ✓');
+  // Reset deadline chip to app default after adding
+  const defaultT = state.defaultTiming || 'This Week';
+  document.querySelectorAll('#deadlineChips .add-chip').forEach(c => {
+    c.classList.toggle('sel', c.dataset.en === defaultT);
+  });
+  setSelectedCat('Other');
+  showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
 });
 
 /* ══════════════════════════════════════════
@@ -2302,43 +2318,47 @@ function updateScreenState() {
   }
 }
 
-/* Show manual add card */
-document.getElementById('fabBtn')?.addEventListener('click', () => {
+/* Show manual add card — syncs deadline chip to app default + resets category */
+function openManualAddCard(scrollIntoView) {
   const card = document.getElementById('manualAddCard');
-  if (card) {
-    card.style.display = '';
-    addInput?.focus();
-    card.scrollIntoView({ behavior:'smooth', block:'center' });
-  }
-});
+  if (!card) return;
+  // Sync deadline chip to the app's default timing
+  const defaultT = state.defaultTiming || 'This Week';
+  document.querySelectorAll('#deadlineChips .add-chip').forEach(c => {
+    c.classList.toggle('sel', c.dataset.en === defaultT);
+  });
+  // Reset category to Other (will auto-update as user types)
+  setSelectedCat('Other');
+  card.style.display = '';
+  addInput?.focus();
+  if (scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+document.getElementById('fabBtn')?.addEventListener('click', () => openManualAddCard(true));
 
 document.getElementById('homeManualBtn')?.addEventListener('click', () => {
-  /* Switch to task list view so the add card is visible */
   homeScreen.style.display   = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
-  const card = document.getElementById('manualAddCard');
-  if (card) {
-    card.style.display = '';
-    addInput?.focus();
-  }
+  openManualAddCard(false);
 });
 
 document.getElementById('doneManualBtn')?.addEventListener('click', () => {
-  /* From done screen → switch to task list view and open add card */
   document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
-  const card = document.getElementById('manualAddCard');
-  if (card) {
-    card.style.display = '';
-    addInput?.focus();
-  }
+  openManualAddCard(false);
 });
 
 document.querySelector('.btn-cancel')?.addEventListener('click', () => {
   const card = document.getElementById('manualAddCard');
   if (card) { card.style.display = 'none'; }
+});
+
+/* Delegate clicks on static add-task-row elements */
+document.getElementById('tasksContainer')?.addEventListener('click', e => {
+  const row = e.target.closest('.add-task-row');
+  if (row) openManualAddCard(true);
 });
 
 /* Voice buttons wired inside the SR block below */
@@ -2452,15 +2472,17 @@ async function classifyTranscript(transcript) {
 const SR       = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
                || /iPad|iPhone|iPod/.test(navigator.userAgent));
+// iOS detection: Chrome iOS and Safari iOS both need getUserMedia before EVERY SR start
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 let recognition    = null;
 let fullTranscript = '';
 let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-// Safari needs getUserMedia called first before webkitSpeechRecognition.start().
-// Chrome/Edge handle mic permission internally — skip getUserMedia on those.
-let micPermGranted = !isSafari;  // Chrome: skip getUserMedia entirely
+// Always probe getUserMedia first: ensures Chrome PC picks up permission changes,
+// and guarantees iOS works on every tap (not just the first).
+let micPermGranted = false;
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -2572,14 +2594,14 @@ if (SR) {
   }
 
   async function requestMicPermission() {
-    if (micPermGranted) return true;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
-      micPermGranted = true;
+      if (!isIOS) micPermGranted = true;  // iOS always re-probes; desktop caches
       return true;
     } catch(e) {
       console.warn('mic permission denied:', e);
+      micPermGranted = false;
       showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
       return false;
     }
@@ -2591,9 +2613,8 @@ if (SR) {
     shouldRestart  = true;
     clearTimeout(restartTimer);
 
-    // Safari REQUIRES getUserMedia before webkitSpeechRecognition.start()
-    // BUT: if already granted, skip the async call to keep in gesture stack
-    if (!micPermGranted) {
+    // All browsers: probe getUserMedia when permission not confirmed, or always on iOS
+    if (!micPermGranted || isIOS) {
       const ok = await requestMicPermission();
       if (!ok) return;
     }
@@ -2695,27 +2716,28 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    if (isSafari && !micPermGranted) {
-      // Safari REQUIRES a getUserMedia call before webkitSpeechRecognition.start().
-      // Must happen inside this .then() microtask — still counts as the user gesture.
+    if (!micPermGranted || isIOS) {
+      // Probe getUserMedia first:
+      //   - iOS (Safari/Chrome): required before every SR start
+      //   - All browsers: when permission not yet confirmed or was denied
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
           stream.getTracks().forEach(t => t.stop());
-          micPermGranted = true;
+          if (!isIOS) micPermGranted = true;  // iOS always re-probes each session
           recognition = createRecognition();
           try { recognition.start(); }
           catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
         })
         .catch(e => {
           console.warn('mic permission denied:', e);
+          micPermGranted = false;
           shouldRestart = false;
           _clearListeningUI();
           showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
         });
     } else {
-      // Chrome / Edge / every subsequent Safari tap:
-      // SpeechRecognition handles its own mic permission — start directly.
-      // Calling getUserMedia first on Chrome causes an audio-capture conflict.
+      // Desktop (Chrome/Edge/Safari) when mic permission already confirmed:
+      // Start SR directly — getUserMedia already succeeded on a previous tap.
       recognition = createRecognition();
       try { recognition.start(); }
       catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
@@ -2925,10 +2947,7 @@ function addCustomCategory(name) {
     card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>`;
     tasksContainer.insertBefore(card, manualAddCard || null);
-    card.querySelector('.add-task-row')?.addEventListener('click', () => {
-      const mc = document.getElementById('manualAddCard');
-      if (mc) { mc.style.display = ''; document.getElementById('addTaskInput')?.focus(); }
-    });
+    card.querySelector('.add-task-row')?.addEventListener('click', () => openManualAddCard(true));
   }
 
   showToast(`"${name}" added ✓`);
@@ -3027,7 +3046,7 @@ document.getElementById('settingsModal').addEventListener('click', e => { if(e.t
 const LEGAL_CONTENT = {
   privacy: {
     en: { title: 'Privacy Policy',
-      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2026</strong></p>
 <p style="margin-bottom:10px">This Privacy Policy describes how <strong>Allerise Pte. Ltd.</strong> ("Allerise", "we", "us", or "our"), a company incorporated in Singapore (UEN: pending), collects, uses, and shares information in connection with your use of the Poplist application ("App").</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. Information We Collect</h4>
 <p style="margin-bottom:8px"><strong>Account data:</strong> When you sign in, we collect your email address and a unique user identifier via Firebase Authentication.</p>
@@ -3048,7 +3067,7 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. Contact</h4>
 <p>Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
     ja: { title: 'プライバシーポリシー',
-      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2026年3月</strong></p>
 <p style="margin-bottom:10px">本プライバシーポリシーは、シンガポールに登記された会社である <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」「当社」）が、Poplistアプリケーション（以下「本アプリ」）の利用に関して情報をどのように収集・利用・共有するかを説明するものです。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. 収集する情報</h4>
 <p style="margin-bottom:8px"><strong>アカウントデータ：</strong>サインイン時に、Firebase Authenticationを通じてメールアドレスと一意のユーザーIDを収集します。</p>
@@ -3071,7 +3090,7 @@ const LEGAL_CONTENT = {
   },
   terms: {
     en: { title: 'Terms of Service',
-      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2026</strong></p>
 <p style="margin-bottom:10px">These Terms of Service ("Terms") govern your access to and use of the Poplist application provided by <strong>Allerise Pte. Ltd.</strong> ("Allerise"), a company incorporated in Singapore. By using the App you agree to these Terms.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. Eligibility</h4>
 <p style="margin-bottom:8px">You must be at least 13 years old to use the App. By agreeing to these Terms you confirm you meet this requirement.</p>
@@ -3092,7 +3111,7 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">9. Contact</h4>
 <p>Allerise Pte. Ltd., Singapore · <strong>legal@allerise.com</strong></p>` },
     ja: { title: '利用規約',
-      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2026年3月</strong></p>
 <p style="margin-bottom:10px">本利用規約（以下「本規約」）は、シンガポールに登記された会社 <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」）が提供するPoplistアプリケーションのご利用に適用されます。本アプリをご利用いただくことで、本規約に同意したものとみなされます。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. 利用資格</h4>
 <p style="margin-bottom:8px">本アプリをご利用いただくには13歳以上である必要があります。本規約に同意することで、この条件を満たすことを確認したものとします。</p>
@@ -3115,7 +3134,7 @@ const LEGAL_CONTENT = {
   },
   eula: {
     en: { title: 'End User Licence Agreement',
-      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2025</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>Last updated: March 2026</strong></p>
 <p style="margin-bottom:10px">This End User Licence Agreement ("EULA") is between you and <strong>Allerise Pte. Ltd.</strong>, Singapore, for your use of the Poplist App downloaded via Apple App Store or Google Play.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. Licence Grant</h4>
 <p style="margin-bottom:8px">Allerise grants you a non-transferable licence to use the App on any Apple-branded or Android device that you own or control, subject to the Usage Rules in the applicable App Store Terms of Service.</p>
@@ -3134,7 +3153,7 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
 <p>This EULA is governed by the laws of Singapore.</p>` },
     ja: { title: 'エンドユーザーライセンス契約',
-      body: `<p style="margin-bottom:10px"><strong>最終更新日：2025年3月</strong></p>
+      body: `<p style="margin-bottom:10px"><strong>最終更新日：2026年3月</strong></p>
 <p style="margin-bottom:10px">本エンドユーザーライセンス契約（以下「本EULA」）は、Apple App StoreまたはGoogle PlayからダウンロードされたPoplistアプリのご利用に関して、お客様と <strong>Allerise Pte. Ltd.</strong>（シンガポール）との間で締結されます。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">1. ライセンスの付与</h4>
 <p style="margin-bottom:8px">Alleriseは、お客様が所有または管理するAppleブランドまたはAndroidデバイスにて本アプリを使用する、譲渡不可のライセンスを付与します。なお、該当するApp Storeの利用規約の使用ルールに従うものとします。</p>
