@@ -1899,6 +1899,15 @@ GoogleService-Info.plist
   ═══════════════════════════════════════════════════════════ -->
 
 <script>
+/* Global error catcher — shows JS errors as a visible banner so we can debug */
+window.onerror = function(msg, src, line, col, err) {
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;padding:10px 14px;font-size:12px;font-family:monospace;z-index:99999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto';
+  banner.textContent = '⚠ JS ERROR line ' + line + ': ' + msg + (err?.stack ? '\n' + err.stack.split('\n').slice(0,4).join('\n') : '');
+  document.body.prepend(banner);
+  return false;
+};
+
 /* ══════════════════════════════════════════
    STATE — mirrors Firestore data model
 ══════════════════════════════════════════ */
@@ -3600,9 +3609,9 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
 const openM  = id => document.getElementById(id).classList.add('show');
 const closeM = id => document.getElementById(id).classList.remove('show');
 
-document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
-document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
-document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+document.getElementById('settingsBtn')?.addEventListener('click', () => openM('settingsModal'));
+document.getElementById('closeSettings')?.addEventListener('click', () => closeM('settingsModal'));
+document.getElementById('settingsModal')?.addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
 
 /* ── Legal document modal ── */
 const LEGAL_CONTENT = {
@@ -3864,9 +3873,9 @@ document.getElementById('deployToggle')?.addEventListener('click', () => {
   hdr.classList.toggle('open', open);
 });
 
-document.getElementById('exportBtn').addEventListener('click', () => openM('exportModal'));
-document.getElementById('closeExport').addEventListener('click', () => closeM('exportModal'));
-document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
+document.getElementById('exportBtn')?.addEventListener('click', () => openM('exportModal'));
+document.getElementById('closeExport')?.addEventListener('click', () => closeM('exportModal'));
+document.getElementById('exportModal')?.addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
 async function applyLang(lang) {
@@ -3990,12 +3999,12 @@ function dl(name, content, type) {
   });
   a.click(); URL.revokeObjectURL(a.href);
 }
-document.getElementById('exportCSV').addEventListener('click', () => {
+document.getElementById('exportCSV')?.addEventListener('click', () => {
   const rows = [['Task','Category','Deadline'], ...allTasks().map(t=>[`"${t.text.replace(/"/g,'""')}"`,t.cat,t.timing])];
   dl('poplist.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
   showToast(state.lang==='ja' ? 'CSVとして書き出しました' : 'Exported as CSV'); closeM('exportModal');
 });
-document.getElementById('exportTXT').addEventListener('click', () => {
+document.getElementById('exportTXT')?.addEventListener('click', () => {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
   let out = `POPLIST — ${new Date().toLocaleDateString()}\n${'─'.repeat(32)}\n`;
   Object.entries(cats).forEach(([c,items]) => {
@@ -4005,7 +4014,7 @@ document.getElementById('exportTXT').addEventListener('click', () => {
   dl('poplist.txt', out, 'text/plain');
   showToast(state.lang==='ja' ? 'テキストとして書き出しました' : 'Exported as text'); closeM('exportModal');
 });
-document.getElementById('exportCopy').addEventListener('click', () => {
+document.getElementById('exportCopy')?.addEventListener('click', () => {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
   let out = '';
   Object.entries(cats).forEach(([c,items]) => {

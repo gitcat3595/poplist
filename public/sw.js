@@ -1,11 +1,8 @@
-// Poplist service worker — network-first for API calls, cache-first for assets
-const CACHE = 'poplist-v1';
-const PRECACHE = ['/', '/index.html'];
+// Poplist service worker — network-first for HTML, cache-first for static assets
+const CACHE = 'poplist-v3';
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting())
-  );
+  e.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', e => {
@@ -19,13 +16,15 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // Always go network-first for API routes
-  if (url.pathname.startsWith('/api/')) {
-    e.respondWith(fetch(e.request).catch(() => new Response('', { status: 503 })));
+  // Always go network-first for API routes and HTML pages
+  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.html') || url.pathname === '/') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
     return;
   }
 
-  // Cache-first for everything else
+  // Cache-first for static assets (JS, CSS, images, fonts)
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
       if (res.ok && e.request.method === 'GET') {
