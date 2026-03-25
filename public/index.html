@@ -1946,6 +1946,7 @@ const state = {
   isListening:  false,
   userId:       null,        // Firebase UID when signed in, null for guest
   isLoggedIn:   false,
+  carryOverCount: 0,         // tasks carrying over after Done for today
 };
 
 /* ══════════════════════════════════════════
@@ -2696,10 +2697,31 @@ function showDoneScreen() {
   el.style.display = 'none';
 
   // Update text content for current language
-  const title = el.querySelector('.done-title');
-  const sub   = el.querySelector('.done-sub');
-  if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
-  if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
+  const title    = el.querySelector('.done-title');
+  const sub      = el.querySelector('.done-sub');
+  const info     = document.getElementById('carryOverInfo');
+  const countEl  = document.getElementById('carryOverCount');
+  const seeBtn   = document.getElementById('seeCarryOverBtn');
+  const co       = state.carryOverCount || 0;
+  const ja       = state.lang === 'ja';
+
+  if (title) title.textContent = ja ? '今日もお疲れさまです' : "You're done for today";
+  if (sub) sub.textContent = co > 0
+    ? (ja ? '今日のタスクは完了！' : "Today's tasks are all done!")
+    : (ja ? 'タスクは全部完了。いつでも追加できます。' : "All clear. Add more whenever you're ready.");
+
+  // Carry-over section
+  if (info && countEl) {
+    if (co > 0) {
+      countEl.textContent = ja
+        ? `${co}件のタスクを持ち越し`
+        : `${co} task${co !== 1 ? 's' : ''} carrying over`;
+      if (seeBtn) seeBtn.textContent = ja ? '持ち越しタスクを見る' : 'See carry-over tasks';
+      info.style.display = '';
+    } else {
+      info.style.display = 'none';
+    }
+  }
 
   const _dcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D',
@@ -2731,8 +2753,16 @@ function showDoneScreen() {
 /* ── Done for today helpers ── */
 function _todayKey() { return new Date().toDateString(); }
 function isDoneForToday() { return localStorage.getItem('doneForTodayDate') === _todayKey(); }
-function setDoneForToday() { localStorage.setItem('doneForTodayDate', _todayKey()); }
-function clearDoneForToday() { localStorage.removeItem('doneForTodayDate'); }
+function setDoneForToday(co) {
+  localStorage.setItem('doneForTodayDate', _todayKey());
+  localStorage.setItem('doneCarryOver', String(co || 0));
+  state.carryOverCount = co || 0;
+}
+function clearDoneForToday() {
+  localStorage.removeItem('doneForTodayDate');
+  localStorage.removeItem('doneCarryOver');
+  state.carryOverCount = 0;
+}
 
 function updateDoneForTodayBtn() {
   const row = document.getElementById('doneForTodayRow');
@@ -2752,11 +2782,12 @@ function doneForToday() {
   );
   if (todayItems.length === 0) return;
 
-  const carryOver = document.querySelectorAll('.task-item').length - todayItems.length;
-  setDoneForToday();
+  const co = document.querySelectorAll('.task-item').length - todayItems.length;
+  setDoneForToday(co);
 
-  // Pop each Today task with staggered animation
+  // Pop each Today task with staggered animation + sync to Firestore
   todayItems.forEach((item, idx) => {
+    if (item.dataset.fsId) fsMarkDone(item.dataset.fsId);
     setTimeout(() => {
       const bubble = item.querySelector('.task-bubble');
       if (bubble) bubble.classList.add('popping');
@@ -2774,21 +2805,6 @@ function doneForToday() {
   });
 
   setTimeout(() => {
-    // Update carry-over info on done screen
-    const info      = document.getElementById('carryOverInfo');
-    const countEl   = document.getElementById('carryOverCount');
-    const seeBtn    = document.getElementById('seeCarryOverBtn');
-    if (info && countEl) {
-      if (carryOver > 0) {
-        countEl.textContent = state.lang === 'ja'
-          ? `${carryOver}件のタスクを持ち越し`
-          : `${carryOver} task${carryOver !== 1 ? 's' : ''} carrying over`;
-        if (seeBtn) seeBtn.textContent = state.lang === 'ja' ? '持ち越しタスクを見る' : 'See carry-over tasks';
-        info.style.display = '';
-      } else {
-        info.style.display = 'none';
-      }
-    }
     homeScreen.style.display   = 'none';
     taskListView.style.display = 'none';
     bottomBar.style.display    = 'none';
@@ -2863,10 +2879,10 @@ document.getElementById('seeCarryOverBtn')?.addEventListener('click', () => {
   document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
-  // Switch to This Week filter to highlight carry-over tasks
+  // Show all tasks (carry-over may be This Week and/or Later)
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  const weekBtn = document.querySelector('.filter-btn[data-filter="week"]');
-  if (weekBtn) { weekBtn.classList.add('active'); reapplyFilter(); }
+  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+  if (allBtn) { allBtn.classList.add('active'); reapplyFilter(); }
   updateDoneForTodayBtn();
 });
 
@@ -3657,9 +3673,11 @@ buildCatList();
 updateCatDragHandles();
 syncAllBubbles(); // sync add-preview bubble style on first load
 
-// Clear stale doneForToday flag from a previous day
-if (localStorage.getItem('doneForTodayDate') && !isDoneForToday()) {
-  clearDoneForToday();
+// Restore or clear doneForToday state on load
+if (isDoneForToday()) {
+  state.carryOverCount = parseInt(localStorage.getItem('doneCarryOver') || '0', 10);
+} else if (localStorage.getItem('doneForTodayDate')) {
+  clearDoneForToday(); // stale from previous day
 }
 updateDoneForTodayBtn();
 
