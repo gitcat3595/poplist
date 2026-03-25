@@ -525,6 +525,30 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .btn-add:hover { box-shadow:var(--shbtn) }
 .btn-add:active { transform:scale(.97) }
+.btn-paste-list {
+  font-size:13px; font-weight:700; color:var(--t2); padding:8px 14px;
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+  display:inline-flex; align-items:center; gap:5px;
+}
+.btn-paste-list:hover { color:var(--blue); border-color:var(--blue) }
+.btn-paste-list svg { width:13px; height:13px; flex-shrink:0 }
+.paste-list-area {
+  width:100%; min-height:150px; padding:12px 14px; margin-top:14px;
+  border-radius:14px; border:1.5px solid var(--border);
+  background:var(--raised); color:var(--t1);
+  font-size:14px; font-family:inherit; line-height:1.6;
+  resize:vertical; outline:none; box-sizing:border-box;
+}
+.paste-list-area:focus { border-color:var(--blue) }
+.paste-list-area::placeholder { color:var(--t3) }
+.paste-list-process {
+  width:100%; margin-top:12px; padding:14px;
+  border-radius:14px; border:none;
+  background:var(--blue); color:#fff;
+  font-size:15px; font-weight:800; font-family:inherit;
+  cursor:pointer; transition:transform .14s ease;
+}
+.paste-list-process:active { transform:scale(.97) }
 
 /* ════════════════════════════════════════
    FAB
@@ -1274,6 +1298,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     </div>
     <div class="add-task-actions">
       <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+      <button class="btn-paste-list" id="pasteListBtn" title="Paste a list or brain dump">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        <span data-en="Paste list" data-ja="リスト貼付け">Paste list</span>
+      </button>
       <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加する">Add Task</button>
     </div>
   </div>
@@ -1455,6 +1483,22 @@ GoogleService-Info.plist
       </button>
     </div>
     <button class="modal-cancel" id="closeExport">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════ PASTE / BULK-ADD MODAL ═══════ -->
+<div class="modal-overlay" id="pasteListModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <p class="modal-title" data-en="Paste your list" data-ja="リストを貼り付け">Paste your list</p>
+    <p class="modal-sub" data-en="Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline." data-ja="メモ、音声テキスト、リストをそのまま貼り付け。タスクに分解してカテゴリ・期限を自動設定します。">Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline.</p>
+    <textarea class="paste-list-area" id="pasteListInput"
+      placeholder="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
+      data-placeholder-en="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
+      data-placeholder-ja="例：歯医者に電話、今週食料品を買う、月曜日にクライアントへレポート送付、土曜日にジム…"></textarea>
+    <p style="font-size:11px;color:var(--t3);margin:6px 2px 0;text-align:right" data-en="Ctrl+Enter to process" data-ja="Ctrl+Enterで処理">Ctrl+Enter to process</p>
+    <button class="paste-list-process" id="pasteListProcess" data-en="Process &amp; add tasks" data-ja="タスクを追加する">Process &amp; add tasks</button>
+    <button class="modal-cancel" id="closePasteList" data-en="Cancel" data-ja="キャンセル">Cancel</button>
   </div>
 </div>
 
@@ -2680,6 +2724,95 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
 });
 
 /* Voice buttons wired inside the SR block below */
+
+/* ══════════════════════════════════════════
+   PASTE / BULK-ADD
+   Paste a brain dump, transcript, or bullet list.
+   Runs through the same classifyTranscript() pipeline as voice.
+══════════════════════════════════════════ */
+document.getElementById('pasteListBtn')?.addEventListener('click', () => {
+  openM('pasteListModal');
+  setTimeout(() => document.getElementById('pasteListInput')?.focus(), 300);
+});
+document.getElementById('closePasteList')?.addEventListener('click', () => closeM('pasteListModal'));
+
+// Intercept paste on the single-task input: if multi-line or long → redirect to bulk modal
+addInput?.addEventListener('paste', e => {
+  const pasted = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  if (pasted.includes('\n') || pasted.length > 120) {
+    e.preventDefault();
+    const ta = document.getElementById('pasteListInput');
+    if (ta) ta.value = pasted;
+    openM('pasteListModal');
+    setTimeout(() => document.getElementById('pasteListInput')?.focus(), 300);
+  }
+});
+
+async function processPasteList() {
+  const ta   = document.getElementById('pasteListInput');
+  const text = ta?.value.trim();
+  if (!text) {
+    showToast(state.lang === 'ja' ? 'テキストを入力してください' : 'Paste or type something first');
+    return;
+  }
+
+  closeM('pasteListModal');
+  if (ta) ta.value = '';
+
+  showCompile();
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const minShow = new Promise(r => setTimeout(r, 800));
+
+  let tasks = [];
+  try {
+    tasks = await classifyTranscript(text);
+  } catch(e) {
+    console.error('classify failed:', e);
+    tasks = localClassify(text, state.defaultTiming || 'This Week');
+  }
+
+  await minShow;
+  hideCompile();
+
+  if (!tasks || tasks.length === 0) {
+    showToast(state.lang === 'ja'
+      ? 'タスクを認識できませんでした。表現を変えてお試しください'
+      : 'Could not parse any tasks — try rewording');
+    return;
+  }
+
+  // Make sure task list view is visible
+  const homeScreen = document.getElementById('homeScreen');
+  const taskListView = document.getElementById('taskListView');
+  const bottomBar = document.getElementById('bottomBar');
+  if (homeScreen) homeScreen.style.display = 'none';
+  if (taskListView) taskListView.style.display = '';
+  if (bottomBar) bottomBar.style.display = '';
+
+  tasks.forEach((task, i) => {
+    setTimeout(() => {
+      const item = makeTaskItem(
+        task.text     || text,
+        task.timing   || state.defaultTiming || 'This Week',
+        task.category || 'Other'
+      );
+      if (state.isLoggedIn && item) {
+        fsAddTask(task.text || text, task.category || 'Other', task.timing || 'This Week')
+          .then(id => { if (id && item) item.dataset.fsId = id; });
+      }
+    }, i * 90);
+  });
+
+  const n = tasks.length;
+  showToast(state.lang === 'ja'
+    ? `${n}件のタスクを追加しました ✓`
+    : `${n} task${n > 1 ? 's' : ''} added ✓`);
+}
+
+document.getElementById('pasteListProcess')?.addEventListener('click', processPasteList);
+document.getElementById('pasteListInput')?.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); processPasteList(); }
+});
 
 /* ══════════════════════════════════════════
    INLINE EDIT
