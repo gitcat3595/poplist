@@ -423,7 +423,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   touch-action:manipulation;
 }
 .timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow);     background:var(--blue-lt) }
-.timing-chip[data-timing="This Week"] { color:#D97706;       border-color:rgba(217,119,6,.25);  background:#FFFBEB }
+.timing-chip[data-timing="This Week"] { color:var(--t2);     border-color:var(--border);        background:var(--card) }
 .timing-chip[data-timing="Later"]     { color:var(--t3);    border-color:var(--border);        background:var(--card) }
 /* Japanese timing chip labels */
 .timing-chip[data-timing="Today"] .jp,
@@ -466,13 +466,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-active { display:flex; align-items:center; padding:14px 16px 14px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
-  background:var(--blue); opacity:.25; pointer-events:none;
-  position:relative; align-self:center;
-}
-.add-bubble-ph::before {
-  content:''; position:absolute; top:3px; left:5px;
-  width:42%; height:28%; border-radius:50%;
-  background:rgba(255,255,255,.5); filter:blur(1px); transform:rotate(-20deg);
+  opacity:.28; pointer-events:none; align-self:center;
 }
 .add-input-body { flex:1; min-width:0; position:relative; overflow:visible }
 .add-task-field {
@@ -521,23 +515,21 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-actions { display:flex; justify-content:flex-end; gap:8px; padding:10px 16px 14px }
 .btn-cancel {
   font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
-  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr); white-space:nowrap; flex-shrink:0;
 }
 .btn-cancel:hover { color:var(--t1); border-color:var(--brim) }
 .btn-add {
   font-size:13px; font-weight:800; color:#fff; padding:8px 22px;
   border-radius:var(--rp); background:var(--blue); box-shadow:var(--shbtn);
-  transition:transform .14s ease, box-shadow .14s ease;
+  transition:transform .14s ease, box-shadow .14s ease; white-space:nowrap; flex-shrink:0;
 }
 .btn-add:hover { box-shadow:var(--shbtn) }
 .btn-add:active { transform:scale(.97) }
 .btn-paste-list {
-  font-size:13px; font-weight:700; color:var(--t2); padding:8px 14px;
-  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
-  display:inline-flex; align-items:center; gap:5px;
+  font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr); white-space:nowrap; flex-shrink:0;
 }
-.btn-paste-list:hover { color:var(--blue); border-color:var(--blue) }
-.btn-paste-list svg { width:13px; height:13px; flex-shrink:0 }
+.btn-paste-list:hover { color:var(--t1); border-color:var(--brim) }
 .paste-list-area {
   width:100%; min-height:150px; padding:12px 14px; margin-top:14px;
   border-radius:14px; border:1.5px solid var(--border);
@@ -699,6 +691,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
+.cat-drag-handle {
+  display:none; flex-shrink:0; width:16px; cursor:grab; opacity:.35;
+  flex-direction:column; gap:3px; align-items:center; padding:2px 0;
+}
+.cat-drag-handle span { display:block; width:12px; height:1.5px; background:var(--t2); border-radius:2px; }
+.pro-active .cat-drag-handle { display:flex }
+.cat-item.dragging { opacity:.35; }
+.cat-item.drag-over { border-color:var(--blue); box-shadow:0 0 0 2px var(--blue-glow); }
 .cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0 }
 .cat-item-name { flex:1; font-size:13px; font-weight:700 }
 .cat-item-kw   { font-size:11px; color:var(--t3) }
@@ -1271,12 +1271,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       </div>
     </div>
     <div class="add-task-actions">
-      <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
-      <button class="btn-paste-list" id="pasteListBtn" title="Paste a list or brain dump">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
-        <span data-en="Paste list" data-ja="リスト貼付け">Paste list</span>
-      </button>
-      <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加する">Add Task</button>
+      <button class="btn-cancel" data-en="Cancel" data-ja="×">Cancel</button>
+      <button class="btn-paste-list" id="pasteListBtn" data-en="Add list" data-ja="リスト貼付け">Add list</button>
+      <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加">Add Task</button>
     </div>
   </div>
 
@@ -1380,6 +1377,10 @@ GoogleService-Info.plist
 
 <!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
 <div class="bottom-bar" id="bottomBar" style="display:none">
+  <button class="bottom-bar-add" id="fabBtn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span data-en="Add Task" data-ja="追加する">Add Task</span>
+  </button>
   <button class="bottom-bar-speak" id="voiceBtnBottom" aria-label="Speak">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="9" y="2" width="6" height="11" rx="3"/>
@@ -1387,10 +1388,6 @@ GoogleService-Info.plist
       <line x1="12" y1="19" x2="12" y2="22"/>
       <line x1="9" y1="22" x2="15" y2="22"/>
     </svg>
-  </button>
-  <button class="bottom-bar-add" id="fabBtn">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    <span data-en="Add Task" data-ja="追加する">Add Task</span>
   </button>
 </div>
 
@@ -1658,13 +1655,9 @@ GoogleService-Info.plist
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
       </div>
-      <div class="guide-row">
+      <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
         <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
-      </div>
-      <div class="guide-row" style="border-bottom:none">
-        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
-        <div><p class="guide-action" data-en="Pop it done" data-ja="完了させる">Pop it done</p><p class="guide-detail" data-en="Tap the bubble to mark it done." data-ja="バブルをタップしてタスクを完了。">Tap the bubble to mark it done.</p></div>
       </div>
     </div>
 
@@ -2122,7 +2115,7 @@ const STYLE_META = {
 function setBubbleClasses(el) {
   // Remove old style + colour classes (ALL 4 styles must be listed)
   el.classList.remove('luminous','solid','ring','ink');
-  ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green',
+  ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green','bc-lime',
    'bc-amber','bc-rose','bc-purple','bc-pink','bc-grey','bc-white'].forEach(c => el.classList.remove(c));
   el.classList.add(state.bubbleStyle, state.bubbleColour);
 }
@@ -2154,7 +2147,7 @@ function burstBubble(el, item) {
 
   /* Reliable class-based colour lookup — avoids getComputedStyle Safari quirks */
   const _bcMap = {
-    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
   };
@@ -2682,7 +2675,7 @@ function showDoneScreen() {
   if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
 
   const _dcMap = {
-    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
   };
@@ -3302,7 +3295,8 @@ document.getElementById('unlockProBtn')?.addEventListener('click', () => {
     applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
   }
   syncAllBubbles();
-  showToast('Pro unlocked! ✨  Pick a colour to theme the whole app');
+  updateCatDragHandles();
+  showToast(state.lang==='ja' ? 'Proにアップグレードしました' : 'Pro unlocked! Pick a colour to theme the whole app');
 });
 
 /* ══════════════════════════════════════════
@@ -3328,12 +3322,65 @@ function buildCatList() {
     // Header row
     const row = document.createElement('div');
     row.className = 'cat-item-row';
-    row.innerHTML = `
-      <div class="cat-item-dot" style="background:var(--blue)"></div>
-      <span class="cat-item-name" data-en="${cat.en}" data-ja="${cat.ja}">${state.lang==='ja' ? cat.ja : cat.en}</span>
-      <span class="cat-item-kw" data-en="add keywords" data-ja="キーワード追加">${state.lang==='ja'?'キーワード追加':'add keywords'}</span>
-      <span class="cat-item-chevron">▾</span>`;
-    row.addEventListener('click', () => item.classList.toggle('open'));
+    // Drag handle (visible only for Pro users via .pro-active on catList)
+    const handle = document.createElement('div');
+    handle.className = 'cat-drag-handle';
+    handle.innerHTML = '<span></span><span></span><span></span>';
+    handle.setAttribute('title', 'Drag to reorder');
+    row.appendChild(handle);
+    const dotEl = document.createElement('div');
+    dotEl.className = 'cat-item-dot'; dotEl.style.background = 'var(--blue)';
+    row.appendChild(dotEl);
+    const nameEl = document.createElement('span');
+    nameEl.className = 'cat-item-name';
+    nameEl.dataset.en = cat.en; nameEl.dataset.ja = cat.ja;
+    nameEl.textContent = state.lang==='ja' ? cat.ja : cat.en;
+    row.appendChild(nameEl);
+    const kwLabel = document.createElement('span');
+    kwLabel.className = 'cat-item-kw';
+    kwLabel.dataset.en = 'add keywords'; kwLabel.dataset.ja = 'キーワード追加';
+    kwLabel.textContent = state.lang==='ja' ? 'キーワード追加' : 'add keywords';
+    row.appendChild(kwLabel);
+    const chevron = document.createElement('span');
+    chevron.className = 'cat-item-chevron'; chevron.textContent = '▾';
+    row.appendChild(chevron);
+    row.addEventListener('click', e => {
+      if (e.target.closest('.cat-drag-handle')) return;
+      item.classList.toggle('open');
+    });
+    // Desktop: HTML5 drag-and-drop via handle
+    item.draggable = false; // only enable when handle is grabbed
+    handle.addEventListener('mousedown', () => { item.draggable = true; });
+    item.addEventListener('dragend',     () => { item.draggable = false; item.classList.remove('dragging'); });
+    item.addEventListener('dragstart', e => {
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', cat.id);
+    });
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+    item.addEventListener('drop', e => {
+      e.preventDefault(); item.classList.remove('drag-over');
+      const fromId = e.dataTransfer.getData('text/plain');
+      if (fromId === cat.id) return;
+      const fromIdx = state.categories.findIndex(c => c.id === fromId);
+      const toIdx   = state.categories.findIndex(c => c.id === cat.id);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = state.categories.splice(fromIdx, 1);
+      state.categories.splice(toIdx, 0, moved);
+      buildCatList();
+    });
+    // Mobile: long-press to activate drag (300ms)
+    let _lpTimer = null, _lpStartY = 0;
+    handle.addEventListener('touchstart', e => {
+      _lpStartY = e.touches[0].clientY;
+      _lpTimer = setTimeout(() => {
+        item.classList.add('dragging');
+        _doTouchDrag(item, cat.id, list);
+      }, 280);
+    }, { passive:true });
+    handle.addEventListener('touchmove',  () => clearTimeout(_lpTimer), { passive:true });
+    handle.addEventListener('touchend',   () => clearTimeout(_lpTimer), { passive:true });
     item.appendChild(row);
 
     // Keyword section (shown when open)
@@ -3412,6 +3459,43 @@ function buildCatList() {
   });
 }
 
+/* ── Touch drag-to-reorder for cat list (mobile long-press on handle) ── */
+function _doTouchDrag(dragItem, dragId, list) {
+  const items = () => [...list.querySelectorAll('.cat-item')];
+  let over = null;
+  function onMove(e) {
+    const touch = e.touches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cat-item');
+    if (over && over !== el) over.classList.remove('drag-over');
+    if (el && el !== dragItem) { el.classList.add('drag-over'); over = el; }
+  }
+  function onEnd() {
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+    dragItem.classList.remove('dragging');
+    if (over) {
+      over.classList.remove('drag-over');
+      const fromIdx = state.categories.findIndex(c => c.id === dragId);
+      const toId    = over.dataset.id;
+      const toIdx   = state.categories.findIndex(c => c.id === toId);
+      if (fromIdx >= 0 && toIdx >= 0 && fromIdx !== toIdx) {
+        const [moved] = state.categories.splice(fromIdx, 1);
+        state.categories.splice(toIdx, 0, moved);
+        buildCatList();
+      }
+    }
+  }
+  document.addEventListener('touchmove', onMove, { passive:true });
+  document.addEventListener('touchend', onEnd);
+}
+
+/* Show drag handles when Pro is active */
+function updateCatDragHandles() {
+  const catList = document.getElementById('catList');
+  if (!catList) return;
+  catList.classList.toggle('pro-active', !!state.isProUser);
+}
+
 function rebuildDetectRegex() {
   // Rebuild CAT_KW-like detection from state.categories
   window._catDetectFn = text => {
@@ -3450,6 +3534,8 @@ function refreshCatChips() {
 }
 
 buildCatList();
+updateCatDragHandles();
+syncAllBubbles(); // sync add-preview bubble style on first load
 
 // Add category
 document.getElementById('addCategoryRow')?.addEventListener('click', () => {
