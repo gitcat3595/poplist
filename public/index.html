@@ -130,8 +130,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .nav-right { display:flex; align-items:center; gap:8px }
 
 .lang-toggle {
-  display:flex; background:var(--card); border-radius:var(--rp);
-  padding:3px; border:1px solid var(--border); gap:2px;
+  display:flex; align-items:center; background:var(--card); border-radius:var(--rp);
+  height:34px; padding:3px; border:1px solid var(--border); gap:2px;
   box-shadow:var(--shlift);
 }
 .lang-btn {
@@ -151,7 +151,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .nav-icon-btn:hover { border-color:var(--blue); color:var(--blue) }
 
 .nav-export {
-  display:flex; align-items:center; gap:5px; padding:7px 13px;
+  display:flex; align-items:center; gap:5px; height:34px; padding:0 13px;
   background:var(--card); border:1px solid var(--border);
   border-radius:var(--rp); font-size:11px; font-weight:700;
   color:var(--t2); transition:var(--tr); box-shadow:var(--shlift);
@@ -2931,7 +2931,7 @@ let fullTranscript = '';
 let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
-let voiceErrorCount = 0;    // counts transient errors (audio-capture, network); resets on onstart
+let voiceErrorCount = 0;    // counts transient errors (audio-capture, network); resets on onresult (real speech)
 // Desktop browsers (Chrome/Edge/Safari macOS): SR handles its own mic permission — start directly.
 // iOS: requires getUserMedia before EVERY recognition.start() — never cache.
 let micPermGranted = !isIOS;
