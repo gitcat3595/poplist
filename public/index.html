@@ -2959,14 +2959,17 @@ if (SR) {
   function createRecognition() {
     const r = new SR();
     r.lang            = state.lang === 'ja' ? 'ja-JP' : 'en-US';
-    r.continuous      = false;           // MUST be false on Safari
-    r.interimResults  = !isSafari;       // Safari: false (only fires isFinal, interim breaks it)
-                                         // Chrome: true  (live words as user speaks)
+    // iOS Safari: continuous:true keeps the session alive past the ~0.5s silence timeout.
+    //   With continuous:false, iOS fires onend after ~0.5s of silence, and restarting from
+    //   onend fails because recognition.start() requires a user-gesture context on iOS —
+    //   which the onend callback does NOT have. continuous:true eliminates this entirely.
+    // macOS Safari / Chrome / Edge: continuous:false + restart loop (works correctly).
+    r.continuous      = isIOS;
+    r.interimResults  = !isSafari;  // Safari (incl. iOS): only isFinal results; Chrome: live interim
     r.maxAlternatives = 1;
 
     r.onstart = () => {
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
-      voiceErrorCount = 0;   // successful start — reset transient error counter
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
@@ -2975,9 +2978,11 @@ if (SR) {
       micModal?.classList.add('show');
       transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
       transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
+      console.log('[SR] session started — continuous:', r.continuous, 'isIOS:', isIOS);
     };
 
     r.onresult = e => {
+      voiceErrorCount = 0;  // real speech received — reset transient error counter
       let newInterim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
@@ -3006,44 +3011,38 @@ if (SR) {
         interimText = '';
       }
 
+      console.log(`[SR] onend — shouldRestart=${shouldRestart} isListening=${state.isListening} transcript="${fullTranscript.slice(0,40)}"`);
+
       if (shouldRestart && state.isListening) {
-        recognition = createRecognition();
-        // Back off longer when there have been transient errors
-        const delay = isIOS ? 350 : isSafari ? 350 : (voiceErrorCount > 0 ? 400 : 150);
-        if (isIOS) {
-          // iOS needs getUserMedia probe before every recognition.start(), even restarts
-          navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-              stream.getTracks().forEach(t => t.stop());
-              restartTimer = setTimeout(() => {
-                try { recognition.start(); }
-                catch(err) {
-                  if (err.name === 'InvalidStateError') {
-                    // Previous session not fully torn down — wait longer and retry once
-                    clearTimeout(restartTimer);
-                    restartTimer = setTimeout(() => {
-                      recognition = createRecognition();
-                      try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
-                    }, 500);
-                  } else { shouldRestart = false; _clearListeningUI(); }
-                }
-              }, delay);
-            })
-            .catch(() => { shouldRestart = false; _clearListeningUI(); });
-        } else {
+        // On iOS with continuous:true, onend should only fire if the session crashed unexpectedly.
+        // On desktop (continuous:false), onend fires after every phrase — normal restart loop.
+        const delay = isSafari ? 400 : (voiceErrorCount > 0 ? 500 : 150);
+
+        function _doRestart() {
+          recognition = createRecognition();
           restartTimer = setTimeout(() => {
-            try { recognition.start(); }
-            catch(err) {
+            try {
+              recognition.start();
+              console.log('[SR] restarted');
+            } catch(err) {
               if (err.name === 'InvalidStateError') {
                 // Previous session not fully torn down — wait longer and retry once
-                clearTimeout(restartTimer);
                 restartTimer = setTimeout(() => {
                   recognition = createRecognition();
-                  try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
-                }, 500);
-              } else { shouldRestart = false; _clearListeningUI(); }
+                  try { recognition.start(); } catch(e2) { console.warn('[SR] restart failed:', e2); shouldRestart = false; _clearListeningUI(); }
+                }, 600);
+              } else { console.warn('[SR] restart error:', err); shouldRestart = false; _clearListeningUI(); }
             }
           }, delay);
+        }
+
+        if (isIOS) {
+          // Even on iOS, probe getUserMedia to ensure the audio session is live before restarting
+          navigator.mediaDevices?.getUserMedia({ audio: true })
+            .then(stream => { stream.getTracks().forEach(t => t.stop()); _doRestart(); })
+            .catch(err => { console.warn('[SR] getUserMedia failed on restart:', err); shouldRestart = false; _clearListeningUI(); });
+        } else {
+          _doRestart();
         }
         return;
       }
@@ -3054,22 +3053,24 @@ if (SR) {
     };
 
     r.onerror = e => {
-      console.warn('SR error:', e.error);
+      console.warn(`[SR] error: "${e.error}" | voiceErrorCount=${voiceErrorCount} | continuous=${r.continuous} | shouldRestart=${shouldRestart}`);
       if (e.error === 'no-speech') return;   // silence — keep restarting
       if (e.error === 'aborted')  return;    // deliberate stop — ignore
 
-      // Transient errors: retry up to 3 times before giving up
+      // Transient errors (network hiccup, mic briefly captured by OS):
+      // retry up to 4 times; counter only resets when real speech arrives (onresult)
       if ((e.error === 'audio-capture' || e.error === 'network') && shouldRestart && state.isListening) {
         voiceErrorCount++;
-        if (voiceErrorCount <= 3) {
-          console.warn(`SR ${e.error} (attempt ${voiceErrorCount}/3) — will retry`);
-          return;  // onend will fire next and trigger the restart loop
+        if (voiceErrorCount <= 4) {
+          console.warn(`[SR] transient ${e.error} — retry ${voiceErrorCount}/4`);
+          return;  // onend fires next → restart loop handles it
         }
       }
 
       shouldRestart = false;
       clearTimeout(restartTimer);
       _clearListeningUI();
+
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         micPermGranted = false;
         const msg = isIOS
@@ -3079,9 +3080,13 @@ if (SR) {
             : 'Allow mic: click the mic icon in the address bar → Allow');
         showToast(msg);
       } else if (e.error === 'audio-capture') {
-        showToast(state.lang === 'ja' ? 'マイクにアクセスできません' : 'Cannot access microphone — check browser settings');
+        showToast(state.lang === 'ja'
+          ? 'マイクにアクセスできません — ブラウザ設定を確認してください'
+          : 'Cannot access microphone — check browser settings');
       } else if (e.error === 'network') {
-        showToast(state.lang === 'ja' ? '音声認識にはインターネット接続が必要です' : 'Voice recognition needs an internet connection');
+        showToast(state.lang === 'ja'
+          ? '音声認識にはインターネット接続が必要です'
+          : 'Voice needs an internet connection (Chrome uses Google's servers)');
       }
     };
 
