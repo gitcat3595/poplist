@@ -387,6 +387,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .bc-slate  { --bubble-color:#475569; --bubble-color-glow:rgba(71,85,105,.5);    --bubble-color-ink:rgba(71,85,105,.18);  --bubble-color-ink-border:rgba(71,85,105,.32);   --bubble-color-ink-glow:rgba(71,85,105,.15) }
 .bc-teal   { --bubble-color:#0D9488; --bubble-color-glow:rgba(13,148,136,.55);  --bubble-color-ink:rgba(13,148,136,.2);  --bubble-color-ink-border:rgba(13,148,136,.35);  --bubble-color-ink-glow:rgba(13,148,136,.18) }
 .bc-green  { --bubble-color:#16A34A; --bubble-color-glow:rgba(22,163,74,.55);   --bubble-color-ink:rgba(22,163,74,.2);   --bubble-color-ink-border:rgba(22,163,74,.35);   --bubble-color-ink-glow:rgba(22,163,74,.18) }
+.bc-lime   { --bubble-color:#65A30D; --bubble-color-glow:rgba(101,163,13,.55);  --bubble-color-ink:rgba(101,163,13,.2);  --bubble-color-ink-border:rgba(101,163,13,.35);  --bubble-color-ink-glow:rgba(101,163,13,.18) }
 .bc-amber  { --bubble-color:#F97316; --bubble-color-glow:rgba(249,115,22,.55);  --bubble-color-ink:rgba(249,115,22,.2);  --bubble-color-ink-border:rgba(249,115,22,.35);  --bubble-color-ink-glow:rgba(249,115,22,.18) }
 .bc-rose   { --bubble-color:#EF4444; --bubble-color-glow:rgba(239,68,68,.55);   --bubble-color-ink:rgba(239,68,68,.2);   --bubble-color-ink-border:rgba(239,68,68,.35);   --bubble-color-ink-glow:rgba(239,68,68,.18) }
 .bc-purple { --bubble-color:#7C3AED; --bubble-color-glow:rgba(124,58,237,.55);  --bubble-color-ink:rgba(124,58,237,.2);  --bubble-color-ink-border:rgba(124,58,237,.35);  --bubble-color-ink-glow:rgba(124,58,237,.18) }
@@ -3455,13 +3456,12 @@ function addCustomCategory(name) {
 
   // Add category card to task list
   const tasksContainer = document.getElementById('tasksContainer');
-  const manualAddCard  = document.getElementById('manualAddCard');
   if (tasksContainer && !document.getElementById('cat-'+id)) {
     const card = document.createElement('div');
     card.className = 'category-card'; card.id = 'cat-'+id; card.style.display = 'none';
     card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><span class="cat-count">0</span></div>
       <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>`;
-    tasksContainer.insertBefore(card, manualAddCard || null);
+    tasksContainer.appendChild(card);
     card.querySelector('.add-task-row')?.addEventListener('click', () => openManualAddCard(true));
   }
 
@@ -3853,6 +3853,7 @@ const COLOUR_ACCENT_VARS = {
   'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
   'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
   'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
+  'bc-lime':   {'--blue':'#65A30D','--blue-dim':'#4d7c0f','--blue-lt':'#F7FEE7','--blue-glow':'rgba(101,163,13,.18)','--shbtn':'0 4px 16px rgba(101,163,13,.38)'},
   'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
   'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
   'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
