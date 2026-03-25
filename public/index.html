@@ -687,7 +687,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .cat-list { display:flex; flex-direction:column; gap:6px; margin-top:4px }
 .cat-item {
   background:var(--raised); border-radius:12px; border:1px solid var(--border);
-  margin-bottom:6px; overflow:hidden;
+  margin-bottom:8px; overflow:hidden;
 }
 .cat-item-row {
   display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
@@ -1665,13 +1665,16 @@ GoogleService-Info.plist
     <!-- ══ ABOUT THE APP ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label" data-en="About" data-ja="このアプリについて">About</div>
-      <div class="settings-row" style="pointer-events:none;border-bottom:none">
+      <div class="settings-row" id="aboutAppRow" style="cursor:pointer;border-bottom:none">
         <div style="flex:1;min-width:0">
           <p class="settings-row-label">Poplist</p>
           <p class="settings-row-sub" data-en="Version 1.0 · Allerise Pte. Ltd." data-ja="バージョン 1.0 · Allerise Pte. Ltd.">Version 1.0 · Allerise Pte. Ltd.</p>
         </div>
+        <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
+    </div>
 
+    <div class="settings-section" style="margin-top:24px">
       <div class="settings-section-label" data-en="Legal" data-ja="法的情報">Legal</div>
       <div class="settings-row" style="cursor:pointer" onclick="window.open('/privacy.html','_blank')">
         <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
@@ -1695,6 +1698,32 @@ GoogleService-Info.plist
     </div>
 
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
+  </div>
+</div>
+
+<!-- ═══════ ABOUT APP MODAL ═══════ -->
+<div class="modal-overlay" id="aboutModal">
+  <div class="modal-sheet" style="padding:32px 24px 36px;text-align:center">
+    <div class="modal-handle"></div>
+    <!-- Logo -->
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:var(--blue);border-radius:18px;margin-bottom:16px;box-shadow:0 4px 16px var(--blue-glow)">
+      <span style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-.5px">P</span>
+    </div>
+    <p style="font-size:22px;font-weight:900;letter-spacing:-.4px;color:var(--black);margin-bottom:4px">Poplist</p>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:2px" data-en="Version 1.0" data-ja="バージョン 1.0">Version 1.0</p>
+    <p style="font-size:12px;color:var(--t3);margin-bottom:24px">© 2026 Allerise Pte. Ltd.</p>
+    <!-- App Store link (placeholder until live) -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--raised);border:1px solid var(--border);border-radius:14px;opacity:.45;pointer-events:none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
+        <div style="text-align:left">
+          <p style="font-size:13px;font-weight:700;color:var(--black)" data-en="App Store" data-ja="App Store">App Store</p>
+          <p style="font-size:11px;color:var(--t3)" data-en="Coming soon" data-ja="近日公開">Coming soon</p>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--t3);line-height:1.6;margin-top:16px" data-en="Made with care in Singapore" data-ja="シンガポールで心を込めて制作">Made with care in Singapore</p>
+    <button class="modal-cancel" id="closeAbout" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:20px auto 0" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
 
@@ -3244,10 +3273,10 @@ document.getElementById('unlockProBtn')?.addEventListener('click', () => {
    state.categories = [{ id, en, ja, keywords:[] }, ...]
 ══════════════════════════════════════════ */
 state.categories = [
-  { id:'work',     en:'Work',     ja:'仕事',    keywords:['meeting','email','report','client','project','deadline','invoice','proposal','presentation','call','boss','budget'] },
-  { id:'home',     en:'Home',     ja:'家の事',  keywords:['groceri','supermarket','clean','trash','laundry','repair','fix','bill','rent','cook','dinner','delivery'] },
-  { id:'personal', en:'Personal', ja:'自分の事',keywords:['gym','run','jog','doctor','dentist','hospital','read','book','friend','family','travel','hobby','yoga','haircut'] },
-  { id:'other',    en:'Other',    ja:'その他',  keywords:[] },
+  { id:'work',     en:'Work',     ja:'仕事',    keywords:['meeting','email','report','client','project','deadline','invoice','proposal','presentation','call','boss','budget'], customKeywords:[] },
+  { id:'home',     en:'Home',     ja:'家の事',  keywords:['groceri','supermarket','clean','trash','laundry','repair','fix','bill','rent','cook','dinner','delivery'], customKeywords:[] },
+  { id:'personal', en:'Personal', ja:'自分の事',keywords:['gym','run','jog','doctor','dentist','hospital','read','book','friend','family','travel','hobby','yoga','haircut'], customKeywords:[] },
+  { id:'other',    en:'Other',    ja:'その他',  keywords:[], customKeywords:[] },
 ];
 
 function buildCatList() {
@@ -3265,7 +3294,7 @@ function buildCatList() {
     row.innerHTML = `
       <div class="cat-item-dot" style="background:var(--blue)"></div>
       <span class="cat-item-name">${state.lang==='ja' ? cat.ja : cat.en}</span>
-      <span class="cat-item-kw">${cat.keywords.length ? (state.lang==='ja' ? `${cat.keywords.length}件` : `${cat.keywords.length} keyword${cat.keywords.length>1?'s':''}`) : (state.lang==='ja'?'キーワード追加':'add keywords')}</span>
+      <span class="cat-item-kw">${state.lang==='ja'?'キーワード追加':'add keywords'}</span>
       <span class="cat-item-chevron">▾</span>`;
     row.addEventListener('click', () => item.classList.toggle('open'));
     item.appendChild(row);
@@ -3273,9 +3302,27 @@ function buildCatList() {
     // Keyword section (shown when open)
     const kwSection = document.createElement('div');
     kwSection.className = 'cat-item-keywords';
+    if (!cat.customKeywords) cat.customKeywords = [];
     function renderKws() {
       kwSection.innerHTML = '';
-      // Only show the add-keyword input — no pills for existing keywords
+      // Show user-added keywords as small chips (system defaults stay hidden)
+      cat.customKeywords.forEach((kw, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'kw-pill';
+        pill.innerHTML = `${kw} <span class="kw-pill-x" data-i="${i}">✕</span>`;
+        pill.querySelector('.kw-pill-x').addEventListener('click', e => {
+          e.stopPropagation();
+          // Remove from both display array and detection array
+          const detIdx = cat.keywords.indexOf(kw);
+          if (detIdx > -1) cat.keywords.splice(detIdx, 1);
+          cat.customKeywords.splice(i, 1);
+          renderKws();
+          rebuildDetectRegex();
+          row.querySelector('.cat-item-kw').textContent = state.lang==='ja' ? 'キーワード追加' : 'add keywords';
+        });
+        kwSection.appendChild(pill);
+      });
+      // Add keyword input
       const inp = document.createElement('input');
       inp.className = 'kw-add-input';
       inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
@@ -3284,36 +3331,24 @@ function buildCatList() {
         if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
           e.preventDefault();
           const kw = inp.value.trim().replace(/,$/, '');
-          if (!kw || cat.keywords.includes(kw)) { inp.value = ''; return; }
-          cat.keywords.push(kw);
-          rebuildDetectRegex();
           inp.value = '';
-          inp.placeholder = state.lang==='ja' ? '翻訳中…' : 'translating…';
-          inp.disabled = true;
-          // Auto-translate: add the keyword in the other language too so it works bilingually
+          if (!kw || cat.customKeywords.includes(kw)) return;
+          cat.customKeywords.push(kw);
+          if (!cat.keywords.includes(kw)) cat.keywords.push(kw);
+          rebuildDetectRegex();
+          renderKws();
+          // Auto-translate silently: add other-language version for bilingual matching
           const targetLang = state.lang === 'ja' ? 'en' : 'ja';
-          try {
-            const res = await fetch('/api/translate', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ texts: [kw], targetLang })
-            });
-            if (res.ok) {
-              const d = await res.json();
-              const translated = d?.texts?.[0]?.trim();
-              if (translated && translated.toLowerCase() !== kw.toLowerCase() && !cat.keywords.includes(translated)) {
-                cat.keywords.push(translated);
-                rebuildDetectRegex();
-              }
+          fetch('/api/translate', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: [kw], targetLang })
+          }).then(r => r.ok ? r.json() : null).then(d => {
+            const t = d?.texts?.[0]?.trim();
+            if (t && t.toLowerCase() !== kw.toLowerCase() && !cat.keywords.includes(t)) {
+              cat.keywords.push(t);
+              rebuildDetectRegex();
             }
-          } catch(_) {}
-          inp.disabled = false;
-          inp.placeholder = state.lang==='ja' ? '+ キーワード' : '+ keyword';
-          // Update row summary: show count
-          const n = cat.keywords.length;
-          row.querySelector('.cat-item-kw').textContent = n
-            ? (state.lang==='ja' ? `${n}件` : `${n} keyword${n>1?'s':''}`)
-            : (state.lang==='ja' ? 'キーワード追加' : 'add keywords');
+          }).catch(()=>{});
         }
       });
       kwSection.appendChild(inp);
@@ -3395,7 +3430,7 @@ function addCustomCategory(name) {
   if (state.categories.find(c => c.id === id)) { showToast(state.lang==='ja'?'既に存在します':'Category already exists'); return; }
 
   // Add to state
-  state.categories.splice(state.categories.length - 1, 0, { id, en:name, ja:name, keywords:[] });
+  state.categories.splice(state.categories.length - 1, 0, { id, en:name, ja:name, keywords:[], customKeywords:[] });
   buildCatList();
 
   // Add chip to cat picker
@@ -3730,12 +3765,16 @@ function openLegal(key) {
   openM('legalModal');
 }
 
-document.getElementById('legalRowPrivacy').addEventListener('click', () => openLegal('privacy'));
-document.getElementById('legalRowTerms').addEventListener('click',   () => openLegal('terms'));
-document.getElementById('legalRowEula').addEventListener('click',    () => openLegal('eula'));
-document.getElementById('legalRowData').addEventListener('click',    () => openLegal('datadeletion'));
-document.getElementById('closeLegal').addEventListener('click',      () => closeM('legalModal'));
-document.getElementById('legalModal').addEventListener('click', e => { if(e.target.id==='legalModal') closeM('legalModal') });
+document.getElementById('aboutAppRow')?.addEventListener('click', () => openM('aboutModal'));
+document.getElementById('closeAbout')?.addEventListener('click', () => closeM('aboutModal'));
+document.getElementById('aboutModal')?.addEventListener('click', e => { if(e.target.id==='aboutModal') closeM('aboutModal') });
+
+document.getElementById('legalRowPrivacy')?.addEventListener('click', () => openLegal('privacy'));
+document.getElementById('legalRowTerms')?.addEventListener('click',   () => openLegal('terms'));
+document.getElementById('legalRowEula')?.addEventListener('click',    () => openLegal('eula'));
+document.getElementById('legalRowData')?.addEventListener('click',    () => openLegal('datadeletion'));
+document.getElementById('closeLegal')?.addEventListener('click',      () => closeM('legalModal'));
+document.getElementById('legalModal')?.addEventListener('click', e => { if(e.target.id==='legalModal') closeM('legalModal') });
 
 /* ── Settings: default deadline chip cycles like task chips ── */
 document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
