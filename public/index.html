@@ -973,25 +973,25 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .done-bubble {
   position:absolute; border-radius:50%;
   background:var(--bubble-color, var(--blue));
-  animation:done-bubble-pop 1.0s cubic-bezier(.36,.07,.19,.97) both;
+  animation:done-bubble-pop 0.65s cubic-bezier(.36,.07,.19,.97) both;
 }
-/* sizes + staggered delays across ~1.8s → total burst lasts ~2.8s */
-.done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.05s}
-.done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.10s}
-.done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.16s}
-.done-bubble:nth-child(4) {width:10px;height:10px;top:50%;left:50%;animation-delay:.22s}
-.done-bubble:nth-child(5) {width:14px;height:14px;top:50%;left:50%;animation-delay:.30s}
-.done-bubble:nth-child(6) {width:20px;height:20px;top:50%;left:50%;animation-delay:.40s}
-.done-bubble:nth-child(7) {width:8px; height:8px; top:50%;left:50%;animation-delay:.52s}
-.done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.64s}
-.done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.78s}
-.done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.92s}
-.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:1.06s}
-.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:1.20s}
-.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:1.35s}
-.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:1.50s}
-.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:1.64s}
-.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:1.78s}
+/* sizes + staggered delays across ~0.9s → total burst lasts ~1.55s (~1s shorter) */
+.done-bubble:nth-child(1) {width:18px;height:18px;top:50%;left:50%;animation-delay:.03s}
+.done-bubble:nth-child(2) {width:12px;height:12px;top:50%;left:50%;animation-delay:.06s}
+.done-bubble:nth-child(3) {width:16px;height:16px;top:50%;left:50%;animation-delay:.10s}
+.done-bubble:nth-child(4) {width:10px;height:10px;top:50%;left:50%;animation-delay:.14s}
+.done-bubble:nth-child(5) {width:14px;height:14px;top:50%;left:50%;animation-delay:.18s}
+.done-bubble:nth-child(6) {width:20px;height:20px;top:50%;left:50%;animation-delay:.24s}
+.done-bubble:nth-child(7) {width:8px; height:8px; top:50%;left:50%;animation-delay:.31s}
+.done-bubble:nth-child(8) {width:15px;height:15px;top:50%;left:50%;animation-delay:.38s}
+.done-bubble:nth-child(9) {width:18px;height:18px;top:50%;left:50%;animation-delay:.46s}
+.done-bubble:nth-child(10){width:11px;height:11px;top:50%;left:50%;animation-delay:.54s}
+.done-bubble:nth-child(11){width:16px;height:16px;top:50%;left:50%;animation-delay:.62s}
+.done-bubble:nth-child(12){width:9px; height:9px; top:50%;left:50%;animation-delay:.70s}
+.done-bubble:nth-child(13){width:14px;height:14px;top:50%;left:50%;animation-delay:.78s}
+.done-bubble:nth-child(14){width:19px;height:19px;top:50%;left:50%;animation-delay:.86s}
+.done-bubble:nth-child(15){width:8px; height:8px; top:50%;left:50%;animation-delay:.90s}
+.done-bubble:nth-child(16){width:13px;height:13px;top:50%;left:50%;animation-delay:.90s}
 @keyframes done-bubble-pop {
   0%   { transform:translate(-50%,-50%) scale(0);   opacity:0 }
   25%  { transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1.5); opacity:1 }
@@ -1171,7 +1171,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   <div id="doneScreen" class="done-screen" style="display:none">
     <!-- CSS burst + JS swirl particles fire together on arrival -->
     <div class="done-bubbles" id="doneBubblesAnchor" aria-hidden="true">
-      <div class="done-bubble-center"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
@@ -1944,8 +1943,8 @@ function spawnDoneBurst(bubbleColor) {
     `rgba(${cr},${cg},${cb},.7)`,
   ];
 
-  // 3 waves, staggered — each wave slightly rotated for swirl effect
-  [0, 220, 460].forEach((waveDelay, wave) => {
+  // 3 waves, staggered — each wave slightly rotated for swirl effect (~1s shorter total)
+  [0, 150, 300].forEach((waveDelay, wave) => {
     setTimeout(() => {
       const count = 20;
       for (let i = 0; i < count; i++) {
@@ -1975,9 +1974,9 @@ function spawnDoneBurst(bubbleColor) {
           { transform:`translate(${tx*.28}px,${ty*.28}px) scale(1.5) rotate(${rot*.3}deg)`, opacity:1, offset:.14 },
           { transform:`translate(${tx}px,${ty}px) scale(0) rotate(${rot}deg)`, opacity:0 }
         ], {
-          duration: 540 + ~~(Math.random() * 200),
+          duration: 380 + ~~(Math.random() * 160),
           easing:   'cubic-bezier(.25,.46,.45,.94)',
-          delay:    i * 25
+          delay:    i * 16
         }).onfinish = () => p.remove();
       }
     }, waveDelay);
@@ -2291,7 +2290,7 @@ function makeTaskItem(text, timing, cat) {
   updateScreenState(); /* switch home → task list as soon as first task added */
 }
 
-document.getElementById('addTaskBtn')?.addEventListener('click', () => {
+function submitAddTask() {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
   const timing = state.defaultTiming || 'This Week';
@@ -2300,6 +2299,12 @@ document.getElementById('addTaskBtn')?.addEventListener('click', () => {
   addInput.value = '';
   setSelectedCat('Other');
   showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
+  // Return focus to input so the next task can be typed straight away
+  requestAnimationFrame(() => addInput?.focus());
+}
+document.getElementById('addTaskBtn')?.addEventListener('click', submitAddTask);
+addInput?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); submitAddTask(); }
 });
 
 /* ══════════════════════════════════════════
@@ -2445,7 +2450,13 @@ const LOCAL_TIMING_KW = {
   Later: /\b(someday|eventually|later|future|no rush|そのうち|いつか|後で|将来|急がない)\b/i,
 };
 
+// Personal-recipient keywords — used to route "email to mum" → Home instead of Work
+const PERSONAL_RECIPIENT_KW = /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i;
+const EMAIL_KW = /\b(email|emails?|mail|メール)\b/i;
+
 function localDetectCat(text) {
+  // Email with a personal recipient (e.g. "email mum", "write email to dad") → Home
+  if (EMAIL_KW.test(text) && PERSONAL_RECIPIENT_KW.test(text)) return 'Home';
   for (const [c, r] of Object.entries(LOCAL_CAT_KW)) if (r.test(text)) return c;
   return 'Other';
 }
@@ -2781,21 +2792,28 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    // All platforms: probe getUserMedia first to ensure mic access is established
-    // before handing off to the Speech Recognition API.
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
-        stream.getTracks().forEach(t => t.stop());
-        recognition = createRecognition();
-        try { recognition.start(); }
-        catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-      })
-      .catch(e => {
-        console.warn('mic permission denied:', e);
-        shouldRestart = false;
-        _clearListeningUI();
-        showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
-      });
+    if (isIOS) {
+      // iOS (Safari & Chrome): getUserMedia probe required before EVERY recognition.start()
+      navigator.mediaDevices?.getUserMedia({ audio: true })
+        .then(stream => {
+          stream.getTracks().forEach(t => t.stop());
+          recognition = createRecognition();
+          try { recognition.start(); }
+          catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+        })
+        .catch(e => {
+          console.warn('mic permission denied:', e);
+          shouldRestart = false;
+          _clearListeningUI();
+          showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+        });
+    } else {
+      // Desktop Chrome / Edge / Safari macOS: SR handles its own mic permission.
+      // Do NOT call getUserMedia first — it conflicts with the SR audio stream on Chrome.
+      recognition = createRecognition();
+      try { recognition.start(); }
+      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+    }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
@@ -2934,6 +2952,11 @@ function buildCatList() {
 function rebuildDetectRegex() {
   // Rebuild CAT_KW-like detection from state.categories
   window._catDetectFn = text => {
+    // Email with a personal recipient → Home (overrides the Work 'email' keyword)
+    if (/\b(email|emails?|mail|メール)\b/i.test(text) &&
+        /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i.test(text)) {
+      return 'Home';
+    }
     for (const cat of state.categories) {
       if (cat.id === 'other') continue;
       if (cat.keywords.some(kw => new RegExp(kw, 'i').test(text))) return cat.en;
