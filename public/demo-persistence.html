@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Poplist · Persistence Demo</title>
+<style>
+  :root {
+    --blue:#3B82F6; --blue-lt:#EFF6FF; --blue-dim:#1D4ED8;
+    --bg:#F9FAFB; --card:#FFFFFF; --border:#E5E7EB;
+    --t1:#111827; --t2:#4B5563; --t3:#9CA3AF;
+    --green:#16A34A; --amber:#F97316; --purple:#7C3AED;
+    --rp:14px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--t1); min-height:100vh; }
+
+  /* ── Page header ── */
+  .page-header {
+    background:#fff; border-bottom:1px solid var(--border);
+    padding:16px 20px 12px; position:sticky; top:0; z-index:100;
+  }
+  .page-header h1 { font-size:15px; font-weight:800; color:var(--t1); }
+  .page-header p  { font-size:12px; color:var(--t3); margin-top:2px; }
+  .back-link { font-size:12px; color:var(--blue); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:8px; font-weight:600; }
+
+  /* ── Flow label ── */
+  .flow-label {
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.8px;
+    color:var(--t3); padding:20px 20px 8px;
+  }
+
+  /* ── State cards (phone frames) ── */
+  .states-row {
+    display:flex; gap:16px; padding:0 20px 32px; overflow-x:auto;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  }
+  .state-card {
+    flex:0 0 300px; scroll-snap-align:start;
+    background:var(--card); border-radius:24px; overflow:hidden;
+    box-shadow:0 4px 24px rgba(0,0,0,.08); border:1px solid var(--border);
+  }
+  .state-card-label {
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.8px;
+    padding:12px 16px 0; color:var(--t3);
+  }
+  .state-card-title {
+    font-size:13px; font-weight:700; color:var(--t1); padding:4px 16px 12px;
+    border-bottom:1px solid var(--border);
+  }
+
+  /* ── Phone screen ── */
+  .phone { padding:12px 14px 16px; min-height:420px; }
+
+  /* ── Nav ── */
+  .mock-nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 0 10px; border-bottom:1px solid var(--border); margin-bottom:12px;
+  }
+  .mock-nav-logo { font-size:14px; font-weight:900; letter-spacing:-.3px; }
+  .mock-nav-right { display:flex; gap:6px; align-items:center; }
+  .mock-btn { background:var(--blue-lt); color:var(--blue); border:none; border-radius:10px; padding:4px 10px; font-size:11px; font-weight:700; cursor:default; }
+
+  /* ── Category section ── */
+  .cat-section { margin-bottom:10px; }
+  .cat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .cat-name-badge {
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    color:var(--t3); display:flex; align-items:center; gap:5px;
+  }
+  .cat-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); flex-shrink:0; }
+  .cat-dot.green  { background:var(--green); }
+  .cat-dot.purple { background:var(--purple); }
+  .cat-count-badge { font-size:10px; color:var(--t3); font-weight:600; }
+
+  /* ── Task item ── */
+  .task { display:flex; align-items:center; gap:8px; padding:5px 0; }
+  .task-bubble {
+    width:20px; height:20px; border-radius:50%; background:var(--blue);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .task-bubble.done { background:#D1FAE5; }
+  .task-bubble.done::after { content:'✓'; font-size:9px; color:var(--green); font-weight:900; }
+  .task-bubble.green  { background:var(--green); }
+  .task-bubble.purple { background:var(--purple); }
+  .task-bubble.faded  { background:#E5E7EB; }
+  .task-text { font-size:12px; color:var(--t1); font-weight:500; flex:1; }
+  .task-text.done { color:var(--t3); text-decoration:line-through; }
+  .task-text.faded { color:var(--t3); }
+  .timing-chip {
+    font-size:9px; font-weight:700; border-radius:6px; padding:2px 6px;
+    background:var(--blue-lt); color:var(--blue); white-space:nowrap;
+  }
+  .timing-chip.week { background:#FEF3C7; color:#D97706; }
+  .timing-chip.later { background:#F3F4F6; color:var(--t3); }
+
+  /* ── Done screen ── */
+  .done-screen {
+    display:flex; flex-direction:column; align-items:center;
+    padding:20px 12px 12px; text-align:center;
+  }
+  .done-burst {
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--blue-dim));
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; margin-bottom:12px;
+    box-shadow:0 4px 20px rgba(59,130,246,.35);
+  }
+  .done-title { font-size:17px; font-weight:800; margin-bottom:4px; }
+  .done-sub { font-size:12px; color:var(--t2); line-height:1.5; margin-bottom:16px; }
+
+  /* ── Remaining card (the key new element) ── */
+  .remaining-card {
+    width:100%; background:var(--bg); border-radius:16px; border:1px solid var(--border);
+    padding:10px 12px; text-align:left; margin-bottom:10px;
+  }
+  .remaining-card-header {
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    color:var(--t3); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .remaining-card-header span { font-size:10px; font-weight:700; color:var(--blue); cursor:pointer; }
+  .remaining-task { display:flex; align-items:center; gap:6px; padding:3px 0; }
+  .remaining-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); flex-shrink:0; }
+  .remaining-dot.week { background:var(--amber); }
+  .remaining-dot.later { background:var(--t3); }
+  .remaining-text { font-size:11px; color:var(--t2); flex:1; }
+  .remaining-chip {
+    font-size:9px; font-weight:700; border-radius:5px; padding:1px 5px;
+    background:#FEF3C7; color:#D97706;
+  }
+  .remaining-chip.later { background:#F3F4F6; color:var(--t3); }
+
+  .done-actions { display:flex; flex-direction:column; gap:6px; width:100%; }
+  .done-action-btn {
+    width:100%; padding:8px; border-radius:12px; border:1px solid var(--border);
+    background:#fff; font-size:12px; font-weight:700; color:var(--t1); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .done-action-btn.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+  /* ── Next-day screen ── */
+  .next-day-banner {
+    background:linear-gradient(135deg,#EFF6FF,#DBEAFE); border-radius:12px;
+    padding:8px 12px; margin-bottom:10px;
+    display:flex; align-items:center; gap:8px;
+    border:1px solid #BFDBFE;
+  }
+  .next-day-icon { font-size:16px; }
+  .next-day-text { font-size:11px; color:var(--blue-dim); font-weight:600; line-height:1.4; }
+
+  /* ── Divider ── */
+  .section-divider {
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    color:var(--t3); padding:8px 0 4px; display:flex; align-items:center; gap:6px;
+  }
+  .section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── Pro upsell ── */
+  .pro-upsell {
+    background:linear-gradient(135deg,#EDE9FE,#DDD6FE); border-radius:16px;
+    border:1px solid #C4B5FD; padding:10px 12px; margin-top:8px;
+  }
+  .pro-upsell-header { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .pro-badge { font-size:9px; font-weight:800; background:var(--purple); color:#fff; border-radius:5px; padding:2px 6px; letter-spacing:.4px; }
+  .pro-upsell-title { font-size:12px; font-weight:700; color:#5B21B6; }
+  .pro-upsell-sub { font-size:11px; color:#6D28D9; line-height:1.5; }
+  .pro-upsell-features { margin:6px 0; }
+  .pro-feature { display:flex; align-items:center; gap:6px; padding:2px 0; }
+  .pro-feature-icon { font-size:12px; }
+  .pro-feature-text { font-size:11px; color:#5B21B6; font-weight:500; }
+
+  /* ── Pro comparison table ── */
+  .comparison { padding:0 20px 32px; }
+  .comparison-table {
+    background:var(--card); border-radius:20px; border:1px solid var(--border);
+    overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.06);
+  }
+  .comparison-header {
+    display:grid; grid-template-columns:1fr 1fr 1fr; background:#F9FAFB;
+    border-bottom:1px solid var(--border);
+  }
+  .comparison-col { padding:10px 12px; text-align:center; }
+  .comparison-col:first-child { text-align:left; }
+  .comparison-col-label { font-size:11px; font-weight:800; color:var(--t2); }
+  .comparison-col-sub { font-size:10px; color:var(--t3); }
+  .comparison-row {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    border-bottom:1px solid var(--border); padding:8px 0;
+  }
+  .comparison-row:last-child { border-bottom:none; }
+  .comparison-cell { padding:4px 12px; display:flex; align-items:center; }
+  .comparison-cell:not(:first-child) { justify-content:center; }
+  .comparison-cell-label { font-size:12px; color:var(--t2); }
+  .check { color:var(--green); font-size:14px; font-weight:900; }
+  .cross { color:var(--t3); font-size:14px; }
+  .pro-col { background:#FAF5FF; }
+
+  /* ── Flow arrows ── */
+  .flow-arrow {
+    flex:0 0 32px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--t3); font-size:18px; margin-top:60px; flex-shrink:0;
+  }
+  .flow-arrow-label { font-size:9px; color:var(--t3); text-align:center; margin-top:4px; font-weight:600; }
+
+  /* ── Scrollbar ── */
+  .states-row::-webkit-scrollbar { display:none; }
+
+  /* ── Interactive state highlight ── */
+  .state-card.active { box-shadow:0 4px 32px rgba(59,130,246,.2); border-color:#BFDBFE; }
+
+  /* ── Annotations ── */
+  .annotation {
+    background:#FFF8E1; border:1px solid #FFE082; border-radius:10px;
+    padding:8px 12px; margin:0 20px 16px; font-size:11px; color:#5D4037; line-height:1.5;
+  }
+  .annotation strong { font-weight:700; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a href="/" class="back-link">← Back to Poplist</a>
+  <h1>Persistence & "Done for Today" · Concept Demo</h1>
+  <p>Scroll right to walk through the flow ↓</p>
+</div>
+
+<!-- ════════ FLOW 1: DAILY FLOW ════════ -->
+<div class="flow-label">Daily flow — how "done for today" works</div>
+
+<div class="annotation">
+  <strong>New behaviour:</strong> The celebration screen fires when all <strong>Today</strong> tasks are ticked — not when every task is gone. "This Week" and "Later" tasks stay visible below, or as a tray on the done screen.
+</div>
+
+<div class="states-row">
+
+  <!-- STATE 1: Active tasks -->
+  <div class="state-card active">
+    <div class="state-card-label">State 1</div>
+    <div class="state-card-title">Your list — morning</div>
+    <div class="phone">
+      <div class="mock-nav">
+        <div class="mock-nav-logo">Poplist</div>
+        <div class="mock-nav-right"><div class="mock-btn">Export</div></div>
+      </div>
+
+      <!-- Today section -->
+      <div class="cat-section">
+        <div class="section-divider">Today · 3 tasks</div>
+        <div class="task"><div class="task-bubble"></div><div class="task-text">Email client proposal</div><div class="timing-chip">Today</div></div>
+        <div class="task"><div class="task-bubble"></div><div class="task-text">Call dentist</div><div class="timing-chip">Today</div></div>
+        <div class="task"><div class="task-bubble purple"></div><div class="task-text">Pick up dry cleaning</div><div class="timing-chip">Today</div></div>
+      </div>
+
+      <!-- This Week section -->
+      <div class="cat-section">
+        <div class="section-divider">This week · 2 tasks</div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text faded">Review Q2 budget</div><div class="timing-chip week">This Week</div></div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text faded">Buy groceries</div><div class="timing-chip week">This Week</div></div>
+      </div>
+
+      <!-- Later section -->
+      <div class="cat-section">
+        <div class="section-divider">Later · 1 task</div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text faded">Plan summer trip</div><div class="timing-chip later">Later</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="flow-arrow">→<div class="flow-arrow-label">tap all<br>Today</div></div>
+
+  <!-- STATE 2: Done for today -->
+  <div class="state-card">
+    <div class="state-card-label">State 2</div>
+    <div class="state-card-title">All Today tasks done ✓</div>
+    <div class="phone">
+      <div class="done-screen">
+        <div class="done-burst">🎉</div>
+        <div class="done-title">Done for today!</div>
+        <div class="done-sub">You cleared all your tasks for today.<br>Nice work.</div>
+
+        <!-- The key new element: remaining tasks tray -->
+        <div class="remaining-card">
+          <div class="remaining-card-header">
+            3 tasks carrying over
+            <span>See all →</span>
+          </div>
+          <div class="remaining-task">
+            <div class="remaining-dot week"></div>
+            <div class="remaining-text">Review Q2 budget</div>
+            <div class="remaining-chip">This Week</div>
+          </div>
+          <div class="remaining-task">
+            <div class="remaining-dot week"></div>
+            <div class="remaining-text">Buy groceries</div>
+            <div class="remaining-chip">This Week</div>
+          </div>
+          <div class="remaining-task">
+            <div class="remaining-dot later"></div>
+            <div class="remaining-text">Plan summer trip</div>
+            <div class="remaining-chip later">Later</div>
+          </div>
+        </div>
+
+        <div class="done-actions">
+          <button class="done-action-btn primary">+ Add more for tomorrow</button>
+          <button class="done-action-btn">View remaining tasks</button>
+        </div>
+
+        <!-- Pro nudge (free users) -->
+        <div class="pro-upsell" style="margin-top:12px;width:100%">
+          <div class="pro-upsell-header">
+            <span class="pro-badge">PRO</span>
+            <span class="pro-upsell-title">Your tasks sync everywhere</span>
+          </div>
+          <div class="pro-upsell-sub">These 3 tasks are saved on this device. Upgrade to keep them safe across all your devices — even if you clear your browser.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="flow-arrow">→<div class="flow-arrow-label">next<br>morning</div></div>
+
+  <!-- STATE 3: Next day -->
+  <div class="state-card">
+    <div class="state-card-label">State 3</div>
+    <div class="state-card-title">Next morning — tasks waiting</div>
+    <div class="phone">
+      <div class="mock-nav">
+        <div class="mock-nav-logo">Poplist</div>
+        <div class="mock-nav-right"><div class="mock-btn">Export</div></div>
+      </div>
+
+      <!-- Welcome back banner -->
+      <div class="next-day-banner">
+        <div class="next-day-icon">☀️</div>
+        <div class="next-day-text">Welcome back! You have <strong>3 tasks</strong> carrying over from yesterday.</div>
+      </div>
+
+      <!-- Carried-over tasks (no Today badge yet) -->
+      <div class="cat-section">
+        <div class="section-divider">Carrying over · 3 tasks</div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text">Review Q2 budget</div><div class="timing-chip week">This Week</div></div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text">Buy groceries</div><div class="timing-chip week">This Week</div></div>
+        <div class="task"><div class="task-bubble faded"></div><div class="task-text">Plan summer trip</div><div class="timing-chip later">Later</div></div>
+      </div>
+
+      <!-- Empty today section ready to add -->
+      <div style="margin-top:8px;background:var(--bg);border-radius:12px;border:1px dashed var(--border);padding:10px 12px;text-align:center">
+        <div style="font-size:11px;color:var(--t3);font-weight:600">What's on your list today?</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:2px">Tap mic or + to add</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end states-row -->
+
+
+<!-- ════════ FREE vs PRO COMPARISON ════════ -->
+<div class="flow-label">Free vs Pro — how data persists</div>
+
+<div class="annotation">
+  <strong>Free tier (localStorage):</strong> Tasks survive closing the tab and coming back the next day on the <em>same browser</em>. If the user clears browser data, tasks are gone.<br><br>
+  <strong>Pro tier (Firestore sync):</strong> Tasks are written to the cloud in real time. Open on your phone, your laptop, or a fresh browser — they're all there. Even if you never re-open the tab, a background sync keeps everything up to date.
+</div>
+
+<div class="comparison">
+  <div class="comparison-table">
+    <div class="comparison-header">
+      <div class="comparison-col"><div class="comparison-col-label">Feature</div></div>
+      <div class="comparison-col"><div class="comparison-col-label">Free</div><div class="comparison-col-sub">This device only</div></div>
+      <div class="comparison-col pro-col"><div class="comparison-col-label" style="color:var(--purple)">Pro</div><div class="comparison-col-sub">Cloud sync</div></div>
+    </div>
+
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Tasks survive tab close</div></div>
+      <div class="comparison-cell"><span class="check">✓</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Carry-over to next day</div></div>
+      <div class="comparison-cell"><span class="check">✓</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Survives browser data clear</div></div>
+      <div class="comparison-cell"><span class="cross">✗</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Sync across devices</div></div>
+      <div class="comparison-cell"><span class="cross">✗</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Background sync (no tab open)</div></div>
+      <div class="comparison-cell"><span class="cross">✗</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">Push reminders for Today tasks</div></div>
+      <div class="comparison-cell"><span class="cross">✗</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-cell"><div class="comparison-cell-label">iOS app data same as web</div></div>
+      <div class="comparison-cell"><span class="cross">✗</span></div>
+      <div class="comparison-cell pro-col"><span class="check">✓</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ FLOW 2: PRO SYNC STORY ════════ -->
+<div class="flow-label">Pro — what "background sync" means</div>
+
+<div class="annotation">
+  <strong>Scenario:</strong> You add tasks on your laptop at 9am, then pick up your phone at noon. With Pro, everything is already there — you didn't even need to open the web tab on your phone.
+</div>
+
+<div class="states-row" style="padding-bottom:40px">
+
+  <!-- Device 1: Laptop -->
+  <div class="state-card">
+    <div class="state-card-label">Laptop · 9:00 AM</div>
+    <div class="state-card-title">Added tasks at work</div>
+    <div class="phone">
+      <div class="mock-nav">
+        <div class="mock-nav-logo">Poplist</div>
+        <div class="mock-nav-right"><div class="mock-btn">💾 Synced</div></div>
+      </div>
+      <div class="cat-section">
+        <div class="section-divider">Today · 2 tasks</div>
+        <div class="task"><div class="task-bubble"></div><div class="task-text">Send weekly update</div><div class="timing-chip">Today</div></div>
+        <div class="task"><div class="task-bubble green"></div><div class="task-text">Buy birthday cake</div><div class="timing-chip">Today</div></div>
+      </div>
+      <div style="margin-top:10px;background:#F0FDF4;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;border:1px solid #BBF7D0">
+        <span style="font-size:12px">✓</span>
+        <span style="font-size:11px;color:#166534;font-weight:600">Saved to cloud · just now</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="flow-arrow">→<div class="flow-arrow-label">cloud<br>sync</div></div>
+
+  <!-- Cloud -->
+  <div class="state-card" style="flex:0 0 120px">
+    <div class="state-card-label" style="text-align:center">Cloud</div>
+    <div class="state-card-title" style="text-align:center">Firestore</div>
+    <div class="phone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:200px">
+      <div style="font-size:36px">☁️</div>
+      <div style="font-size:10px;color:var(--t3);text-align:center;line-height:1.5;font-weight:600">Tasks stored<br>in real-time DB</div>
+      <div style="font-size:9px;color:var(--blue);font-weight:700;background:var(--blue-lt);padding:3px 8px;border-radius:6px">2 tasks</div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="flow-arrow">→<div class="flow-arrow-label">push to<br>all devices</div></div>
+
+  <!-- Device 2: iPhone -->
+  <div class="state-card">
+    <div class="state-card-label">iPhone · 12:00 PM</div>
+    <div class="state-card-title">Already there, tab never opened</div>
+    <div class="phone">
+      <div class="mock-nav">
+        <div class="mock-nav-logo">Poplist</div>
+        <div class="mock-nav-right"><div class="mock-btn">💾 Synced</div></div>
+      </div>
+      <div class="next-day-banner" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#86EFAC">
+        <div class="next-day-icon">📱</div>
+        <div class="next-day-text" style="color:#166534">Tasks synced from your laptop — nothing to set up.</div>
+      </div>
+      <div class="cat-section">
+        <div class="section-divider">Today · 2 tasks</div>
+        <div class="task"><div class="task-bubble"></div><div class="task-text">Send weekly update</div><div class="timing-chip">Today</div></div>
+        <div class="task"><div class="task-bubble green"></div><div class="task-text">Buy birthday cake</div><div class="timing-chip">Today</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end states-row -->
+
+<div style="height:32px"></div>
+</body>
+</html>
