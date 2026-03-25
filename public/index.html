@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
+<!-- Firebase SDK (compat v10) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <!--
   ═══════════════════════════════════════════════════════════
   POPLIST — Web Preview / Cursor reference for iOS App
@@ -1489,6 +1494,43 @@ GoogleService-Info.plist
       </div>
     </div>
 
+    <!-- ══ ACCOUNT ══ -->
+    <div class="settings-section" id="accountSection" style="margin-top:24px">
+      <div class="settings-section-label" data-en="Account" data-ja="アカウント">Account</div>
+
+      <div class="firebase-status">
+        <div class="fb-dot disconnected" id="fbStatusDot"></div>
+        <p id="fbStatusText" data-en="Firebase — not connected" data-ja="Firebase — 未接続">Firebase — not connected</p>
+        <span id="fbStatusSub" data-en="Sign in to sync across devices" data-ja="サインインでデバイス間同期">Sign in to sync across devices</span>
+      </div>
+
+      <!-- Sign-in options (shown when not signed in) -->
+      <div id="authSignInRow">
+        <div class="settings-row" id="googleSignInBtn" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            <p class="settings-row-label" data-en="Continue with Google" data-ja="Googleでサインイン">Continue with Google</p>
+          </div>
+          <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <div class="settings-row" id="emailSignInBtn" style="cursor:pointer;border-bottom:none">
+          <p class="settings-row-label" data-en="Continue with Email" data-ja="メールでサインイン">Continue with Email</p>
+          <div class="settings-row-right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Signed-in state -->
+      <div id="authAccountRow" style="display:none">
+        <div class="settings-row">
+          <p class="settings-row-label" data-en="Signed in as" data-ja="サインイン中">Signed in as</p>
+          <span class="settings-row-right" style="font-size:12px;color:var(--t3);max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="authEmailLabel"></span>
+        </div>
+        <div class="settings-row" id="signOutBtn" style="cursor:pointer;border-bottom:none">
+          <p class="settings-row-label" style="color:#EF4444" data-en="Sign out" data-ja="サインアウト">Sign out</p>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ CUSTOMISE PRO ══ -->
     <div class="settings-section" style="margin-top:24px">
       <div class="pro-label-row">
@@ -1628,6 +1670,26 @@ GoogleService-Info.plist
     <p class="legal-copyright" data-en="© 2026 Allerise Pte. Ltd. All rights reserved." data-ja="© 2026 Allerise Pte. Ltd. 無断複製・転載を禁じます。">© 2026 Allerise Pte. Ltd. All rights reserved.</p>
 
     <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
+  </div>
+</div>
+
+<!-- ═══════ EMAIL SIGN-IN SHEET ═══════ -->
+<div class="modal-overlay" id="emailAuthModal">
+  <div class="modal-sheet" style="padding:28px 20px 36px">
+    <div class="modal-handle"></div>
+    <p class="modal-title" id="emailAuthTitle" data-en="Sign in with Email" data-ja="メールでサインイン">Sign in with Email</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+      <input id="emailAuthEmail" type="email" placeholder="Email" autocomplete="email"
+        style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--raised);font-size:15px;font-family:inherit;color:var(--t1);outline:none;box-sizing:border-box">
+      <input id="emailAuthPwd" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"
+        style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--raised);font-size:15px;font-family:inherit;color:var(--t1);outline:none;box-sizing:border-box">
+    </div>
+    <button id="emailAuthSubmit" style="margin-top:16px;width:100%;padding:14px;border-radius:14px;background:var(--blue);color:#fff;border:none;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer" data-en="Sign in" data-ja="サインイン">Sign in</button>
+    <div style="display:flex;justify-content:center;gap:18px;margin-top:12px">
+      <button id="emailAuthToggle" style="background:none;border:none;font-size:13px;color:var(--t3);cursor:pointer;font-family:inherit" data-en="Create account" data-ja="アカウント作成">Create account</button>
+      <button id="emailAuthForgot" style="background:none;border:none;font-size:13px;color:var(--t3);cursor:pointer;font-family:inherit" data-en="Forgot password?" data-ja="パスワードを忘れた">Forgot password?</button>
+    </div>
+    <button class="modal-cancel" id="closeEmailAuth" style="margin-top:10px" data-en="Cancel" data-ja="キャンセル">Cancel</button>
   </div>
 </div>
 
@@ -1789,11 +1851,185 @@ GoogleService-Info.plist
 const state = {
   bubbleStyle:  'luminous', // luminous | solid | ring | ink
   bubbleColour: 'bc-blue',  // bc-* class
-  isProUser:    true,        // Pro unlocked in web demo (gated by StoreKit on iOS)
+  isProUser:    false,       // set true after Firebase auth confirms Pro; always true when no Firebase config
   greyBubbles:  false,       // FREE — greyscale mode
   lang:         'en',
   isListening:  false,
+  userId:       null,        // Firebase UID when signed in, null for guest
+  isLoggedIn:   false,
 };
+
+/* ══════════════════════════════════════════
+   FIREBASE — Auth + Firestore
+   ─────────────────────────────────────────
+   Replace the placeholder values below with your Firebase project config.
+   Get them from: console.firebase.google.com
+     → Project Settings → Your apps → Web app → SDK snippet → Config
+   These are safe for client-side code (not secrets).
+   Keep OPENAI_API_KEY and service-account keys server-side only.
+══════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+  authDomain:        "REPLACE_WITH_YOUR_PROJECT.firebaseapp.com",
+  projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket:     "REPLACE_WITH_YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
+};
+
+// Guest mode: max tasks before sign-in is required for sync
+const GUEST_MAX_TASKS = 5;
+
+let _auth = null, _db = null;
+const FB_READY = (() => {
+  if (FIREBASE_CONFIG.apiKey.startsWith('REPLACE')) return false; // not configured yet
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    _auth = firebase.auth();
+    _db   = firebase.firestore();
+    return true;
+  } catch (e) {
+    console.info('Firebase init failed — guest mode:', e.message);
+    return false;
+  }
+})();
+
+// When Firebase is not configured, unlock Pro so the demo works fully
+if (!FB_READY) state.isProUser = true;
+
+/* ── Firestore helpers ── */
+async function fsAddTask(text, category, timing) {
+  if (!_db || !state.userId) return null;
+  try {
+    const ref = await _db.collection('tasks').add({
+      text, category, timing,
+      isDone:    false,
+      userId:    state.userId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    return ref.id;
+  } catch (e) { console.warn('fsAddTask:', e); return null; }
+}
+
+async function fsMarkDone(fsId) {
+  if (!_db || !fsId) return;
+  try { await _db.collection('tasks').doc(fsId).update({ isDone: true }); }
+  catch (e) { console.warn('fsMarkDone:', e); }
+}
+
+async function fsLoadTasks(uid) {
+  if (!_db) return;
+  try {
+    const snap = await _db.collection('tasks')
+      .where('userId', '==', uid)
+      .where('isDone', '==', false)
+      .orderBy('createdAt', 'desc')
+      .get();
+    snap.forEach(doc => {
+      if (document.querySelector(`[data-fs-id="${doc.id}"]`)) return; // already in DOM
+      const d = doc.data();
+      makeTaskItem(d.text, d.timing || 'This Week', d.category || 'Other', doc.id);
+    });
+    updateScreenState();
+  } catch (e) { console.warn('fsLoadTasks:', e); }
+}
+
+async function fsCheckPro(uid) {
+  if (!_db) return false;
+  try {
+    const doc = await _db.collection('users').doc(uid).get();
+    return doc.exists && doc.data()?.isPro === true;
+  } catch { return false; }
+}
+
+/* ── Guest → account merge (uploads local tasks without a Firestore ID) ── */
+async function mergePendingGuestTasks(uid) {
+  const localItems = [...document.querySelectorAll('.task-item:not([data-fs-id])')];
+  if (!localItems.length) return;
+  await Promise.all(localItems.map(async item => {
+    const text   = item.querySelector('.task-text')?.textContent?.trim();
+    const timing = item.querySelector('.timing-chip')?.dataset?.timing || 'This Week';
+    const cat    = item.closest('.category-card')?.dataset?.cat        || 'Other';
+    if (!text) return;
+    const id = await fsAddTask(text, cat, timing);
+    if (id) item.dataset.fsId = id;
+  }));
+  showToast(state.lang === 'ja' ? 'タスクを同期しました ✓' : 'Local tasks synced to cloud ✓');
+}
+
+/* ── Auth UI updater ── */
+function updateAuthUI(user) {
+  const dot         = document.getElementById('fbStatusDot');
+  const statusText  = document.getElementById('fbStatusText');
+  const statusSub   = document.getElementById('fbStatusSub');
+  const signInRow   = document.getElementById('authSignInRow');
+  const accountRow  = document.getElementById('authAccountRow');
+  const emailLabel  = document.getElementById('authEmailLabel');
+
+  if (user) {
+    if (dot)        dot.className       = 'fb-dot connected';
+    if (statusText) statusText.textContent = state.lang === 'ja' ? 'Firebase — 接続済み' : 'Firebase — connected';
+    if (statusSub)  statusSub.textContent  = user.email || user.displayName || '';
+    if (signInRow)  signInRow.style.display  = 'none';
+    if (accountRow) accountRow.style.display = '';
+    if (emailLabel) emailLabel.textContent   = user.email || user.displayName || 'Signed in';
+  } else {
+    if (dot)        dot.className       = 'fb-dot disconnected';
+    if (statusText) statusText.textContent = state.lang === 'ja' ? 'Firebase — 未接続' : 'Firebase — not connected';
+    if (statusSub)  statusSub.textContent  = state.lang === 'ja' ? 'サインインでデバイス間同期' : 'Sign in to sync across devices';
+    if (signInRow)  signInRow.style.display  = '';
+    if (accountRow) accountRow.style.display = 'none';
+  }
+}
+
+/* ── Auth state listener ── */
+if (FB_READY) {
+  _auth.onAuthStateChanged(async user => {
+    state.userId    = user?.uid  || null;
+    state.isLoggedIn = !!user;
+    updateAuthUI(user);
+    if (user) {
+      state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
+      await mergePendingGuestTasks(user.uid);
+      await fsLoadTasks(user.uid);
+    } else {
+      state.isProUser = false;
+    }
+  });
+}
+
+/* ── Sign-in helpers ── */
+function signInWithGoogle() {
+  if (!_auth) return;
+  const provider = new firebase.auth.GoogleAuthProvider();
+  _auth.signInWithPopup(provider).catch(e => {
+    if (e.code !== 'auth/popup-closed-by-user') showToast(e.message);
+  });
+}
+
+function _handleEmailAuth(email, password, isNew) {
+  if (!_auth) return;
+  const p = isNew
+    ? _auth.createUserWithEmailAndPassword(email, password)
+    : _auth.signInWithEmailAndPassword(email, password);
+  p.catch(e => showToast(_friendlyAuthError(e)));
+}
+
+function _friendlyAuthError(e) {
+  switch (e.code) {
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return state.lang === 'ja' ? 'メールまたはパスワードが違います' : 'Incorrect email or password';
+    case 'auth/user-not-found':
+      return state.lang === 'ja' ? 'アカウントが見つかりません' : 'No account found';
+    case 'auth/email-already-in-use':
+      return state.lang === 'ja' ? 'このメールは既に使用中です' : 'Email already in use';
+    case 'auth/weak-password':
+      return state.lang === 'ja' ? 'パスワードは6文字以上' : 'Password must be 6+ characters';
+    default:
+      return e.message;
+  }
+}
 
 /* ══════════════════════════════════════════
    DESIGN TOKEN helpers
@@ -1833,6 +2069,8 @@ function syncAllBubbles() {
 ══════════════════════════════════════════ */
 function burstBubble(el, item) {
   if (item.classList.contains('collapsing')) return;
+  // Sync completion to Firestore if this task has a cloud ID
+  if (item.dataset.fsId) fsMarkDone(item.dataset.fsId);
   const r  = el.getBoundingClientRect();
   const cx = r.left + r.width  / 2;
   const cy = r.top  + r.height / 2;
@@ -2232,15 +2470,16 @@ const CAT_LIST_EN = ['Work', 'Home', 'Personal', 'Other'];
 /* ══════════════════════════════════════════
    ADD TASK
 ══════════════════════════════════════════ */
-function makeTaskItem(text, timing, cat) {
-  const catId = 'cat-' + cat.toLowerCase();
+function makeTaskItem(text, timing, cat, fsId) {
+  const catId = 'cat-' + cat.toLowerCase().replace(/\s+/g, '-');
   const card  = document.getElementById(catId) || document.getElementById('cat-other');
-  if (!card) return;
+  if (!card) return null;
 
   // All bubbles use the global colour choice (bc-blue by default); grey mode overrides
   const colourClass = state.greyBubbles ? 'bc-grey' : state.bubbleColour;
   const item = document.createElement('div');
   item.className = 'task-item';
+  if (fsId) item.dataset.fsId = fsId;
   item.innerHTML = `
     <div class="task-bubble ${state.bubbleStyle} ${colourClass}" data-orig-colour="${state.bubbleColour}"></div>
     <div class="task-body"><div class="task-top">
@@ -2288,19 +2527,37 @@ function makeTaskItem(text, timing, cat) {
   });
 
   updateScreenState(); /* switch home → task list as soon as first task added */
+  return item;
 }
 
 function submitAddTask() {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
+
+  // Guest limit: nudge sign-in after GUEST_MAX_TASKS tasks (only when Firebase is configured)
+  if (FB_READY && !state.isLoggedIn) {
+    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
+    if (count >= GUEST_MAX_TASKS) {
+      showToast(state.lang === 'ja'
+        ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
+        : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
+      openM('settingsModal');
+      return;
+    }
+  }
+
   const timing = state.defaultTiming || 'This Week';
   const cat    = detectCat(text) || 'Other';
-  makeTaskItem(text, timing, cat);
+  const item   = makeTaskItem(text, timing, cat);
   addInput.value = '';
   setSelectedCat('Other');
   showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
-  // Return focus to input so the next task can be typed straight away
   requestAnimationFrame(() => addInput?.focus());
+
+  // Persist to Firestore if signed in
+  if (state.isLoggedIn && item) {
+    fsAddTask(text, cat, timing).then(id => { if (id) item.dataset.fsId = id; });
+  }
 }
 document.getElementById('addTaskBtn')?.addEventListener('click', submitAddTask);
 addInput?.addEventListener('keydown', e => {
@@ -3078,20 +3335,76 @@ function updateBubblePreview() {
 }
 
 /* ══════════════════════════════════════════
-   FIREBASE AUTH SIMULATION
-   (Replace with Firebase SDK calls in iOS)
+   ACCOUNT / AUTH EVENT HANDLERS
+   Web uses Firebase Auth (Google + Email).
+   iOS uses Firebase Auth (Apple + Google + Email) via native SDK.
+   Both sync to the same Firestore tasks collection:
+     tasks/{docId}: { text, category, timing, isDone, userId, createdAt }
 ══════════════════════════════════════════ */
-document.getElementById('signInBtn')?.addEventListener('click', () => {
-  // In iOS: use Sign in with Apple → Firebase Auth
-  // firebase.auth().signInWithProvider(AppleAuthProvider)
-  const btn = document.getElementById('signInBtn');
-  btn.textContent = 'Signed In ✓';
-  btn.style.background = '#16A34A';
-  document.getElementById('fbStatusDot').className = 'fb-dot connected';
-  document.getElementById('fbStatusText').textContent = 'Firebase — connected';
-  document.getElementById('fbStatusSub').textContent  = 'Syncing in real-time';
-  showToast('Signed in — tasks now syncing');
+
+// Hide Account section entirely if Firebase not configured (demo/preview mode)
+if (!FB_READY) {
+  const acctSection = document.getElementById('accountSection');
+  if (acctSection) acctSection.style.display = 'none';
+}
+
+document.getElementById('googleSignInBtn')?.addEventListener('click', () => {
+  closeM('settingsModal');
+  signInWithGoogle();
 });
+
+document.getElementById('emailSignInBtn')?.addEventListener('click', () => {
+  closeM('settingsModal');
+  openM('emailAuthModal');
+});
+
+document.getElementById('signOutBtn')?.addEventListener('click', () => {
+  _auth?.signOut();
+  state.userId    = null;
+  state.isLoggedIn = false;
+  showToast(state.lang === 'ja' ? 'サインアウトしました' : 'Signed out');
+});
+
+// Email auth sheet
+let _emailAuthIsNew = false;
+document.getElementById('emailAuthToggle')?.addEventListener('click', () => {
+  _emailAuthIsNew = !_emailAuthIsNew;
+  const btn   = document.getElementById('emailAuthSubmit');
+  const title = document.getElementById('emailAuthTitle');
+  const tog   = document.getElementById('emailAuthToggle');
+  const pwd   = document.getElementById('emailAuthPwd');
+  if (_emailAuthIsNew) {
+    btn.textContent   = state.lang === 'ja' ? 'アカウント作成'  : 'Create account';
+    title.textContent = state.lang === 'ja' ? 'アカウント作成'  : 'Create account';
+    tog.textContent   = state.lang === 'ja' ? 'すでにアカウントがある方' : 'Already have an account?';
+    pwd.placeholder   = state.lang === 'ja' ? 'パスワード (6文字以上)' : 'Password (6+ characters)';
+    pwd.setAttribute('autocomplete', 'new-password');
+  } else {
+    btn.textContent   = state.lang === 'ja' ? 'サインイン'       : 'Sign in';
+    title.textContent = state.lang === 'ja' ? 'メールでサインイン' : 'Sign in with Email';
+    tog.textContent   = state.lang === 'ja' ? 'アカウント作成'    : 'Create account';
+    pwd.placeholder   = state.lang === 'ja' ? 'パスワード'         : 'Password';
+    pwd.setAttribute('autocomplete', 'current-password');
+  }
+});
+
+document.getElementById('emailAuthForgot')?.addEventListener('click', () => {
+  const email = document.getElementById('emailAuthEmail')?.value?.trim();
+  if (!email) { showToast(state.lang === 'ja' ? 'メールを入力してください' : 'Enter your email first'); return; }
+  _auth?.sendPasswordResetEmail(email)
+    .then(() => showToast(state.lang === 'ja' ? 'リセットメールを送信しました' : 'Password reset email sent'))
+    .catch(e => showToast(e.message));
+});
+
+document.getElementById('emailAuthSubmit')?.addEventListener('click', () => {
+  const email = document.getElementById('emailAuthEmail')?.value?.trim();
+  const pwd   = document.getElementById('emailAuthPwd')?.value;
+  if (!email || !pwd) { showToast(state.lang === 'ja' ? 'メールとパスワードを入力してください' : 'Enter email and password'); return; }
+  _handleEmailAuth(email, pwd, _emailAuthIsNew);
+  closeM('emailAuthModal');
+});
+
+document.getElementById('closeEmailAuth')?.addEventListener('click', () => closeM('emailAuthModal'));
 
 /* ══════════════════════════════════════════
    CLEAR ALL
