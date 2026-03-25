@@ -1039,22 +1039,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .done-bubble:nth-child(10){--tx:-42px;--ty:-17px;--tx2:-57px;--ty2:-23px}
 
 
-/* Central big bubble — pops up then fades out so nothing lingers */
-.done-bubble-center {
-  width:36px; height:36px; border-radius:50%; position:absolute;
-  top:50%; left:50%; transform:translate(-50%,-50%);
-  background:var(--bubble-color, var(--blue));
-  box-shadow:0 0 0 3px var(--done-glow, var(--blue-glow)), 0 0 12px 2px var(--done-glow, var(--blue-glow));
-  animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
-}
-@keyframes done-center-pop {
-  0%   { transform:scale(0);    opacity:0 }
-  12%  { transform:scale(1.35); opacity:1 }
-  25%  { transform:scale(.9);   opacity:1 }
-  35%  { transform:scale(1);    opacity:1 }
-  78%  { transform:scale(1);    opacity:1 }
-  100% { transform:scale(1.1);  opacity:0 }
-}
 
 .done-title  { font-size:20px; font-weight:900; color:var(--black); letter-spacing:-.4px; margin-bottom:8px;
                opacity:0; animation:fade-up .4s ease .45s forwards }
@@ -2224,44 +2208,41 @@ function spawnDoneBurst(bubbleColor) {
     `rgba(${cr},${cg},${cb},.7)`,
   ];
 
-  // 3 waves, staggered — each wave slightly rotated for swirl effect (~1s shorter total)
-  [0, 150, 300].forEach((waveDelay, wave) => {
-    setTimeout(() => {
-      const count = 20;
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = 'burst-p';
-        const size   = Math.random() * 11 + 3;
-        const col    = palette[~~(Math.random() * palette.length)];
-        const isRing = Math.random() > 0.55;
-        p.style.cssText = `
-          width:${size}px; height:${size}px;
-          background:${isRing ? 'transparent' : col};
-          ${isRing ? `border:1.5px solid ${col};` : ''}
-          left:${cx - size/2}px; top:${cy - size/2}px;
-          box-shadow:${isRing ? 'none' : `0 0 ${size*1.2}px ${col}`};
-        `;
-        document.body.appendChild(p);
+  // Single burst wave — fill:'forwards' keeps particles at opacity:0 until removed
+  // (without fill:'forwards' particles snap back to full opacity/size before onfinish fires)
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'burst-p';
+    const size   = Math.random() * 11 + 3;
+    const col    = palette[~~(Math.random() * palette.length)];
+    const isRing = Math.random() > 0.55;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${isRing ? 'transparent' : col};
+      ${isRing ? `border:1.5px solid ${col};` : ''}
+      left:${cx - size/2}px; top:${cy - size/2}px;
+      box-shadow:${isRing ? 'none' : `0 0 ${size*1.2}px ${col}`};
+    `;
+    document.body.appendChild(p);
 
-        // Offset angular position per wave to create swirl
-        const ang  = (Math.PI * 2 * i) / count + (Math.random() - .5) * .5 + wave * 0.22;
-        const dist = Math.random() * 95 + 42;
-        const tx   = Math.cos(ang) * dist;
-        const ty   = Math.sin(ang) * dist;
-        const rot  = Math.random() * 360;
+    const ang  = (Math.PI * 2 * i) / count + (Math.random() - .5) * .4;
+    const dist = Math.random() * 90 + 40;
+    const tx   = Math.cos(ang) * dist;
+    const ty   = Math.sin(ang) * dist;
+    const rot  = Math.random() * 360;
 
-        p.animate([
-          { transform:`translate(0,0) scale(1)`, opacity:1 },
-          { transform:`translate(${tx*.28}px,${ty*.28}px) scale(1.5) rotate(${rot*.3}deg)`, opacity:1, offset:.14 },
-          { transform:`translate(${tx}px,${ty}px) scale(0) rotate(${rot}deg)`, opacity:0 }
-        ], {
-          duration: 380 + ~~(Math.random() * 160),
-          easing:   'cubic-bezier(.25,.46,.45,.94)',
-          delay:    i * 16
-        }).onfinish = () => p.remove();
-      }
-    }, waveDelay);
-  });
+    p.animate([
+      { transform:`translate(0,0) scale(1)`, opacity:1 },
+      { transform:`translate(${tx*.28}px,${ty*.28}px) scale(1.5) rotate(${rot*.3}deg)`, opacity:1, offset:.14 },
+      { transform:`translate(${tx}px,${ty}px) scale(0) rotate(${rot}deg)`, opacity:0 }
+    ], {
+      duration: 380 + ~~(Math.random() * 120),
+      easing:   'cubic-bezier(.25,.46,.45,.94)',
+      delay:    i * 14,
+      fill:     'forwards'
+    }).onfinish = () => p.remove();
+  }
 }
 
 /* Attach click to a bubble element */
@@ -2642,13 +2623,13 @@ function showDoneScreen() {
   el.style.setProperty('--done-glow', bubbleColor + '18');
 
   // Restart all animations (done screen + bubbles + text)
-  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble,.done-bubble-center').forEach(c => {
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble,.done-bubble-center').forEach(c => {
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble').forEach(c => {
     c.style.animation = '';
   });
 
