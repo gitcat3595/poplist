@@ -423,7 +423,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   touch-action:manipulation;
 }
 .timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow);     background:var(--blue-lt) }
-.timing-chip[data-timing="This Week"] { color:#D97706;       border-color:rgba(217,119,6,.25);  background:#FFFBEB }
+.timing-chip[data-timing="This Week"] { color:var(--t2);     border-color:var(--border);        background:var(--card) }
 .timing-chip[data-timing="Later"]     { color:var(--t3);    border-color:var(--border);        background:var(--card) }
 /* Japanese timing chip labels */
 .timing-chip[data-timing="Today"] .jp,
@@ -515,19 +515,19 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-actions { display:flex; justify-content:flex-end; gap:8px; padding:10px 16px 14px }
 .btn-cancel {
   font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
-  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr); white-space:nowrap; flex-shrink:0;
 }
 .btn-cancel:hover { color:var(--t1); border-color:var(--brim) }
 .btn-add {
   font-size:13px; font-weight:800; color:#fff; padding:8px 22px;
   border-radius:var(--rp); background:var(--blue); box-shadow:var(--shbtn);
-  transition:transform .14s ease, box-shadow .14s ease;
+  transition:transform .14s ease, box-shadow .14s ease; white-space:nowrap; flex-shrink:0;
 }
 .btn-add:hover { box-shadow:var(--shbtn) }
 .btn-add:active { transform:scale(.97) }
 .btn-paste-list {
   font-size:13px; font-weight:700; color:var(--t2); padding:8px 16px;
-  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr);
+  border-radius:var(--rp); border:1px solid var(--border); transition:var(--tr); white-space:nowrap; flex-shrink:0;
 }
 .btn-paste-list:hover { color:var(--t1); border-color:var(--brim) }
 .paste-list-area {
@@ -1271,9 +1271,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       </div>
     </div>
     <div class="add-task-actions">
-      <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
-      <button class="btn-paste-list" id="pasteListBtn" data-en="Add list" data-ja="リストを追加">Add list</button>
-      <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加する">Add Task</button>
+      <button class="btn-cancel" data-en="Cancel" data-ja="×">Cancel</button>
+      <button class="btn-paste-list" id="pasteListBtn" data-en="Add list" data-ja="リスト貼付け">Add list</button>
+      <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加">Add Task</button>
     </div>
   </div>
 
@@ -1655,13 +1655,9 @@ GoogleService-Info.plist
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
       </div>
-      <div class="guide-row">
+      <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
         <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
-      </div>
-      <div class="guide-row" style="border-bottom:none">
-        <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
-        <div><p class="guide-action" data-en="Pop it done" data-ja="完了させる">Pop it done</p><p class="guide-detail" data-en="Tap the bubble to mark it done." data-ja="バブルをタップしてタスクを完了。">Tap the bubble to mark it done.</p></div>
       </div>
     </div>
 
