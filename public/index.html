@@ -2616,8 +2616,8 @@ if (SR) {
         const msg = isIOS
           ? (state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed')
           : (state.lang === 'ja'
-            ? 'マイク許可：アドレスバーの🎤をクリック→「許可」'
-            : 'Allow mic: click 🎤 in the address bar → Allow');
+            ? 'マイク許可：アドレスバーのマイクアイコンをクリック→「許可」'
+            : 'Allow mic: click the mic icon in the address bar → Allow');
         showToast(msg);
       }
     };
@@ -2762,28 +2762,21 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    if (isIOS) {
-      // iOS (Safari & Chrome): must call getUserMedia before EVERY recognition.start()
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-          stream.getTracks().forEach(t => t.stop());
-          recognition = createRecognition();
-          try { recognition.start(); }
-          catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-        })
-        .catch(e => {
-          console.warn('mic permission denied:', e);
-          shouldRestart = false;
-          _clearListeningUI();
-          showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
-        });
-    } else {
-      // Desktop Chrome / Edge / Safari macOS: SR manages its own mic permission.
-      // Calling getUserMedia first conflicts with the SR stream on some Chrome versions.
-      recognition = createRecognition();
-      try { recognition.start(); }
-      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-    }
+    // All platforms: probe getUserMedia first to ensure mic access is established
+    // before handing off to the Speech Recognition API.
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        stream.getTracks().forEach(t => t.stop());
+        recognition = createRecognition();
+        try { recognition.start(); }
+        catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+      })
+      .catch(e => {
+        console.warn('mic permission denied:', e);
+        shouldRestart = false;
+        _clearListeningUI();
+        showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+      });
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
