@@ -59,32 +59,44 @@ actor ClassifierService {
 
         return sentences.map { sentence in
             let lower = sentence.lowercased()
-
-            let timing: TaskTiming
-            if lower.contains("today") || lower.contains("now") || lower.contains("asap") || lower.contains("urgent") {
-                timing = .today
-            } else if lower.contains("later") || lower.contains("someday") || lower.contains("eventually") {
-                timing = .later
-            } else {
-                timing = .thisWeek
-            }
-
-            let workWords     = ["meeting","email","report","client","call","project","deadline","work","office"]
-            let homeWords     = ["clean","groceries","laundry","dishes","cook","repair","grocery","home","house","garden"]
-            let personalWords = ["exercise","run","gym","health","doctor","dentist","read","meditate","journal","friend","family"]
-
-            let category: TaskCategory
-            if workWords.contains(where: { lower.contains($0) }) {
-                category = .work
-            } else if homeWords.contains(where: { lower.contains($0) }) {
-                category = .home
-            } else if personalWords.contains(where: { lower.contains($0) }) {
-                category = .personal
-            } else {
-                category = .other
-            }
-
-            return PopTask(text: sentence, category: category, timing: timing, userId: "")
+            return PopTask(text: sentence, category: localCategory(lower), timing: localTiming(lower), userId: "")
         }
+    }
+
+    /// Timing detection — mirrors web LOCAL_TIMING_KW
+    private func localTiming(_ lower: String) -> TaskTiming {
+        let todayWords  = ["today","tonight","now","asap","urgent","immediately"]
+        let laterWords  = ["later","someday","eventually","no rush","future"]
+        if todayWords.contains(where: { lower.contains($0) }) { return .today  }
+        if laterWords.contains(where: { lower.contains($0) }) { return .later  }
+        return .thisWeek
+    }
+
+    /// Category detection — mirrors web localDetectCat including email/recipient rule
+    private func localCategory(_ lower: String) -> TaskCategory {
+        // Email with a personal recipient → Home (same rule as web app)
+        let emailWords    = ["email","mail"]
+        let personalRecipients = ["mom","mum","mummy","dad","daddy","papa","mama","son","daughter",
+                                  "kids","child","children","husband","wife","partner","grandma",
+                                  "grandpa","granny","grandad","baby","mother","father","parents",
+                                  "sibling","brother","sister","family","friend"]
+        let hasEmail     = emailWords.contains(where: { lower.contains($0) })
+        let hasRecipient = personalRecipients.contains(where: { lower.contains($0) })
+        if hasEmail && hasRecipient { return .home }
+
+        let workWords     = ["meeting","email","report","client","call","project","deadline",
+                             "work","office","invoice","proposal","presentation","boss","budget",
+                             "strategy","review","打ち合わせ","メール","クライアント","締め切り"]
+        let homeWords     = ["clean","groceries","laundry","dishes","cook","repair","grocery",
+                             "home","house","garden","trash","bill","rent","delivery","buy food",
+                             "掃除","買い物","洗濯","料理","ゴミ","家賃"]
+        let personalWords = ["exercise","run","gym","health","doctor","dentist","read","meditate",
+                             "journal","friend","haircut","yoga","hobby","travel","learn",
+                             "ジム","医者","歯医者","ランニング","読書"]
+
+        if workWords.contains(where:     { lower.contains($0) }) { return .work     }
+        if homeWords.contains(where:     { lower.contains($0) }) { return .home     }
+        if personalWords.contains(where: { lower.contains($0) }) { return .personal }
+        return .other
     }
 }
