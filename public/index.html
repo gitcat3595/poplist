@@ -191,7 +191,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   50%      { box-shadow:var(--shcard), 0 0 0 8px var(--blue-glow), 0 0 0 16px var(--blue-glow) }
 }
 .mic-icon { width:20px; height:20px }
-.voice-label { font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.45 }
+.voice-label { display:none }
 .voice-transcript {
   font-size:12px; color:var(--t3); min-height:16px;
   font-style:normal; text-align:center; transition:color .2s;
@@ -942,15 +942,12 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:22px; font-weight:900; letter-spacing:-.6px;
   color:var(--black); margin-bottom:32px; text-align:center;
 }
-.home-or {
-  font-size:12px; font-weight:700; color:var(--t3);
-  margin:24px 0;
-}
+.home-or { display:none }
 .home-manual-btn {
   font-size:13px; font-weight:700; color:var(--t2);
   padding:10px 24px; border-radius:var(--rp);
   background:var(--card); border:1.5px solid var(--border);
-  transition:var(--tr);
+  transition:var(--tr); margin-top:48px;
 }
 .home-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
 
@@ -1044,7 +1041,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:13px; font-weight:700; color:var(--t2);
   padding:10px 24px; border-radius:var(--rp);
   background:var(--card); border:1.5px solid var(--border);
-  transition:var(--tr); margin-top:8px;
+  transition:var(--tr); margin-top:24px;
   opacity:0; animation:fade-up .4s ease .75s forwards;
 }
 .done-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
@@ -1106,7 +1103,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border-top:1px solid var(--border); z-index:80;
 }
 .bottom-bar-speak {
-  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  width:52px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
   padding:13px; font-size:14px; font-weight:800;
   background:var(--blue); color:#fff;
   border-radius:var(--rp); border:none; cursor:pointer;
@@ -1115,7 +1112,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .bottom-bar-speak:hover  { filter:brightness(1.08) }
 .bottom-bar-speak:active { transform:scale(.97) }
 .bottom-bar-add {
-  display:flex; align-items:center; justify-content:center; gap:6px;
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
   padding:13px 20px; font-size:14px; font-weight:800;
   background:var(--card); color:var(--black);
   border-radius:var(--rp); border:1.5px solid var(--border);
@@ -1164,35 +1161,16 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
           <line x1="12" y1="19" x2="12" y2="22"/>
           <line x1="9" y1="22" x2="15" y2="22"/>
         </svg>
-        <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
       </button>
       <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
     </div>
-    <div class="home-or" data-en="or" data-ja="または">or</div>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task manually" data-ja="＋ 手動でタスクを追加">+ Add task manually</button>
   </div>
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
   <div id="doneScreen" class="done-screen" style="display:none">
-    <!-- Bubble burst animation instead of emoji -->
-    <div class="done-bubbles" aria-hidden="true">
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-      <div class="done-bubble"></div>
-    </div>
+    <!-- JS-spawned burst particles anchor — particles are created by spawnDoneBurst() -->
+    <div class="done-bubbles" id="doneBubblesAnchor" aria-hidden="true"></div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
@@ -1202,7 +1180,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
         <line x1="12" y1="19" x2="12" y2="22"/>
         <line x1="9" y1="22" x2="15" y2="22"/>
       </svg>
-      <span class="voice-label" data-en="Speak" data-ja="話す">Speak</span>
     </button>
     <button class="done-manual-btn" id="doneManualBtn" data-en="+ Add task manually" data-ja="＋ 手動でタスクを追加">+ Add task manually</button>
   </div>
@@ -1251,7 +1228,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     <div class="add-task-active">
       <div class="add-bubble-ph" id="addBubblePh"></div>
       <div class="add-input-body">
-        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？">
+        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？" autocomplete="off" autocorrect="off" autocapitalize="off">
       </div>
     </div>
     <!-- Hidden chips kept in DOM so applyLang + JS detection still work -->
@@ -1374,14 +1351,13 @@ GoogleService-Info.plist
 
 <!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
 <div class="bottom-bar" id="bottomBar" style="display:none">
-  <button class="bottom-bar-speak" id="voiceBtnBottom">
+  <button class="bottom-bar-speak" id="voiceBtnBottom" aria-label="Speak">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="9" y="2" width="6" height="11" rx="3"/>
       <path d="M5 10a7 7 0 0 0 14 0"/>
       <line x1="12" y1="19" x2="12" y2="22"/>
       <line x1="9" y1="22" x2="15" y2="22"/>
     </svg>
-    <span data-en="Speak" data-ja="話す">Speak</span>
   </button>
   <button class="bottom-bar-add" id="fabBtn">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1924,6 +1900,72 @@ function burstBubble(el, item) {
   }, 210);
 }
 
+/* ══════════════════════════════════════════
+   DONE-SCREEN BURST — same particle style as burstBubble(),
+   fired in 3 waves for a swirling celebration
+══════════════════════════════════════════ */
+function spawnDoneBurst(bubbleColor) {
+  const anchor = document.getElementById('doneBubblesAnchor') || document.querySelector('.done-bubbles');
+  if (!anchor) return;
+  const r  = anchor.getBoundingClientRect();
+  const cx = r.left + r.width  / 2;
+  const cy = r.top  + r.height / 2;
+
+  const rawHex = (bubbleColor || '#3B82F6').replace('#','');
+  const cr = parseInt(rawHex.slice(0,2),16);
+  const cg = parseInt(rawHex.slice(2,4),16);
+  const cb = parseInt(rawHex.slice(4,6),16);
+  const lt = (v,a) => Math.min(v+a,255), dk = (v,a) => Math.max(v-a,0);
+  const palette = [
+    `rgba(${cr},${cg},${cb},1)`,
+    `rgba(${lt(cr,40)},${lt(cg,40)},${lt(cb,40)},.95)`,
+    `rgba(${lt(cr,80)},${lt(cg,80)},${lt(cb,80)},.9)`,
+    `rgba(${dk(cr,30)},${dk(cg,30)},${dk(cb,30)},.95)`,
+    `rgba(${lt(cr,110)},${lt(cg,110)},${lt(cb,110)},.85)`,
+    'rgba(255,255,255,.9)',
+    `rgba(${cr},${cg},${cb},.7)`,
+  ];
+
+  // 3 waves, staggered — each wave slightly rotated for swirl effect
+  [0, 220, 460].forEach((waveDelay, wave) => {
+    setTimeout(() => {
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'burst-p';
+        const size   = Math.random() * 11 + 3;
+        const col    = palette[~~(Math.random() * palette.length)];
+        const isRing = Math.random() > 0.55;
+        p.style.cssText = `
+          width:${size}px; height:${size}px;
+          background:${isRing ? 'transparent' : col};
+          ${isRing ? `border:1.5px solid ${col};` : ''}
+          left:${cx - size/2}px; top:${cy - size/2}px;
+          box-shadow:${isRing ? 'none' : `0 0 ${size*1.2}px ${col}`};
+        `;
+        document.body.appendChild(p);
+
+        // Offset angular position per wave to create swirl
+        const ang  = (Math.PI * 2 * i) / count + (Math.random() - .5) * .5 + wave * 0.22;
+        const dist = Math.random() * 95 + 42;
+        const tx   = Math.cos(ang) * dist;
+        const ty   = Math.sin(ang) * dist;
+        const rot  = Math.random() * 360;
+
+        p.animate([
+          { transform:`translate(0,0) scale(1)`, opacity:1 },
+          { transform:`translate(${tx*.28}px,${ty*.28}px) scale(1.5) rotate(${rot*.3}deg)`, opacity:1, offset:.14 },
+          { transform:`translate(${tx}px,${ty}px) scale(0) rotate(${rot}deg)`, opacity:0 }
+        ], {
+          duration: 540 + ~~(Math.random() * 200),
+          easing:   'cubic-bezier(.25,.46,.45,.94)',
+          delay:    i * 25
+        }).onfinish = () => p.remove();
+      }
+    }, waveDelay);
+  });
+}
+
 /* Attach click to a bubble element */
 /* ══════════════════════════════════════════
    CATEGORY EDIT SHEET
@@ -2265,38 +2307,30 @@ function showDoneScreen() {
   if (title) title.textContent = state.lang === 'ja' ? '今日もお疲れさまです' : "You're done for today";
   if (sub)   sub.textContent   = state.lang === 'ja' ? 'タスクは全部完了。いつでも追加できます。' : 'All clear. Add more whenever you\'re ready.';
 
-  // Sync burst bubble colours to match the chosen colour scheme
   const _dcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
   };
   const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
-  el.querySelectorAll('.done-bubble').forEach(b => {
-    b.style.background = bubbleColor;
-    b.style.setProperty('--bubble-color', bubbleColor);
-  });
-  // Color the center bubble and its glow to match theme
-  const center = el.querySelector('.done-bubble-center');
-  if (center) {
-    center.style.background = bubbleColor;
-    center.style.boxShadow  = `0 0 0 3px ${bubbleColor}44, 0 0 28px 8px ${bubbleColor}33`;
-  }
+
   // Subtle radial color wash on the done screen matching the bubble color
   el.style.setProperty('--done-glow', bubbleColor + '18');
 
-  // Restart all animations: force reflow
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  // Restart screen + text animations
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-bubble,.done-bubble-center,.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn').forEach(c => {
     c.style.animation = '';
   });
 
   el.style.display = '';
+  // Spawn JS burst particles — same style as task completion pop
+  requestAnimationFrame(() => spawnDoneBurst(bubbleColor));
 }
 
 function updateScreenState() {
