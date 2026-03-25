@@ -589,14 +589,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   to   { transform:translateY(0);    opacity:1 }
 }
 .modal-handle { width:36px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px }
-.modal-title  { font-size:18px; font-weight:900; margin-bottom:4px; letter-spacing:-.4px; color:var(--black) }
-.modal-sub    { font-size:13px; color:var(--t2); margin-bottom:22px }
+.modal-title  { font-size:18px; font-weight:900; margin-bottom:18px; letter-spacing:-.4px; color:var(--black) }
+.modal-sub    { font-size:13px; color:var(--t2); margin-bottom:22px; margin-top:-10px }
 
 /* Settings structure */
-.settings-section      { margin-bottom:32px }
+.settings-section      { margin-bottom:28px }
 .settings-section-label {
   font-size:10px; font-weight:800; text-transform:uppercase;
-  letter-spacing:.8px; color:var(--t3); margin-bottom:6px;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:10px;
   display:flex; align-items:center; gap:8px;
 }
 .settings-row {
@@ -1059,6 +1059,23 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   opacity:0; animation:fade-up .4s ease .75s forwards;
 }
 .done-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
+.done-carry-count {
+  font-size:13px; color:var(--t2); margin-bottom:10px; line-height:1.5;
+}
+.done-carry-btn {
+  font-size:13px; font-weight:700; color:var(--blue);
+  padding:9px 20px; border-radius:var(--rp);
+  border:1.5px solid var(--blue-glow); background:var(--blue-lt);
+  transition:var(--tr);
+}
+.done-carry-btn:hover { background:var(--blue); color:#fff }
+#doneForTodayBtn {
+  font-size:12px; font-weight:700; color:var(--t3);
+  padding:8px 22px; border-radius:var(--rp);
+  border:1px solid var(--border); background:none;
+  transition:var(--tr); cursor:pointer;
+}
+#doneForTodayBtn:hover { color:var(--t2); border-color:var(--brim) }
 @keyframes fade-up {
   from { opacity:0; transform:translateY(8px) }
   to   { opacity:1; transform:translateY(0) }
@@ -1207,6 +1224,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       </svg>
     </button>
     <button class="done-manual-btn" id="doneManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task</button>
+    <!-- carry-over info — shown after Done for today when tasks remain -->
+    <div id="carryOverInfo" style="display:none;text-align:center;margin-top:20px">
+      <p class="done-carry-count" id="carryOverCount"></p>
+      <button class="done-carry-btn" id="seeCarryOverBtn" data-en="See carry-over tasks" data-ja="持ち越しタスクを見る">See carry-over tasks</button>
+    </div>
   </div>
 
   <!-- TASK LIST — shown when tasks exist -->
@@ -1275,6 +1297,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <button class="btn-paste-list" id="pasteListBtn" data-en="Add list" data-ja="リスト貼付け">Add list</button>
       <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加">Add Task</button>
     </div>
+  </div>
+
+  <!-- Done for today row -->
+  <div id="doneForTodayRow" style="display:none;text-align:center;padding:4px 16px 12px">
+    <button id="doneForTodayBtn" data-en="Done for today" data-ja="今日はここまで">Done for today</button>
   </div>
 
   </div><!-- /taskListView -->
@@ -2701,7 +2728,84 @@ function showDoneScreen() {
   requestAnimationFrame(() => spawnDoneBurst(bubbleColor));
 }
 
+/* ── Done for today helpers ── */
+function _todayKey() { return new Date().toDateString(); }
+function isDoneForToday() { return localStorage.getItem('doneForTodayDate') === _todayKey(); }
+function setDoneForToday() { localStorage.setItem('doneForTodayDate', _todayKey()); }
+function clearDoneForToday() { localStorage.removeItem('doneForTodayDate'); }
+
+function updateDoneForTodayBtn() {
+  const row = document.getElementById('doneForTodayRow');
+  if (!row) return;
+  const hasTodayTasks = [...document.querySelectorAll('.task-item')]
+    .some(i => i.querySelector('.timing-chip')?.dataset.timing === 'Today');
+  row.style.display = hasTodayTasks && !isDoneForToday() ? '' : 'none';
+  if (state.lang === 'ja') {
+    const btn = document.getElementById('doneForTodayBtn');
+    if (btn) btn.textContent = '今日はここまで';
+  }
+}
+
+function doneForToday() {
+  const todayItems = [...document.querySelectorAll('.task-item')].filter(
+    i => i.querySelector('.timing-chip')?.dataset.timing === 'Today'
+  );
+  if (todayItems.length === 0) return;
+
+  const carryOver = document.querySelectorAll('.task-item').length - todayItems.length;
+  setDoneForToday();
+
+  // Pop each Today task with staggered animation
+  todayItems.forEach((item, idx) => {
+    setTimeout(() => {
+      const bubble = item.querySelector('.task-bubble');
+      if (bubble) bubble.classList.add('popping');
+      setTimeout(() => {
+        const card = item.closest('.category-card');
+        item.remove();
+        if (card) {
+          const cnt = card.querySelectorAll('.task-item').length;
+          const el  = card.querySelector('.cat-count');
+          if (el) el.textContent = cnt;
+          if (cnt === 0) card.style.display = 'none';
+        }
+      }, 440);
+    }, idx * 70);
+  });
+
+  setTimeout(() => {
+    // Update carry-over info on done screen
+    const info      = document.getElementById('carryOverInfo');
+    const countEl   = document.getElementById('carryOverCount');
+    const seeBtn    = document.getElementById('seeCarryOverBtn');
+    if (info && countEl) {
+      if (carryOver > 0) {
+        countEl.textContent = state.lang === 'ja'
+          ? `${carryOver}件のタスクを持ち越し`
+          : `${carryOver} task${carryOver !== 1 ? 's' : ''} carrying over`;
+        if (seeBtn) seeBtn.textContent = state.lang === 'ja' ? '持ち越しタスクを見る' : 'See carry-over tasks';
+        info.style.display = '';
+      } else {
+        info.style.display = 'none';
+      }
+    }
+    homeScreen.style.display   = 'none';
+    taskListView.style.display = 'none';
+    bottomBar.style.display    = 'none';
+    showDoneScreen();
+  }, todayItems.length * 70 + 520);
+}
+
 function updateScreenState() {
+  // If user marked done for today, keep showing done screen regardless of carry-over tasks
+  if (isDoneForToday() && document.querySelector('.category-card.was-used')) {
+    homeScreen.style.display   = 'none';
+    taskListView.style.display = 'none';
+    bottomBar.style.display    = 'none';
+    showDoneScreen();
+    return;
+  }
+
   const total = getTotalTasks();
   if (total === 0) {
     const everHadTasks = document.querySelector('.category-card.was-used');
@@ -2721,6 +2825,7 @@ function updateScreenState() {
     taskListView.style.display = '';
     document.getElementById('doneScreen').style.display = 'none';
     bottomBar.style.display    = '';
+    updateDoneForTodayBtn();
   }
 }
 
@@ -2744,10 +2849,25 @@ document.getElementById('homeManualBtn')?.addEventListener('click', () => {
 });
 
 document.getElementById('doneManualBtn')?.addEventListener('click', () => {
+  clearDoneForToday();
   document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
   openManualAddCard(false);
+});
+
+document.getElementById('doneForTodayBtn')?.addEventListener('click', doneForToday);
+
+document.getElementById('seeCarryOverBtn')?.addEventListener('click', () => {
+  clearDoneForToday();
+  document.getElementById('doneScreen').style.display = 'none';
+  taskListView.style.display = '';
+  bottomBar.style.display    = '';
+  // Switch to This Week filter to highlight carry-over tasks
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const weekBtn = document.querySelector('.filter-btn[data-filter="week"]');
+  if (weekBtn) { weekBtn.classList.add('active'); reapplyFilter(); }
+  updateDoneForTodayBtn();
 });
 
 document.querySelector('.btn-cancel')?.addEventListener('click', () => {
@@ -3536,6 +3656,12 @@ function refreshCatChips() {
 buildCatList();
 updateCatDragHandles();
 syncAllBubbles(); // sync add-preview bubble style on first load
+
+// Clear stale doneForToday flag from a previous day
+if (localStorage.getItem('doneForTodayDate') && !isDoneForToday()) {
+  clearDoneForToday();
+}
+updateDoneForTodayBtn();
 
 // Add category
 document.getElementById('addCategoryRow')?.addEventListener('click', () => {
