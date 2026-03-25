@@ -1,0 +1,70 @@
+/* ── General ── */
+"ok"                        = "OK";
+"cancel"                    = "キャンセル";
+"done"                      = "完了";
+"error"                     = "エラー";
+
+/* ── Navigation / Titles ── */
+"settings_title"            = "設定";
+
+/* ── Account section ── */
+"section_account"           = "アカウント";
+"no_email"                  = "メールなし";
+"sign_out"                  = "サインアウト";
+
+/* ── Pro section ── */
+"section_pro"               = "Pro";
+"pro_active"                = "Poplist Pro — 有効";
+"pro_active_badge"          = "PRO";
+"upgrade_to_pro"            = "Proにアップグレード";
+"restore_purchases"         = "購入を復元";
+"try_pro"                   = "Pro を試す";
+
+/* ── Pro paywall ── */
+"pro_subtitle"              = "Poplistのすべての機能を解放";
+"pro_feature_colours"       = "カスタムカラーテーマ";
+"pro_feature_categories"    = "カスタムカテゴリーの追加";
+"pro_feature_voice"         = "無制限の音声タスク";
+"pro_feature_sync"          = "全デバイスでiCloud同期";
+"pro_feature_sort"          = "高度な並べ替えとフィルター";
+"plan_monthly"              = "月払い";
+"plan_annual"               = "年払い";
+"per_month"                 = " ／ 月";
+"per_year"                  = " ／ 年";
+"best_value"                = "おトク";
+"purchase_pending"          = "購入の承認待ちです。";
+"restore_failed"            = "復元に失敗しました。もう一度お試しください。";
+"iap_unavailable"           = "現在、アプリ内購入はご利用いただけません。";
+"iap_legal_notice"          = "サブスクリプションは、現在の期間終了の少なくとも24時間前にキャンセルされない限り、自動的に更新されます。App Storeアカウント設定から管理・キャンセルできます。\nサブスクリプションにより、利用規約とプライバシーポリシーに同意したものとみなされます。";
+
+/* ── Legal section ── */
+"section_legal"             = "法的情報";
+"privacy_policy"            = "プライバシーポリシー";
+"terms_of_service"          = "利用規約";
+"eula"                      = "エンドユーザーライセンス契約";
+"data_deletion"             = "データ削除リクエスト";
+
+/* ── Account deletion ── */
+"delete_account"            = "アカウントを削除";
+"delete_account_title"      = "アカウントを削除しますか？";
+"delete_account_message"    = "アカウントとすべてのタスクが完全に削除されます。この操作は取り消せません。";
+"delete_account_footer"     = "アカウントを削除すると、Alleriseサーバーからすべてのデータが削除されます。";
+"delete_confirm"            = "削除";
+"delete_reauth_required"    = "セキュリティのため、アカウントを削除する前に一度サインアウトし、再度サインインしてください。";
+
+/* ── About ── */
+"version"                   = "バージョン";
+"copyright"                 = "© 2025 Allerise Pte. Ltd. All rights reserved.";
+
+/* ── Task list ── */
+"empty_title"               = "マイクをタップしてタスクを追加";
+"empty_subtitle"            = "話すだけで、AIが自動で整理します";
+
+/* ── Auth errors ── */
+"apple_signin_error"        = "Apple サインインを処理できませんでした。";
+"google_signin_error"       = "Google サインインを表示できませんでした。";
+"auth_wrong_password"       = "メールアドレスまたはパスワードが正しくありません。";
+"auth_user_not_found"       = "このメールアドレスのアカウントが見つかりません。";
+"auth_email_in_use"         = "このメールアドレスのアカウントはすでに存在します。";
+"auth_weak_password"        = "パスワードは6文字以上で設定してください。";
+"auth_invalid_email"        = "有効なメールアドレスを入力してください。";
