@@ -1018,10 +1018,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
 /* Central big bubble — pops up then fades out so nothing lingers */
 .done-bubble-center {
-  width:36px; height:36px; border-radius:50%; position:relative;
-  margin-bottom:24px;
-  background:var(--blue);
-  box-shadow:0 0 0 3px var(--blue-glow), 0 0 12px 2px var(--blue-glow);
+  width:36px; height:36px; border-radius:50%; position:absolute;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  background:var(--bubble-color, var(--blue));
+  box-shadow:0 0 0 3px var(--done-glow, var(--blue-glow)), 0 0 12px 2px var(--done-glow, var(--blue-glow));
   animation:done-center-pop 2.6s cubic-bezier(.36,.07,.19,.97) .0s both;
 }
 @keyframes done-center-pop {
@@ -1169,8 +1169,26 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
   <div id="doneScreen" class="done-screen" style="display:none">
-    <!-- JS-spawned burst particles anchor — particles are created by spawnDoneBurst() -->
-    <div class="done-bubbles" id="doneBubblesAnchor" aria-hidden="true"></div>
+    <!-- CSS burst + JS swirl particles fire together on arrival -->
+    <div class="done-bubbles" id="doneBubblesAnchor" aria-hidden="true">
+      <div class="done-bubble-center"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+    </div>
     <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
@@ -2314,17 +2332,18 @@ function showDoneScreen() {
   };
   const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
 
-  // Subtle radial color wash on the done screen matching the bubble color
+  // Set theme colour for CSS bubble animations + radial glow
+  el.style.setProperty('--bubble-color', bubbleColor);
   el.style.setProperty('--done-glow', bubbleColor + '18');
 
-  // Restart screen + text animations
-  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  // Restart all animations (done screen + bubbles + text)
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble,.done-bubble-center').forEach(c => {
     c.style.animation = 'none';
   });
   el.style.animation = 'none';
   el.offsetHeight; // trigger reflow
   el.style.animation = '';
-  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn').forEach(c => {
+  el.querySelectorAll('.done-title,.done-sub,.done-manual-btn,.done-bubble,.done-bubble-center').forEach(c => {
     c.style.animation = '';
   });
 
@@ -2616,8 +2635,8 @@ if (SR) {
         const msg = isIOS
           ? (state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed')
           : (state.lang === 'ja'
-            ? 'マイク許可：アドレスバーの🎤をクリック→「許可」'
-            : 'Allow mic: click 🎤 in the address bar → Allow');
+            ? 'マイク許可：アドレスバーのマイクアイコンをクリック→「許可」'
+            : 'Allow mic: click the mic icon in the address bar → Allow');
         showToast(msg);
       }
     };
@@ -2762,28 +2781,21 @@ if (SR) {
       ? '自然に話してください…'
       : 'Say your tasks naturally…';
 
-    if (isIOS) {
-      // iOS (Safari & Chrome): must call getUserMedia before EVERY recognition.start()
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-          stream.getTracks().forEach(t => t.stop());
-          recognition = createRecognition();
-          try { recognition.start(); }
-          catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-        })
-        .catch(e => {
-          console.warn('mic permission denied:', e);
-          shouldRestart = false;
-          _clearListeningUI();
-          showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
-        });
-    } else {
-      // Desktop Chrome / Edge / Safari macOS: SR manages its own mic permission.
-      // Calling getUserMedia first conflicts with the SR stream on some Chrome versions.
-      recognition = createRecognition();
-      try { recognition.start(); }
-      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-    }
+    // All platforms: probe getUserMedia first to ensure mic access is established
+    // before handing off to the Speech Recognition API.
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        stream.getTracks().forEach(t => t.stop());
+        recognition = createRecognition();
+        try { recognition.start(); }
+        catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+      })
+      .catch(e => {
+        console.warn('mic permission denied:', e);
+        shouldRestart = false;
+        _clearListeningUI();
+        showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+      });
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
