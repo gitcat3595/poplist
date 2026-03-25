@@ -595,10 +595,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .modal-sub    { font-size:13px; color:var(--t2); margin-bottom:22px }
 
 /* Settings structure */
-.settings-section      { margin-bottom:28px }
+.settings-section      { margin-bottom:32px }
 .settings-section-label {
   font-size:10px; font-weight:800; text-transform:uppercase;
-  letter-spacing:.8px; color:var(--t3); margin-bottom:10px;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:6px;
   display:flex; align-items:center; gap:8px;
 }
 .settings-row {
@@ -754,7 +754,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .export-divider::before,.export-divider::after { content:''; flex:1; height:1px; background:var(--border) }
 .modal-cancel {
-  margin-top:14px; width:100%; padding:13px; font-size:14px; font-weight:700;
+  display:block; margin:16px auto 0; padding:9px 36px;
+  font-size:13px; font-weight:700; width:auto;
   color:var(--t2); background:var(--raised); border:1px solid var(--border);
   border-radius:var(--rp); transition:var(--tr);
 }
@@ -1424,7 +1425,7 @@ GoogleService-Info.plist
     <div id="catEditOptions" style="display:flex;flex-direction:column;gap:0;margin-top:16px;border-radius:16px;overflow:hidden;border:1px solid var(--border)">
       <!-- filled by JS -->
     </div>
-    <button class="modal-cancel" id="closeCatEdit" style="margin-top:14px" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+    <button class="modal-cancel" id="closeCatEdit" data-en="Cancel" data-ja="キャンセル">Cancel</button>
   </div>
 </div>
 
@@ -1443,7 +1444,6 @@ GoogleService-Info.plist
         <div class="export-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></div>
         <div><p class="export-btn-label" data-en="Plain Text" data-ja="プレーンテキスト">Plain Text</p><p class="export-btn-desc" data-en="Paste-anywhere checklist" data-ja="どのアプリにも貼れるチェックリスト">Paste-anywhere checklist</p></div>
       </button>
-      <div class="export-divider" data-en="or" data-ja="または">or</div>
       <button class="export-btn" id="exportCopy">
         <div class="export-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
         <div><p class="export-btn-label" data-en="Copy to Clipboard" data-ja="クリップボードにコピー">Copy to Clipboard</p><p class="export-btn-desc" data-en="Paste into any app" data-ja="どのアプリにも貼り付け可能">Paste into any app</p></div>
@@ -1476,7 +1476,7 @@ GoogleService-Info.plist
     <p class="modal-title" data-en="Settings" data-ja="設定">Settings</p>
 
     <!-- ══ ACCOUNT ══ -->
-    <div class="settings-section" id="accountSection" style="margin-top:24px">
+    <div class="settings-section" id="accountSection">
       <div class="settings-section-label" data-en="Account" data-ja="アカウント">Account</div>
       <div class="firebase-status">
         <div class="fb-dot disconnected" id="fbStatusDot"></div>
@@ -1511,7 +1511,7 @@ GoogleService-Info.plist
     </div>
 
     <!-- ══ SERVICE ══ -->
-    <div class="settings-section" id="serviceSection" style="margin-top:24px">
+    <div class="settings-section" id="serviceSection">
       <div class="settings-section-label" data-en="Service" data-ja="サービス">Service</div>
       <div id="serviceFreeRow">
         <div class="settings-row">
@@ -1544,7 +1544,7 @@ GoogleService-Info.plist
     </div>
 
     <!-- ══ GENERAL ══ -->
-    <div class="settings-section" style="margin-top:24px">
+    <div class="settings-section">
       <div class="settings-section-label" data-en="General" data-ja="一般">General</div>
       <div class="settings-row">
         <p class="settings-row-label" data-en="Language" data-ja="言語">Language</p>
@@ -1576,7 +1576,7 @@ GoogleService-Info.plist
     </div>
 
     <!-- ══ CUSTOMISE PRO ══ -->
-    <div class="settings-section" style="margin-top:24px">
+    <div class="settings-section">
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
@@ -1642,7 +1642,7 @@ GoogleService-Info.plist
     </div>
 
     <!-- ══ HOW IT WORKS ══ -->
-    <div class="settings-section" style="margin-top:24px">
+    <div class="settings-section">
       <div class="settings-section-label" data-en="How it works" data-ja="使い方">How it works</div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
@@ -1663,7 +1663,7 @@ GoogleService-Info.plist
     </div>
 
     <!-- ══ ABOUT THE APP ══ -->
-    <div class="settings-section" style="margin-top:24px">
+    <div class="settings-section">
       <div class="settings-section-label" data-en="About" data-ja="このアプリについて">About</div>
       <div class="settings-row" id="aboutAppRow" style="cursor:pointer;border-bottom:none">
         <div style="flex:1;min-width:0">
@@ -1674,7 +1674,7 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <div class="settings-section" style="margin-top:24px">
+    <div class="settings-section">
       <div class="settings-section-label" data-en="Legal" data-ja="法的情報">Legal</div>
       <div class="settings-row" style="cursor:pointer" onclick="window.open('/privacy.html','_blank')">
         <p class="settings-row-label" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</p>
@@ -1697,7 +1697,7 @@ GoogleService-Info.plist
       </div>
     </div>
 
-    <button class="modal-cancel" id="closeSettings" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:18px auto 0" data-en="Done" data-ja="完了">Done</button>
+    <button class="modal-cancel" id="closeSettings" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
 
@@ -1723,7 +1723,7 @@ GoogleService-Info.plist
       </div>
     </div>
     <p style="font-size:11px;color:var(--t3);line-height:1.6;margin-top:16px" data-en="Made with care in Singapore" data-ja="シンガポールで心を込めて制作">Made with care in Singapore</p>
-    <button class="modal-cancel" id="closeAbout" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:20px auto 0" data-en="Done" data-ja="完了">Done</button>
+    <button class="modal-cancel" id="closeAbout" data-en="Done" data-ja="完了">Done</button>
   </div>
 </div>
 
@@ -1743,7 +1743,7 @@ GoogleService-Info.plist
       <button id="emailAuthToggle" style="background:none;border:none;font-size:13px;color:var(--t3);cursor:pointer;font-family:inherit" data-en="Create account" data-ja="アカウント作成">Create account</button>
       <button id="emailAuthForgot" style="background:none;border:none;font-size:13px;color:var(--t3);cursor:pointer;font-family:inherit" data-en="Forgot password?" data-ja="パスワードを忘れた">Forgot password?</button>
     </div>
-    <button class="modal-cancel" id="closeEmailAuth" style="margin-top:10px" data-en="Cancel" data-ja="キャンセル">Cancel</button>
+    <button class="modal-cancel" id="closeEmailAuth" data-en="Cancel" data-ja="キャンセル">Cancel</button>
   </div>
 </div>
 
@@ -1752,7 +1752,7 @@ GoogleService-Info.plist
   <div class="modal-card" style="background:var(--card);border-radius:20px;max-height:88vh;overflow-y:auto;padding:24px 20px 28px;width:calc(100% - 32px);max-width:480px;box-shadow:0 4px 40px rgba(0,0,0,.2)">
     <p class="modal-title" id="legalTitle" style="margin-bottom:16px">Privacy Policy</p>
     <div id="legalBody" style="font-size:13px;line-height:1.7;color:var(--t2)"></div>
-    <button class="modal-cancel" id="closeLegal" style="padding:9px 36px;font-size:12px;width:auto;align-self:center;display:block;margin:24px auto 0" data-en="Close" data-ja="閉じる">Close</button>
+    <button class="modal-cancel" id="closeLegal" data-en="Close" data-ja="閉じる">Close</button>
   </div>
 </div>
 
@@ -1899,6 +1899,15 @@ GoogleService-Info.plist
   ═══════════════════════════════════════════════════════════ -->
 
 <script>
+/* Global error catcher — shows JS errors as a visible banner so we can debug */
+window.onerror = function(msg, src, line, col, err) {
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;padding:10px 14px;font-size:12px;font-family:monospace;z-index:99999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto';
+  banner.textContent = '⚠ JS ERROR line ' + line + ': ' + msg + (err?.stack ? '\n' + err.stack.split('\n').slice(0,4).join('\n') : '');
+  document.body.prepend(banner);
+  return false;
+};
+
 /* ══════════════════════════════════════════
    STATE — mirrors Firestore data model
 ══════════════════════════════════════════ */
@@ -3293,8 +3302,8 @@ function buildCatList() {
     row.className = 'cat-item-row';
     row.innerHTML = `
       <div class="cat-item-dot" style="background:var(--blue)"></div>
-      <span class="cat-item-name">${state.lang==='ja' ? cat.ja : cat.en}</span>
-      <span class="cat-item-kw">${state.lang==='ja'?'キーワード追加':'add keywords'}</span>
+      <span class="cat-item-name" data-en="${cat.en}" data-ja="${cat.ja}">${state.lang==='ja' ? cat.ja : cat.en}</span>
+      <span class="cat-item-kw" data-en="add keywords" data-ja="キーワード追加">${state.lang==='ja'?'キーワード追加':'add keywords'}</span>
       <span class="cat-item-chevron">▾</span>`;
     row.addEventListener('click', () => item.classList.toggle('open'));
     item.appendChild(row);
@@ -3318,7 +3327,6 @@ function buildCatList() {
           cat.customKeywords.splice(i, 1);
           renderKws();
           rebuildDetectRegex();
-          row.querySelector('.cat-item-kw').textContent = state.lang==='ja' ? 'キーワード追加' : 'add keywords';
         });
         kwSection.appendChild(pill);
       });
@@ -3601,9 +3609,9 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
 const openM  = id => document.getElementById(id).classList.add('show');
 const closeM = id => document.getElementById(id).classList.remove('show');
 
-document.getElementById('settingsBtn').addEventListener('click', () => openM('settingsModal'));
-document.getElementById('closeSettings').addEventListener('click', () => closeM('settingsModal'));
-document.getElementById('settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+document.getElementById('settingsBtn')?.addEventListener('click', () => openM('settingsModal'));
+document.getElementById('closeSettings')?.addEventListener('click', () => closeM('settingsModal'));
+document.getElementById('settingsModal')?.addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
 
 /* ── Legal document modal ── */
 const LEGAL_CONTENT = {
@@ -3865,9 +3873,9 @@ document.getElementById('deployToggle')?.addEventListener('click', () => {
   hdr.classList.toggle('open', open);
 });
 
-document.getElementById('exportBtn').addEventListener('click', () => openM('exportModal'));
-document.getElementById('closeExport').addEventListener('click', () => closeM('exportModal'));
-document.getElementById('exportModal').addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
+document.getElementById('exportBtn')?.addEventListener('click', () => openM('exportModal'));
+document.getElementById('closeExport')?.addEventListener('click', () => closeM('exportModal'));
+document.getElementById('exportModal')?.addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
 async function applyLang(lang) {
@@ -3991,12 +3999,12 @@ function dl(name, content, type) {
   });
   a.click(); URL.revokeObjectURL(a.href);
 }
-document.getElementById('exportCSV').addEventListener('click', () => {
+document.getElementById('exportCSV')?.addEventListener('click', () => {
   const rows = [['Task','Category','Deadline'], ...allTasks().map(t=>[`"${t.text.replace(/"/g,'""')}"`,t.cat,t.timing])];
   dl('poplist.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
   showToast(state.lang==='ja' ? 'CSVとして書き出しました' : 'Exported as CSV'); closeM('exportModal');
 });
-document.getElementById('exportTXT').addEventListener('click', () => {
+document.getElementById('exportTXT')?.addEventListener('click', () => {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
   let out = `POPLIST — ${new Date().toLocaleDateString()}\n${'─'.repeat(32)}\n`;
   Object.entries(cats).forEach(([c,items]) => {
@@ -4006,7 +4014,7 @@ document.getElementById('exportTXT').addEventListener('click', () => {
   dl('poplist.txt', out, 'text/plain');
   showToast(state.lang==='ja' ? 'テキストとして書き出しました' : 'Exported as text'); closeM('exportModal');
 });
-document.getElementById('exportCopy').addEventListener('click', () => {
+document.getElementById('exportCopy')?.addEventListener('click', () => {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
   let out = '';
   Object.entries(cats).forEach(([c,items]) => {
