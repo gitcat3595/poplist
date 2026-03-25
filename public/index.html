@@ -238,7 +238,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 /* ════════════════════════════════════════
    CATEGORY CARDS
 ════════════════════════════════════════ */
-.tasks-container { display:flex; flex-direction:column; gap:10px }
+.tasks-container { display:flex; flex-direction:column; gap:14px }
 
 .category-card {
   background:var(--card); border-radius:var(--rc);
@@ -252,6 +252,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   padding:12px 16px; border-bottom:1px solid var(--border);
   background:var(--raised);
 }
+.category-card.filtered-empty { display:none }
 .cat-name {
   font-size:11px; font-weight:800; letter-spacing:.8px;
   text-transform:uppercase; color:var(--t2);
@@ -421,16 +422,20 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
 }
-.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow); background:var(--blue-lt) }
-.timing-chip[data-timing="This Week"] { color:var(--t1);    border-color:var(--brim);         background:var(--raised); font-weight:800 }
-.timing-chip[data-timing="Later"]     { color:var(--t2);    border-color:var(--border);       background:var(--card) }
+.timing-chip[data-timing="Today"]     { color:var(--blue);  border-color:var(--blue-glow);     background:var(--blue-lt) }
+.timing-chip[data-timing="This Week"] { color:#D97706;       border-color:rgba(217,119,6,.25);  background:#FFFBEB }
+.timing-chip[data-timing="Later"]     { color:var(--t3);    border-color:var(--border);        background:var(--card) }
+/* Japanese timing chip labels */
+.timing-chip[data-timing="Today"] .jp,
+.timing-chip[data-timing="This Week"] .jp,
+.timing-chip[data-timing="Later"] .jp { font-size:inherit }
 .timing-chip:hover { border-color:var(--blue); color:var(--blue); opacity:1 }
 
 /* ════════════════════════════════════════
    ADD TASK ROW
 ════════════════════════════════════════ */
 .add-task-row {
-  display:flex; align-items:center; padding:10px 16px; gap:13px;
+  display:flex; align-items:center; padding:12px 16px; gap:13px;
   border-top:1px solid var(--border);
   opacity:.4; cursor:pointer; transition:opacity var(--tr);
 }
@@ -2219,6 +2224,7 @@ function burstBubble(el, item) {
         card.style.opacity = ''; card.style.transform = '';
         updateScreenState(); // ← check if all gone → show done screen
       } else {
+        reapplyFilter(); // re-hide cards with no matching tasks under active filter
         updateScreenState();
       }
     }, 380);
@@ -2437,6 +2443,21 @@ document.querySelectorAll('.timing-chip').forEach(attachChip);
 /* ══════════════════════════════════════════
    FILTER BAR
 ══════════════════════════════════════════ */
+function reapplyFilter() {
+  const activeBtn = document.querySelector('.filter-btn.active');
+  const f = activeBtn?.dataset.filter || 'all';
+  if (f === 'all') return; // nothing to re-hide
+  document.querySelectorAll('.task-item').forEach(item => {
+    const t  = item.querySelector('.timing-chip')?.dataset.timing || '';
+    const ok = (f==='today'&&t==='Today')||(f==='week'&&t==='This Week')||(f==='later'&&t==='Later');
+    item.style.display = ok ? '' : 'none';
+  });
+  document.querySelectorAll('.category-card').forEach(card => {
+    const hasVisible = [...card.querySelectorAll('.task-item')].some(i => i.style.display !== 'none');
+    card.classList.toggle('filtered-empty', !hasVisible);
+  });
+}
+
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -2447,6 +2468,11 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       const t  = item.querySelector('.timing-chip')?.dataset.timing || '';
       const ok = (f==='today'&&t==='Today')||(f==='week'&&t==='This Week')||(f==='later'&&t==='Later');
       item.style.display = ok ? '' : 'none';
+    });
+    // Hide category cards that have no visible tasks under this filter
+    document.querySelectorAll('.category-card').forEach(card => {
+      const hasVisible = [...card.querySelectorAll('.task-item')].some(i => i.style.display !== 'none');
+      card.classList.toggle('filtered-empty', f !== 'all' && !hasVisible);
     });
   });
 });
@@ -2581,6 +2607,7 @@ function makeTaskItem(text, timing, cat, fsId) {
   const cnt = card.querySelector('.cat-count');
   if (cnt) cnt.textContent = card.querySelectorAll('.task-item').length;
   card.classList.remove('empty');
+  card.classList.remove('filtered-empty'); /* new task → card must be visible */
   card.classList.add('was-used');   /* marks card as ever having had tasks */
   card.style.display = '';          /* make sure card is visible */
   card.style.opacity = ''; card.style.transform = '';
