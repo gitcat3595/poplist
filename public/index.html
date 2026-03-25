@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Poplist</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f0f13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Poplist">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -2799,6 +2804,7 @@ let fullTranscript = '';
 let interimText    = '';
 let shouldRestart  = false;
 let restartTimer   = null;
+let voiceErrorCount = 0;    // counts transient errors (audio-capture, network); resets on onstart
 // Desktop browsers (Chrome/Edge/Safari macOS): SR handles its own mic permission — start directly.
 // iOS: requires getUserMedia before EVERY recognition.start() — never cache.
 let micPermGranted = !isIOS;
@@ -2827,6 +2833,7 @@ if (SR) {
 
     r.onstart = () => {
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
+      voiceErrorCount = 0;   // successful start — reset transient error counter
       state.isListening = true;
       [voiceBtn,
        document.getElementById('voiceBtnDone'),
@@ -2868,20 +2875,42 @@ if (SR) {
 
       if (shouldRestart && state.isListening) {
         recognition = createRecognition();
+        // Back off longer when there have been transient errors
+        const delay = isIOS ? 350 : isSafari ? 350 : (voiceErrorCount > 0 ? 400 : 150);
         if (isIOS) {
           // iOS needs getUserMedia probe before every recognition.start(), even restarts
           navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
               stream.getTracks().forEach(t => t.stop());
               restartTimer = setTimeout(() => {
-                try { recognition.start(); } catch(err) { console.warn('restart err:', err); }
-              }, 350);
+                try { recognition.start(); }
+                catch(err) {
+                  if (err.name === 'InvalidStateError') {
+                    // Previous session not fully torn down — wait longer and retry once
+                    clearTimeout(restartTimer);
+                    restartTimer = setTimeout(() => {
+                      recognition = createRecognition();
+                      try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
+                    }, 500);
+                  } else { shouldRestart = false; _clearListeningUI(); }
+                }
+              }, delay);
             })
             .catch(() => { shouldRestart = false; _clearListeningUI(); });
         } else {
           restartTimer = setTimeout(() => {
-            try { recognition.start(); } catch(err) { console.warn('restart err:', err); }
-          }, isSafari ? 350 : 150);
+            try { recognition.start(); }
+            catch(err) {
+              if (err.name === 'InvalidStateError') {
+                // Previous session not fully torn down — wait longer and retry once
+                clearTimeout(restartTimer);
+                restartTimer = setTimeout(() => {
+                  recognition = createRecognition();
+                  try { recognition.start(); } catch(e2) { shouldRestart = false; _clearListeningUI(); }
+                }, 500);
+              } else { shouldRestart = false; _clearListeningUI(); }
+            }
+          }, delay);
         }
         return;
       }
@@ -2894,11 +2923,21 @@ if (SR) {
     r.onerror = e => {
       console.warn('SR error:', e.error);
       if (e.error === 'no-speech') return;   // silence — keep restarting
-      if (e.error === 'aborted')  return;   // deliberate stop — ignore
+      if (e.error === 'aborted')  return;    // deliberate stop — ignore
+
+      // Transient errors: retry up to 3 times before giving up
+      if ((e.error === 'audio-capture' || e.error === 'network') && shouldRestart && state.isListening) {
+        voiceErrorCount++;
+        if (voiceErrorCount <= 3) {
+          console.warn(`SR ${e.error} (attempt ${voiceErrorCount}/3) — will retry`);
+          return;  // onend will fire next and trigger the restart loop
+        }
+      }
+
       shouldRestart = false;
       clearTimeout(restartTimer);
       _clearListeningUI();
-      if (e.error === 'not-allowed') {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         micPermGranted = false;
         const msg = isIOS
           ? (state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed')
@@ -2906,6 +2945,10 @@ if (SR) {
             ? 'マイク許可：アドレスバーのマイクアイコンをクリック→「許可」'
             : 'Allow mic: click the mic icon in the address bar → Allow');
         showToast(msg);
+      } else if (e.error === 'audio-capture') {
+        showToast(state.lang === 'ja' ? 'マイクにアクセスできません' : 'Cannot access microphone — check browser settings');
+      } else if (e.error === 'network') {
+        showToast(state.lang === 'ja' ? '音声認識にはインターネット接続が必要です' : 'Voice recognition needs an internet connection');
       }
     };
 
@@ -2926,40 +2969,6 @@ if (SR) {
     if (hint) hint.textContent = state.lang === 'ja'
       ? '自然に話してください。例:「今日メールを送って、今週買い物へ行く」'
       : 'Say your tasks naturally.\n"Email the client today, buy groceries this week"';
-  }
-
-  async function requestMicPermission() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop());
-      return true;
-    } catch(e) {
-      console.warn('mic permission denied:', e);
-      micPermGranted = false;
-      showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
-      return false;
-    }
-  }
-
-  async function startListening() {
-    if (state.isListening) return;  // already running
-    fullTranscript = '';
-    shouldRestart  = true;
-    clearTimeout(restartTimer);
-
-    if (!micPermGranted) {
-      const ok = await requestMicPermission();
-      if (!ok) return;
-    }
-
-    recognition = createRecognition();
-    try {
-      recognition.start();
-    } catch(e) {
-      console.warn('start error:', e);
-      shouldRestart = false;
-      _clearListeningUI();
-    }
   }
 
   async function stopListening() {
@@ -3214,10 +3223,13 @@ function rebuildDetectRegex() {
         /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i.test(text)) {
       return 'Home';
     }
+    // Check user-defined keywords
     for (const cat of state.categories) {
       if (cat.id === 'other') continue;
       if (cat.keywords.some(kw => new RegExp(kw, 'i').test(text))) return cat.en;
     }
+    // Fallback to comprehensive built-in lists (covers the vast majority of everyday tasks)
+    for (const [c, r] of Object.entries(LOCAL_CAT_KW)) if (r.test(text)) return c;
     return 'Other';
   };
 }
@@ -3840,6 +3852,13 @@ document.getElementById('exportCopy').addEventListener('click', () => {
     .catch(() => showToast('Try CSV instead'));
   closeM('exportModal');
 });
+
+// Register service worker for PWA / offline support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(e => console.warn('SW registration failed:', e));
+  });
+}
 </script>
 </body>
 </html>
