@@ -1590,7 +1590,7 @@ GoogleService-Info.plist
         <div class="settings-row">
           <div style="flex:1;min-width:0">
             <p class="settings-row-label" data-en="Free Plan" data-ja="フリープラン">Free Plan</p>
-            <p class="settings-row-sub" data-en="Up to 5 tasks · voice · manual add" data-ja="タスク最大5件・音声追加・手動追加">Up to 5 tasks · voice · manual add</p>
+            <p class="settings-row-sub" data-en="Up to 10 tasks · voice · manual add" data-ja="タスク最大10件・音声追加・手動追加">Up to 10 tasks · voice · manual add</p>
           </div>
           <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--raised);color:var(--t2);border:1px solid var(--border)">FREE</span>
         </div>
@@ -2052,7 +2052,34 @@ const FIREBASE_CONFIG = {
 };
 
 // Guest mode: max tasks before sign-in is required for sync
-const GUEST_MAX_TASKS = 5;
+const GUEST_MAX_TASKS = 10;
+
+/* ── Guest task cache — persist tasks in localStorage for phone users ── */
+const TASK_CACHE_KEY = 'pl_tasks';
+
+function saveTaskCache() {
+  if (state.isLoggedIn) return; // signed-in users use Firestore
+  const tasks = [...document.querySelectorAll('.task-item:not(.collapsing)')].map(item => {
+    const cardId  = item.closest('.category-card')?.id || 'cat-other'; // 'cat-work'
+    const catKey  = cardId.slice(4); // 'work'
+    const catObj  = state.categories.find(c => c.id === catKey);
+    const cat     = catObj ? catObj.en : (catKey.charAt(0).toUpperCase() + catKey.slice(1));
+    return {
+      text:     item.querySelector('.task-text')?.textContent?.trim() || '',
+      timing:   item.querySelector('.timing-chip')?.dataset?.timing   || 'This Week',
+      category: cat
+    };
+  }).filter(t => t.text);
+  localStorage.setItem(TASK_CACHE_KEY, JSON.stringify(tasks));
+}
+
+function loadTaskCache() {
+  try {
+    const raw = localStorage.getItem(TASK_CACHE_KEY);
+    if (!raw) return;
+    JSON.parse(raw).forEach(t => makeTaskItem(t.text, t.timing || 'This Week', t.category || 'Other'));
+  } catch(e) { console.warn('loadTaskCache:', e); }
+}
 
 let _auth = null, _db = null;
 const FB_READY = (() => {
@@ -2069,7 +2096,14 @@ const FB_READY = (() => {
 })();
 
 // When Firebase is not configured, unlock Pro so the demo works fully
-if (!FB_READY) state.isProUser = true;
+if (!FB_READY) {
+  state.isProUser = true;
+  // No auth — load cached guest tasks immediately (DOM is ready by this point)
+  loadTaskCache();
+}
+
+// Always save task cache on tab close (catches any unsaved in-flight tasks)
+window.addEventListener('beforeunload', () => { if (!state.isLoggedIn) saveTaskCache(); });
 
 /* ── Firestore helpers ── */
 async function fsAddTask(text, category, timing) {
@@ -2164,16 +2198,23 @@ function updateAuthUI(user) {
 
 /* ── Auth state listener ── */
 if (FB_READY) {
+  let _guestCacheLoaded = false;
   _auth.onAuthStateChanged(async user => {
     state.userId    = user?.uid  || null;
     state.isLoggedIn = !!user;
     updateAuthUI(user);
     if (user) {
+      localStorage.removeItem(TASK_CACHE_KEY); // Firestore takes over — discard local cache
       state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
       await mergePendingGuestTasks(user.uid);
       await fsLoadTasks(user.uid);
     } else {
       state.isProUser = false;
+      // Load cached guest tasks once we know the user is not signed in
+      if (!_guestCacheLoaded) {
+        _guestCacheLoaded = true;
+        loadTaskCache();
+      }
     }
   });
 }
@@ -2320,6 +2361,7 @@ function burstBubble(el, item) {
     }
     setTimeout(() => {
       item.remove();
+      saveTaskCache();
       const remaining = card.querySelectorAll('.task-item:not(.collapsing)').length;
       const cnt = card.querySelector('.cat-count');
       if (cnt) cnt.textContent = remaining;
@@ -2732,6 +2774,7 @@ function makeTaskItem(text, timing, cat, fsId) {
   });
 
   updateScreenState(); /* switch home → task list as soon as first task added */
+  saveTaskCache();
   return item;
 }
 
@@ -3299,10 +3342,12 @@ if (SR) {
       }
       if (newInterim) interimText = newInterim;  // keep latest interim
 
-      // Show live words — final so far + current interim phrase
+      // Show live words — rolling 2-line window (most recent speech only)
       const hint = document.getElementById('micModalHint');
       if (hint) {
-        const display = (fullTranscript + interimText).trim();
+        let display = (fullTranscript + interimText).trim();
+        // Keep only the last ~90 chars so it stays to ~2 lines and flows naturally
+        if (display.length > 90) display = display.slice(-90).replace(/^\S+\s/, '');
         if (display) hint.textContent = display;
       }
     };
@@ -3455,6 +3500,20 @@ if (SR) {
         ? 'タスクを認識できませんでした。もう一度試してください'
         : 'Nothing recognised — please try again');
       return;
+    }
+
+    // Guest task limit — cap voice tasks the same as manual add
+    if (FB_READY && !state.isLoggedIn) {
+      const current = document.querySelectorAll('.task-item:not(.collapsing)').length;
+      const allowed = Math.max(0, GUEST_MAX_TASKS - current);
+      if (allowed === 0) {
+        showToast(state.lang === 'ja'
+          ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
+          : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
+        openM('settingsModal');
+        return;
+      }
+      tasks = tasks.slice(0, allowed);
     }
 
     // Stagger tasks into the list
@@ -3816,6 +3875,18 @@ syncAllBubbles(); // sync add-preview bubble style on first load
   }
 })();
 
+// Restore language from localStorage and sync all toggles + mic
+(function restoreLang() {
+  const saved = localStorage.getItem('lang');
+  if (saved !== 'ja' && saved !== 'en') return;
+  if (saved === state.lang) return; // already default
+  state.lang = saved;
+  const isJA = saved === 'ja';
+  ['langEN','sLangEN'].forEach(id => document.getElementById(id)?.classList.toggle('active', !isJA));
+  ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
+  applyLang(saved);
+})();
+
 // Restore or clear doneForToday state on load
 if (isDoneForToday()) {
   state.carryOverCount = parseInt(localStorage.getItem('doneCarryOver') || '0', 10);
@@ -3898,12 +3969,14 @@ function updateClassifyModeUI() {
 document.getElementById('classifyModePrivate')?.addEventListener('click', () => {
   if (state.aiClassify === false) return;
   state.aiClassify = false;
+  localStorage.setItem('aiClassify', 'false');
   updateClassifyModeUI();
   showToast('Private mode — on-device only');
 });
 document.getElementById('classifyModeAI')?.addEventListener('click', () => {
   if (state.aiClassify === true) return;
   state.aiClassify = true;
+  localStorage.setItem('aiClassify', 'true');
   updateClassifyModeUI();
   showToast('AI mode — cloud enhanced');
 });
@@ -3917,12 +3990,50 @@ document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
 // Init chip on load
 updateClassifyModeUI();
 
+// Restore persisted prefs (colour, style, grey mode, AI mode)
+(function restorePrefs() {
+  const c  = localStorage.getItem('bubbleColour');
+  const s  = localStorage.getItem('bubbleStyle');
+  const g  = localStorage.getItem('greyBubbles');
+  const ai = localStorage.getItem('aiClassify');
+
+  if (c && document.querySelector(`[data-colour="${c}"]`)) {
+    state.bubbleColour = c;
+    document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
+      sw.classList.toggle('sel', sw.dataset.colour === c));
+  }
+  if (s) {
+    state.bubbleStyle = s;
+    document.querySelectorAll('.bst-tab').forEach(tab =>
+      tab.classList.toggle('active', tab.dataset.style === s));
+  }
+  if (g === 'true') {
+    state.greyBubbles = true;
+    document.getElementById('colourModeGrey')?.classList.add('active');
+    document.getElementById('colourModeBlue')?.classList.remove('active');
+  }
+  if (ai === 'false') {
+    state.aiClassify = false;
+    updateClassifyModeUI();
+  }
+  // Apply accent + sync all bubbles if anything changed
+  if (c || s || g || ai) {
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    } else if (state.greyBubbles) {
+      applyAccentVars(GREY_VARS);
+    }
+    syncAllBubbles();
+  }
+})();
+
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.bst-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.bubbleStyle = tab.dataset.style;
+    localStorage.setItem('bubbleStyle', state.bubbleStyle);
     updateBubblePreview();
     syncAllBubbles();
   });
@@ -3934,6 +4045,7 @@ document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
     document.querySelectorAll('#colourGrid .cswatch').forEach(s => s.classList.remove('sel'));
     sw.classList.add('sel');
     state.bubbleColour = sw.dataset.colour;
+    localStorage.setItem('bubbleColour', state.bubbleColour);
     updateBubblePreview();
     syncAllBubbles();
     // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
@@ -4262,6 +4374,7 @@ document.getElementById('defaultDeadlineChip')?.addEventListener('click', e => {
 document.getElementById('colourModeBlue')?.addEventListener('click', () => {
   if (!state.greyBubbles) return;
   state.greyBubbles = false;
+  localStorage.setItem('greyBubbles', 'false');
   document.getElementById('colourModeBlue').classList.add('active');
   document.getElementById('colourModeGrey').classList.remove('active');
   // Restore to the selected Pro colour if available, otherwise default blue
@@ -4276,6 +4389,7 @@ document.getElementById('colourModeBlue')?.addEventListener('click', () => {
 document.getElementById('colourModeGrey')?.addEventListener('click', () => {
   if (state.greyBubbles) return;
   state.greyBubbles = true;
+  localStorage.setItem('greyBubbles', 'true');
   document.getElementById('colourModeGrey').classList.add('active');
   document.getElementById('colourModeBlue').classList.remove('active');
   applyAccentVars(GREY_VARS);
@@ -4434,6 +4548,7 @@ async function applyLang(lang) {
     ['langEN','sLangEN'].forEach(i => document.getElementById(i)?.classList.toggle('active', isEN));
     ['langJP','sLangJP'].forEach(i => document.getElementById(i)?.classList.toggle('active', !isEN));
     state.lang = isEN ? 'en' : 'ja';
+    localStorage.setItem('lang', state.lang);
     // Apply language to all UI elements
     applyLang(state.lang);
     // Update recognition language immediately
