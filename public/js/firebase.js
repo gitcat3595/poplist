@@ -136,6 +136,16 @@ function signInWithGoogle() {
   });
 }
 
+function signInWithApple() {
+  if (!_auth) return;
+  const provider = new firebase.auth.OAuthProvider('apple.com');
+  provider.addScope('email');
+  provider.addScope('name');
+  _auth.signInWithPopup(provider).catch(e => {
+    if (e.code !== 'auth/popup-closed-by-user') showToast(e.message);
+  });
+}
+
 function _handleEmailAuth(email, password, isNew) {
   if (!_auth) return;
   const p = isNew
