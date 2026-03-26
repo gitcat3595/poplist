@@ -1952,7 +1952,7 @@ const state = {
   userId:       null,        // Firebase UID when signed in, null for guest
   isLoggedIn:   false,
   carryOverCount: 0,         // tasks carrying over after Done for today
-  defaultTiming:  'Later',   // new tasks start here; first tap → Today
+  defaultTiming:  'This Week', // new tasks default; restored from localStorage on load
 };
 
 /* ══════════════════════════════════════════
@@ -2459,8 +2459,15 @@ function chipLabel(timing) {
 function attachChip(chip) {
   chip.addEventListener('click', e => {
     e.stopPropagation();
-    const cur  = chip.dataset.timing || 'This Week';
-    const next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
+    let next;
+    if (!chip.dataset.tapped) {
+      // First tap always → Today, regardless of current timing
+      next = 'Today';
+      chip.dataset.tapped = '1';
+    } else {
+      const cur = chip.dataset.timing || 'This Week';
+      next = T_CYCLE[(T_CYCLE.indexOf(cur) + 1) % T_CYCLE.length];
+    }
     chip.dataset.timing = next;
     chip.textContent    = chipLabel(next);
   });
@@ -3719,6 +3726,19 @@ buildCatList();
 updateCatDragHandles();
 syncAllBubbles(); // sync add-preview bubble style on first load
 
+// Restore default timing from localStorage and sync settings chip
+(function restoreDefaultTiming() {
+  const saved = localStorage.getItem('defaultTiming');
+  if (saved && ['Today','This Week','Later'].includes(saved)) {
+    state.defaultTiming = saved;
+    const ddc = document.getElementById('defaultDeadlineChip');
+    if (ddc) {
+      ddc.dataset.timing = saved;
+      ddc.textContent    = chipLabel(saved);
+    }
+  }
+})();
+
 // Restore or clear doneForToday state on load
 if (isDoneForToday()) {
   state.carryOverCount = parseInt(localStorage.getItem('doneCarryOver') || '0', 10);
@@ -3913,7 +3933,15 @@ const openM  = id => document.getElementById(id).classList.add('show');
 const closeM = id => document.getElementById(id).classList.remove('show');
 
 document.getElementById('settingsBtn')?.addEventListener('click', () => openM('settingsModal'));
-document.getElementById('closeSettings')?.addEventListener('click', () => closeM('settingsModal'));
+document.getElementById('closeSettings')?.addEventListener('click', () => {
+  // Persist the default timing chosen in settings
+  const ddc = document.getElementById('defaultDeadlineChip');
+  if (ddc) {
+    state.defaultTiming = ddc.dataset.timing || 'This Week';
+    localStorage.setItem('defaultTiming', state.defaultTiming);
+  }
+  closeM('settingsModal');
+});
 document.getElementById('settingsModal')?.addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
 
 /* ── Legal document modal ── */
