@@ -182,7 +182,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1.5px solid var(--border);
   box-shadow:var(--shcard), 0 0 0 0 transparent;
   display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:3px; color:var(--black);
+  flex-direction:column; gap:3px; color:var(--blue);
   transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
   position:relative;
 }
@@ -206,13 +206,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:12px; color:var(--t3); min-height:16px;
   font-style:normal; text-align:center; transition:color .2s;
 }
-/* Classification mode chip — shown below voice button */
+/* Classification mode chip — sits in nav bar next to settings */
 .classify-mode-chip {
-  display:inline-flex; align-items:center; gap:3px;
-  font-size:10px; font-weight:700; letter-spacing:.3px;
-  padding:3px 9px; border-radius:20px;
+  display:inline-flex; align-items:center;
+  font-size:9px; font-weight:800; letter-spacing:.4px;
+  padding:2px 7px; border-radius:20px;
   border:1px solid var(--border); color:var(--t3);
-  background:var(--raised); cursor:pointer;
+  background:var(--raised); cursor:pointer; flex-shrink:0;
   transition:color .2s, border-color .2s, background .2s;
 }
 .classify-mode-chip.ai-mode {
@@ -484,7 +484,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-active { display:flex; align-items:center; padding:14px 16px 14px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
-  opacity:.28; pointer-events:none; align-self:center;
+  opacity:.9; pointer-events:none; align-self:center;
+  transition: transform .16s cubic-bezier(.25,.46,.45,.94);
 }
 .add-input-body { flex:1; min-width:0; position:relative; overflow:visible }
 .add-task-field {
@@ -1104,13 +1105,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   transition:var(--tr);
 }
 .done-carry-btn:hover { background:var(--blue); color:#fff }
-#doneForTodayBtn {
-  font-size:12px; font-weight:700; color:var(--t3);
-  padding:8px 22px; border-radius:var(--rp);
-  border:1px solid var(--border); background:none;
-  transition:var(--tr); cursor:pointer;
-}
-#doneForTodayBtn:hover { color:var(--t2); border-color:var(--brim) }
 @keyframes fade-up {
   from { opacity:0; transform:translateY(8px) }
   to   { opacity:1; transform:translateY(0) }
@@ -1156,6 +1150,121 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .compile-sub {
   font-size:12px; color:var(--t2); text-align:center; line-height:1.6; margin-top:-10px;
 }
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+
+/* ── Shared footer base ── */
+.site-footer {
+  width:100%; max-width:480px;
+  padding:0 20px;
+  margin-top:32px;
+}
+
+/* ══ VARIANT A — Ghost Strip (one-row, ultra-minimal) ══ */
+.footer-a {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  border-top:1px solid var(--border);
+  padding-top:16px; padding-bottom:20px;
+}
+.footer-a-logo {
+  font-size:13px; font-weight:900; letter-spacing:-.3px; color:var(--t2);
+  white-space:nowrap; flex-shrink:0;
+}
+.footer-a-logo em {
+  display:inline-block; width:5px; height:5px;
+  background:var(--blue); border-radius:50%;
+  margin-left:1px; vertical-align:super; font-style:normal;
+}
+.footer-a-links {
+  display:flex; align-items:center; flex-wrap:wrap; gap:0; justify-content:center;
+  flex:1;
+}
+.footer-a-links a {
+  font-size:10px; font-weight:600; color:var(--t3);
+  text-decoration:none; padding:2px 8px;
+  transition:color .18s;
+  border-right:1px solid var(--border);
+}
+.footer-a-links a:last-child { border-right:none }
+.footer-a-links a:hover { color:var(--blue) }
+.footer-a-copy {
+  font-size:10px; color:var(--t3); font-weight:500;
+  white-space:nowrap; flex-shrink:0;
+}
+
+/* ══ VARIANT B — Three Columns (structured, card-like) ══ */
+.footer-b {
+  border-top:1px solid var(--border);
+  padding-top:24px; padding-bottom:24px;
+}
+.footer-b-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;
+  margin-bottom:20px;
+}
+.footer-b-col-title {
+  font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+  color:var(--t3); margin-bottom:10px;
+}
+.footer-b-col a {
+  display:block; font-size:11px; font-weight:500; color:var(--t2);
+  text-decoration:none; padding:3px 0; transition:color .18s; line-height:1.4;
+}
+.footer-b-col a:hover { color:var(--blue) }
+.footer-b-brand { margin-bottom:6px }
+.footer-b-brand-logo {
+  font-size:14px; font-weight:900; letter-spacing:-.4px; color:var(--black-mid);
+}
+.footer-b-brand-logo em {
+  display:inline-block; width:6px; height:6px;
+  background:var(--blue); border-radius:50%;
+  margin-left:2px; vertical-align:super; font-style:normal;
+}
+.footer-b-tagline {
+  font-size:10px; color:var(--t3); font-weight:500; line-height:1.5; margin-top:4px;
+}
+.footer-b-bottom {
+  border-top:1px solid var(--border); padding-top:14px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.footer-b-copy { font-size:10px; color:var(--t3); font-weight:500 }
+
+/* ══ VARIANT C — Centered Compact (centered, clean) ══ */
+.footer-c {
+  text-align:center;
+  border-top:1px solid var(--border);
+  padding-top:20px; padding-bottom:24px;
+}
+.footer-c-logo {
+  font-size:15px; font-weight:900; letter-spacing:-.4px; color:var(--black-mid);
+  display:inline-flex; align-items:center; gap:1px;
+}
+.footer-c-logo em {
+  display:inline-block; width:6px; height:6px;
+  background:var(--blue); border-radius:50%;
+  margin-left:2px; vertical-align:super; font-style:normal;
+}
+.footer-c-tagline {
+  font-size:11px; color:var(--t3); font-weight:500; margin-top:4px; margin-bottom:16px;
+}
+.footer-c-links {
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:0;
+  margin-bottom:6px;
+}
+.footer-c-links a {
+  font-size:10px; font-weight:600; color:var(--t3);
+  text-decoration:none; padding:3px 9px;
+  border-right:1px solid var(--border);
+  transition:color .18s;
+}
+.footer-c-links a:last-child { border-right:none }
+.footer-c-links a:hover { color:var(--blue) }
+.footer-c-sep {
+  width:40px; height:1px; background:var(--border);
+  margin:12px auto;
+}
+.footer-c-copy { font-size:10px; color:var(--t3); font-weight:500 }
 
 /* ════════════════════════════════════════
    BOTTOM ACTION BAR (shown when tasks exist)
@@ -1207,6 +1316,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <button class="lang-btn active" id="langEN">EN</button>
       <button class="lang-btn" id="langJP">JP</button>
     </div>
+    <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — change in Settings">AI</span>
     <div class="nav-icon-btn" id="settingsBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
@@ -1229,7 +1339,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
         </svg>
       </button>
       <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
-      <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — tap Settings to change">AI</span>
     </div>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task manually</button>
   </div>
@@ -1335,11 +1444,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     </div>
   </div>
 
-  <!-- Done for today row -->
-  <div id="doneForTodayRow" style="display:none;text-align:center;padding:4px 16px 12px">
-    <button id="doneForTodayBtn" data-en="Done for today" data-ja="今日はここまで">Done for today</button>
-  </div>
-
   </div><!-- /taskListView -->
 
   <!-- old deploy section hidden -->
@@ -1437,6 +1541,72 @@ GoogleService-Info.plist
   </div>
 
 </div><!-- /container -->
+
+<!-- ═══════ FOOTER ═══════
+     Three variants — keep one, comment out the other two.
+     Active: VARIANT A (Ghost Strip) · VARIANT B (Three Columns) · VARIANT C (Centered)
+════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── VARIANT A · Ghost Strip ─────────────────────────────────── -->
+<footer class="site-footer footer-a" id="siteFooter">
+  <span class="footer-a-logo">Poplist<em></em></span>
+  <nav class="footer-a-links" aria-label="Footer">
+    <a href="/" data-en="Home" data-ja="ホーム">Home</a>
+    <a href="#" id="footerAbout" data-en="About" data-ja="について">About</a>
+    <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
+    <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+    <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
+  </nav>
+  <span class="footer-a-copy">© 2026 ALLERISE</span>
+</footer>
+
+<!--
+── VARIANT B · Three Columns ──────────────────────────────────────
+<footer class="site-footer footer-b" id="siteFooter">
+  <div class="footer-b-grid">
+    <div class="footer-b-col">
+      <div class="footer-b-brand">
+        <span class="footer-b-brand-logo">Poplist<em></em></span>
+        <p class="footer-b-tagline">Instant task list<br>generator</p>
+      </div>
+    </div>
+    <div class="footer-b-col">
+      <div class="footer-b-col-title" data-en="About" data-ja="について">About</div>
+      <a href="/" data-en="Home" data-ja="ホーム">Home</a>
+      <a href="#" id="footerAbout" data-en="About Poplist" data-ja="Poplistについて">About Poplist</a>
+      <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="#" id="footerDownload" data-en="Download" data-ja="ダウンロード">Download</a>
+    </div>
+    <div class="footer-b-col">
+      <div class="footer-b-col-title" data-en="Support" data-ja="サポート">Support</div>
+      <a href="/privacy.html" target="_blank" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</a>
+      <a href="/terms.html"   target="_blank" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+      <a href="/security.html" target="_blank" data-en="Security" data-ja="セキュリティ">Security</a>
+    </div>
+  </div>
+  <div class="footer-b-bottom">
+    <span class="footer-b-copy">© 2026 ALLERISE</span>
+  </div>
+</footer>
+-->
+
+<!--
+── VARIANT C · Centered Compact ────────────────────────────────────
+<footer class="site-footer footer-c" id="siteFooter">
+  <span class="footer-c-logo">Poplist<em></em></span>
+  <p class="footer-c-tagline">Instant task list generator</p>
+  <nav class="footer-c-links" aria-label="Footer">
+    <a href="/" data-en="Home" data-ja="ホーム">Home</a>
+    <a href="#" id="footerAbout" data-en="About" data-ja="について">About</a>
+    <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
+    <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+    <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
+    <a href="/security.html" target="_blank" data-en="Security" data-ja="セキュリティ">Security</a>
+  </nav>
+  <div class="footer-c-sep"></div>
+  <p class="footer-c-copy">© 2026 ALLERISE</p>
+</footer>
+-->
 
 <!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
 <div class="bottom-bar" id="bottomBar" style="display:none">
@@ -2280,7 +2450,6 @@ function syncAllBubbles() {
   if (ph) {
     ph.className = '';
     ph.classList.add('task-bubble', state.bubbleStyle, state.bubbleColour);
-    ph.style.opacity = '.3';
     ph.style.pointerEvents = 'none';
   }
 }
@@ -2689,6 +2858,14 @@ function updateCat() {
 }
 function setCatDisplay(cat, autoDetected) {
   setSelectedCat(cat);
+  // Pop the bubble circle so the luminous glow visually reacts to the detected category
+  const ph = document.getElementById('addBubblePh');
+  if (ph) {
+    ph.style.transform = 'scale(1.3)';
+    requestAnimationFrame(() => {
+      ph.style.transform = 'scale(1)';
+    });
+  }
 }
 addInput?.addEventListener('input', updateCat);
 
@@ -2897,17 +3074,7 @@ function clearDoneForToday() {
   state.carryOverCount = 0;
 }
 
-function updateDoneForTodayBtn() {
-  const row = document.getElementById('doneForTodayRow');
-  if (!row) return;
-  const hasTodayTasks = [...document.querySelectorAll('.task-item')]
-    .some(i => i.querySelector('.timing-chip')?.dataset.timing === 'Today');
-  row.style.display = hasTodayTasks && !isDoneForToday() ? '' : 'none';
-  if (state.lang === 'ja') {
-    const btn = document.getElementById('doneForTodayBtn');
-    if (btn) btn.textContent = '今日はここまで';
-  }
-}
+function updateDoneForTodayBtn() { /* button removed */ }
 
 function doneForToday() {
   const todayItems = [...document.querySelectorAll('.task-item')].filter(
@@ -3990,42 +4157,6 @@ document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
 // Init chip on load
 updateClassifyModeUI();
 
-// Restore persisted prefs (colour, style, grey mode, AI mode)
-(function restorePrefs() {
-  const c  = localStorage.getItem('bubbleColour');
-  const s  = localStorage.getItem('bubbleStyle');
-  const g  = localStorage.getItem('greyBubbles');
-  const ai = localStorage.getItem('aiClassify');
-
-  if (c && document.querySelector(`[data-colour="${c}"]`)) {
-    state.bubbleColour = c;
-    document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
-      sw.classList.toggle('sel', sw.dataset.colour === c));
-  }
-  if (s) {
-    state.bubbleStyle = s;
-    document.querySelectorAll('.bst-tab').forEach(tab =>
-      tab.classList.toggle('active', tab.dataset.style === s));
-  }
-  if (g === 'true') {
-    state.greyBubbles = true;
-    document.getElementById('colourModeGrey')?.classList.add('active');
-    document.getElementById('colourModeBlue')?.classList.remove('active');
-  }
-  if (ai === 'false') {
-    state.aiClassify = false;
-    updateClassifyModeUI();
-  }
-  // Apply accent + sync all bubbles if anything changed
-  if (c || s || g || ai) {
-    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
-      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
-    } else if (state.greyBubbles) {
-      applyAccentVars(GREY_VARS);
-    }
-    syncAllBubbles();
-  }
-})();
 
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
@@ -4353,6 +4484,10 @@ document.getElementById('howToUseLinkRow')?.addEventListener('click', () => {
 document.getElementById('faqLinkRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('aboutModal')?.addEventListener('click', e => { if(e.target.id==='aboutModal') closeM('aboutModal') });
 
+// Footer links
+document.getElementById('footerAbout')?.addEventListener('click', e => { e.preventDefault(); openM('aboutModal'); });
+document.getElementById('footerPlans')?.addEventListener('click', e => { e.preventDefault(); openM('settingsModal'); });
+
 document.getElementById('legalRowPrivacy')?.addEventListener('click', () => openLegal('privacy'));
 document.getElementById('legalRowTerms')?.addEventListener('click',   () => openLegal('terms'));
 document.getElementById('legalRowEula')?.addEventListener('click',    () => openLegal('eula'));
@@ -4443,6 +4578,42 @@ const COLOUR_ACCENT_VARS = {
   'bc-chrome': {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
   'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
 };
+
+/* Restore persisted prefs — runs after GREY_VARS + COLOUR_ACCENT_VARS are defined */
+(function restorePrefs() {
+  const c  = localStorage.getItem('bubbleColour');
+  const s  = localStorage.getItem('bubbleStyle');
+  const g  = localStorage.getItem('greyBubbles');
+  const ai = localStorage.getItem('aiClassify');
+
+  if (c && document.querySelector(`[data-colour="${c}"]`)) {
+    state.bubbleColour = c;
+    document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
+      sw.classList.toggle('sel', sw.dataset.colour === c));
+  }
+  if (s) {
+    state.bubbleStyle = s;
+    document.querySelectorAll('.bst-tab').forEach(tab =>
+      tab.classList.toggle('active', tab.dataset.style === s));
+  }
+  if (g === 'true') {
+    state.greyBubbles = true;
+    document.getElementById('colourModeGrey')?.classList.add('active');
+    document.getElementById('colourModeBlue')?.classList.remove('active');
+  }
+  if (ai === 'false') {
+    state.aiClassify = false;
+    updateClassifyModeUI();
+  }
+  if (c || s || g || ai) {
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    } else if (state.greyBubbles) {
+      applyAccentVars(GREY_VARS);
+    }
+    syncAllBubbles();
+  }
+})();
 
 /* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
 
