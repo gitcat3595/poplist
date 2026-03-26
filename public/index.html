@@ -182,7 +182,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1.5px solid var(--border);
   box-shadow:var(--shcard), 0 0 0 0 transparent;
   display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:3px; color:var(--black);
+  flex-direction:column; gap:3px; color:var(--blue);
   transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
   position:relative;
 }
@@ -206,13 +206,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:12px; color:var(--t3); min-height:16px;
   font-style:normal; text-align:center; transition:color .2s;
 }
-/* Classification mode chip — shown below voice button */
+/* Classification mode chip — sits in nav bar next to settings */
 .classify-mode-chip {
-  display:inline-flex; align-items:center; gap:3px;
-  font-size:10px; font-weight:700; letter-spacing:.3px;
-  padding:3px 9px; border-radius:20px;
+  display:inline-flex; align-items:center;
+  font-size:9px; font-weight:800; letter-spacing:.4px;
+  padding:2px 7px; border-radius:20px;
   border:1px solid var(--border); color:var(--t3);
-  background:var(--raised); cursor:pointer;
+  background:var(--raised); cursor:pointer; flex-shrink:0;
   transition:color .2s, border-color .2s, background .2s;
 }
 .classify-mode-chip.ai-mode {
@@ -1201,6 +1201,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <button class="lang-btn active" id="langEN">EN</button>
       <button class="lang-btn" id="langJP">JP</button>
     </div>
+    <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — change in Settings">AI</span>
     <div class="nav-icon-btn" id="settingsBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
@@ -1223,7 +1224,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
         </svg>
       </button>
       <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
-      <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — tap Settings to change">AI</span>
     </div>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task manually</button>
   </div>
