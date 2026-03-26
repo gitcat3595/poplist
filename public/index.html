@@ -1308,7 +1308,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 <nav class="nav">
   <div class="nav-logo">Poplist<em></em></div>
   <div class="nav-right">
-    <button class="nav-export" id="exportBtn">
+    <button class="nav-export" id="exportBtn" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       <span data-en="Export" data-ja="エクスポート">Export</span>
     </button>
@@ -1316,7 +1316,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       <button class="lang-btn active" id="langEN">EN</button>
       <button class="lang-btn" id="langJP">JP</button>
     </div>
-    <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — change in Settings">AI</span>
     <div class="nav-icon-btn" id="settingsBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
@@ -3118,29 +3117,35 @@ function updateScreenState() {
     homeScreen.style.display   = 'none';
     taskListView.style.display = 'none';
     bottomBar.style.display    = 'none';
+    const _eb = document.getElementById('exportBtn');
+    if (_eb) _eb.style.display = 'none';
     showDoneScreen();
     return;
   }
 
   const total = getTotalTasks();
+  const exportBtn = document.getElementById('exportBtn');
   if (total === 0) {
     const everHadTasks = document.querySelector('.category-card.was-used');
     if (everHadTasks) {
       homeScreen.style.display   = 'none';
       taskListView.style.display = 'none';
       bottomBar.style.display    = 'none';
+      if (exportBtn) exportBtn.style.display = 'none';
       showDoneScreen();
     } else {
       homeScreen.style.display   = '';
       taskListView.style.display = 'none';
       document.getElementById('doneScreen').style.display = 'none';
       bottomBar.style.display    = 'none';
+      if (exportBtn) exportBtn.style.display = 'none';
     }
   } else {
     homeScreen.style.display   = 'none';
     taskListView.style.display = '';
     document.getElementById('doneScreen').style.display = 'none';
     bottomBar.style.display    = '';
+    if (exportBtn) exportBtn.style.display = '';
     updateDoneForTodayBtn();
   }
 }
