@@ -1158,21 +1158,29 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
 /* ── Shared footer base ── */
 .site-footer {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   width:100%; max-width:480px;
   padding:0 20px;
-  margin-top:32px;
+  background:var(--bg);
+  z-index:10;
 }
 
-/* ══ VARIANT A — Ghost Strip (one-row, ultra-minimal) ══ */
+/* ══ VARIANT A — Ghost Strip (two-row on mobile) ══ */
 .footer-a {
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
   border-top:1px solid var(--border);
   padding-top:16px; padding-bottom:20px;
+}
+.footer-a-top {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  flex-wrap:wrap; width:100%;
 }
 .footer-a-logo {
   font-size:13px; font-weight:900; letter-spacing:-.3px; color:var(--t2);
   white-space:nowrap; flex-shrink:0;
+  background:none; border:none; cursor:pointer; padding:0; font-family:inherit;
 }
+.footer-a-logo:hover { color:var(--blue) }
 .footer-a-logo em {
   display:inline-block; width:5px; height:5px;
   background:var(--blue); border-radius:50%;
@@ -1180,7 +1188,6 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .footer-a-links {
   display:flex; align-items:center; flex-wrap:wrap; gap:0; justify-content:center;
-  flex:1;
 }
 .footer-a-links a {
   font-size:10px; font-weight:600; color:var(--t3);
@@ -1192,7 +1199,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .footer-a-links a:hover { color:var(--blue) }
 .footer-a-copy {
   font-size:10px; color:var(--t3); font-weight:500;
-  white-space:nowrap; flex-shrink:0;
+  text-align:center; width:100%;
 }
 
 /* ══ VARIANT B — Three Columns (structured, card-like) ══ */
@@ -1549,14 +1556,15 @@ GoogleService-Info.plist
 
 <!-- ── VARIANT A · Ghost Strip ─────────────────────────────────── -->
 <footer class="site-footer footer-a" id="siteFooter">
-  <span class="footer-a-logo">Poplist<em></em></span>
-  <nav class="footer-a-links" aria-label="Footer">
-    <a href="/" data-en="Home" data-ja="ホーム">Home</a>
-    <a href="#" id="footerAbout" data-en="About" data-ja="について">About</a>
-    <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
-    <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-    <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
-  </nav>
+  <div class="footer-a-top">
+    <button class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
+    <nav class="footer-a-links" aria-label="Footer">
+      <a href="#" id="footerAbout" data-en="About" data-ja="について">About</a>
+      <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
+    </nav>
+  </div>
   <span class="footer-a-copy">© 2026 ALLERISE</span>
 </footer>
 
@@ -3194,14 +3202,17 @@ function doneForToday() {
   });
 
   setTimeout(() => {
+    const _sf = document.getElementById('siteFooter');
     homeScreen.style.display   = 'none';
     taskListView.style.display = 'none';
     bottomBar.style.display    = 'none';
+    if (_sf) _sf.style.display = '';
     showDoneScreen();
   }, todayItems.length * 70 + 520);
 }
 
 function updateScreenState() {
+  const siteFooter = document.getElementById('siteFooter');
   // If user marked done for today, keep showing done screen regardless of carry-over tasks
   if (isDoneForToday() && document.querySelector('.category-card.was-used')) {
     homeScreen.style.display   = 'none';
@@ -3209,6 +3220,7 @@ function updateScreenState() {
     bottomBar.style.display    = 'none';
     const _eb = document.getElementById('exportBtn');
     if (_eb) _eb.style.display = 'none';
+    if (siteFooter) siteFooter.style.display = '';
     showDoneScreen();
     return;
   }
@@ -3222,6 +3234,7 @@ function updateScreenState() {
       taskListView.style.display = 'none';
       bottomBar.style.display    = 'none';
       if (exportBtn) exportBtn.style.display = 'none';
+      if (siteFooter) siteFooter.style.display = '';
       showDoneScreen();
     } else {
       homeScreen.style.display   = '';
@@ -3229,6 +3242,7 @@ function updateScreenState() {
       document.getElementById('doneScreen').style.display = 'none';
       bottomBar.style.display    = 'none';
       if (exportBtn) exportBtn.style.display = 'none';
+      if (siteFooter) siteFooter.style.display = '';
     }
   } else {
     homeScreen.style.display   = 'none';
@@ -3236,6 +3250,7 @@ function updateScreenState() {
     document.getElementById('doneScreen').style.display = 'none';
     bottomBar.style.display    = '';
     if (exportBtn) exportBtn.style.display = '';
+    if (siteFooter) siteFooter.style.display = 'none';
     updateDoneForTodayBtn();
   }
 }
@@ -3253,27 +3268,33 @@ function openManualAddCard(scrollIntoView) {
 document.getElementById('fabBtn')?.addEventListener('click', () => openManualAddCard(true));
 
 document.getElementById('homeManualBtn')?.addEventListener('click', () => {
+  const _sf = document.getElementById('siteFooter');
   homeScreen.style.display   = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
+  if (_sf) _sf.style.display = 'none';
   openManualAddCard(false);
 });
 
 document.getElementById('doneManualBtn')?.addEventListener('click', () => {
+  const _sf = document.getElementById('siteFooter');
   clearDoneForToday();
   document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
+  if (_sf) _sf.style.display = 'none';
   openManualAddCard(false);
 });
 
 document.getElementById('doneForTodayBtn')?.addEventListener('click', doneForToday);
 
 document.getElementById('seeCarryOverBtn')?.addEventListener('click', () => {
+  const _sf = document.getElementById('siteFooter');
   clearDoneForToday();
   document.getElementById('doneScreen').style.display = 'none';
   taskListView.style.display = '';
   bottomBar.style.display    = '';
+  if (_sf) _sf.style.display = 'none';
   // Show all tasks (carry-over may be This Week and/or Later)
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
@@ -3387,9 +3408,11 @@ async function processPasteList() {
   const homeScreen = document.getElementById('homeScreen');
   const taskListView = document.getElementById('taskListView');
   const bottomBar = document.getElementById('bottomBar');
+  const _sf = document.getElementById('siteFooter');
   if (homeScreen) homeScreen.style.display = 'none';
   if (taskListView) taskListView.style.display = '';
   if (bottomBar) bottomBar.style.display = '';
+  if (_sf) _sf.style.display = 'none';
 
   tasks.forEach((task, i) => {
     setTimeout(() => {
@@ -4584,6 +4607,7 @@ document.getElementById('aboutModal')?.addEventListener('click', e => { if(e.tar
 // Footer links
 document.getElementById('footerAbout')?.addEventListener('click', e => { e.preventDefault(); openM('aboutModal'); });
 document.getElementById('footerPlans')?.addEventListener('click', e => { e.preventDefault(); openM('settingsModal'); });
+document.getElementById('footerLogoBtn')?.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
 document.getElementById('legalRowPrivacy')?.addEventListener('click', () => openLegal('privacy'));
 document.getElementById('legalRowTerms')?.addEventListener('click',   () => openLegal('terms'));
