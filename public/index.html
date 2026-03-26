@@ -609,24 +609,24 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   to   { transform:translateY(0);    opacity:1 }
 }
 .modal-handle { width:36px; height:4px; background:var(--color-border); border-radius:var(--space-1); margin:0 auto var(--space-5); }
-.modal-title  { font-size:var(--text-lg); font-weight:var(--weight-black); margin-bottom:var(--space-5); letter-spacing:var(--tracking-tight); color:var(--color-text-1); }
+.modal-title  { font-size:var(--text-md); font-weight:var(--weight-extrabold); margin-bottom:var(--space-4); letter-spacing:var(--tracking-tight); color:var(--color-text-1); }
 .modal-sub    { font-size:13px; color:var(--t2); margin-bottom:22px; margin-top:-10px }
 
 /* Settings structure */
-.settings-section      { margin-bottom:28px }
+.settings-section      { margin-bottom:20px }
 .settings-section-label {
-  font-size:11px; font-weight:800; text-transform:uppercase;
-  letter-spacing:.8px; color:var(--t3); margin-bottom:12px;
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:8px;
   display:flex; align-items:center; gap:8px;
 }
 .settings-row {
-  display:flex; align-items:center; padding:12px 0;
+  display:flex; align-items:center; padding:11px 0;
   border-bottom:1px solid var(--border); gap:12px;
 }
 .settings-row:last-child { border-bottom:none }
 .legal-copyright { text-align:center; font-size:11px; color:var(--t3); margin:4px 0 16px }
 .legal-row:active { opacity:.6 }
-.settings-row-label { flex:1; font-size:14px; font-weight:600; color:var(--t1) }
+.settings-row-label { flex:1; font-size:13px; font-weight:600; color:var(--t1) }
 .settings-row-sub   { font-size:11px; color:var(--t3); margin-top:2px }
 .settings-row-right { font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px }
 
@@ -1808,18 +1808,6 @@ GoogleService-Info.plist
         </div>
       </div>
       <div class="settings-row">
-        <div style="flex:1;min-width:0">
-          <p class="settings-row-label" data-en="Classification" data-ja="分類モード">Classification</p>
-          <p class="settings-row-sub" data-en="Private: on-device only · AI: cloud enhanced" data-ja="プライベート: デバイスのみ · AI: クラウド強化">Private: on-device only · AI: cloud enhanced</p>
-        </div>
-        <div class="settings-row-right">
-          <div class="pill-toggle">
-            <button class="colour-mode-btn" id="classifyModePrivate" data-en="Private" data-ja="プライベート">Private</button>
-            <button class="colour-mode-btn active" id="classifyModeAI" data-en="AI" data-ja="AI">AI</button>
-          </div>
-        </div>
-      </div>
-      <div class="settings-row" style="border-bottom:none">
         <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
         <div class="settings-row-right">
           <div class="pill-toggle">
@@ -1894,19 +1882,21 @@ GoogleService-Info.plist
             </div>
           </div>
         </div>
-        <div class="pro-divider"></div>
-        <div class="pro-block">
-          <div class="pro-block-title" data-en="AI Classification" data-ja="AI分類">AI Classification</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px">
-            <div style="flex:1;min-width:0;padding-right:12px">
-              <p style="font-size:12px;color:var(--t2);line-height:1.5" data-en="Use AI for precise categorisation. When off, uses fast on-device keyword matching." data-ja="AIによる高精度な分類。オフにするとデバイス上のキーワードマッチングを使用。">Use AI for precise categorisation. When off, uses fast on-device keyword matching.</p>
-            </div>
-            <label class="ai-toggle-switch" id="aiClassifyToggle" title="AI Classification">
-              <input type="checkbox" id="aiClassifyCheck" checked>
-              <span class="ai-toggle-track"></span>
-            </label>
-          </div>
+      </div>
+    </div>
+
+    <!-- ══ AI CLASSIFICATION ══ -->
+    <div class="settings-section">
+      <div class="settings-section-label" data-en="AI" data-ja="AI">AI</div>
+      <div class="settings-row">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="AI Classification" data-ja="AI分類">AI Classification</p>
+          <p class="settings-row-sub" data-en="Cloud-enhanced · more precise categorisation" data-ja="クラウド強化・高精度な分類">Cloud-enhanced · more precise categorisation</p>
         </div>
+        <label class="ai-toggle-switch" id="aiClassifyToggle" title="AI Classification">
+          <input type="checkbox" id="aiClassifyCheck" checked>
+          <span class="ai-toggle-track"></span>
+        </label>
       </div>
     </div>
 
@@ -1991,55 +1981,51 @@ GoogleService-Info.plist
 <!-- ═══════ ABOUT APP MODAL ═══════ -->
 <div class="modal-overlay" id="aboutModal">
   <div class="modal-sheet" style="padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column">
-    <div style="padding:24px 20px 0;flex-shrink:0">
+    <div style="padding:20px 20px 0;flex-shrink:0">
       <div class="modal-handle"></div>
-      <!-- Logo row -->
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
-        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--blue);border-radius:14px;box-shadow:0 4px 14px var(--blue-glow);flex-shrink:0">
-          <span style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">P</span>
-        </div>
-        <div>
-          <p style="font-size:20px;font-weight:900;letter-spacing:-.4px;color:var(--black);line-height:1.2">Poplist</p>
-          <p style="font-size:12px;color:var(--t3);margin-top:2px" data-en="Version 1.0 · © 2026 Allerise Pte. Ltd." data-ja="バージョン 1.0 · © 2026 Allerise Pte. Ltd.">Version 1.0 · © 2026 Allerise Pte. Ltd.</p>
-        </div>
+      <!-- Logo -->
+      <div style="display:flex;justify-content:center;margin-bottom:20px;margin-top:4px">
+        <img src="/logo-black-filled.svg" alt="Poplist" style="width:56px;height:56px;border-radius:14px">
       </div>
     </div>
     <!-- Scrollable body -->
     <div style="overflow-y:auto;padding:0 20px 8px">
-      <!-- Brand story -->
-      <p style="font-size:16px;font-weight:800;color:var(--black);line-height:1.45;margin-bottom:14px" data-en="解消" data-ja="あたまが忙しい人のための、話して作るタスクリスト。">A voice-generated task list designed for busy minds.</p>
-      <p style="font-size:14px;color:var(--t2);line-height:1.75;margin-bottom:16px" data-en="Say what&rsquo;s on your mind, and Poplist automatically turns it into a clear, organised list." data-ja="頭に浮かんだことを話すだけで、Poplistが整理された一覧に変えてくれます。">Say what&rsquo;s on your mind, and Poplist automatically turns it into a clear, organised list.</p>
-      <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
-      <p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:14px" data-en="We created Poplist because too much energy gets wasted before the doing even begins. Organising, categorising, prioritising. Trying to remember everything. Carrying unfinished tasks around in your head. That invisible effort is exhausting." data-ja="Poplistを作ったのは、やる前にエネルギーを持っていかれすぎることに気づいたからです。整理、分類、優先順位をつける。忘れないように覚えようとする。そして、終わっていないタスクであたまがいっぱい。そして地味にエネルギーをけずられていく。">We created Poplist because too much energy gets wasted before the doing even begins. Organising. Categorising. Prioritising. Sorting. Trying to remember everything. Carrying unfinished tasks around in your head. That invisible effort is exhausting.</p>
-      <p style="font-size:13px;font-weight:700;color:var(--black);line-height:1.7;margin-bottom:14px" data-en="Poplist is designed to take that weight off." data-ja="Poplistはそれを解消します。">Poplist is designed to take that weight off.</p>
-      <p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:14px" data-en="Just talk about what&rsquo;s on your mind, and Poplist turns it into an organised task list for you." data-ja="頭にあることを話すだけで、Poplistが整理してタスクリストにしてくれます。">Just talk about what&rsquo;s on your mind, and Poplist turns it into an organised task list for you.</p>
-      <!-- Three bullets -->
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <p style="font-size:15px;font-weight:800;color:var(--black);line-height:1.4;margin-bottom:10px;text-align:center" data-en="A voice-generated task list designed for busy minds." data-ja="あたまが忙しい人のための、話して作るタスクリスト。">A voice-generated task list designed for busy minds.</p>
+      <p style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;text-align:center" data-en="Say what&rsquo;s on your mind and Poplist automatically turns it into a clear, organised list." data-ja="頭に浮かんだことを話すだけで、Poplistが整理された一覧に変えてくれます。">Say what&rsquo;s on your mind and Poplist automatically turns it into a clear, organised list.</p>
+
+      <div style="height:1px;background:var(--border);margin-bottom:20px"></div>
+
+      <p style="font-size:13px;color:var(--t2);line-height:1.75;margin-bottom:12px" data-en="We created Poplist because too much energy gets wasted before the doing even begins — organising, categorising, prioritising, trying to remember everything. That invisible effort is exhausting." data-ja="Poplistを作ったのは、やる前にエネルギーを持っていかれすぎることに気づいたからです。整理、分類、優先順位をつける。忘れないように覚えようとする。そして、終わっていないタスクであたまがいっぱい。地味にエネルギーをけずられていく。">We created Poplist because too much energy gets wasted before the doing even begins — organising, categorising, prioritising, trying to remember everything. That invisible effort is exhausting.</p>
+
+      <p style="font-size:13px;font-weight:700;color:var(--black);line-height:1.6;margin-bottom:16px" data-en="Poplist is designed to take that weight off." data-ja="Poplistはそれを解消します。">Poplist is designed to take that weight off.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
         <div style="display:flex;align-items:flex-start;gap:10px">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px"></span>
-          <p style="font-size:13px;color:var(--t2);line-height:1.65" data-en="No need to worry about forgetting." data-ja="忘れる心配なし。">No need to worry about forgetting.</p>
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px"></span>
+          <p style="font-size:13px;color:var(--t2);line-height:1.6" data-en="No need to worry about forgetting." data-ja="忘れる心配なし。">No need to worry about forgetting.</p>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px"></span>
-          <p style="font-size:13px;color:var(--t2);line-height:1.65" data-en="No need to tidy your thoughts before you speak." data-ja="話す前にの整理も不要。">No need to tidy your thoughts before you speak.</p>
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px"></span>
+          <p style="font-size:13px;color:var(--t2);line-height:1.6" data-en="No need to tidy your thoughts before you speak." data-ja="話す前の整理も不要。">No need to tidy your thoughts before you speak.</p>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px"></span>
-          <p style="font-size:13px;color:var(--t2);line-height:1.65" data-en="No need to carry unfinished tasks around in your head." data-ja="終わっていないタスクを抱えつづけなくても大丈夫。">No need to carry unfinished tasks around in your head.</p>
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px"></span>
+          <p style="font-size:13px;color:var(--t2);line-height:1.6" data-en="No need to carry unfinished tasks in your head." data-ja="終わっていないタスクを抱えつづけなくても大丈夫。">No need to carry unfinished tasks in your head.</p>
         </div>
       </div>
-      <p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:20px" data-en="Poplist does the organising, so you can focus on doing. Instead of spending your energy managing your thoughts, you can spend it on what you actually want to do." data-ja="Poplisが整理するから、あなたは「やること」に集中できる。思考の管理にエネルギーを使う代わりに、本当にやりたいことに使えるようになります。">Poplist does the organising, so you can focus on doing. Instead of spending your energy managing your thoughts, you can spend it on what you actually want to do.</p>
-      <p style="font-size:15px;font-weight:800;color:var(--black);letter-spacing:-.2px;margin-bottom:24px" data-en="Less mental load. More action." data-ja="整理するエネルギーを減らして、やることにエネルギーを。">Less mental load. More action.</p>
+
+      <p style="font-size:14px;font-weight:800;color:var(--black);letter-spacing:-.2px;margin-bottom:24px" data-en="Less mental load. More action." data-ja="整理するエネルギーを減らして、やることにエネルギーを。">Less mental load. More action.</p>
+
       <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
+
       <!-- App Store link (placeholder until live) -->
-      <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--raised);border:1px solid var(--border);border-radius:14px;opacity:.45;pointer-events:none;margin-bottom:16px">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--raised);border:1px solid var(--border);border-radius:12px;opacity:.45;pointer-events:none;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
         <div>
           <p style="font-size:13px;font-weight:700;color:var(--black)" data-en="App Store" data-ja="App Store">App Store</p>
           <p style="font-size:11px;color:var(--t3)" data-en="Coming soon" data-ja="近日公開予定">Coming soon</p>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--t3);line-height:1.6;text-align:center;margin-bottom:8px" data-en="Made with care in Singapore" data-ja="シンガポールで心を込めて制作">Made with care in Singapore</p>
     </div>
     <div style="padding:8px 16px 28px;flex-shrink:0">
       <button class="modal-cancel" id="closeAbout" data-en="Done" data-ja="完了">Done</button>
