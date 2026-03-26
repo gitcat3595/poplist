@@ -408,6 +408,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .bc-purple { --bubble-color:#7C3AED; --bubble-color-glow:rgba(124,58,237,.55);  --bubble-color-ink:rgba(124,58,237,.2);  --bubble-color-ink-border:rgba(124,58,237,.35);  --bubble-color-ink-glow:rgba(124,58,237,.18) }
 .bc-pink   { --bubble-color:#EC4899; --bubble-color-glow:rgba(236,72,153,.55);  --bubble-color-ink:rgba(236,72,153,.2);  --bubble-color-ink-border:rgba(236,72,153,.35);  --bubble-color-ink-glow:rgba(236,72,153,.18) }
 .bc-grey   { --bubble-color:#9CA3AF; --bubble-color-glow:rgba(156,163,175,.45); --bubble-color-ink:rgba(156,163,175,.2); --bubble-color-ink-border:rgba(156,163,175,.35); --bubble-color-ink-glow:rgba(156,163,175,.18) }
+.bc-chrome { --bubble-color:#374151; --bubble-color-glow:rgba(55,65,81,.45);    --bubble-color-ink:rgba(55,65,81,.14);   --bubble-color-ink-border:rgba(55,65,81,.28);    --bubble-color-ink-glow:rgba(55,65,81,.12)  }
 .bc-white  { --bubble-color:#CBD5E1; --bubble-color-glow:rgba(148,163,184,.45); --bubble-color-ink:rgba(229,231,235,.5); --bubble-color-ink-border:rgba(17,17,17,.18);    --bubble-color-ink-glow:rgba(17,17,17,.06)  }
 
 /* ════════════════════════════════════════
@@ -1698,7 +1699,7 @@ GoogleService-Info.plist
             <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
             <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
             <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
-            <div class="cswatch"     data-colour="bc-grey"   style="background:#9CA3AF"></div>
+            <div class="cswatch"     data-colour="bc-chrome" style="background:#374151"></div>
             <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;outline:1px solid var(--border)"></div>
           </div>
         </div>
@@ -2227,7 +2228,7 @@ function setBubbleClasses(el) {
   // Remove old style + colour classes (ALL 4 styles must be listed)
   el.classList.remove('luminous','solid','ring','ink');
   ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green','bc-lime','bc-yellow',
-   'bc-amber','bc-rose','bc-purple','bc-pink','bc-grey','bc-white'].forEach(c => el.classList.remove(c));
+   'bc-amber','bc-rose','bc-purple','bc-pink','bc-grey','bc-chrome','bc-white'].forEach(c => el.classList.remove(c));
   el.classList.add(state.bubbleStyle, state.bubbleColour);
 }
 
@@ -2260,7 +2261,7 @@ function burstBubble(el, item) {
   const _bcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
-    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
   const _bcClass = [...el.classList].find(c => c.startsWith('bc-'));
   const rawHex = _bcMap[_bcClass] || _bcMap[state.bubbleColour] || '#3B82F6';
@@ -2815,7 +2816,7 @@ function showDoneScreen() {
   const _dcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
-    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
   const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
 
@@ -4325,6 +4326,7 @@ const COLOUR_ACCENT_VARS = {
   'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
   'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
   'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
+  'bc-chrome': {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
   'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
 };
 
