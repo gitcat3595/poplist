@@ -1044,6 +1044,16 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   100% { opacity:1; transform:translateY(0) }
 }
 
+/* INLINE TODAY-DONE PANEL — lives inside taskListView below filter bar */
+#todayDoneInline {
+  display:flex; flex-direction:column; align-items:center;
+  padding:56px 24px 72px; text-align:center;
+  --bubble-color:#3B82F6; --done-glow:rgba(59,130,246,.12);
+  background:radial-gradient(ellipse at 50% 40%, var(--done-glow) 0%, transparent 65%);
+  opacity:0; transform:translateY(16px);
+  animation:done-enter .45s cubic-bezier(.32,.72,0,1) forwards;
+}
+
 /* Bubble-burst celebration — 16 bubbles, ~3s total, colour follows theme */
 .done-bubbles {
   position:relative; width:80px; height:80px; margin-bottom:24px;
@@ -1392,6 +1402,24 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     <button class="filter-btn" data-filter="week" data-en="This Week" data-ja="今週">This Week</button>
     <button class="filter-btn" data-filter="later" data-en="Later" data-ja="そのうち">Later</button>
     <button class="sort-btn" id="sortBtn" data-en="↕ Due" data-ja="↕ 期限">↕ Due</button>
+  </div>
+
+  <!-- TODAY DONE INLINE — shown when all Today tasks are completed, keeps filter bar visible -->
+  <div id="todayDoneInline" style="display:none">
+    <div class="done-bubbles" id="todayDoneBubblesAnchor" aria-hidden="true">
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+      <div class="done-bubble"></div>
+    </div>
+    <div class="done-title" id="todayDoneTitle">You're done for today</div>
+    <div class="done-sub" id="todayDoneSub">Today's tasks are all done!</div>
   </div>
 
   <div class="tasks-container" id="tasksContainer">
@@ -2615,6 +2643,7 @@ function burstBubble(el, item) {
     ).onfinish = () => p.remove();
   }
 
+  const wasToday = item.querySelector('.timing-chip')?.dataset.timing === 'Today';
   setTimeout(() => {
     item.classList.add('collapsing');
     const card = item.closest('.category-card');
@@ -2635,6 +2664,18 @@ function burstBubble(el, item) {
         card.style.transition = '';
         card.classList.add('empty');
         card.style.opacity = ''; card.style.transform = '';
+      }
+      // Check if this was the last Today task → show inline celebration
+      if (wasToday) {
+        const remainingToday = [...document.querySelectorAll('.task-item:not(.collapsing)')].filter(
+          i => i.querySelector('.timing-chip')?.dataset.timing === 'Today'
+        ).length;
+        if (remainingToday === 0) {
+          showTodayDoneInline();
+          return;
+        }
+      }
+      if (remaining === 0) {
         updateScreenState(); // ← check if all gone → show done screen
       } else {
         reapplyFilter(); // re-hide cards with no matching tasks under active filter
@@ -2648,8 +2689,8 @@ function burstBubble(el, item) {
    DONE-SCREEN BURST — same particle style as burstBubble(),
    fired in 3 waves for a swirling celebration
 ══════════════════════════════════════════ */
-function spawnDoneBurst(bubbleColor) {
-  const anchor = document.getElementById('doneBubblesAnchor') || document.querySelector('.done-bubbles');
+function spawnDoneBurst(bubbleColor, anchorEl) {
+  const anchor = anchorEl || document.getElementById('doneBubblesAnchor') || document.querySelector('.done-bubbles');
   if (!anchor) return;
   const r  = anchor.getBoundingClientRect();
   const cx = r.left + r.width  / 2;
@@ -2704,6 +2745,65 @@ function spawnDoneBurst(bubbleColor) {
       delay:    i * 14,
       fill:     'forwards'
     }).onfinish = () => p.remove();
+  }
+}
+
+/* ══════════════════════════════════════════
+   INLINE TODAY-DONE — shown inside taskListView when all Today tasks are cleared
+   • filter=today  → stays visible (no tasks left to show)
+   • filter≠today  → auto-dismisses after 3.2s, restores task list
+══════════════════════════════════════════ */
+let _todayDoneTimer = null;
+
+function showTodayDoneInline() {
+  const panel = document.getElementById('todayDoneInline');
+  if (!panel) return;
+  if (panel.style.display !== 'none') return; // already showing
+
+  const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+  const ja = state.lang === 'ja';
+
+  // Update text
+  const title = document.getElementById('todayDoneTitle');
+  const sub   = document.getElementById('todayDoneSub');
+  if (title) title.textContent = ja ? '今日もお疲れさまです' : "You're done for today";
+  if (sub)   sub.textContent   = ja ? '今日のタスクは完了！' : "Today's tasks are all done!";
+
+  // Set bubble color
+  const _dcMap = {
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
+    'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
+    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
+  };
+  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
+  panel.style.setProperty('--bubble-color', bubbleColor);
+  panel.style.setProperty('--done-glow', bubbleColor + '18');
+
+  // Restart all animations
+  panel.querySelectorAll('.done-title,.done-sub,.done-bubble').forEach(c => { c.style.animation = 'none'; });
+  panel.style.animation = 'none';
+  panel.offsetHeight; // trigger reflow
+  panel.style.animation = '';
+  panel.querySelectorAll('.done-title,.done-sub,.done-bubble').forEach(c => { c.style.animation = ''; });
+
+  // Hide tasks, show panel
+  const tasksContainer = document.getElementById('tasksContainer');
+  if (tasksContainer) tasksContainer.style.display = 'none';
+  panel.style.display = '';
+
+  // Spawn burst particles from the inline anchor
+  const anchor = document.getElementById('todayDoneBubblesAnchor');
+  requestAnimationFrame(() => spawnDoneBurst(bubbleColor, anchor));
+
+  // If not on today filter, auto-dismiss and restore tasks
+  if (activeFilter !== 'today') {
+    if (_todayDoneTimer) clearTimeout(_todayDoneTimer);
+    _todayDoneTimer = setTimeout(() => {
+      _todayDoneTimer = null;
+      panel.style.display = 'none';
+      if (tasksContainer) tasksContainer.style.display = '';
+      reapplyFilter();
+    }, 3200);
   }
 }
 
@@ -2882,6 +2982,15 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const f = btn.dataset.filter;
+
+    // Dismiss inline today-done panel if visible when switching filters
+    const _tdp = document.getElementById('todayDoneInline');
+    if (_tdp && _tdp.style.display !== 'none') {
+      _tdp.style.display = 'none';
+      if (_todayDoneTimer) { clearTimeout(_todayDoneTimer); _todayDoneTimer = null; }
+      const _tc = document.getElementById('tasksContainer');
+      if (_tc) _tc.style.display = '';
+    }
     document.querySelectorAll('.task-item').forEach(item => {
       if (f === 'all') { item.style.display = ''; return; }
       const t  = item.querySelector('.timing-chip')?.dataset.timing || '';
@@ -3202,27 +3311,32 @@ function doneForToday() {
   });
 
   setTimeout(() => {
-    const _sf = document.getElementById('siteFooter');
-    homeScreen.style.display   = 'none';
-    taskListView.style.display = 'none';
-    bottomBar.style.display    = 'none';
-    if (_sf) _sf.style.display = '';
-    showDoneScreen();
+    saveTaskCache();
+    showTodayDoneInline();
   }, todayItems.length * 70 + 520);
 }
 
 function updateScreenState() {
   const siteFooter = document.getElementById('siteFooter');
-  // If user marked done for today, keep showing done screen regardless of carry-over tasks
+
+  // Don't override the inline today-done panel while it's showing
+  const _tdPanel = document.getElementById('todayDoneInline');
+  if (_tdPanel && _tdPanel.style.display !== 'none') return;
+
+  // If user marked done for today but carry-over tasks remain, just show task list normally
   if (isDoneForToday() && document.querySelector('.category-card.was-used')) {
-    homeScreen.style.display   = 'none';
-    taskListView.style.display = 'none';
-    bottomBar.style.display    = 'none';
-    const _eb = document.getElementById('exportBtn');
-    if (_eb) _eb.style.display = 'none';
-    if (siteFooter) siteFooter.style.display = '';
-    showDoneScreen();
-    return;
+    if (getTotalTasks() > 0) {
+      // Has carry-over tasks — fall through to normal task-list display below
+    } else {
+      homeScreen.style.display   = 'none';
+      taskListView.style.display = 'none';
+      bottomBar.style.display    = 'none';
+      const _eb = document.getElementById('exportBtn');
+      if (_eb) _eb.style.display = 'none';
+      if (siteFooter) siteFooter.style.display = '';
+      showDoneScreen();
+      return;
+    }
   }
 
   const total = getTotalTasks();
