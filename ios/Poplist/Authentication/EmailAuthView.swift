@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct EmailAuthView: View {
     @EnvironmentObject private var authVM: AuthViewModel
@@ -28,15 +29,17 @@ struct EmailAuthView: View {
                 .padding(.top, 8)
 
                 VStack(spacing: 12) {
-                    TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                    NoAssistantTextField(placeholder: "Email", text: $email,
+                                        keyboardType: .emailAddress,
+                                        autocapitalizationType: .none)
+                        .frame(height: 22)
                         .padding()
                         .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
 
-                    SecureField("Password", text: $password)
+                    NoAssistantTextField(placeholder: "Password", text: $password,
+                                        isSecure: true)
+                        .frame(height: 22)
                         .padding()
                         .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
@@ -114,6 +117,49 @@ struct EmailAuthView: View {
             } message: {
                 Text("Check your inbox for a password reset link.")
             }
+        }
+    }
+}
+
+// UITextField wrapper that hides the iOS autofill/password toolbar above the keyboard
+private struct NoAssistantTextField: UIViewRepresentable {
+    let placeholder: String
+    @Binding var text: String
+    var isSecure: Bool = false
+    var keyboardType: UIKeyboardType = .default
+    var autocapitalizationType: UITextAutocapitalizationType = .sentences
+
+    func makeUIView(context: Context) -> UITextField {
+        let field = UITextField()
+        field.placeholder = placeholder
+        field.isSecureTextEntry = isSecure
+        field.keyboardType = keyboardType
+        field.autocapitalizationType = autocapitalizationType
+        field.autocorrectionType = .no
+        field.inputAssistantItem.leadingBarButtonGroups = []
+        field.inputAssistantItem.trailingBarButtonGroups = []
+        field.delegate = context.coordinator
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return field
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        if uiView.text != text { uiView.text = text }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(text: $text) }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        @Binding var text: String
+        init(text: Binding<String>) { _text = text }
+
+        func textField(_ textField: UITextField,
+                       shouldChangeCharactersIn range: NSRange,
+                       replacementString string: String) -> Bool {
+            if let current = textField.text, let swiftRange = Range(range, in: current) {
+                text = current.replacingCharacters(in: swiftRange, with: string)
+            }
+            return true
         }
     }
 }

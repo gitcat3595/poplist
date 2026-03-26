@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Poplist — How to Use</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --accent:    #3B82F6;
+  --accent-lt: #EFF6FF;
+  --accent-glow: rgba(59,130,246,.18);
+  --rp:   50px;
+  --rc:   16px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+a { text-decoration: none; color: inherit }
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
+}
+.nav-logo em {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--accent); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 0 8px var(--accent);
+}
+.nav-right { display: flex; align-items: center; gap: 8px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--accent); color: #fff }
+
+/* ── PAGE ── */
+.page { width: 100%; max-width: 480px; padding-bottom: 60px }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 32px 24px 20px;
+}
+.hero-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--accent); margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(59,130,246,.35);
+}
+.hero-icon svg { width: 26px; height: 26px; fill: #fff }
+.hero-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.6px;
+  color: var(--t1); line-height: 1.15; margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 13.5px; color: var(--t2); line-height: 1.6;
+  max-width: 300px; margin: 0 auto;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px; font-weight: 700; color: var(--t3);
+  letter-spacing: .8px; text-transform: uppercase;
+  padding: 24px 20px 10px;
+}
+
+/* ── STEPS ── */
+.steps-wrap {
+  margin: 0 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.step-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rc); padding: 16px 16px 16px 16px;
+  display: flex; gap: 14px; align-items: flex-start;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  transition: var(--tr);
+}
+.step-number {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-content {}
+.step-title {
+  font-size: 14px; font-weight: 700; color: var(--t1); margin-bottom: 4px;
+}
+.step-body {
+  font-size: 12.5px; color: var(--t2); line-height: 1.6;
+}
+.step-tip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 600; color: var(--accent);
+  background: var(--accent-lt); padding: 3px 8px;
+  border-radius: var(--rp); margin-top: 8px;
+  border: 1px solid rgba(59,130,246,.2);
+}
+
+/* ── FEATURE CARDS ── */
+.features-wrap {
+  margin: 0 16px; display: flex; flex-direction: column; gap: 0;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rc); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.feature-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.feature-row:last-child { border-bottom: none }
+.feat-icon {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: var(--raised); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.feat-body { flex: 1 }
+.feat-title {
+  font-size: 13.5px; font-weight: 700; color: var(--t1); margin-bottom: 3px;
+}
+.feat-desc {
+  font-size: 12px; color: var(--t2); line-height: 1.55;
+}
+.feat-pro-tag {
+  display: inline-block; font-size: 9px; font-weight: 800;
+  letter-spacing: .4px; text-transform: uppercase;
+  background: var(--accent); color: #fff;
+  padding: 1px 6px; border-radius: var(--rp);
+  vertical-align: middle; margin-left: 5px; position: relative; top: -1px;
+}
+
+/* ── FAQ ── */
+.faq-wrap {
+  margin: 0 16px; display: flex; flex-direction: column; gap: 0;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rc); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item:last-child { border-bottom: none }
+.faq-question {
+  width: 100%; text-align: left; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  padding: 14px 16px;
+  font-size: 13.5px; font-weight: 600; color: var(--t1);
+  cursor: pointer; transition: var(--tr);
+}
+.faq-question:active { background: var(--raised) }
+.faq-chevron {
+  width: 18px; height: 18px; flex-shrink: 0; color: var(--t3);
+  transition: transform .2s ease;
+}
+.faq-item.open .faq-chevron { transform: rotate(180deg) }
+.faq-answer {
+  display: none; padding: 0 16px 14px;
+  font-size: 12.5px; color: var(--t2); line-height: 1.6;
+}
+.faq-item.open .faq-answer { display: block }
+
+/* ── PLAN COMPARISON FOOTER ── */
+.plan-footer {
+  margin: 0 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.plan-footer-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--rc); padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  transition: var(--tr);
+}
+.plan-footer-card.pro { border-color: var(--accent) }
+.plan-footer-name {
+  font-size: 11px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+  color: var(--t3);
+}
+.plan-footer-card.pro .plan-footer-name { color: var(--accent) }
+.plan-footer-price {
+  font-size: 20px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
+}
+.plan-footer-note {
+  font-size: 10.5px; color: var(--t3); flex: 1;
+}
+.plan-footer-cta {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 700;
+  padding: 8px 12px; border-radius: 10px;
+  transition: var(--tr);
+}
+.plan-footer-card:not(.pro) .plan-footer-cta {
+  background: var(--raised); color: var(--t2); border: 1px solid var(--border);
+}
+.plan-footer-card:not(.pro) .plan-footer-cta:hover {
+  border-color: var(--accent); color: var(--accent);
+}
+.plan-footer-card.pro .plan-footer-cta {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 3px 12px rgba(59,130,246,.3);
+}
+.plan-footer-card.pro .plan-footer-cta:hover { opacity: .88 }
+
+/* ── BOTTOM NAV HINT ── */
+.bottom-hint {
+  text-align: center; font-size: 11px; color: var(--t3);
+  padding: 20px 24px 0;
+}
+.bottom-hint a { color: var(--accent); font-weight: 600 }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Poplist<em></em></a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">
+      <!-- book/guide icon -->
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+    </div>
+    <h1 class="hero-title">
+      <span data-en="How to use<br>Poplist" data-ja="Poplistの<br>使い方">How to use<br>Poplist</span>
+    </h1>
+    <p class="hero-sub">
+      <span data-en="Talk, tap, done. Your AI-powered to-do list that thinks like you." data-ja="話して、タップして、完了。あなたのように考えるAI搭載のToDoリスト。">Talk, tap, done. Your AI-powered to-do list that thinks like you.</span>
+    </p>
+  </div>
+
+  <!-- HOW TO GET STARTED -->
+  <div class="section-label">
+    <span data-en="Getting started" data-ja="はじめ方">Getting started</span>
+  </div>
+  <div class="steps-wrap">
+
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title" data-en="Tap the mic and speak" data-ja="マイクをタップして話す">Tap the mic and speak</div>
+        <div class="step-body" data-en="Say everything on your mind in one go — groceries, meetings, errands. Poplist listens and sorts it all automatically." data-ja="頭の中にあることを一度にすべて話してください。食料品の買い物、会議、用事など。Poplistがすべて自動的に整理します。">Say everything on your mind in one go — groceries, meetings, errands. Poplist listens and sorts it all automatically.</div>
+        <div class="step-tip">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/></svg>
+          <span data-en="Try: "Buy milk, email John, gym tomorrow"" data-ja="例：「牛乳を買う、田中さんにメール、明日ジム」">Try: "Buy milk, email John, gym tomorrow"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title" data-en="AI sorts your tasks" data-ja="AIがタスクを仕分け">AI sorts your tasks</div>
+        <div class="step-body" data-en="Poplist understands what each task is about and puts it in the right category — Work, Home, Personal, or Other. It also decides if it's for Today, This Week, or Later." data-ja="Poplistは各タスクの内容を理解し、仕事・家・個人・その他の適切なカテゴリに分類します。今日・今週・後でのどれかも自動的に決めます。">Poplist understands what each task is about and puts it in the right category — Work, Home, Personal, or Other. It also decides if it's for Today, This Week, or Later.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title" data-en="Tap to complete" data-ja="タップして完了">Tap to complete</div>
+        <div class="step-body" data-en="Done with a task? Tap it. It flies off with a satisfying animation. When everything's done, you get a celebration screen — you earned it." data-ja="タスクが終わったらタップ。気持ちよいアニメーションで消えます。すべて完了したら達成画面が表示されます。頑張りましたね！">Done with a task? Tap it. It flies off with a satisfying animation. When everything's done, you get a celebration screen — you earned it.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title" data-en="Filter to focus" data-ja="フィルターで集中">Filter to focus</div>
+        <div class="step-body" data-en="Switch between Today, This Week, and Later views. Or filter by category — only see Work tasks, or just Home. You're in control." data-ja="今日・今週・後でのビューを切り替えられます。カテゴリでフィルターも可能 — 仕事のタスクだけ、または家のタスクだけを表示。あなたがコントロールします。">Switch between Today, This Week, and Later views. Or filter by category — only see Work tasks, or just Home. You're in control.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <div class="step-title" data-en="Export any time" data-ja="いつでもエクスポート">Export any time</div>
+        <div class="step-body" data-en="Copy your list to clipboard, export as CSV for spreadsheets, or grab a plain-text version to paste anywhere." data-ja="リストをクリップボードにコピー、スプレッドシート用にCSVエクスポート、またはどこにでも貼り付けられるプレーンテキスト形式で取得できます。">Copy your list to clipboard, export as CSV for spreadsheets, or grab a plain-text version to paste anywhere.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN FEATURES -->
+  <div class="section-label">
+    <span data-en="Key features" data-ja="主な機能">Key features</span>
+  </div>
+  <div class="features-wrap">
+
+    <div class="feature-row">
+      <div class="feat-icon">🎤</div>
+      <div class="feat-body">
+        <div class="feat-title" data-en="Voice input" data-ja="音声入力">Voice input</div>
+        <div class="feat-desc" data-en="Speak naturally in English or Japanese. No special commands — just talk like you normally would." data-ja="日本語でも英語でも自然に話しかけてください。特別なコマンドは不要 — いつも通り話すだけです。">Speak naturally in English or Japanese. No special commands — just talk like you normally would.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-body">
+        <div class="feat-title" data-en="AI categorisation" data-ja="AI自動分類">AI categorisation</div>
+        <div class="feat-desc" data-en="Every task is automatically placed into Work, Home, Personal, or Other. Timing is assigned too — Today, This Week, or Later." data-ja="すべてのタスクが仕事・家・個人・その他に自動分類されます。今日・今週・後でのタイミングも自動で割り当てられます。">Every task is automatically placed into Work, Home, Personal, or Other. Timing is assigned too — Today, This Week, or Later.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">📋</div>
+      <div class="feat-body">
+        <div class="feat-title" data-en="Bulk add (Brain Dump)" data-ja="一括追加（ブレインダンプ）">Bulk add (Brain Dump)</div>
+        <div class="feat-desc" data-en="Paste a wall of text — a shopping list, a brain dump, meeting notes — and Poplist extracts and sorts every task automatically." data-ja="大量のテキストを貼り付けてください。買い物リスト、メモ書き、会議ノート — Poplistがすべてのタスクを抽出して自動的に分類します。">Paste a wall of text and Poplist extracts and sorts every task automatically.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Colour themes" data-ja="カラーテーマ">Colour themes</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="Choose from 13 accent colours. Change the whole app's look to match your mood or workspace — blue, green, purple, red and more." data-ja="13種類のアクセントカラーから選択。気分やワークスペースに合わせてアプリ全体の見た目を変えられます。">Choose from 13 accent colours. Change the whole app's look to match your mood or workspace.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🔵</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Category colours" data-ja="カテゴリカラー">Category colours</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="Set a different colour for each category — Work in blue, Home in green, Personal in purple. Your list, your colours." data-ja="各カテゴリに異なるカラーを設定 — 仕事は青、家は緑、個人は紫。あなたのリスト、あなたの色。">Set a different colour for each category — Work in blue, Home in green, Personal in purple.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🔑</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="Teach the AI your vocabulary. Map your own words to categories — so "standup" always goes to Work, "yoga" to Personal." data-ja="AIにあなたの語彙を教えましょう。自分の言葉をカテゴリにマップ — 「朝会」は常に仕事、「ヨガ」は個人に。">Teach the AI your vocabulary. Map your own words to categories so the AI learns how you think.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">🔁</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Task rollover" data-ja="タスク繰越">Task rollover</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="Unfinished tasks automatically carry forward to the next day. Never lose track of what's left — it's handled for you." data-ja="未完了タスクは翌日に自動的に繰り越されます。残っているタスクを見失わないよう、自動的に処理されます。">Unfinished tasks automatically carry forward to the next day. Never lose track of what's left.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">📊</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Weekly stats" data-ja="週間統計">Weekly stats</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="See how productive you've been this week, broken down by category. Free plan shows today only; PRO shows full history." data-ja="今週の生産性をカテゴリ別に確認。無料プランは今日のみ、PROは全履歴を表示。">See how productive you've been this week, broken down by category. PRO shows full history.</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feat-icon">☁️</div>
+      <div class="feat-body">
+        <div class="feat-title">
+          <span data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</span>
+          <span class="feat-pro-tag">PRO</span>
+        </div>
+        <div class="feat-desc" data-en="Sign in with Google or Apple and your tasks sync across all your devices instantly. Pick up where you left off." data-ja="GoogleまたはAppleでサインインすると、タスクがすべてのデバイスに即時同期。続きはどこでも。">Sign in and your tasks sync across all your devices instantly. Pick up where you left off anywhere.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-label">
+    <span data-en="Common questions" data-ja="よくある質問">Common questions</span>
+  </div>
+  <div class="faq-wrap">
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span data-en="Does it work offline?" data-ja="オフラインでも使えますか？">Does it work offline?</span>
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer" data-en="Yes — basic task entry and viewing works offline. AI classification and cloud sync require an internet connection." data-ja="はい — 基本的なタスクの入力と表示はオフラインで動作します。AI分類とクラウド同期にはインターネット接続が必要です。">Yes — basic task entry and viewing works offline. AI classification and cloud sync require an internet connection.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span data-en="Which languages does voice input support?" data-ja="音声入力はどの言語に対応していますか？">Which languages does voice input support?</span>
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer" data-en="Poplist supports English and Japanese voice input. You can even mix both languages in the same recording." data-ja="Poplistは英語と日本語の音声入力をサポートしています。同じ録音で両方の言語を混在させることもできます。">Poplist supports English and Japanese voice input. You can even mix both languages in the same recording.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span data-en="Can I use it without signing in?" data-ja="サインインなしで使えますか？">Can I use it without signing in?</span>
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer" data-en="Absolutely. Poplist works fully without an account — tasks are saved locally on your device. Sign in only if you want cloud sync across devices." data-ja="もちろんです。Poplistはアカウントなしで完全に動作します。タスクはデバイスにローカル保存されます。デバイス間のクラウド同期が必要な場合のみサインインしてください。">Absolutely. Poplist works fully without an account — tasks are saved locally. Sign in only if you want cloud sync.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span data-en="What's the difference between Free and PRO?" data-ja="無料とPROの違いは何ですか？">What's the difference between Free and PRO?</span>
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer" data-en="Free plan gives you up to 10 tasks, 2 colour themes, and basic stats. PRO unlocks unlimited tasks, 13 colour themes, custom keywords, category colours, task rollover, full stats, and cloud sync." data-ja="無料プランは最大10タスク、2種類のカラーテーマ、基本統計が使えます。PROは無制限タスク、13種類のカラーテーマ、カスタムキーワード、カテゴリカラー、タスク繰越、フル統計、クラウド同期がすべて解放されます。">Free gives you 10 tasks, 2 colour themes, and today-only stats. PRO unlocks everything — unlimited tasks, 13 themes, custom keywords, category colours, rollover, full stats, and cloud sync.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span data-en="Can I cancel my subscription?" data-ja="サブスクリプションはキャンセルできますか？">Can I cancel my subscription?</span>
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer" data-en="Yes, any time. Cancel from your account settings and you'll keep PRO access until the end of your billing period. Lifetime plan has no subscription to cancel." data-ja="はい、いつでも可能です。アカウント設定からキャンセルでき、課金期間終了まではPROアクセスを維持できます。買い切りプランにはキャンセルするサブスクリプションはありません。">Yes, any time. Cancel from your account settings and you'll keep PRO access until the end of your billing period. Lifetime plan has no subscription.</div>
+    </div>
+
+  </div>
+
+  <!-- PLAN PICKER FOOTER -->
+  <div class="section-label">
+    <span data-en="Choose your plan" data-ja="プランを選ぶ">Choose your plan</span>
+  </div>
+  <div class="plan-footer">
+
+    <div class="plan-footer-card">
+      <div class="plan-footer-name" data-en="Free" data-ja="無料">Free</div>
+      <div class="plan-footer-price" data-en="$0" data-ja="$0">$0</div>
+      <div class="plan-footer-note" data-en="10 tasks · 2 themes · basic stats" data-ja="10タスク · 2テーマ · 基本統計">10 tasks · 2 themes · basic stats</div>
+      <a href="pricing.html#plans" class="plan-footer-cta">
+        <span data-en="Free plan" data-ja="無料プラン">Free plan</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+    <div class="plan-footer-card pro">
+      <div class="plan-footer-name" data-en="PRO" data-ja="PRO">PRO</div>
+      <div class="plan-footer-price" data-en="$2.50/mo" data-ja="$2.50/月">$2.50/mo</div>
+      <div class="plan-footer-note" data-en="Unlimited everything · annual plan" data-ja="すべて無制限 · 年額プラン">Unlimited everything · annual plan</div>
+      <a href="pricing.html#plans" class="plan-footer-cta">
+        <span data-en="See PRO plans" data-ja="PROプランを見る">See PRO plans</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <p class="bottom-hint">
+    <span data-en="Questions? " data-ja="ご質問は？ ">Questions? </span>
+    <a href="mailto:hello@poplist.app" data-en="Contact us" data-ja="お問い合わせ">Contact us</a>
+  </p>
+
+</div>
+
+<script>
+// ── Language toggle ──
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang);
+    if (txt) el.innerHTML = txt;
+  });
+}
+
+// ── FAQ accordion ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>

@@ -485,7 +485,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-active { display:flex; align-items:center; padding:14px 16px 14px; gap:13px }
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
-  opacity:.9; pointer-events:none; align-self:center;
+  opacity:.3; pointer-events:none; align-self:center;
   transition: transform .16s cubic-bezier(.25,.46,.45,.94);
 }
 .add-input-body { flex:1; min-width:0; position:relative; overflow:visible }
@@ -3064,14 +3064,6 @@ function updateCat() {
 }
 function setCatDisplay(cat, autoDetected) {
   setSelectedCat(cat);
-  // Pop the bubble circle so the luminous glow visually reacts to the detected category
-  const ph = document.getElementById('addBubblePh');
-  if (ph) {
-    ph.style.transform = 'scale(1.3)';
-    requestAnimationFrame(() => {
-      ph.style.transform = 'scale(1)';
-    });
-  }
 }
 addInput?.addEventListener('input', updateCat);
 
@@ -3433,7 +3425,7 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
   const inp = document.createElement('input');
   inp.className   = 'inline-add-inp';
   inp.placeholder = state.lang === 'ja' ? 'タスクを入力…' : 'Type a task…';
-  if (textEl) textEl.style.visibility = 'hidden';
+  if (textEl) textEl.style.display = 'none';
   row.style.opacity = '1';
   row.appendChild(inp);
   inp.focus();
@@ -3443,7 +3435,7 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
     if (_done) return; _done = true;
     const text = inp.value.trim();
     inp.remove();
-    if (textEl) textEl.style.visibility = '';
+    if (textEl) textEl.style.display = '';
     row.style.opacity = '';
     if (!text) return;
     const timing = state.defaultTiming || 'This Week';
@@ -4991,27 +4983,26 @@ function dl(name, content, type) {
   a.click(); URL.revokeObjectURL(a.href);
 }
 document.getElementById('exportCSV')?.addEventListener('click', () => {
-  const rows = [['Task','Category','Deadline'], ...allTasks().map(t=>[`"${t.text.replace(/"/g,'""')}"`,t.cat,t.timing])];
-  dl('poplist.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
+  const rows = [['Category', 'Task', 'Due'], ...allTasks().map(t=>[t.cat.toUpperCase(), `"${t.text.replace(/"/g,'""')}"`, t.timing])];
+  dl('poplist.csv', rows.map(r=>r.join(', ')).join('\n'), 'text/csv');
   showToast(state.lang==='ja' ? 'CSVとして書き出しました' : 'Exported as CSV'); closeM('exportModal');
 });
-document.getElementById('exportTXT')?.addEventListener('click', () => {
+function buildTextExport() {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
-  let out = `POPLIST — ${new Date().toLocaleDateString()}\n${'─'.repeat(32)}\n`;
+  const parts = [];
   Object.entries(cats).forEach(([c,items]) => {
-    out += `\n${c.toUpperCase()}\n`;
-    items.forEach(t => { out += `  [ ] ${t.text}  (${t.timing})\n` });
+    let block = `${c.toUpperCase()}\n`;
+    block += items.map(t => `${t.text} : ${t.timing}`).join('\n');
+    parts.push(block);
   });
-  dl('poplist.txt', out, 'text/plain');
+  return parts.join('\n\n');
+}
+document.getElementById('exportTXT')?.addEventListener('click', () => {
+  dl('poplist.txt', buildTextExport(), 'text/plain');
   showToast(state.lang==='ja' ? 'テキストとして書き出しました' : 'Exported as text'); closeM('exportModal');
 });
 document.getElementById('exportCopy')?.addEventListener('click', () => {
-  const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
-  let out = '';
-  Object.entries(cats).forEach(([c,items]) => {
-    out += `${c}\n`; items.forEach(t => { out += `  - ${t.text} [${t.timing}]\n` }); out += '\n';
-  });
-  navigator.clipboard.writeText(out.trim())
+  navigator.clipboard.writeText(buildTextExport())
     .then(() => showToast(state.lang==='ja' ? 'クリップボードにコピーしました' : 'Copied to clipboard!'))
     .catch(() => showToast(state.lang==='ja' ? 'CSVをお試しください' : 'Try CSV instead'));
   closeM('exportModal');

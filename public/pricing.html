@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Poplist — Plans & Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --accent:    #3B82F6;
+  --accent-lt: #EFF6FF;
+  --accent-glow: rgba(59,130,246,.18);
+  --rp:   50px;
+  --rc:   16px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent; scroll-behavior: smooth }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+a { text-decoration: none; color: inherit }
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
+}
+.nav-logo em {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--accent); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 0 8px var(--accent);
+}
+.nav-right { display: flex; align-items: center; gap: 8px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--accent); color: #fff }
+
+/* ── PAGE CONTAINER ── */
+.page { width: 100%; max-width: 480px; padding-bottom: 60px }
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 32px 24px 24px;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-lt); color: var(--accent);
+  font-size: 11px; font-weight: 700; letter-spacing: .4px;
+  padding: 5px 12px; border-radius: var(--rp);
+  border: 1px solid rgba(59,130,246,.25);
+  margin-bottom: 14px;
+}
+.hero-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.6px;
+  color: var(--t1); line-height: 1.15; margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 13.5px; color: var(--t2); line-height: 1.55;
+  max-width: 280px; margin: 0 auto;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px; font-weight: 700; color: var(--t3);
+  letter-spacing: .8px; text-transform: uppercase;
+  padding: 20px 20px 8px;
+}
+
+/* ── COMPARISON TABLE ── */
+.compare-wrap {
+  margin: 0 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--rc);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+}
+.compare-header {
+  display: grid; grid-template-columns: 1fr 80px 80px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  gap: 8px; align-items: center;
+}
+.compare-header-label {
+  font-size: 10px; font-weight: 700; color: var(--t3);
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.compare-col-head {
+  text-align: center;
+}
+.col-plan-name {
+  font-size: 11px; font-weight: 700; color: var(--t2);
+  margin-bottom: 2px;
+}
+.col-plan-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+  font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: var(--rp);
+  transition: var(--tr); cursor: pointer;
+}
+.col-plan-cta.free-cta {
+  background: var(--surface); color: var(--t2);
+  border: 1px solid var(--border);
+}
+.col-plan-cta.free-cta:hover { border-color: var(--accent); color: var(--accent) }
+.col-plan-cta.pro-cta {
+  background: var(--accent); color: #fff;
+}
+.col-plan-cta.pro-cta:hover { opacity: .88 }
+
+.compare-row {
+  display: grid; grid-template-columns: 1fr 80px 80px;
+  padding: 11px 14px; gap: 8px; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.compare-row:last-child { border-bottom: none }
+.compare-row:nth-child(odd) { background: rgba(0,0,0,.015) }
+.feat-info {}
+.feat-name {
+  font-size: 13px; font-weight: 600; color: var(--t1); margin-bottom: 1px;
+}
+.feat-desc-small {
+  font-size: 10.5px; color: var(--t3); line-height: 1.3;
+}
+.compare-val {
+  text-align: center;
+}
+.val-free {
+  font-size: 11px; font-weight: 600; color: var(--t2);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: var(--rp); display: inline-block;
+}
+.val-pro {
+  font-size: 11px; font-weight: 700; color: #fff;
+  background: var(--accent);
+  padding: 2px 7px; border-radius: var(--rp); display: inline-block;
+}
+.val-dash {
+  font-size: 15px; color: var(--t3); display: block; text-align: center;
+}
+.val-check {
+  font-size: 14px; color: var(--accent); display: block; text-align: center; font-weight: 800;
+}
+
+/* ── PLAN TOGGLE ── */
+.plan-toggle-section {
+  padding: 24px 20px 0;
+  text-align: center;
+}
+.plan-toggle-wrap {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rp);
+  padding: 4px;
+  gap: 2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.toggle-pill {
+  font-size: 13px; font-weight: 700;
+  padding: 8px 20px; border-radius: var(--rp);
+  color: var(--t2); transition: var(--tr);
+  position: relative; display: flex; align-items: center; gap: 6px;
+}
+.toggle-pill.active {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 2px 12px rgba(59,130,246,.4);
+}
+.save-badge {
+  font-size: 10px; font-weight: 700;
+  background: rgba(255,255,255,.25); color: #fff;
+  padding: 1px 6px; border-radius: var(--rp);
+}
+.toggle-pill:not(.active) .save-badge {
+  background: rgba(59,130,246,.12); color: var(--accent);
+}
+
+/* ── PLAN CARD ── */
+.plan-display {
+  margin: 16px 16px 0;
+}
+.plan-price-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--rc);
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+  transition: var(--tr);
+}
+.plan-price-card.active-plan {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12), 0 4px 16px rgba(0,0,0,.06);
+}
+.price-row {
+  display: flex; align-items: flex-end; gap: 8px; margin-bottom: 6px;
+}
+.price-big {
+  font-size: 36px; font-weight: 900; letter-spacing: -1px; color: var(--t1);
+}
+.price-per {
+  font-size: 13px; color: var(--t2); padding-bottom: 6px;
+}
+.price-note {
+  font-size: 12px; color: var(--t3); margin-bottom: 16px;
+}
+.price-cta-btn {
+  width: 100%; height: 50px; border-radius: 14px;
+  background: var(--accent); color: #fff;
+  font-size: 16px; font-weight: 800; font-family: var(--font);
+  letter-spacing: -.2px;
+  transition: var(--tr); border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(59,130,246,.38);
+}
+.price-cta-btn:hover { opacity: .88; transform: translateY(-1px) }
+.price-cta-btn:active { opacity: .8; transform: none }
+
+/* ── LIFETIME BLOCK ── */
+.lifetime-section { padding: 20px 16px 0 }
+.lifetime-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--rc);
+  padding: 20px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+}
+.lifetime-badge {
+  position: absolute; top: -11px; left: 16px;
+  font-size: 10px; font-weight: 800; letter-spacing: .4px;
+  text-transform: uppercase;
+  background: #EF4444; color: #fff;
+  padding: 3px 10px; border-radius: var(--rp);
+}
+.lifetime-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.lifetime-icon {
+  font-size: 22px;
+}
+.lifetime-title {
+  font-size: 17px; font-weight: 800; color: var(--t1);
+}
+.lifetime-sub {
+  font-size: 12px; color: var(--t2); margin-bottom: 14px; line-height: 1.5;
+}
+.lifetime-price-row {
+  display: flex; align-items: baseline; gap: 6px; margin-bottom: 16px;
+}
+.lifetime-price {
+  font-size: 34px; font-weight: 900; letter-spacing: -1px; color: var(--t1);
+}
+.lifetime-price-label {
+  font-size: 13px; color: var(--t2);
+}
+.lifetime-cta-btn {
+  width: 100%; height: 50px; border-radius: 14px;
+  background: var(--t1); color: #fff;
+  font-size: 16px; font-weight: 800; font-family: var(--font);
+  letter-spacing: -.2px;
+  transition: var(--tr); border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.lifetime-cta-btn:hover { opacity: .88; transform: translateY(-1px) }
+.lifetime-cta-btn:active { opacity: .8; transform: none }
+.lifetime-perks {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0;
+}
+.perk-chip {
+  font-size: 10.5px; font-weight: 600; color: var(--t2);
+  background: var(--raised); border: 1px solid var(--border);
+  padding: 3px 9px; border-radius: var(--rp);
+}
+
+/* ── FOOTER LEGAL ── */
+.legal-note {
+  text-align: center; font-size: 10.5px; color: var(--t3);
+  padding: 24px 24px 0; line-height: 1.55;
+}
+
+/* ── HIDDEN STATES ── */
+.plan-block { display: none }
+.plan-block.active { display: block }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Poplist<em></em></a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      <span data-en="Poplist PRO" data-ja="Poplist PRO">Poplist PRO</span>
+    </div>
+    <h1 class="hero-title">
+      <span data-en="Simple pricing,<br>zero surprises." data-ja="シンプルな料金、<br>驚きなし。">Simple pricing,<br>zero surprises.</span>
+    </h1>
+    <p class="hero-sub">
+      <span data-en="Unlock all features. Pay the way that works for you." data-ja="すべての機能を解放。あなたに合った支払い方法を選んでください。">Unlock all features. Pay the way that works for you.</span>
+    </p>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="section-label">
+    <span data-en="FREE vs PRO" data-ja="無料 vs PRO">FREE vs PRO</span>
+  </div>
+  <div class="compare-wrap">
+    <div class="compare-header">
+      <div class="compare-header-label">
+        <span data-en="Feature" data-ja="機能">Feature</span>
+      </div>
+      <div class="compare-col-head">
+        <div class="col-plan-name" data-en="Free" data-ja="無料">Free</div>
+        <a href="#plans" class="col-plan-cta free-cta">
+          <span data-en="Free" data-ja="無料">Free</span>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+      <div class="compare-col-head">
+        <div class="col-plan-name" data-en="PRO" data-ja="PRO">PRO</div>
+        <a href="#plans" class="col-plan-cta pro-cta">
+          <span data-en="PRO" data-ja="PRO">PRO</span>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Tasks" data-ja="タスク数">Tasks</div>
+        <div class="feat-desc-small" data-en="Max tasks per list" data-ja="リストの最大タスク数">Max tasks per list</div>
+      </div>
+      <div class="compare-val"><span class="val-free" data-en="10" data-ja="10">10</span></div>
+      <div class="compare-val"><span class="val-pro" data-en="∞" data-ja="∞">∞</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Colour palettes" data-ja="カラーパレット">Colour palettes</div>
+        <div class="feat-desc-small" data-en="App theme colours" data-ja="アプリテーマカラー">App theme colours</div>
+      </div>
+      <div class="compare-val"><span class="val-free">2</span></div>
+      <div class="compare-val"><span class="val-pro">13</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Category colours" data-ja="カテゴリカラー">Category colours</div>
+        <div class="feat-desc-small" data-en="Per-category custom colour" data-ja="カテゴリごとのカスタムカラー">Per-category custom colour</div>
+      </div>
+      <div class="compare-val"><span class="val-dash">—</span></div>
+      <div class="compare-val"><span class="val-check">✓</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</div>
+        <div class="feat-desc-small" data-en="AI learns your vocabulary" data-ja="AIがあなたの言葉を学習">AI learns your vocabulary</div>
+      </div>
+      <div class="compare-val"><span class="val-dash">—</span></div>
+      <div class="compare-val"><span class="val-check">✓</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Category names" data-ja="カテゴリ名">Category names</div>
+        <div class="feat-desc-small" data-en="Rename Work, Home, etc." data-ja="仕事、家など名前を変更">Rename Work, Home, etc.</div>
+      </div>
+      <div class="compare-val"><span class="val-dash">—</span></div>
+      <div class="compare-val"><span class="val-check">✓</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Task rollover" data-ja="タスク繰越">Task rollover</div>
+        <div class="feat-desc-small" data-en="Carry unfinished tasks forward" data-ja="未完了タスクを翌日へ繰越">Carry unfinished tasks forward</div>
+      </div>
+      <div class="compare-val"><span class="val-dash">—</span></div>
+      <div class="compare-val"><span class="val-check">✓</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Weekly stats" data-ja="週間統計">Weekly stats</div>
+        <div class="feat-desc-small" data-en="Full completion history" data-ja="完了履歴をフルで確認">Full completion history</div>
+      </div>
+      <div class="compare-val"><span class="val-free" data-en="Today" data-ja="今日">Today</span></div>
+      <div class="compare-val"><span class="val-pro" data-en="Full" data-ja="フル">Full</span></div>
+    </div>
+
+    <div class="compare-row">
+      <div class="feat-info">
+        <div class="feat-name" data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</div>
+        <div class="feat-desc-small" data-en="Sync across all devices" data-ja="すべてのデバイスで同期">Sync across all devices</div>
+      </div>
+      <div class="compare-val"><span class="val-dash">—</span></div>
+      <div class="compare-val"><span class="val-check">✓</span></div>
+    </div>
+
+  </div>
+
+  <!-- PLAN TOGGLE & PRICE DISPLAY -->
+  <div id="plans" class="plan-toggle-section">
+    <div class="plan-toggle-wrap">
+      <button class="toggle-pill active" id="pill-monthly" onclick="setPlan('monthly')">
+        <span data-en="Monthly" data-ja="月額">Monthly</span>
+      </button>
+      <button class="toggle-pill" id="pill-annual" onclick="setPlan('annual')">
+        <span data-en="Annual" data-ja="年額">Annual</span>
+        <span class="save-badge" data-en="-22%" data-ja="-22%">-22%</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="plan-display">
+    <!-- MONTHLY -->
+    <div class="plan-block active-plan plan-block active" id="block-monthly">
+      <div class="plan-price-card active-plan">
+        <div class="price-row">
+          <div class="price-big">$3.20</div>
+          <div class="price-per"><span data-en="/month" data-ja="/ 月">/month</span></div>
+        </div>
+        <div class="price-note" data-en="Billed monthly · cancel any time" data-ja="月額課金 · いつでもキャンセル可">Billed monthly · cancel any time</div>
+        <button class="price-cta-btn" onclick="goNotify('monthly')" data-en="Get PRO Monthly →" data-ja="PRO 月額プランを始める →">Get PRO Monthly →</button>
+      </div>
+    </div>
+
+    <!-- ANNUAL -->
+    <div class="plan-block" id="block-annual">
+      <div class="plan-price-card active-plan">
+        <div class="price-row">
+          <div class="price-big">$2.50</div>
+          <div class="price-per"><span data-en="/month" data-ja="/ 月">/month</span></div>
+        </div>
+        <div class="price-note">
+          <span data-en="$30 billed annually · save $8.40/year" data-ja="年間 $30 一括払い · 年間 $8.40 お得">$30 billed annually · save $8.40/year</span>
+        </div>
+        <button class="price-cta-btn" onclick="goNotify('annual')" data-en="Get PRO Annual →" data-ja="PRO 年額プランを始める →">Get PRO Annual →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFETIME BLOCK -->
+  <div class="lifetime-section">
+    <div class="lifetime-card">
+      <div class="lifetime-badge" data-en="Launch Price" data-ja="リリース記念価格">Launch Price</div>
+      <div class="lifetime-header">
+        <span class="lifetime-icon">♾️</span>
+        <span class="lifetime-title" data-en="Lifetime" data-ja="買い切り">Lifetime</span>
+      </div>
+      <div class="lifetime-sub" data-en="One-time purchase. All PRO features, forever. No subscriptions, no renewals." data-ja="一度だけの購入。すべてのPRO機能を永久に。サブスクなし、更新なし。">
+        One-time purchase. All PRO features, forever. No subscriptions, no renewals.
+      </div>
+      <div class="lifetime-price-row">
+        <div class="lifetime-price">$60</div>
+        <div class="lifetime-price-label" data-en="one-time" data-ja="買い切り">one-time</div>
+      </div>
+      <button class="lifetime-cta-btn" onclick="goNotify('lifetime')" data-en="Get Lifetime Access →" data-ja="買い切りプランを入手 →">Get Lifetime Access →</button>
+      <div class="lifetime-perks">
+        <span class="perk-chip" data-en="All PRO features" data-ja="全PRO機能">All PRO features</span>
+        <span class="perk-chip" data-en="Future updates" data-ja="将来のアップデート">Future updates</span>
+        <span class="perk-chip" data-en="No recurring fees" data-ja="継続費用なし">No recurring fees</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="legal-note" data-en="Payments via Stripe. Subscriptions renew automatically — cancel any time. Lifetime is a one-time purchase with no recurring charge." data-ja="Stripeによる決済。サブスクリプションは自動更新 — いつでもキャンセル可。買い切りは一回限りの支払いです。">
+    Payments via Stripe. Subscriptions renew automatically — cancel any time.<br>Lifetime is a one-time purchase with no recurring charge.
+  </p>
+
+</div>
+
+<script>
+// ── Language toggle ──
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang);
+    if (txt) el.innerHTML = txt;
+  });
+}
+
+// ── Plan toggle ──
+function setPlan(plan) {
+  document.querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('pill-' + plan).classList.add('active');
+  document.querySelectorAll('.plan-block').forEach(b => b.classList.remove('active'));
+  document.getElementById('block-' + plan).classList.add('active');
+}
+
+// ── Navigate to notify page ──
+function goNotify(plan) {
+  window.location.href = 'notify.html?plan=' + plan;
+}
+
+// ── Plan card interaction ──
+document.querySelectorAll('.plan-card-select').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.plan-card-select').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>
