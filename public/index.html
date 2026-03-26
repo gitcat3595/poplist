@@ -4983,27 +4983,26 @@ function dl(name, content, type) {
   a.click(); URL.revokeObjectURL(a.href);
 }
 document.getElementById('exportCSV')?.addEventListener('click', () => {
-  const rows = [['Task','Category','Deadline'], ...allTasks().map(t=>[`"${t.text.replace(/"/g,'""')}"`,t.cat,t.timing])];
-  dl('poplist.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
+  const rows = [['Category', 'Task', 'Due'], ...allTasks().map(t=>[t.cat.toUpperCase(), `"${t.text.replace(/"/g,'""')}"`, t.timing])];
+  dl('poplist.csv', rows.map(r=>r.join(', ')).join('\n'), 'text/csv');
   showToast(state.lang==='ja' ? 'CSVとして書き出しました' : 'Exported as CSV'); closeM('exportModal');
 });
-document.getElementById('exportTXT')?.addEventListener('click', () => {
+function buildTextExport() {
   const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
-  let out = `POPLIST — ${new Date().toLocaleDateString()}\n${'─'.repeat(32)}\n`;
+  const parts = [];
   Object.entries(cats).forEach(([c,items]) => {
-    out += `\n${c.toUpperCase()}\n`;
-    items.forEach(t => { out += `  [ ] ${t.text}  (${t.timing})\n` });
+    let block = `${c.toUpperCase()}\n`;
+    block += items.map(t => `${t.text} : ${t.timing}`).join('\n');
+    parts.push(block);
   });
-  dl('poplist.txt', out, 'text/plain');
+  return parts.join('\n\n');
+}
+document.getElementById('exportTXT')?.addEventListener('click', () => {
+  dl('poplist.txt', buildTextExport(), 'text/plain');
   showToast(state.lang==='ja' ? 'テキストとして書き出しました' : 'Exported as text'); closeM('exportModal');
 });
 document.getElementById('exportCopy')?.addEventListener('click', () => {
-  const cats = {}; allTasks().forEach(t => (cats[t.cat]=cats[t.cat]||[]).push(t));
-  let out = '';
-  Object.entries(cats).forEach(([c,items]) => {
-    out += `${c}\n`; items.forEach(t => { out += `  - ${t.text} [${t.timing}]\n` }); out += '\n';
-  });
-  navigator.clipboard.writeText(out.trim())
+  navigator.clipboard.writeText(buildTextExport())
     .then(() => showToast(state.lang==='ja' ? 'クリップボードにコピーしました' : 'Copied to clipboard!'))
     .catch(() => showToast(state.lang==='ja' ? 'CSVをお試しください' : 'Try CSV instead'));
   closeM('exportModal');
