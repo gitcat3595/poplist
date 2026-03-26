@@ -1930,14 +1930,6 @@ GoogleService-Info.plist
   ═══════════════════════════════════════════════════════════ -->
 
 <script>
-/* Global error catcher — shows JS errors as a visible banner so we can debug */
-window.onerror = function(msg, src, line, col, err) {
-  const banner = document.createElement('div');
-  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;padding:10px 14px;font-size:12px;font-family:monospace;z-index:99999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto';
-  banner.textContent = '⚠ JS ERROR line ' + line + ': ' + msg + (err?.stack ? '\n' + err.stack.split('\n').slice(0,4).join('\n') : '');
-  document.body.prepend(banner);
-  return false;
-};
 
 /* ══════════════════════════════════════════
    STATE — mirrors Firestore data model
