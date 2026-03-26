@@ -3976,42 +3976,6 @@ document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
 // Init chip on load
 updateClassifyModeUI();
 
-// Restore persisted prefs (colour, style, grey mode, AI mode)
-(function restorePrefs() {
-  const c  = localStorage.getItem('bubbleColour');
-  const s  = localStorage.getItem('bubbleStyle');
-  const g  = localStorage.getItem('greyBubbles');
-  const ai = localStorage.getItem('aiClassify');
-
-  if (c && document.querySelector(`[data-colour="${c}"]`)) {
-    state.bubbleColour = c;
-    document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
-      sw.classList.toggle('sel', sw.dataset.colour === c));
-  }
-  if (s) {
-    state.bubbleStyle = s;
-    document.querySelectorAll('.bst-tab').forEach(tab =>
-      tab.classList.toggle('active', tab.dataset.style === s));
-  }
-  if (g === 'true') {
-    state.greyBubbles = true;
-    document.getElementById('colourModeGrey')?.classList.add('active');
-    document.getElementById('colourModeBlue')?.classList.remove('active');
-  }
-  if (ai === 'false') {
-    state.aiClassify = false;
-    updateClassifyModeUI();
-  }
-  // Apply accent + sync all bubbles if anything changed
-  if (c || s || g || ai) {
-    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
-      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
-    } else if (state.greyBubbles) {
-      applyAccentVars(GREY_VARS);
-    }
-    syncAllBubbles();
-  }
-})();
 
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
@@ -4429,6 +4393,42 @@ const COLOUR_ACCENT_VARS = {
   'bc-chrome': {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
   'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
 };
+
+/* Restore persisted prefs — runs after GREY_VARS + COLOUR_ACCENT_VARS are defined */
+(function restorePrefs() {
+  const c  = localStorage.getItem('bubbleColour');
+  const s  = localStorage.getItem('bubbleStyle');
+  const g  = localStorage.getItem('greyBubbles');
+  const ai = localStorage.getItem('aiClassify');
+
+  if (c && document.querySelector(`[data-colour="${c}"]`)) {
+    state.bubbleColour = c;
+    document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
+      sw.classList.toggle('sel', sw.dataset.colour === c));
+  }
+  if (s) {
+    state.bubbleStyle = s;
+    document.querySelectorAll('.bst-tab').forEach(tab =>
+      tab.classList.toggle('active', tab.dataset.style === s));
+  }
+  if (g === 'true') {
+    state.greyBubbles = true;
+    document.getElementById('colourModeGrey')?.classList.add('active');
+    document.getElementById('colourModeBlue')?.classList.remove('active');
+  }
+  if (ai === 'false') {
+    state.aiClassify = false;
+    updateClassifyModeUI();
+  }
+  if (c || s || g || ai) {
+    if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
+      applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
+    } else if (state.greyBubbles) {
+      applyAccentVars(GREY_VARS);
+    }
+    syncAllBubbles();
+  }
+})();
 
 /* (greyToggleBtn removed — replaced by colourModeBlue/colourModeGrey above) */
 
