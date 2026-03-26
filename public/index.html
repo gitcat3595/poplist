@@ -1685,7 +1685,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: This Week → Today → Later." data-ja="期限チップをタップで切り替え：今週 → 今日 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
+        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
@@ -1952,6 +1952,7 @@ const state = {
   userId:       null,        // Firebase UID when signed in, null for guest
   isLoggedIn:   false,
   carryOverCount: 0,         // tasks carrying over after Done for today
+  defaultTiming:  'Later',   // new tasks start here; first tap → Today
 };
 
 /* ══════════════════════════════════════════
@@ -2449,7 +2450,7 @@ document.getElementById('catEditModal')?.addEventListener('click', e => {
 /* ══════════════════════════════════════════
    TIMING CHIP — cycle on click (no × icon)
 ══════════════════════════════════════════ */
-const T_CYCLE = ['Later','This Week','Today'];
+const T_CYCLE = ['Today','This Week','Later'];
 
 const T_LABELS_JA = { 'Today': '今日', 'This Week': '今週', 'Later': 'そのうち' };
 function chipLabel(timing) {
