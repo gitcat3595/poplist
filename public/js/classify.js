@@ -72,6 +72,9 @@ async function classifyTranscript(transcript) {
   const categoryKeywords = {};
   state.categories.forEach(c => { if (c.keywords.length) categoryKeywords[c.en] = c.keywords; });
 
+  // If AI classification is disabled (PRO toggle off), use local keyword fallback directly
+  if (!state.aiClassify) return localClassify(transcript, defaultTiming);
+
   // Try Cloudflare Worker → OpenAI (key lives in Cloudflare secrets, never in browser)
   try {
     const res = await fetch('/api/classify', {
