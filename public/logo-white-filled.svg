@@ -12,9 +12,9 @@
       <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
     </radialGradient>
     <radialGradient id="bubble-dark-small" cx="38%" cy="28%" r="65%">
-      <stop offset="0%" stop-color="#333333" stop-opacity="1"/>
-      <stop offset="60%" stop-color="#181818" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+      <stop offset="0%" stop-color="#60A5FA" stop-opacity="1"/>
+      <stop offset="60%" stop-color="#3B82F6" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#1D4ED8" stop-opacity="1"/>
     </radialGradient>
     <!-- specular highlights -->
     <radialGradient id="spec-lw" cx="36%" cy="28%" r="38%">
@@ -37,9 +37,9 @@
   <!-- specular highlight -->
   <ellipse cx="185" cy="220" rx="78" ry="54" fill="url(#spec-lw)" transform="rotate(-18,185,220)"/>
 
-  <!-- Small rounded-square bubble -->
+  <!-- Small circle bubble -->
   <g filter="url(#shadow-small)">
-    <rect x="268" y="72" width="158" height="158" rx="42" ry="42" fill="url(#bubble-dark-small)"/>
+    <circle cx="347" cy="151" r="79" fill="url(#bubble-dark-small)"/>
   </g>
   <!-- specular highlight small -->
   <ellipse cx="321" cy="118" rx="44" ry="30" fill="url(#spec-sw)" transform="rotate(-18,321,118)"/>

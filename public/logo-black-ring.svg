@@ -27,11 +27,11 @@
     stroke-width="1.5"
     opacity="0.5"/>
 
-  <!-- Small rounded-square — RING style: thin stroke, no fill -->
+  <!-- Small circle — RING style: thin stroke, no fill -->
   <g filter="url(#glow-ring)">
-    <rect x="268" y="72" width="158" height="158" rx="42" ry="42"
+    <circle cx="347" cy="151" r="79"
       fill="none"
-      stroke="#888888"
+      stroke="#3B82F6"
       stroke-width="3"/>
   </g>
 </svg>
