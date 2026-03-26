@@ -1,0 +1,241 @@
+/*
+ * ════════════════════════════════════════════════════════════
+ *  POPLIST — Design System
+ *  あそびのあるミニマリスト  ·  Playful Minimalist
+ *
+ *  Tone: minimal, calm, bold — with a hint of humour.
+ *  The accent colour is the user's. Everything else is neutral.
+ *
+ *  Sections:
+ *    1. Primitive Colours
+ *    2. Semantic Colour Tokens
+ *    3. Typography Scale
+ *    4. Spacing Scale
+ *    5. Border Radius Scale
+ *    6. Shadows
+ *    7. Motion
+ *    8. Layout
+ *    9. Legacy Aliases  (backward-compat; do not use in new code)
+ * ════════════════════════════════════════════════════════════
+ */
+
+/* ──────────────────────────────────────────────────────────
+   1. PRIMITIVE COLOURS
+   Raw values only. Never use these directly in components —
+   always go through semantic tokens.
+   ────────────────────────────────────────────────────────── */
+:root {
+
+  /* Gray ramp */
+  --gray-0:   #FFFFFF;
+  --gray-50:  #F5F6F8;
+  --gray-100: #ECEEF2;
+  --gray-200: #E2E4E9;
+  --gray-300: #D4D7DD;
+  --gray-400: #BFC3CA;
+  --gray-500: #9CA3AF;
+  --gray-600: #6B7280;
+  --gray-700: #374151;
+  --gray-900: #111111;
+
+  /* Blue (default accent) */
+  --blue-50:  #EFF6FF;
+  --blue-100: rgba(59, 130, 246, 0.18);
+  --blue-500: #3B82F6;
+  --blue-700: #1D4ED8;
+  --blue-900: #1E40AF;
+
+  /* Accent palette — all 12 theme colours */
+  --swatch-blue:       #3B82F6;
+  --swatch-navy:       #1E40AF;
+  --swatch-teal:       #0D9488;
+  --swatch-green:      #16A34A;
+  --swatch-orange:     #F97316;
+  --swatch-red:        #EF4444;
+  --swatch-pink:       #EC4899;
+  --swatch-purple:     #7C3AED;
+  --swatch-black:      #111111;
+  --swatch-slate:      #475569;
+  --swatch-gray:       #9CA3AF;
+  --swatch-lightgray:  #E5E7EB;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   2. SEMANTIC COLOUR TOKENS
+   These are what components use. They express intent, not hue.
+   ────────────────────────────────────────────────────────── */
+:root {
+
+  /* — Surfaces — */
+  --color-bg:       var(--gray-100);   /* page background      */
+  --color-surface:  var(--gray-200);   /* nav strip, sheet nav */
+  --color-card:     var(--gray-0);     /* card, modal body     */
+  --color-raised:   var(--gray-50);    /* hover, subtle inset  */
+  --color-overlay:  var(--gray-300);   /* dividers             */
+
+  /* — Text — */
+  --color-text-1:   var(--gray-900);   /* primary (headings, task names) */
+  --color-text-2:   var(--gray-600);   /* secondary (descriptions)       */
+  --color-text-3:   var(--gray-500);   /* tertiary (placeholders, hints) */
+
+  /* — Borders — */
+  --color-border:   var(--gray-300);   /* default divider/outline */
+  --color-border-strong: var(--gray-400); /* stronger border, selected state */
+
+  /* — Accent (user-chosen; defaults to blue) —
+     Components should always reference --color-accent, not --blue-500
+     directly, so themes propagate automatically.              */
+  --color-accent:       var(--blue-500);
+  --color-accent-dim:   var(--blue-700);
+  --color-accent-light: var(--blue-50);
+  --color-accent-glow:  var(--blue-100);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   3. TYPOGRAPHY SCALE
+   One size per role. Use the role, not the raw pixel value.
+   ────────────────────────────────────────────────────────── */
+:root {
+
+  /* — Font family — */
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+
+  /* — Size scale — */
+  --text-label:   10px;   /* section headers (UPPERCASE only, +tracking) */
+  --text-xs:      11px;   /* captions, hints, sub-descriptions            */
+  --text-sm:      13px;   /* secondary body, row descriptions             */
+  --text-base:    14px;   /* primary body, task text, button labels       */
+  --text-md:      16px;   /* emphasized lead copy                         */
+  --text-lg:      18px;   /* modal/sheet titles                           */
+  --text-xl:      22px;   /* page headings                                */
+  --text-2xl:     28px;   /* display / welcome hero                       */
+
+  /* — Weight scale — */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;  /* body emphasis, settings rows        */
+  --weight-bold:     700;  /* labels, chips, action text          */
+  --weight-extrabold:800;  /* headings, section titles, buttons   */
+  --weight-black:    900;  /* hero text, logo, welcome title      */
+
+  /* — Line heights — */
+  --leading-tight:  1.3;
+  --leading-snug:   1.45;
+  --leading-normal: 1.6;
+  --leading-relaxed:1.75;
+
+  /* — Letter spacing — */
+  --tracking-tight: -0.4px;
+  --tracking-normal: 0;
+  --tracking-wide:   0.4px;
+  --tracking-widest: 0.8px;  /* for UPPERCASE labels */
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   4. SPACING SCALE  (base-4 grid)
+   Everything snaps to this grid. No ad-hoc pixel values.
+   ────────────────────────────────────────────────────────── */
+:root {
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;   /* default horizontal gutter */
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Named aliases (intent > number) */
+  --gutter:     var(--space-5);   /* left/right page margin */
+  --gutter-sm:  var(--space-4);   /* tighter contexts       */
+  --section-gap:var(--space-6);   /* gap between sections   */
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   5. BORDER RADIUS SCALE
+   ────────────────────────────────────────────────────────── */
+:root {
+  --radius-xs:   6px;    /* small badges, tiny chips         */
+  --radius-sm:  10px;    /* list items, small cards          */
+  --radius-md:  14px;    /* inputs, medium elements          */
+  --radius-lg:  18px;    /* cards, main panels               */
+  --radius-xl:  24px;    /* sheets, bottom modals            */
+  --radius-pill: 50px;   /* full-pill buttons, toggles, chips*/
+  --radius-full: 9999px; /* perfect circles                  */
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   6. SHADOWS
+   ────────────────────────────────────────────────────────── */
+:root {
+  --shadow-card: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shadow-lift: 0 2px 8px rgba(0,0,0,.10);
+  --shadow-btn:  0 4px 20px rgba(17,17,17,.22);
+  --shadow-accent: 0 4px 16px var(--color-accent-glow);
+  --shadow-float: 0 4px 20px rgba(0,0,0,.25);  /* FAB */
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   7. MOTION
+   ────────────────────────────────────────────────────────── */
+:root {
+  --ease-standard:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-enter:     cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring:    cubic-bezier(0.32, 0.72, 0, 1);
+
+  --duration-fast:  140ms;
+  --duration-base:  180ms;
+  --duration-slow:  260ms;
+  --duration-modal: 300ms;
+
+  --transition: var(--duration-base) var(--ease-standard);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   8. LAYOUT
+   ────────────────────────────────────────────────────────── */
+:root {
+  --max-width:    480px;   /* mobile container max-width */
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   9. LEGACY ALIASES
+   Keeps old variable names working while pages migrate.
+   Remove these once all pages reference the new tokens.
+   ────────────────────────────────────────────────────────── */
+:root {
+  --bg:        var(--color-bg);
+  --surface:   var(--color-surface);
+  --card:      var(--color-card);
+  --raised:    var(--color-raised);
+  --t1:        var(--color-text-1);
+  --t2:        var(--color-text-2);
+  --t3:        var(--color-text-3);
+  --border:    var(--color-border);
+  --brim:      var(--color-border-strong);
+  --blue:      var(--color-accent);
+  --blue-dim:  var(--color-accent-dim);
+  --blue-lt:   var(--color-accent-light);
+  --blue-glow: var(--color-accent-glow);
+  --black:     var(--gray-900);
+  --black-mid: var(--gray-700);
+  --shcard:    var(--shadow-card);
+  --shlift:    var(--shadow-lift);
+  --shbtn:     var(--shadow-accent);
+  --rc:        var(--radius-lg);
+  --rp:        var(--radius-pill);
+  --font:      var(--font-sans);
+  --tr:        var(--transition);
+}
