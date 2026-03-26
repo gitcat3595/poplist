@@ -1930,14 +1930,6 @@ GoogleService-Info.plist
   ═══════════════════════════════════════════════════════════ -->
 
 <script>
-/* Global error catcher — shows JS errors as a visible banner so we can debug */
-window.onerror = function(msg, src, line, col, err) {
-  const banner = document.createElement('div');
-  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;padding:10px 14px;font-size:12px;font-family:monospace;z-index:99999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto';
-  banner.textContent = '⚠ JS ERROR line ' + line + ': ' + msg + (err?.stack ? '\n' + err.stack.split('\n').slice(0,4).join('\n') : '');
-  document.body.prepend(banner);
-  return false;
-};
 
 /* ══════════════════════════════════════════
    STATE — mirrors Firestore data model
@@ -2050,7 +2042,7 @@ async function mergePendingGuestTasks(uid) {
     const id = await fsAddTask(text, cat, timing);
     if (id) item.dataset.fsId = id;
   }));
-  showToast(state.lang === 'ja' ? 'タスクを同期しました ✓' : 'Local tasks synced to cloud ✓');
+  showToast(state.lang === 'ja' ? 'タスクを同期しました' : 'Local tasks synced to cloud');
 }
 
 /* ── Auth UI updater ── */
@@ -2358,9 +2350,8 @@ function openCatEdit(taskItem) {
       border-bottom:${idx < CAT_META.length-1 ? '1px solid var(--border)' : 'none'};
       -webkit-tap-highlight-color:transparent;touch-action:manipulation;`;
     btn.innerHTML = `
-      <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0"></span>
+      <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0;${isCurrent ? `box-shadow:0 0 0 3px ${cat.colour}33,0 0 8px 2px ${cat.colour}55` : ''}"></span>
       <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
-      ${isCurrent ? '<span style="font-size:11px;font-weight:800;color:var(--t3)">●</span>' : ''}
     `;
     btn.addEventListener('click', () => {
       moveCatTaskItem(taskItem, cat.en);
@@ -2679,7 +2670,7 @@ function submitAddTask() {
   const item   = makeTaskItem(text, timing, cat);
   addInput.value = '';
   setSelectedCat('Other');
-  showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
+  showToast(state.lang === 'ja' ? 'タスクを追加しました' : 'Task added');
   requestAnimationFrame(() => addInput?.focus());
 
   // Persist to Firestore if signed in
@@ -2934,7 +2925,7 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
     if (state.isLoggedIn && item) {
       fsAddTask(text, catEn, timing).then(id => { if (id && item) item.dataset.fsId = id; });
     }
-    showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
+    showToast(state.lang === 'ja' ? 'タスクを追加しました' : 'Task added');
   }
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter')  { e.preventDefault(); _commit(); }
@@ -3788,7 +3779,7 @@ function addCustomCategory(name) {
     card.querySelector('.add-task-row')?.addEventListener('click', () => openManualAddCard(true));
   }
 
-  showToast(`"${name}" added ✓`);
+  showToast(`"${name}" added`);
   const form = document.getElementById('newCatForm');
   const inp  = document.getElementById('newCatInput');
   if (form) form.style.display = 'none';
