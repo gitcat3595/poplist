@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Poplist — Capture tasks by voice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --blue:      #3B82F6;
+  --blue-lt:   #EFF6FF;
+  --blue-glow: rgba(59,130,246,.18);
+  --blue-mid:  #DBEAFE;
+  --black:     #111111;
+  --shcard:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shlift:    0 2px 8px rgba(0,0,0,.10);
+  --shbtn:     0 4px 20px rgba(59,130,246,.35);
+  --rp:   50px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent; scroll-behavior:smooth }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit }
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--black);
+  display: flex; align-items: center; gap: 2px;
+}
+.nav-logo-dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--blue); border-radius: 50%;
+  margin-left: 2px; margin-bottom: 8px;
+  box-shadow: 0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
+}
+.nav-cta {
+  font-size: 13px; font-weight: 700;
+  padding: 8px 18px;
+  background: var(--blue); color: #fff;
+  border-radius: var(--rp);
+  box-shadow: var(--shbtn);
+  transition: var(--tr);
+}
+.nav-cta:hover { opacity: .9; transform: translateY(-1px) }
+.nav-cta:active { transform: scale(.96) }
+
+/* ── PAGE WRAPPER ── */
+.page {
+  width: 100%; max-width: 480px;
+  display: flex; flex-direction: column;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 48px 24px 40px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--blue-lt); color: var(--blue);
+  font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+  padding: 5px 14px; border-radius: var(--rp);
+  margin-bottom: 20px;
+  border: 1px solid var(--blue-mid);
+}
+.hero-eyebrow svg { width: 12px; height: 12px; flex-shrink: 0 }
+.hero-title {
+  font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1.15;
+  color: var(--black);
+  margin-bottom: 16px;
+}
+.hero-title em { font-style: normal; color: var(--blue) }
+.hero-sub {
+  font-size: 15px; line-height: 1.65; color: var(--t2); font-weight: 500;
+  max-width: 320px;
+  margin-bottom: 32px;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue); color: #fff;
+  font-size: 15px; font-weight: 800; letter-spacing: -.2px;
+  padding: 15px 32px; border-radius: var(--rp);
+  box-shadow: var(--shbtn);
+  transition: var(--tr);
+}
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.4) }
+.hero-cta:active { transform: scale(.97) }
+.hero-cta svg { width: 16px; height: 16px }
+.hero-note {
+  margin-top: 12px; font-size: 11px; color: var(--t3); font-weight: 500;
+}
+
+/* ── FEATURE SECTIONS ── */
+.features {
+  padding: 0 16px 40px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.feat-card {
+  background: var(--card);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--shcard);
+  border: 1px solid rgba(0,0,0,.04);
+}
+
+.feat-visual {
+  width: 100%;
+  padding: 36px 24px 32px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  min-height: 220px;
+}
+
+.feat-text {
+  padding: 0 24px 28px;
+}
+.feat-title {
+  font-size: 20px; font-weight: 900; letter-spacing: -.5px; line-height: 1.3;
+  color: var(--black);
+  margin-bottom: 10px;
+}
+.feat-desc {
+  font-size: 14px; line-height: 1.7; color: var(--t2); font-weight: 500;
+}
+.feat-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  padding: 4px 12px; border-radius: var(--rp);
+  margin-bottom: 12px;
+}
+
+/* ── VISUAL 1: Phone with mic + task bubbles ── */
+.visual-voice { background: linear-gradient(160deg, #EEF4FF 0%, #E0EBFF 100%) }
+
+.phone-scene {
+  position: relative;
+  width: 220px; height: 160px;
+}
+
+.phone-body {
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%) rotate(-6deg);
+  width: 180px; height: 108px;
+  background: white;
+  border-radius: 18px;
+  border: 2px solid #DDE3F0;
+  box-shadow: 0 8px 32px rgba(59,130,246,.12), 0 2px 8px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+.phone-screen-inner {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #F8FAFF, #F0F4FF);
+  display: flex; align-items: center; justify-content: center;
+}
+.sound-bars {
+  display: flex; align-items: center; gap: 4px;
+  height: 40px;
+}
+.sound-bar {
+  width: 4px; border-radius: 4px;
+  background: var(--blue);
+  opacity: .7;
+  animation: bar-bounce 1.2s ease infinite;
+}
+.sound-bar:nth-child(1) { height: 14px; animation-delay: 0s }
+.sound-bar:nth-child(2) { height: 26px; animation-delay: .15s }
+.sound-bar:nth-child(3) { height: 36px; animation-delay: .3s }
+.sound-bar:nth-child(4) { height: 22px; animation-delay: .45s }
+.sound-bar:nth-child(5) { height: 30px; animation-delay: .6s }
+.sound-bar:nth-child(6) { height: 16px; animation-delay: .75s }
+.sound-bar:nth-child(7) { height: 24px; animation-delay: .9s }
+
+@keyframes bar-bounce {
+  0%,100% { transform: scaleY(1); opacity: .6 }
+  50%      { transform: scaleY(1.4); opacity: 1 }
+}
+
+.mic-float-btn {
+  position: absolute;
+  top: 4px; left: 50%; transform: translateX(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(59,130,246,.45), 0 0 0 6px rgba(59,130,246,.12);
+  animation: mic-float-pulse 2s ease infinite;
+  z-index: 2;
+}
+.mic-float-btn svg { width: 20px; height: 20px; color: white }
+
+@keyframes mic-float-pulse {
+  0%,100% { box-shadow: 0 4px 16px rgba(59,130,246,.45), 0 0 0 6px rgba(59,130,246,.12) }
+  50%      { box-shadow: 0 4px 20px rgba(59,130,246,.55), 0 0 0 12px rgba(59,130,246,.06) }
+}
+
+.task-bubble {
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  padding: 7px 12px;
+  font-size: 11px; font-weight: 700;
+  color: var(--t1);
+  box-shadow: 0 2px 12px rgba(0,0,0,.10);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  animation: bubble-float 3s ease infinite;
+}
+.task-bubble .dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.bubble-1 {
+  top: 6px; left: -8px;
+  animation-delay: 0s;
+}
+.bubble-2 {
+  top: 6px; right: -10px;
+  animation-delay: .8s;
+}
+.bubble-3 {
+  bottom: 18px; left: -4px;
+  animation-delay: 1.6s;
+}
+
+@keyframes bubble-float {
+  0%,100% { transform: translateY(0px) }
+  50%      { transform: translateY(-5px) }
+}
+
+/* ── VISUAL 2: Auto task list ── */
+.visual-list { background: linear-gradient(160deg, #F0FDF4 0%, #DCFCE7 100%) }
+
+.list-scene {
+  width: 100%; max-width: 280px;
+}
+.list-mock {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.04);
+}
+.list-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F0F0F0;
+}
+.list-header-title {
+  font-size: 13px; font-weight: 800; color: var(--t1);
+}
+.list-count {
+  font-size: 11px; font-weight: 700;
+  background: #F3F4F6; color: var(--t2);
+  padding: 2px 8px; border-radius: 20px;
+}
+.list-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #F8F8F8;
+}
+.list-row:last-child { border-bottom: none; padding-bottom: 0 }
+.list-row.done .list-row-text { text-decoration: line-through; color: var(--t3) }
+
+.row-check {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.row-check.checked {
+  background: #22C55E; border-color: #22C55E;
+}
+.row-check.checked svg { width: 10px; height: 10px; color: white }
+
+.list-row-info { flex: 1; min-width: 0 }
+.list-row-text {
+  font-size: 12px; font-weight: 600; color: var(--t1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.list-row-cat {
+  font-size: 10px; font-weight: 600; color: var(--t3);
+  margin-top: 1px;
+}
+.row-pill {
+  font-size: 9px; font-weight: 800; letter-spacing: .3px;
+  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* AI wand icon + "organised by AI" badge */
+.list-ai-note {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid #F0F0F0;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; color: var(--blue);
+}
+.list-ai-note svg { width: 12px; height: 12px; flex-shrink: 0 }
+
+/* ── VISUAL 3: Focus / energy ── */
+.visual-focus { background: linear-gradient(160deg, #FFF7ED 0%, #FEEFC9 100%) }
+
+.focus-scene {
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  width: 100%;
+}
+.focus-compare {
+  display: flex; align-items: center; gap: 12px; width: 100%; max-width: 300px;
+}
+.compare-col {
+  flex: 1;
+}
+.compare-label {
+  font-size: 9px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 8px; text-align: center;
+}
+.chaos-items {
+  display: flex; flex-direction: column; gap: 5px;
+}
+.chaos-item {
+  background: white;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 10px; font-weight: 600; color: var(--t2);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  opacity: .7;
+  border: 1px solid rgba(0,0,0,.04);
+  text-align: left;
+  position: relative;
+}
+.chaos-item::after {
+  content: '?';
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  font-size: 9px; color: #FCA5A5; font-weight: 900;
+}
+.compare-arrow {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.compare-arrow svg { width: 24px; height: 24px; color: #F59E0B }
+.compare-arrow span {
+  font-size: 8px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .4px; color: #F59E0B;
+}
+
+.clean-items {
+  display: flex; flex-direction: column; gap: 5px;
+}
+.clean-item {
+  background: white;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 10px; font-weight: 600; color: var(--t1);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  border: 1px solid rgba(0,0,0,.04);
+  display: flex; align-items: center; gap: 6px;
+}
+.clean-item-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+
+.focus-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: white;
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-size: 12px; font-weight: 800; color: #111;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.04);
+}
+.focus-badge svg { width: 16px; height: 16px; color: #F59E0B }
+
+/* ── CTA SECTION ── */
+.cta-section {
+  margin: 8px 16px 48px;
+  background: var(--blue);
+  border-radius: 24px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(59,130,246,.3);
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,.06);
+  border-radius: 50%;
+}
+.cta-section::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -30px;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.cta-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.7px; line-height: 1.2;
+  color: white; margin-bottom: 12px;
+  position: relative; z-index: 1;
+}
+.cta-sub {
+  font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.75);
+  font-weight: 500; margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+.cta-btn-white {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; color: var(--blue);
+  font-size: 15px; font-weight: 800; letter-spacing: -.2px;
+  padding: 14px 32px; border-radius: var(--rp);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  transition: var(--tr);
+  position: relative; z-index: 1;
+}
+.cta-btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
+.cta-btn-white:active { transform: scale(.97) }
+.cta-btn-white svg { width: 16px; height: 16px }
+.cta-note-white {
+  margin-top: 14px; font-size: 11px; color: rgba(255,255,255,.55);
+  font-weight: 500; position: relative; z-index: 1;
+}
+
+/* ── FOOTER ── */
+footer {
+  width: 100%; max-width: 480px;
+  padding: 24px 24px 40px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-logo {
+  font-size: 16px; font-weight: 900; letter-spacing: -.4px; color: var(--t2);
+  margin-bottom: 16px; display: flex; align-items: center; justify-content: center;
+}
+.footer-links {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.footer-links a {
+  font-size: 12px; color: var(--t3); font-weight: 500;
+  transition: var(--tr);
+}
+.footer-links a:hover { color: var(--t2) }
+.footer-copy {
+  margin-top: 16px;
+  font-size: 11px; color: var(--t3); font-weight: 400;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    Poplist<span class="nav-logo-dot"></span>
+  </div>
+  <a href="/" class="nav-cta">Get started</a>
+</nav>
+
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="11" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+      Voice-first task capture
+    </div>
+    <h1 class="hero-title">For busy minds<br>on the <em>move</em></h1>
+    <p class="hero-sub">Talk out what's on your mind. Poplist turns your words into a clean, organised task list — instantly.</p>
+    <a href="/" class="hero-cta">
+      Try for free
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+    <p class="hero-note">No account needed to start</p>
+  </section>
+
+  <!-- ── FEATURES ── -->
+  <div class="features">
+
+    <!-- Card 1: Voice capture -->
+    <div class="feat-card">
+      <div class="feat-visual visual-voice">
+        <div class="phone-scene">
+          <!-- Floating task bubbles -->
+          <div class="task-bubble bubble-1">
+            <span class="dot" style="background:#3B82F6"></span>
+            Send report
+          </div>
+          <div class="task-bubble bubble-2">
+            <span class="dot" style="background:#22C55E"></span>
+            Buy oat milk
+          </div>
+          <div class="task-bubble bubble-3">
+            <span class="dot" style="background:#F59E0B"></span>
+            Call dentist
+          </div>
+
+          <!-- Mic button floating above phone -->
+          <div class="mic-float-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="2" width="6" height="11" rx="3"/>
+              <path d="M5 10a7 7 0 0 0 14 0"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+              <line x1="9" y1="22" x2="15" y2="22"/>
+            </svg>
+          </div>
+
+          <!-- Phone body -->
+          <div class="phone-body">
+            <div class="phone-screen-inner">
+              <div class="sound-bars">
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+                <div class="sound-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-badge" style="background:#EFF6FF;color:#3B82F6;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+          </svg>
+          Voice capture
+        </div>
+        <h2 class="feat-title">Capture tasks the moment they appear</h2>
+        <p class="feat-desc">Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears.</p>
+      </div>
+    </div>
+
+    <!-- Card 2: Auto-organised -->
+    <div class="feat-card">
+      <div class="feat-visual visual-list">
+        <div class="list-scene">
+          <div class="list-mock">
+            <div class="list-header">
+              <span class="list-header-title">My tasks</span>
+              <span class="list-count">4 tasks</span>
+            </div>
+
+            <div class="list-row">
+              <div class="row-check"></div>
+              <div class="list-row-info">
+                <div class="list-row-text">Send Q1 report to team</div>
+                <div class="list-row-cat">Work · Today</div>
+              </div>
+              <span class="row-pill" style="background:#EFF6FF;color:#3B82F6;">Work</span>
+            </div>
+
+            <div class="list-row">
+              <div class="row-check"></div>
+              <div class="list-row-info">
+                <div class="list-row-text">Buy groceries + oat milk</div>
+                <div class="list-row-cat">Errands · Today</div>
+              </div>
+              <span class="row-pill" style="background:#F0FDF4;color:#16A34A;">Errands</span>
+            </div>
+
+            <div class="list-row">
+              <div class="row-check"></div>
+              <div class="list-row-info">
+                <div class="list-row-text">Book dentist appointment</div>
+                <div class="list-row-cat">Health · This week</div>
+              </div>
+              <span class="row-pill" style="background:#FFF7ED;color:#D97706;">Health</span>
+            </div>
+
+            <div class="list-row done">
+              <div class="row-check checked">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2 6 5 9 10 3"/>
+                </svg>
+              </div>
+              <div class="list-row-info">
+                <div class="list-row-text">Morning run</div>
+                <div class="list-row-cat">Health · Done</div>
+              </div>
+            </div>
+
+            <div class="list-ai-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+              </svg>
+              Organised by AI
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-badge" style="background:#F0FDF4;color:#16A34A;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+          </svg>
+          AI-powered
+        </div>
+        <h2 class="feat-title">Everything you say is automatically organised</h2>
+        <p class="feat-desc">AI sorts your spoken tasks into categories — work, errands, health, and more. You get a clean, ready-to-action list without lifting a finger.</p>
+      </div>
+    </div>
+
+    <!-- Card 3: No decision fatigue -->
+    <div class="feat-card">
+      <div class="feat-visual visual-focus">
+        <div class="focus-scene">
+          <div class="focus-compare">
+            <!-- Before: chaos -->
+            <div class="compare-col">
+              <div class="compare-label">Before</div>
+              <div class="chaos-items">
+                <div class="chaos-item" style="transform:rotate(-1.5deg)">call sarah back</div>
+                <div class="chaos-item" style="transform:rotate(1deg)">grocery run?</div>
+                <div class="chaos-item" style="transform:rotate(-.5deg)">finish slides</div>
+              </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="compare-arrow">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2l8 10-8 10V14H3v-4h10z"/>
+              </svg>
+              <span>Poplist</span>
+            </div>
+
+            <!-- After: clean -->
+            <div class="compare-col">
+              <div class="compare-label">After</div>
+              <div class="clean-items">
+                <div class="clean-item">
+                  <span class="clean-item-dot" style="background:#3B82F6"></span>
+                  Finish slides
+                </div>
+                <div class="clean-item">
+                  <span class="clean-item-dot" style="background:#22C55E"></span>
+                  Grocery run
+                </div>
+                <div class="clean-item">
+                  <span class="clean-item-dot" style="background:#EC4899"></span>
+                  Call Sarah
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="focus-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            Zero sorting needed
+          </div>
+        </div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-badge" style="background:#FFF7ED;color:#D97706;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          No friction
+        </div>
+        <h2 class="feat-title">Save mental energy. Focus on the doing.</h2>
+        <p class="feat-desc">No more decision fatigue from sorting and prioritising. Poplist handles the mental overhead so your energy goes where it matters — getting things done.</p>
+      </div>
+    </div>
+
+  </div><!-- /features -->
+
+  <!-- ── CTA SECTION ── -->
+  <section class="cta-section">
+    <h2 class="cta-title">Ready to clear<br>your mind?</h2>
+    <p class="cta-sub">Start capturing tasks by voice in seconds. Free to use, no setup required.</p>
+    <a href="/" class="cta-btn-white">
+      Start for free
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+    <p class="cta-note-white">No account needed · Works in your browser</p>
+  </section>
+
+</div><!-- /page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Poplist</div>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/how-to-use.html">How to use</a>
+  </div>
+  <p class="footer-copy">© 2025 Poplist</p>
+</footer>
+
+</body>
+</html>
