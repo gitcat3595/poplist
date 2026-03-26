@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Poplist — Get Notified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ECEEF2;
+  --surface:   #E2E4E9;
+  --card:      #FFFFFF;
+  --raised:    #F5F6F8;
+  --t1:        #111111;
+  --t2:        #6B7280;
+  --t3:        #9CA3AF;
+  --border:    #D4D7DD;
+  --brim:      #BFC3CA;
+  --accent:    #3B82F6;
+  --accent-lt: #EFF6FF;
+  --accent-glow: rgba(59,130,246,.18);
+  --rp:   50px;
+  --rc:   16px;
+  --font: 'Plus Jakarta Sans','Noto Sans JP',sans-serif;
+  --tr:   0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { -webkit-tap-highlight-color:transparent }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+a { text-decoration: none; color: inherit }
+button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
+input, select, textarea { font-family: var(--font) }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(236,238,242,.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
+}
+.nav-logo em {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--accent); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 0 8px var(--accent);
+}
+.nav-right { display: flex; align-items: center; gap: 8px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--accent); color: #fff }
+
+/* ── PAGE ── */
+.page { width: 100%; max-width: 480px; padding: 0 0 60px }
+
+/* ── FORM SCREEN ── */
+.form-screen, .success-screen { width: 100% }
+.success-screen { display: none }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 32px 24px 24px;
+}
+.plan-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  padding: 5px 12px; border-radius: var(--rp);
+  margin-bottom: 14px;
+}
+.plan-pill.monthly { background: var(--accent-lt); color: var(--accent); border: 1px solid rgba(59,130,246,.25) }
+.plan-pill.annual   { background: var(--accent-lt); color: var(--accent); border: 1px solid rgba(59,130,246,.25) }
+.plan-pill.lifetime { background: #FEF2F2; color: #EF4444; border: 1px solid rgba(239,68,68,.25) }
+.hero-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.6px;
+  color: var(--t1); line-height: 1.15; margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 13px; color: var(--t2); line-height: 1.6;
+  max-width: 300px; margin: 0 auto;
+}
+
+/* ── INFO CARD ── */
+.info-card {
+  margin: 0 16px 20px;
+  background: var(--accent-lt); border: 1px solid rgba(59,130,246,.2);
+  border-radius: var(--rc); padding: 14px 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px }
+.info-text {}
+.info-title {
+  font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 3px;
+}
+.info-body {
+  font-size: 12px; color: var(--t2); line-height: 1.55;
+}
+
+/* ── FORM ── */
+.form-card {
+  margin: 0 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rc); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+}
+.form-group {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.form-group:last-child { border-bottom: none }
+.form-label {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  letter-spacing: .5px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 5px;
+}
+.label-required {
+  font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 0;
+  text-transform: none;
+}
+.label-optional {
+  font-size: 10px; color: var(--t3); font-weight: 600; letter-spacing: 0;
+  text-transform: none; font-style: italic;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 0;
+  background: none; border: none; outline: none;
+  font-size: 15px; font-weight: 600; color: var(--t1);
+  -webkit-appearance: none; appearance: none;
+  line-height: 1.4;
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color: var(--t3); font-weight: 400;
+}
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: 20px;
+}
+.form-select option { font-weight: 400 }
+.form-textarea {
+  resize: none; min-height: 72px; line-height: 1.55;
+}
+
+/* ── SUBMIT ── */
+.submit-area { padding: 16px 16px 0 }
+.submit-btn {
+  width: 100%; height: 52px; border-radius: 14px;
+  background: var(--accent); color: #fff;
+  font-size: 16px; font-weight: 800; font-family: var(--font);
+  letter-spacing: -.2px; border: none; cursor: pointer;
+  transition: var(--tr);
+  box-shadow: 0 4px 20px rgba(59,130,246,.38);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.submit-btn:hover { opacity: .88; transform: translateY(-1px) }
+.submit-btn:active { opacity: .8; transform: none }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none }
+.privacy-note {
+  text-align: center; font-size: 10.5px; color: var(--t3);
+  padding: 12px 24px 0; line-height: 1.5;
+}
+.privacy-note a { color: var(--accent) }
+
+/* ── SUCCESS SCREEN ── */
+.success-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 64px 32px 40px;
+}
+.success-icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #DCFCE7; border: 2px solid #86EFAC;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  animation: pop-in .4s cubic-bezier(0.32,0.72,0,1);
+}
+@keyframes pop-in {
+  0% { transform: scale(0.5); opacity: 0 }
+  100% { transform: scale(1); opacity: 1 }
+}
+.success-check {
+  font-size: 32px;
+}
+.success-title {
+  font-size: 22px; font-weight: 900; letter-spacing: -.5px;
+  color: var(--t1); margin-bottom: 10px;
+}
+.success-sub {
+  font-size: 13.5px; color: var(--t2); line-height: 1.6;
+  margin-bottom: 32px; max-width: 280px;
+}
+.success-back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 24px; border-radius: var(--rp);
+  background: var(--card); border: 1.5px solid var(--border);
+  font-size: 14px; font-weight: 700; color: var(--t2);
+  transition: var(--tr);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.success-back-btn:hover { border-color: var(--accent); color: var(--accent) }
+.success-divider {
+  width: 40px; height: 2px; background: var(--border);
+  border-radius: 2px; margin: 28px 0;
+}
+.success-detail {
+  font-size: 12px; color: var(--t3); line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="pricing.html" class="nav-logo">Poplist<em></em></a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- FORM SCREEN -->
+  <div class="form-screen" id="formScreen">
+
+    <!-- HERO (plan-specific) -->
+    <div class="hero">
+      <div class="plan-pill" id="planPill">
+        <span id="planPillText">PRO Monthly</span>
+      </div>
+      <h1 class="hero-title">
+        <span data-en="Be first to know<br>when we launch" data-ja="ローンチ時に<br>最初に知る">Be first to know<br>when we launch</span>
+      </h1>
+      <p class="hero-sub">
+        <span data-en="Stripe payments are coming soon. Sign up and we'll notify you the moment PRO is available — with an early-bird discount." data-ja="Stripe決済は近日公開予定。サインアップすると、PROが利用可能になった瞬間にお知らせします。アーリーバード割引もあります。">Stripe payments are coming soon. Sign up and we'll notify you the moment PRO is available — with an early-bird discount.</span>
+      </p>
+    </div>
+
+    <!-- INFO CARD -->
+    <div class="info-card">
+      <div class="info-icon">💌</div>
+      <div class="info-text">
+        <div class="info-title" data-en="No payment today" data-ja="今日は支払い不要">No payment today</div>
+        <div class="info-body" data-en="We're not taking payments yet. Leave your details and you'll be first in line when checkout goes live — plus an exclusive early-bird offer." data-ja="まだ支払いは受け付けていません。詳細をご記入いただくと、チェックアウトが開始された際に最初にご案内します。限定のアーリーバード特典もあります。">We're not taking payments yet. Leave your details and you'll be first in line when checkout goes live.</div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+
+      <div class="form-group">
+        <label class="form-label">
+          <span data-en="Name" data-ja="お名前">Name</span>
+          <span class="label-required" data-en="required" data-ja="必須">required</span>
+        </label>
+        <input class="form-input" id="fieldName" type="text" autocomplete="name" spellcheck="false"
+          data-placeholder-en="Your name" data-placeholder-ja="お名前"
+          placeholder="Your name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <span data-en="Email" data-ja="メールアドレス">Email</span>
+          <span class="label-required" data-en="required" data-ja="必須">required</span>
+        </label>
+        <input class="form-input" id="fieldEmail" type="email" autocomplete="email" spellcheck="false"
+          data-placeholder-en="you@example.com" data-placeholder-ja="you@example.com"
+          placeholder="you@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <span data-en="Country" data-ja="国">Country</span>
+          <span class="label-required" data-en="required" data-ja="必須">required</span>
+        </label>
+        <select class="form-select" id="fieldCountry" required>
+          <option value="" disabled selected data-en="Select country" data-ja="国を選択">Select country</option>
+          <option value="JP">🇯🇵 Japan</option>
+          <option value="US">🇺🇸 United States</option>
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="AU">🇦🇺 Australia</option>
+          <option value="CA">🇨🇦 Canada</option>
+          <option value="SG">🇸🇬 Singapore</option>
+          <option value="KR">🇰🇷 South Korea</option>
+          <option value="TW">🇹🇼 Taiwan</option>
+          <option value="HK">🇭🇰 Hong Kong</option>
+          <option value="DE">🇩🇪 Germany</option>
+          <option value="FR">🇫🇷 France</option>
+          <option value="NL">🇳🇱 Netherlands</option>
+          <option value="SE">🇸🇪 Sweden</option>
+          <option value="NO">🇳🇴 Norway</option>
+          <option value="DK">🇩🇰 Denmark</option>
+          <option value="FI">🇫🇮 Finland</option>
+          <option value="NZ">🇳🇿 New Zealand</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="CN">🇨🇳 China</option>
+          <option value="BR">🇧🇷 Brazil</option>
+          <option value="MX">🇲🇽 Mexico</option>
+          <option value="OTHER" data-en="Other" data-ja="その他">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <span data-en="Message" data-ja="メッセージ">Message</span>
+          <span class="label-optional" data-en="optional" data-ja="任意">optional</span>
+        </label>
+        <textarea class="form-textarea" id="fieldMessage" rows="3"
+          data-placeholder-en="Anything you'd like us to know — feature requests, feedback, questions…"
+          data-placeholder-ja="ご要望、フィードバック、ご質問など何でもどうぞ…"
+          placeholder="Anything you'd like us to know — feature requests, feedback, questions…"></textarea>
+      </div>
+
+    </div>
+
+    <div class="submit-area">
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span data-en="Notify me when it's ready" data-ja="準備ができたら通知する">Notify me when it's ready</span>
+      </button>
+    </div>
+
+    <p class="privacy-note">
+      <span data-en="We'll only email you about Poplist PRO launch. No spam, ever. " data-ja="Poplist PROのローンチについてのみメールします。スパムは一切ありません。">We'll only email you about Poplist PRO launch. No spam, ever. </span>
+      <a href="privacy.html" data-en="Privacy policy" data-ja="プライバシーポリシー">Privacy policy</a>
+    </p>
+
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-wrap">
+      <div class="success-icon-wrap">
+        <span class="success-check">✓</span>
+      </div>
+      <h2 class="success-title">
+        <span data-en="You're on the list!" data-ja="登録完了！">You're on the list!</span>
+      </h2>
+      <p class="success-sub">
+        <span data-en="We'll reach out the moment Poplist PRO is ready to purchase. Keep an eye on your inbox — there's an early-bird deal with your name on it." data-ja="Poplist PROの購入が可能になった瞬間にご連絡します。受信トレイをチェックしてください。アーリーバード特典をご用意しています。">We'll reach out the moment Poplist PRO is ready to purchase. Keep an eye on your inbox — there's an early-bird deal with your name on it.</span>
+      </p>
+      <a href="index.html" class="success-back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span data-en="Back to Poplist" data-ja="Poplistに戻る">Back to Poplist</span>
+      </a>
+      <div class="success-divider"></div>
+      <p class="success-detail">
+        <span data-en="In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is." data-ja="その間、無料プランは完全に機能しています。音声タスク入力を試してみてください。その速さに驚くかもしれません。">In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is.</span>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Read plan from URL param ──
+const params = new URLSearchParams(window.location.search);
+const plan = params.get('plan') || 'monthly';
+const planPill = document.getElementById('planPill');
+const planPillText = document.getElementById('planPillText');
+const planLabels = {
+  monthly:  { en: 'PRO Monthly',  ja: 'PRO 月額プラン',  cls: 'monthly'  },
+  annual:   { en: 'PRO Annual',   ja: 'PRO 年額プラン',   cls: 'annual'   },
+  lifetime: { en: 'PRO Lifetime', ja: 'PRO 買い切りプラン', cls: 'lifetime' },
+};
+const lbl = planLabels[plan] || planLabels.monthly;
+planPillText.textContent = lbl.en;
+planPill.classList.add(lbl.cls);
+
+// ── Language toggle ──
+let currentLang = 'en';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  // Text nodes
+  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang);
+    if (txt) el.innerHTML = txt;
+  });
+  // Placeholders
+  document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
+    el.placeholder = el.getAttribute('data-placeholder-' + lang);
+  });
+  // Plan pill label
+  planPillText.textContent = lbl[lang] || lbl.en;
+}
+
+// ── Form submission ──
+function handleSubmit() {
+  const name    = document.getElementById('fieldName').value.trim();
+  const email   = document.getElementById('fieldEmail').value.trim();
+  const country = document.getElementById('fieldCountry').value;
+
+  if (!name) { shake('fieldName'); return }
+  if (!email || !isValidEmail(email)) { shake('fieldEmail'); return }
+  if (!country) { shake('fieldCountry'); return }
+
+  // Disable button to prevent double-submit
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .8s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+    <span>${currentLang === 'ja' ? '送信中...' : 'Sending…'}</span>
+  `;
+
+  // Simulate async (replace with real fetch when backend is ready)
+  setTimeout(() => {
+    document.getElementById('formScreen').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Reapply language to success screen
+    document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+      const txt = el.getAttribute('data-' + currentLang);
+      if (txt) el.innerHTML = txt;
+    });
+  }, 900);
+}
+
+function isValidEmail(e) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+}
+
+function shake(id) {
+  const el = document.getElementById(id);
+  const wrap = el.closest('.form-group');
+  wrap.style.animation = 'none';
+  wrap.style.background = 'rgba(239,68,68,.06)';
+  wrap.style.borderColor = 'rgba(239,68,68,.3)';
+  el.focus();
+  setTimeout(() => {
+    wrap.style.background = '';
+    wrap.style.borderColor = '';
+  }, 2000);
+}
+</script>
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+</style>
+</body>
+</html>
