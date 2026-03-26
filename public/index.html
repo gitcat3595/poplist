@@ -389,6 +389,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .bc-teal   { --bubble-color:#0D9488; --bubble-color-glow:rgba(13,148,136,.55);  --bubble-color-ink:rgba(13,148,136,.2);  --bubble-color-ink-border:rgba(13,148,136,.35);  --bubble-color-ink-glow:rgba(13,148,136,.18) }
 .bc-green  { --bubble-color:#16A34A; --bubble-color-glow:rgba(22,163,74,.55);   --bubble-color-ink:rgba(22,163,74,.2);   --bubble-color-ink-border:rgba(22,163,74,.35);   --bubble-color-ink-glow:rgba(22,163,74,.18) }
 .bc-lime   { --bubble-color:#65A30D; --bubble-color-glow:rgba(101,163,13,.55);  --bubble-color-ink:rgba(101,163,13,.2);  --bubble-color-ink-border:rgba(101,163,13,.35);  --bubble-color-ink-glow:rgba(101,163,13,.18) }
+.bc-yellow { --bubble-color:#FACC15; --bubble-color-glow:rgba(250,204,21,.55);  --bubble-color-ink:rgba(250,204,21,.2);  --bubble-color-ink-border:rgba(250,204,21,.35);  --bubble-color-ink-glow:rgba(250,204,21,.18) }
 .bc-amber  { --bubble-color:#F97316; --bubble-color-glow:rgba(249,115,22,.55);  --bubble-color-ink:rgba(249,115,22,.2);  --bubble-color-ink-border:rgba(249,115,22,.35);  --bubble-color-ink-glow:rgba(249,115,22,.18) }
 .bc-rose   { --bubble-color:#EF4444; --bubble-color-glow:rgba(239,68,68,.55);   --bubble-color-ink:rgba(239,68,68,.2);   --bubble-color-ink-border:rgba(239,68,68,.35);   --bubble-color-ink-glow:rgba(239,68,68,.18) }
 .bc-purple { --bubble-color:#7C3AED; --bubble-color-glow:rgba(124,58,237,.55);  --bubble-color-ink:rgba(124,58,237,.2);  --bubble-color-ink-border:rgba(124,58,237,.35);  --bubble-color-ink-glow:rgba(124,58,237,.18) }
@@ -449,11 +450,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .add-task-plus::before {
   content:'+';
   font-size:13px; color:var(--t3);
-  display:block; line-height:1;
-  margin:0; padding:0;
-  position:relative; top:-1px;
+  line-height:1;
 }
 .add-task-text { font-size:13px; color:var(--t3) }
+.inline-add-inp {
+  flex:1; border:none; outline:none;
+  font-size:13px; font-family:inherit;
+  background:transparent; color:var(--t1); min-width:0; padding:0;
+}
 
 /* ════════════════════════════════════════
    QUICK ADD CARD
@@ -595,8 +599,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 /* Settings structure */
 .settings-section      { margin-bottom:28px }
 .settings-section-label {
-  font-size:10px; font-weight:800; text-transform:uppercase;
-  letter-spacing:.8px; color:var(--t3); margin-bottom:10px;
+  font-size:11px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--t3); margin-bottom:12px;
   display:flex; align-items:center; gap:8px;
 }
 .settings-row {
@@ -1275,7 +1279,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
     <div class="add-task-active">
       <div class="add-bubble-ph" id="addBubblePh"></div>
       <div class="add-input-body">
-        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="何をする必要がありますか？" autocomplete="off" autocorrect="off" autocapitalize="off">
+        <input class="add-task-field" id="addTaskInput" placeholder="What do you need to do?" data-placeholder-en="What do you need to do?" data-placeholder-ja="今日は何をする？" autocomplete="off" autocorrect="off" autocapitalize="off">
       </div>
     </div>
     <!-- Hidden chips kept in DOM so applyLang + JS detection still work -->
@@ -1293,7 +1297,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
       </div>
     </div>
     <div class="add-task-actions">
-      <button class="btn-cancel" data-en="Cancel" data-ja="×">Cancel</button>
+      <button class="btn-cancel" data-en="Cancel" data-ja="キャンセル">Cancel</button>
       <button class="btn-paste-list" id="pasteListBtn" data-en="Add list" data-ja="リスト貼付け">Add list</button>
       <button class="btn-add" id="addTaskBtn" data-en="Add Task" data-ja="追加">Add Task</button>
     </div>
@@ -1637,6 +1641,7 @@ GoogleService-Info.plist
             <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
             <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
             <div class="cswatch"     data-colour="bc-lime"   style="background:#65A30D"></div>
+            <div class="cswatch"     data-colour="bc-yellow" style="background:#FACC15"></div>
             <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
             <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
             <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
@@ -1680,7 +1685,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: Today → This Week → Later." data-ja="期限チップをタップで切り替え：今日 → 今週 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
+        <div><p class="guide-action" data-en="Tap to change due date" data-ja="期限を変更する">Tap to change due date</p><p class="guide-detail" data-en="Tap the date chip to cycle: This Week → Today → Later." data-ja="期限チップをタップで切り替え：今週 → 今日 → そのうち。">Tap the date chip to cycle: Today &#x2192; This Week &#x2192; Later.</p></div>
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
@@ -2143,7 +2148,7 @@ const STYLE_META = {
 function setBubbleClasses(el) {
   // Remove old style + colour classes (ALL 4 styles must be listed)
   el.classList.remove('luminous','solid','ring','ink');
-  ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green','bc-lime',
+  ['bc-blue','bc-navy','bc-black','bc-slate','bc-teal','bc-green','bc-lime','bc-yellow',
    'bc-amber','bc-rose','bc-purple','bc-pink','bc-grey','bc-white'].forEach(c => el.classList.remove(c));
   el.classList.add(state.bubbleStyle, state.bubbleColour);
 }
@@ -2175,7 +2180,7 @@ function burstBubble(el, item) {
 
   /* Reliable class-based colour lookup — avoids getComputedStyle Safari quirks */
   const _bcMap = {
-    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D',
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
   };
@@ -2322,10 +2327,10 @@ function spawnDoneBurst(bubbleColor) {
    • Long press → open "Move to…" category sheet
 ══════════════════════════════════════════ */
 const CAT_META = [
-  { en:'Work',     ja:'仕事',    colour:'#3B82F6' },
-  { en:'Home',     ja:'家の事',  colour:'#3B82F6' },
-  { en:'Personal', ja:'自分の事',colour:'#3B82F6' },
-  { en:'Other',    ja:'その他',  colour:'#3B82F6' },
+  { en:'Work',     ja:'仕事',    colour:'var(--blue)' },
+  { en:'Home',     ja:'家の事',  colour:'var(--blue)' },
+  { en:'Personal', ja:'自分の事',colour:'var(--blue)' },
+  { en:'Other',    ja:'その他',  colour:'var(--blue)' },
 ];
 
 let _catEditTarget = null; // the task-item DOM node currently being moved
@@ -2444,7 +2449,7 @@ document.getElementById('catEditModal')?.addEventListener('click', e => {
 /* ══════════════════════════════════════════
    TIMING CHIP — cycle on click (no × icon)
 ══════════════════════════════════════════ */
-const T_CYCLE = ['Today','This Week','Later'];
+const T_CYCLE = ['Later','This Week','Today'];
 
 const T_LABELS_JA = { 'Today': '今日', 'This Week': '今週', 'Later': 'そのうち' };
 function chipLabel(timing) {
@@ -2724,7 +2729,7 @@ function showDoneScreen() {
   }
 
   const _dcMap = {
-    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D',
+    'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-white':'#CBD5E1'
   };
@@ -2891,10 +2896,43 @@ document.querySelector('.btn-cancel')?.addEventListener('click', () => {
   if (card) { card.style.display = 'none'; }
 });
 
-/* Delegate clicks on static add-task-row elements */
+/* Inline add — tap any add-task-row to type right there, no scroll jump */
 document.getElementById('tasksContainer')?.addEventListener('click', e => {
   const row = e.target.closest('.add-task-row');
-  if (row) openManualAddCard(true);
+  if (!row || row.querySelector('.inline-add-inp')) return;
+
+  const textEl = row.querySelector('.add-task-text');
+  const cat    = row.dataset.cat;
+  const catEn  = state.categories.find(c => c.id === cat)?.en || 'Other';
+
+  const inp = document.createElement('input');
+  inp.className   = 'inline-add-inp';
+  inp.placeholder = state.lang === 'ja' ? 'タスクを入力…' : 'Type a task…';
+  if (textEl) textEl.style.visibility = 'hidden';
+  row.style.opacity = '1';
+  row.appendChild(inp);
+  inp.focus();
+
+  let _done = false;
+  function _commit() {
+    if (_done) return; _done = true;
+    const text = inp.value.trim();
+    inp.remove();
+    if (textEl) textEl.style.visibility = '';
+    row.style.opacity = '';
+    if (!text) return;
+    const timing = state.defaultTiming || 'This Week';
+    const item = makeTaskItem(text, timing, catEn);
+    if (state.isLoggedIn && item) {
+      fsAddTask(text, catEn, timing).then(id => { if (id && item) item.dataset.fsId = id; });
+    }
+    showToast(state.lang === 'ja' ? 'タスクを追加しました ✓' : 'Task added ✓');
+  }
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); _commit(); }
+    if (e.key === 'Escape') { inp.value = ''; _commit(); }
+  });
+  inp.addEventListener('blur', _commit);
 });
 
 /* Voice buttons wired inside the SR block below */
@@ -3045,8 +3083,8 @@ function localClassify(transcript, defaultTiming) {
   // Replace sentence-ending punctuation with comma, then split
   const parts = transcript
     .replace(/[。.!?！？]/g, '$&,')
-    .split(/,\s*and\s+|\s+and\s+|[、。；;,]\s*/)
-    .map(s => s.replace(/^(and|also|そして|それから|あと|また)\s+/i, '').trim())
+    .split(/,\s*and\s+|\s+and\s+|\s+then\s+|\s+also\s+|[、。；;,]\s*/)
+    .map(s => s.replace(/^(and|also|then|next|そして|それから|あと|また|さらに|次に)\s+/i, '').trim())
     .filter(s => s.length > 1);
 
   if (parts.length === 0) {
@@ -3081,7 +3119,14 @@ async function classifyTranscript(transcript) {
     });
     if (res.ok) {
       const data = await res.json();
-      if (data.tasks && data.tasks.length > 0) return data.tasks;
+      if (data.tasks && data.tasks.length > 0) {
+        // If AI returned only 1 task for a long transcript, try local split too
+        if (data.tasks.length === 1 && transcript.length > 50) {
+          const localTasks = localClassify(transcript, defaultTiming);
+          if (localTasks.length > 1) return localTasks;
+        }
+        return data.tasks;
+      }
     }
   } catch(e) {
     console.warn('API classify failed, using local:', e);
@@ -4111,6 +4156,7 @@ const COLOUR_ACCENT_VARS = {
   'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
   'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
   'bc-lime':   {'--blue':'#65A30D','--blue-dim':'#4d7c0f','--blue-lt':'#F7FEE7','--blue-glow':'rgba(101,163,13,.18)','--shbtn':'0 4px 16px rgba(101,163,13,.38)'},
+  'bc-yellow': {'--blue':'#FACC15','--blue-dim':'#ca8a04','--blue-lt':'#FEFCE8','--blue-glow':'rgba(250,204,21,.18)','--shbtn':'0 4px 16px rgba(250,204,21,.38)'},
   'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
   'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
   'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
@@ -4151,6 +4197,9 @@ async function applyLang(lang) {
   // Special: input placeholder
   const inp = document.getElementById('addTaskInput');
   if (inp) inp.placeholder = isJA ? inp.dataset.placeholderJa : inp.dataset.placeholderEn;
+  // Paste list textarea placeholder
+  const ta = document.getElementById('pasteListInput');
+  if (ta) ta.placeholder = isJA ? ta.dataset.placeholderJa : ta.dataset.placeholderEn;
   // Special: html lang attribute
   document.documentElement.lang = isJA ? 'ja' : 'en';
   // Special: mic modal hint (uses innerHTML for <br>)
