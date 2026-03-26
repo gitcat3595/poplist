@@ -206,6 +206,19 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:12px; color:var(--t3); min-height:16px;
   font-style:normal; text-align:center; transition:color .2s;
 }
+/* Classification mode chip — shown below voice button */
+.classify-mode-chip {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:10px; font-weight:700; letter-spacing:.3px;
+  padding:3px 9px; border-radius:20px;
+  border:1px solid var(--border); color:var(--t3);
+  background:var(--raised); cursor:pointer;
+  transition:color .2s, border-color .2s, background .2s;
+}
+.classify-mode-chip.ai-mode {
+  color:var(--blue); border-color:var(--blue);
+  background:var(--blue-lt);
+}
 
 /* ════════════════════════════════════════
    FILTER BAR
@@ -1215,6 +1228,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
         </svg>
       </button>
       <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
+      <span class="classify-mode-chip ai-mode" id="classifyChip" title="Classification mode — tap Settings to change">AI</span>
     </div>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task manually</button>
   </div>
@@ -1620,6 +1634,18 @@ GoogleService-Info.plist
         </div>
         <div class="settings-row-right">
           <span class="timing-chip" id="defaultDeadlineChip" data-timing="This Week">This Week</span>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Classification" data-ja="分類モード">Classification</p>
+          <p class="settings-row-sub" data-en="Private: on-device only · AI: cloud enhanced" data-ja="プライベート: デバイスのみ · AI: クラウド強化">Private: on-device only · AI: cloud enhanced</p>
+        </div>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button class="colour-mode-btn" id="classifyModePrivate" data-en="Private" data-ja="プライベート">Private</button>
+            <button class="colour-mode-btn active" id="classifyModeAI" data-en="AI" data-ja="AI">AI</button>
+          </div>
         </div>
       </div>
       <div class="settings-row" style="border-bottom:none">
@@ -3853,10 +3879,42 @@ document.getElementById('newCatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
 });
 
-// AI Classification toggle
+// Classification mode toggle (Settings General section)
+function updateClassifyModeUI() {
+  const ai = state.aiClassify;
+  document.getElementById('classifyModePrivate')?.classList.toggle('active', !ai);
+  document.getElementById('classifyModeAI')?.classList.toggle('active', ai);
+  // Sync the legacy Pro-section checkbox
+  const cb = document.getElementById('aiClassifyCheck');
+  if (cb) cb.checked = ai;
+  // Update the chip on the home screen
+  const chip = document.getElementById('classifyChip');
+  if (chip) {
+    chip.textContent = ai ? 'AI' : 'Private';
+    chip.classList.toggle('ai-mode', ai);
+  }
+}
+document.getElementById('classifyModePrivate')?.addEventListener('click', () => {
+  if (state.aiClassify === false) return;
+  state.aiClassify = false;
+  updateClassifyModeUI();
+  showToast('Private mode — on-device only');
+});
+document.getElementById('classifyModeAI')?.addEventListener('click', () => {
+  if (state.aiClassify === true) return;
+  state.aiClassify = true;
+  updateClassifyModeUI();
+  showToast('AI mode — cloud enhanced');
+});
+
+// AI Classification toggle (legacy Pro section — keep in sync)
 document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
   state.aiClassify = e.target.checked;
+  updateClassifyModeUI();
 });
+
+// Init chip on load
+updateClassifyModeUI();
 
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
