@@ -61,6 +61,17 @@ nav {
   margin-left: 2px; vertical-align: super; font-style: normal;
   box-shadow: 0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
 }
+.nav-right { display: flex; align-items: center; gap: 8px }
+.lang-toggle {
+  display: flex; background: var(--card); border-radius: var(--rp);
+  padding: 3px; border: 1px solid var(--border); gap: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--rp); color: var(--t2); transition: var(--tr);
+}
+.lang-btn.active { background: var(--blue); color: #fff }
 .nav-cta {
   font-size: 13px; font-weight: 700;
   padding: 8px 18px;
@@ -453,7 +464,13 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Poplist<em></em></div>
-  <a href="/" class="nav-cta">Get started</a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+    <a href="/" class="nav-cta" data-en="Get started" data-ja="はじめる">Get started</a>
+  </div>
 </nav>
 
 <div class="page">
@@ -466,18 +483,18 @@ footer {
         <path d="M5 10a7 7 0 0 0 14 0"/>
         <line x1="12" y1="19" x2="12" y2="22"/>
       </svg>
-      Voice-first task capture
+      <span data-en="Voice-first task capture" data-ja="音声ファーストのタスクキャプチャ">Voice-first task capture</span>
     </div>
-    <h1 class="hero-title">For busy minds<br>on the <em>move</em></h1>
-    <p class="hero-sub">Talk out what's on your mind. Poplist turns your words into a clean, organised task list — instantly.</p>
+    <h1 class="hero-title"><span data-en="For busy minds<br>on the <em>move</em>" data-ja="忙しい人のための<br><em>いつでも</em>タスク管理">For busy minds<br>on the <em>move</em></span></h1>
+    <p class="hero-sub" data-en="Talk out what's on your mind. Poplist turns your words into a clean, organised task list — instantly." data-ja="頭の中にあることを話すだけ。Poplistが言葉をきれいに整理されたタスクリストに変換します — 即座に。">Talk out what's on your mind. Poplist turns your words into a clean, organised task list — instantly.</p>
     <a href="/" class="hero-cta">
-      Try for free
+      <span data-en="Try for free" data-ja="無料で試す">Try for free</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
     </a>
-    <p class="hero-note">No account needed to start</p>
+    <p class="hero-note" data-en="No account needed to start" data-ja="アカウント不要で始められます">No account needed to start</p>
   </section>
 
   <!-- ── FEATURES ── -->
@@ -506,17 +523,17 @@ footer {
           </div>
 
           <!-- Task bubbles -->
-          <div class="task-bubble tb-md vb-1">Send report</div>
-          <div class="task-bubble tb-sm vb-2">Buy oat milk</div>
-          <div class="task-bubble tb-lg vb-3">Call dentist</div>
-          <div class="task-bubble tb-sm vb-4">Call Sarah</div>
-          <div class="task-bubble tb-md vb-5">Book hotel</div>
+          <div class="task-bubble tb-md vb-1" data-en="Send report" data-ja="レポートを送る">Send report</div>
+          <div class="task-bubble tb-sm vb-2" data-en="Buy oat milk" data-ja="オーツミルクを買う">Buy oat milk</div>
+          <div class="task-bubble tb-lg vb-3" data-en="Call dentist" data-ja="歯医者に電話">Call dentist</div>
+          <div class="task-bubble tb-sm vb-4" data-en="Call Sarah" data-ja="サラに電話">Call Sarah</div>
+          <div class="task-bubble tb-md vb-5" data-en="Book hotel" data-ja="ホテルを予約">Book hotel</div>
 
         </div>
       </div>
       <div class="feat-text">
-        <h2 class="feat-title">Capture tasks the moment they appear</h2>
-        <p class="feat-desc">Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears.</p>
+        <h2 class="feat-title" data-en="Capture tasks the moment they appear" data-ja="タスクが浮かんだ瞬間にキャプチャ">Capture tasks the moment they appear</h2>
+        <p class="feat-desc" data-en="Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears." data-ja="頭に浮かんだことを話すだけ。アイデアが生まれた瞬間にPoplistを開いて話しかければ、考えが消える前にタスクが保存されます。">Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears.</p>
       </div>
     </div>
 
@@ -530,15 +547,15 @@ footer {
             <div class="cat-section">
               <div class="cat-header">
                 <span class="cat-dot" style="width:8px;height:8px;background:#3B82F6"></span>
-                <span class="cat-name">Work</span>
+                <span class="cat-name" data-en="Work" data-ja="仕事">Work</span>
               </div>
               <div class="cat-task" style="animation-delay:.1s">
                 <div class="cat-check"></div>
-                <span class="cat-task-text">Send Q1 report to team</span>
+                <span class="cat-task-text" data-en="Send Q1 report to team" data-ja="Q1レポートをチームに送る">Send Q1 report to team</span>
               </div>
               <div class="cat-task" style="animation-delay:.45s">
                 <div class="cat-check"></div>
-                <span class="cat-task-text">Review design mockups</span>
+                <span class="cat-task-text" data-en="Review design mockups" data-ja="デザインモックアップを確認">Review design mockups</span>
               </div>
             </div>
 
@@ -546,15 +563,15 @@ footer {
             <div class="cat-section">
               <div class="cat-header">
                 <span class="cat-dot" style="width:8px;height:8px;background:#22C55E"></span>
-                <span class="cat-name">Errands</span>
+                <span class="cat-name" data-en="Errands" data-ja="用事">Errands</span>
               </div>
               <div class="cat-task" style="animation-delay:.75s">
                 <div class="cat-check"></div>
-                <span class="cat-task-text">Buy groceries + oat milk</span>
+                <span class="cat-task-text" data-en="Buy groceries + oat milk" data-ja="食料品＋オーツミルクを買う">Buy groceries + oat milk</span>
               </div>
               <div class="cat-task" style="animation-delay:1.05s">
                 <div class="cat-check"></div>
-                <span class="cat-task-text">Pick up dry cleaning</span>
+                <span class="cat-task-text" data-en="Pick up dry cleaning" data-ja="クリーニングを受け取る">Pick up dry cleaning</span>
               </div>
             </div>
 
@@ -562,11 +579,11 @@ footer {
             <div class="cat-section">
               <div class="cat-header">
                 <span class="cat-dot" style="width:8px;height:8px;background:#F59E0B"></span>
-                <span class="cat-name">Health</span>
+                <span class="cat-name" data-en="Health" data-ja="健康">Health</span>
               </div>
               <div class="cat-task" style="animation-delay:1.35s">
                 <div class="cat-check"></div>
-                <span class="cat-task-text">Book dentist appointment</span>
+                <span class="cat-task-text" data-en="Book dentist appointment" data-ja="歯医者の予約を入れる">Book dentist appointment</span>
               </div>
               <div class="cat-task done" style="animation-delay:1.65s">
                 <div class="cat-check done">
@@ -574,7 +591,7 @@ footer {
                     <polyline points="2 6 5 9 10 3"/>
                   </svg>
                 </div>
-                <span class="cat-task-text">Morning run</span>
+                <span class="cat-task-text" data-en="Morning run" data-ja="朝のランニング">Morning run</span>
               </div>
             </div>
 
@@ -582,15 +599,15 @@ footer {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
               </svg>
-              Organised by AI
+              <span data-en="Organised by AI" data-ja="AIが整理">Organised by AI</span>
             </div>
 
           </div>
         </div>
       </div>
       <div class="feat-text">
-        <h2 class="feat-title">Everything you say is automatically organised</h2>
-        <p class="feat-desc">AI sorts your spoken tasks into categories — work, errands, health, and more. You get a clean, ready-to-action list without lifting a finger.</p>
+        <h2 class="feat-title" data-en="Everything you say is automatically organised" data-ja="話したことが自動的に整理される">Everything you say is automatically organised</h2>
+        <p class="feat-desc" data-en="AI sorts your spoken tasks into categories — work, errands, health, and more. You get a clean, ready-to-action list without lifting a finger." data-ja="AIが話したタスクをカテゴリー（仕事、用事、健康など）に分類します。指一本動かさずに、すっきりした行動可能なリストができあがります。">AI sorts your spoken tasks into categories — work, errands, health, and more. You get a clean, ready-to-action list without lifting a finger.</p>
       </div>
     </div>
 
@@ -601,13 +618,13 @@ footer {
 
           <!-- Free tier -->
           <div class="tier-card">
-            <div class="tier-label">Free</div>
+            <div class="tier-label" data-en="Free" data-ja="無料">Free</div>
             <div class="tier-price">$0</div>
             <div class="tier-feats">
-              <div class="tier-feat"><span class="tier-feat-dot"></span>10 tasks</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>Voice capture</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>AI sorting</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>Task rollover</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="10 tasks" data-ja="10タスク">10 tasks</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Voice capture" data-ja="音声キャプチャ">Voice capture</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="AI sorting" data-ja="AI分類">AI sorting</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Task rollover" data-ja="タスク繰越">Task rollover</span></div>
             </div>
           </div>
 
@@ -615,21 +632,21 @@ footer {
           <div class="tier-card pro">
             <div class="tier-pro-badge">PRO</div>
             <div class="tier-label">PRO</div>
-            <div class="tier-price">$3.20<span>/mo</span></div>
+            <div class="tier-price">$3.20<span data-en="/mo" data-ja="/月">/mo</span></div>
             <div class="tier-feats">
-              <div class="tier-feat"><span class="tier-feat-dot"></span>Unlimited tasks</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>All 13 themes</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>Cloud sync</div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span>Custom categories</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Unlimited tasks" data-ja="無制限タスク">Unlimited tasks</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="All 13 themes" data-ja="全13テーマ">All 13 themes</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</span></div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Custom categories" data-ja="カスタムカテゴリ">Custom categories</span></div>
             </div>
           </div>
 
         </div>
       </div>
       <div class="feat-text">
-        <h2 class="feat-title">Simple pricing,<br>zero surprises</h2>
-        <p class="feat-desc">Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo.</p>
-        <a href="/pricing.html" class="feat-link">See full pricing →</a>
+        <h2 class="feat-title"><span data-en="Simple pricing,<br>zero surprises" data-ja="シンプルな料金、<br>驚きなし">Simple pricing,<br>zero surprises</span></h2>
+        <p class="feat-desc" data-en="Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo." data-ja="無料でスタート。PRO版にアップグレードして、タスク無制限、全テーマ、クラウド同期などをわずか$3.20/月から。">Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo.</p>
+        <a href="/pricing.html" class="feat-link" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
       </div>
     </div>
 
@@ -637,16 +654,16 @@ footer {
 
   <!-- ── CTA SECTION ── -->
   <section class="cta-section">
-    <h2 class="cta-title">Ready to clear<br>your mind?</h2>
-    <p class="cta-sub">Start capturing tasks by voice in seconds. Free to use, no setup required.</p>
+    <h2 class="cta-title"><span data-en="Ready to clear<br>your mind?" data-ja="頭をすっきり<br>させる準備はできてますか？">Ready to clear<br>your mind?</span></h2>
+    <p class="cta-sub" data-en="Start capturing tasks by voice in seconds. Free to use, no setup required." data-ja="数秒で音声によるタスクキャプチャを始めましょう。無料で使えて、セットアップ不要。">Start capturing tasks by voice in seconds. Free to use, no setup required.</p>
     <a href="/" class="cta-btn-white">
-      Start for free
+      <span data-en="Start for free" data-ja="無料で始める">Start for free</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
     </a>
-    <p class="cta-note-white">No account needed · Works in your browser</p>
+    <p class="cta-note-white" data-en="No account needed · Works in your browser" data-ja="アカウント不要 · ブラウザで動作">No account needed · Works in your browser</p>
   </section>
 
 </div><!-- /page -->
@@ -655,13 +672,23 @@ footer {
 <footer>
   <div class="footer-logo">Poplist<em></em></div>
   <div class="footer-links">
-    <a href="/privacy.html">Privacy</a>
-    <a href="/terms.html">Terms</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/how-to-use.html">How to use</a>
+    <a href="/privacy.html" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+    <a href="/terms.html" data-en="Terms" data-ja="利用規約">Terms</a>
+    <a href="/pricing.html" data-en="Pricing" data-ja="料金">Pricing</a>
+    <a href="/how-to-use.html" data-en="How to use" data-ja="使い方">How to use</a>
   </div>
   <p class="footer-copy">© 2025 Poplist</p>
 </footer>
 
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang);
+    if (txt) el.innerHTML = txt;
+  });
+}
+</script>
 </body>
 </html>
