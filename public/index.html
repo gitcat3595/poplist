@@ -267,6 +267,27 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   background:var(--raised);
 }
 .category-card.filtered-empty { display:none }
+
+/* Category collapse — double-tap header to fold/unfold */
+.category-card.cat-collapsed .task-item,
+.category-card.cat-collapsed .add-task-row {
+  display:none;
+}
+.category-card.cat-collapsed .category-header {
+  border-bottom:none;
+}
+.category-header {
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.cat-collapse-arrow {
+  font-size:10px; color:var(--t3); margin-left:6px;
+  transition:transform .22s ease; display:inline-block;
+}
+.category-card.cat-collapsed .cat-collapse-arrow {
+  transform:rotate(-90deg);
+}
+
 .cat-name {
   font-size:11px; font-weight:800; letter-spacing:.8px;
   text-transform:uppercase; color:var(--t2);
@@ -1908,9 +1929,10 @@ GoogleService-Info.plist
             <div style="display:flex;gap:8px;align-items:center;padding:8px 0 0">
               <div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
               <input id="newCatInput" type="text" placeholder="Category name..."
+                data-placeholder-en="Category name..." data-placeholder-ja="カテゴリー名…"
                 style="flex:1;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;
                        padding:7px 12px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">
-              <button id="newCatConfirmBtn"
+              <button id="newCatConfirmBtn" data-en="Add" data-ja="追加"
                 style="font-size:12px;font-weight:800;padding:7px 14px;border-radius:10px;
                        background:var(--blue);color:#fff;border:none;cursor:pointer;font-family:inherit;flex-shrink:0">
                 Add
@@ -2569,13 +2591,18 @@ function setBubbleClasses(el) {
 }
 
 function syncAllBubbles() {
-  document.querySelectorAll('.task-bubble').forEach(setBubbleClasses);
-  // Sync add-preview bubble
+  document.querySelectorAll('.task-bubble').forEach(el => {
+    // Skip the add-bubble placeholder — it uses a fixed ring style
+    if (el.id === 'addBubblePh') return;
+    setBubbleClasses(el);
+  });
+  // Sync add-preview bubble — always ring (transparent centre) so it looks like a placeholder
   const ph = document.getElementById('addBubblePh');
   if (ph) {
     ph.className = '';
-    ph.classList.add('task-bubble', state.bubbleStyle, state.bubbleColour);
+    ph.classList.add('task-bubble', 'ring', state.bubbleColour);
     ph.style.pointerEvents = 'none';
+    ph.style.opacity = '0.55';
   }
 }
 
@@ -3464,6 +3491,7 @@ document.getElementById('pasteListBtn')?.addEventListener('click', () => {
   setTimeout(() => document.getElementById('pasteListInput')?.focus(), 300);
 });
 document.getElementById('closePasteList')?.addEventListener('click', () => closeM('pasteListModal'));
+document.getElementById('pasteListModal')?.addEventListener('click', e => { if (e.target.id === 'pasteListModal') closeM('pasteListModal'); });
 
 // Intercept paste on the single-task input: if multi-line or long → redirect to bulk modal
 addInput?.addEventListener('paste', e => {
@@ -3703,7 +3731,7 @@ if (SR) {
     //   which the onend callback does NOT have. continuous:true eliminates this entirely.
     // macOS Safari / Chrome / Edge: continuous:false + restart loop (works correctly).
     r.continuous      = isIOS;
-    r.interimResults  = !isSafari;  // Safari (incl. iOS): only isFinal results; Chrome: live interim
+    r.interimResults  = true;  // Enable on all platforms incl. iOS Safari for instant text feedback
     r.maxAlternatives = 1;
 
     r.onstart = () => {
@@ -4152,8 +4180,8 @@ function buildCatList() {
       });
       kwSection.appendChild(inp);
 
-      // Rename row (for non-Other cats)
-      if (cat.id !== 'other') {
+      // Rename row (all categories including Other)
+      {
         const renameRow = document.createElement('div');
         renameRow.style.cssText = 'width:100%;display:flex;align-items:center;gap:6px;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)';
         renameRow.innerHTML = `<span style="font-size:11px;color:var(--t3);font-weight:600">${state.lang==='ja'?'名前を変更:':'Rename:'}</span>
@@ -4164,6 +4192,15 @@ function buildCatList() {
           if (!newName) return;
           if (state.lang==='ja') cat.ja = newName; else cat.en = newName;
           row.querySelector('.cat-item-name').textContent = newName;
+          // Also update the category header in the task list for 'other'
+          const catCard = document.getElementById('cat-' + cat.id);
+          if (catCard) {
+            const catNameEl = catCard.querySelector('.cat-name');
+            if (catNameEl) {
+              catNameEl.dataset[state.lang==='ja'?'ja':'en'] = newName;
+              catNameEl.textContent = newName;
+            }
+          }
           refreshCatChips();
         });
         kwSection.appendChild(renameRow);
@@ -4495,6 +4532,7 @@ document.getElementById('emailAuthSubmit')?.addEventListener('click', () => {
 });
 
 document.getElementById('closeEmailAuth')?.addEventListener('click', () => closeM('emailAuthModal'));
+document.getElementById('emailAuthModal')?.addEventListener('click', e => { if (e.target.id === 'emailAuthModal') closeM('emailAuthModal'); });
 
 /* ══════════════════════════════════════════
    CLEAR ALL
@@ -4856,6 +4894,60 @@ document.getElementById('exportBtn')?.addEventListener('click', () => openM('exp
 document.getElementById('closeExport')?.addEventListener('click', () => closeM('exportModal'));
 document.getElementById('exportModal')?.addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
+/* ══════════════════════════════════════════
+   CATEGORY COLLAPSE — double-tap header to fold/unfold
+   Works on both touch (iOS) and desktop (dblclick)
+══════════════════════════════════════════ */
+function initCatCollapseHeader(header) {
+  // Skip if already initialised
+  if (header.dataset.collapseInit) return;
+  header.dataset.collapseInit = '1';
+
+  // Inject collapse arrow if not present
+  if (!header.querySelector('.cat-collapse-arrow')) {
+    const arrow = document.createElement('span');
+    arrow.className = 'cat-collapse-arrow';
+    arrow.textContent = '▾';
+    arrow.setAttribute('aria-hidden', 'true');
+    header.appendChild(arrow);
+  }
+
+  function toggleCollapse() {
+    const card = header.closest('.category-card');
+    if (card) card.classList.toggle('cat-collapsed');
+  }
+
+  // Desktop: native dblclick
+  header.addEventListener('dblclick', e => { e.preventDefault(); toggleCollapse(); });
+
+  // Touch: detect two taps ≤ 320ms apart on the same header
+  let _lastTap = 0;
+  header.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - _lastTap < 320) {
+      e.preventDefault();
+      toggleCollapse();
+      _lastTap = 0;
+    } else {
+      _lastTap = now;
+    }
+  }, { passive: false });
+}
+
+// Init on all existing static category headers
+document.querySelectorAll('.category-header').forEach(initCatCollapseHeader);
+
+// Also init on any dynamically created category cards (called from makeTaskItem / addCategoryRow)
+const _catContainerObserver = new MutationObserver(mutations => {
+  mutations.forEach(m => m.addedNodes.forEach(node => {
+    if (node.nodeType !== 1) return;
+    const hdr = node.classList?.contains('category-header') ? node : node.querySelector?.('.category-header');
+    if (hdr) initCatCollapseHeader(hdr);
+  }));
+});
+const _catContainer = document.getElementById('tasksContainer');
+if (_catContainer) _catContainerObserver.observe(_catContainer, { childList:true, subtree:true });
+
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
 async function applyLang(lang) {
   const isJA = lang === 'ja';
@@ -4875,6 +4967,9 @@ async function applyLang(lang) {
   // Paste list textarea placeholder
   const ta = document.getElementById('pasteListInput');
   if (ta) ta.placeholder = isJA ? ta.dataset.placeholderJa : ta.dataset.placeholderEn;
+  // New category input placeholder
+  const newCatInp = document.getElementById('newCatInput');
+  if (newCatInp) newCatInp.placeholder = isJA ? (newCatInp.dataset.placeholderJa || 'カテゴリー名…') : (newCatInp.dataset.placeholderEn || 'Category name...');
   // Special: html lang attribute
   document.documentElement.lang = isJA ? 'ja' : 'en';
   // Special: mic modal hint (uses innerHTML for <br>)
