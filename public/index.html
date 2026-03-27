@@ -268,10 +268,16 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 }
 .category-card.filtered-empty { display:none }
 
-/* Category collapse — double-tap header to fold/unfold */
-.category-card.cat-collapsed .task-item,
-.category-card.cat-collapsed .add-task-row {
-  display:none;
+/* Category collapse — smooth grid-template-rows animation */
+.cat-body {
+  display:grid;
+  grid-template-rows:1fr;
+  transition:grid-template-rows .32s cubic-bezier(0.4,0,0.2,1);
+}
+.cat-body-inner { overflow:hidden; min-height:0 }
+
+.category-card.cat-collapsed .cat-body {
+  grid-template-rows:0fr;
 }
 .category-card.cat-collapsed .category-header {
   border-bottom:none;
@@ -280,9 +286,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
+/* Right-side group: count badge + arrow */
+.cat-header-right {
+  display:flex; align-items:center; gap:6px; flex-shrink:0;
+}
 .cat-collapse-arrow {
-  font-size:10px; color:var(--t3); margin-left:6px;
-  transition:transform .22s ease; display:inline-block;
+  font-size:10px; color:var(--t3);
+  transition:transform .32s cubic-bezier(0.4,0,0.2,1); display:inline-block;
 }
 .category-card.cat-collapsed .cat-collapse-arrow {
   transform:rotate(-90deg);
@@ -1642,26 +1652,34 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
     <!-- WORK -->
     <div class="category-card" id="cat-work" style="display:none">
-      <div class="category-header"><span class="cat-name" data-en="Work" data-ja="仕事">Work</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add work task…" data-ja="仕事のタスクを追加…">Add work task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Work" data-ja="仕事">Work</span><div class="cat-header-right"><span class="cat-count">0</span></div></div>
+      <div class="cat-body"><div class="cat-body-inner">
+        <div class="add-task-row" data-cat="work"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add work task…" data-ja="仕事のタスクを追加…">Add work task…</span></div>
+      </div></div>
     </div>
 
     <!-- HOME -->
     <div class="category-card" id="cat-home" style="display:none">
-      <div class="category-header"><span class="cat-name" data-en="Home" data-ja="家の事">Home</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add home task…" data-ja="家のタスクを追加…">Add home task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Home" data-ja="家の事">Home</span><div class="cat-header-right"><span class="cat-count">0</span></div></div>
+      <div class="cat-body"><div class="cat-body-inner">
+        <div class="add-task-row" data-cat="home"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add home task…" data-ja="家のタスクを追加…">Add home task…</span></div>
+      </div></div>
     </div>
 
     <!-- PERSONAL -->
     <div class="category-card" id="cat-personal" style="display:none">
-      <div class="category-header"><span class="cat-name" data-en="Personal" data-ja="自分の事">Personal</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add personal task…" data-ja="個人のタスクを追加…">Add personal task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Personal" data-ja="自分の事">Personal</span><div class="cat-header-right"><span class="cat-count">0</span></div></div>
+      <div class="cat-body"><div class="cat-body-inner">
+        <div class="add-task-row" data-cat="personal"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add personal task…" data-ja="個人のタスクを追加…">Add personal task…</span></div>
+      </div></div>
     </div>
 
     <!-- OTHER -->
     <div class="category-card" id="cat-other" style="display:none">
-      <div class="category-header"><span class="cat-name" data-en="Other" data-ja="その他">Other</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add task…" data-ja="タスクを追加…">Add task…</span></div>
+      <div class="category-header"><span class="cat-name" data-en="Other" data-ja="その他">Other</span><div class="cat-header-right"><span class="cat-count">0</span></div></div>
+      <div class="cat-body"><div class="cat-body-inner">
+        <div class="add-task-row" data-cat="other"><div class="add-task-plus"></div><span class="add-task-text" data-en="Add task…" data-ja="タスクを追加…">Add task…</span></div>
+      </div></div>
     </div>
 
   </div>
@@ -3114,9 +3132,9 @@ function moveCatTaskItem(item, newCatEn) {
   const oldCard = item.closest('.category-card');
   if (!newCard || newCard === oldCard) return;
 
-  // Move DOM node before the add-task-row
+  // Move DOM node before the add-task-row (inside cat-body-inner)
   const addRow = newCard.querySelector('.add-task-row');
-  newCard.insertBefore(item, addRow);
+  addRow.parentNode.insertBefore(item, addRow);
   newCard.classList.add('was-used');
   newCard.style.display = '';
 
@@ -3272,7 +3290,7 @@ document.getElementById('sortBtn')?.addEventListener('click', () => {
       const tb = order[b.querySelector('.timing-chip')?.dataset.timing||'Later']??2;
       return ta - tb;
     });
-    items.forEach(i => card.insertBefore(i, addRow));
+    items.forEach(i => addRow.parentNode.insertBefore(i, addRow));
   });
   showToast('Sorted by due date');
 });
@@ -3365,7 +3383,7 @@ function makeTaskItem(text, timing, cat, fsId) {
     </div></div>
   `;
   const addRow = card.querySelector('.add-task-row');
-  card.insertBefore(item, addRow);
+  addRow.parentNode.insertBefore(item, addRow);
 
   // Cache text in the appropriate language slot
   const textEl = item.querySelector('.task-text');
@@ -4592,8 +4610,10 @@ function addCustomCategory(name) {
   if (tasksContainer && !document.getElementById('cat-'+id)) {
     const card = document.createElement('div');
     card.className = 'category-card'; card.id = 'cat-'+id; card.style.display = 'none';
-    card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><span class="cat-count">0</span></div>
-      <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>`;
+    card.innerHTML = `<div class="category-header"><span class="cat-name">${name}</span><div class="cat-header-right"><span class="cat-count">0</span></div></div>
+      <div class="cat-body"><div class="cat-body-inner">
+        <div class="add-task-row" data-cat="${id}"><div class="add-task-plus"></div><span class="add-task-text">Add ${name} task…</span></div>
+      </div></div>`;
     tasksContainer.appendChild(card);
     card.querySelector('.add-task-row')?.addEventListener('click', () => openManualAddCard(true));
   }
@@ -5148,13 +5168,14 @@ function initCatCollapseHeader(header) {
   if (header.dataset.collapseInit) return;
   header.dataset.collapseInit = '1';
 
-  // Inject collapse arrow if not present
+  // Inject collapse arrow into .cat-header-right (right of count badge)
+  const rightGroup = header.querySelector('.cat-header-right') || header;
   if (!header.querySelector('.cat-collapse-arrow')) {
     const arrow = document.createElement('span');
     arrow.className = 'cat-collapse-arrow';
     arrow.textContent = '▾';
     arrow.setAttribute('aria-hidden', 'true');
-    header.appendChild(arrow);
+    rightGroup.appendChild(arrow);
   }
 
   function toggleCollapse() {
