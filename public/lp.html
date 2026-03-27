@@ -189,18 +189,18 @@ nav {
   border-radius: 50%;
   border: 1.5px solid rgba(59,130,246,.28);
   width: 68px; height: 68px;
-  animation: ring-expand 2.4s ease-out infinite;
+  animation: ring-expand 3.5s ease-out infinite;
   pointer-events: none;
 }
 .ring-1 { animation-delay: 0s }
-.ring-2 { animation-delay: .48s }
-.ring-3 { animation-delay: .96s }
-.ring-4 { animation-delay: 1.44s }
-.ring-5 { animation-delay: 1.92s }
+.ring-2 { animation-delay: .7s }
+.ring-3 { animation-delay: 1.4s }
+.ring-4 { animation-delay: 2.1s }
+.ring-5 { animation-delay: 2.8s }
 
 @keyframes ring-expand {
   0%   { transform: scale(1);   opacity: .9 }
-  100% { transform: scale(3.2); opacity: 0  }
+  100% { transform: scale(2.7); opacity: 0  }
 }
 
 /* Centred mic button — matches the app's white circle voice-btn */
@@ -211,7 +211,7 @@ nav {
   border: 1.5px solid var(--blue);
   display: flex; align-items: center; justify-content: center;
   box-shadow: var(--shcard), 0 0 0 4px rgba(59,130,246,.18), 0 0 0 8px rgba(59,130,246,.18);
-  animation: mic-pulse-lp 1.4s ease infinite;
+  animation: mic-pulse-lp 2.2s ease infinite;
   flex-shrink: 0;
   color: var(--blue);
 }
