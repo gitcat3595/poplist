@@ -172,44 +172,48 @@ nav {
 
 .mic-scene {
   position: relative;
-  width: 280px; height: 200px;
+  width: 280px; height: 220px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 
-/* Expanding listening rings */
+/* Expanding listening rings — same blue-glow colour as the app's listening state */
 .listen-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid rgba(59,130,246,.4);
-  width: 88px; height: 88px;
+  border: 1.5px solid rgba(59,130,246,.28);
+  width: 68px; height: 68px;
   animation: ring-expand 2.4s ease-out infinite;
   pointer-events: none;
 }
 .ring-1 { animation-delay: 0s }
-.ring-2 { animation-delay: .8s }
-.ring-3 { animation-delay: 1.6s }
+.ring-2 { animation-delay: .48s }
+.ring-3 { animation-delay: .96s }
+.ring-4 { animation-delay: 1.44s }
+.ring-5 { animation-delay: 1.92s }
 
 @keyframes ring-expand {
-  0%   { transform: scale(1);   opacity: .7 }
-  100% { transform: scale(2.5); opacity: 0  }
+  0%   { transform: scale(1);   opacity: .9 }
+  100% { transform: scale(3.2); opacity: 0  }
 }
 
-/* Centred mic button */
+/* Centred mic button — matches the app's white circle voice-btn */
 .mic-center-btn {
   position: relative; z-index: 3;
   width: 68px; height: 68px; border-radius: 50%;
-  background: var(--blue);
+  background: var(--card);
+  border: 1.5px solid var(--blue);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 24px rgba(59,130,246,.55), 0 0 0 10px rgba(59,130,246,.1);
-  animation: mic-pulse 2s ease infinite;
+  box-shadow: var(--shcard), 0 0 0 4px rgba(59,130,246,.18), 0 0 0 8px rgba(59,130,246,.18);
+  animation: mic-pulse-lp 1.4s ease infinite;
   flex-shrink: 0;
+  color: var(--blue);
 }
-.mic-center-btn svg { width: 30px; height: 30px; color: white }
+.mic-center-btn svg { width: 22px; height: 22px }
 
-@keyframes mic-pulse {
-  0%,100% { box-shadow: 0 4px 24px rgba(59,130,246,.55), 0 0 0 10px rgba(59,130,246,.10) }
-  50%      { box-shadow: 0 6px 32px rgba(59,130,246,.65), 0 0 0 18px rgba(59,130,246,.05) }
+@keyframes mic-pulse-lp {
+  0%,100% { box-shadow: var(--shcard), 0 0 0 4px rgba(59,130,246,.18), 0 0 0 8px rgba(59,130,246,.18) }
+  50%      { box-shadow: var(--shcard), 0 0 0 8px rgba(59,130,246,.18), 0 0 0 16px rgba(59,130,246,.10) }
 }
 
 /* Task bubbles */
@@ -221,17 +225,12 @@ nav {
   color: var(--t1);
   box-shadow: 0 3px 14px rgba(0,0,0,.10);
   white-space: nowrap;
-  display: flex; align-items: center; gap: 6px;
 }
-.task-bubble .dot { border-radius: 50%; flex-shrink: 0 }
 
 /* Size variants */
 .tb-sm { font-size: 10px; padding: 5px 10px }
-.tb-sm .dot { width: 6px; height: 6px }
 .tb-md { font-size: 12px; padding: 7px 12px }
-.tb-md .dot { width: 7px; height: 7px }
 .tb-lg { font-size: 13px; padding: 9px 14px; font-weight: 800 }
-.tb-lg .dot { width: 9px; height: 9px }
 
 /* Bubble positions — surround the mic rings */
 .vb-1 { top: 6px;    left: -2px;   animation: vb-float-a 3.8s ease-in-out infinite }
@@ -474,8 +473,10 @@ footer {
           <div class="listen-ring ring-1"></div>
           <div class="listen-ring ring-2"></div>
           <div class="listen-ring ring-3"></div>
+          <div class="listen-ring ring-4"></div>
+          <div class="listen-ring ring-5"></div>
 
-          <!-- Centred mic button — same icon as hero eyebrow -->
+          <!-- Centred mic button — matches the app's white circle voice-btn -->
           <div class="mic-center-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="2" width="6" height="11" rx="3"/>
@@ -485,33 +486,16 @@ footer {
             </svg>
           </div>
 
-          <!-- Task bubbles — multiple sizes, default app colours -->
-          <div class="task-bubble tb-md vb-1">
-            <span class="dot" style="background:#3B82F6"></span>Send report
-          </div>
-          <div class="task-bubble tb-sm vb-2">
-            <span class="dot" style="background:#22C55E"></span>Buy oat milk
-          </div>
-          <div class="task-bubble tb-lg vb-3">
-            <span class="dot" style="background:#F59E0B"></span>Call dentist
-          </div>
-          <div class="task-bubble tb-sm vb-4">
-            <span class="dot" style="background:#EC4899"></span>Call Sarah
-          </div>
-          <div class="task-bubble tb-md vb-5">
-            <span class="dot" style="background:#14B8A6"></span>Book hotel
-          </div>
+          <!-- Task bubbles -->
+          <div class="task-bubble tb-md vb-1">Send report</div>
+          <div class="task-bubble tb-sm vb-2">Buy oat milk</div>
+          <div class="task-bubble tb-lg vb-3">Call dentist</div>
+          <div class="task-bubble tb-sm vb-4">Call Sarah</div>
+          <div class="task-bubble tb-md vb-5">Book hotel</div>
 
         </div>
       </div>
       <div class="feat-text">
-        <div class="feat-badge" style="background:#EFF6FF;color:#3B82F6;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="2" width="6" height="11" rx="3"/>
-            <path d="M5 10a7 7 0 0 0 14 0"/>
-          </svg>
-          Voice capture
-        </div>
         <h2 class="feat-title">Capture tasks the moment they appear</h2>
         <p class="feat-desc">Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears.</p>
       </div>
@@ -586,12 +570,6 @@ footer {
         </div>
       </div>
       <div class="feat-text">
-        <div class="feat-badge" style="background:#F0FDF4;color:#16A34A;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-          </svg>
-          AI-powered
-        </div>
         <h2 class="feat-title">Everything you say is automatically organised</h2>
         <p class="feat-desc">AI sorts your spoken tasks into categories — work, errands, health, and more. You get a clean, ready-to-action list without lifting a finger.</p>
       </div>
@@ -630,12 +608,6 @@ footer {
         </div>
       </div>
       <div class="feat-text">
-        <div class="feat-badge" style="background:#EFF6FF;color:#3B82F6;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/>
-          </svg>
-          Simple pricing
-        </div>
         <h2 class="feat-title">Simple pricing,<br>zero surprises</h2>
         <p class="feat-desc">Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo.</p>
         <a href="/pricing.html" class="feat-link">See full pricing →</a>
