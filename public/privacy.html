@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy — Poplist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  body { font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
          background: #ECEEF2; color: #111111; padding: 0;
          -webkit-font-smoothing: antialiased }
   nav { position: sticky; top: 0; z-index: 10;
@@ -20,9 +20,21 @@
   .nav-logo em { display: inline-block; width: 7px; height: 7px;
     background: #3B82F6; border-radius: 50%; margin-left: 2px;
     vertical-align: super; font-style: normal }
+  .nav-right { display: flex; align-items: center; gap: 8px }
   .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
           font-weight: 600; color: #3B82F6; text-decoration: none }
   .back svg { width: 15px; height: 15px; flex-shrink: 0 }
+  .lang-toggle {
+    display: flex; background: #fff; border-radius: 50px;
+    padding: 3px; border: 1px solid #D4D7DD; gap: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .lang-btn {
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 50px; color: #6B7280; transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer; border: none; background: none; font-family: inherit;
+  }
+  .lang-btn.active { background: #3B82F6; color: #fff }
   .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 80px }
   h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.3px }
   .meta { font-size: 12px; color: #9CA3AF; margin-bottom: 32px }
@@ -42,11 +54,19 @@
 <body>
 <nav>
   <span class="nav-logo">Poplist<em></em></span>
-  <a class="back" href="javascript:history.back()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+    <a class="back" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span id="back-label">Back</span>
+    </a>
+  </div>
 </nav>
+
+<div id="lang-en">
 <div class="wrap">
   <h1>Privacy Policy</h1>
   <p class="meta">Effective date: 1 January 2026 &nbsp;·&nbsp; Allerise Pte. Ltd.</p>
@@ -96,5 +116,68 @@
     <a href="/data-deletion.html">Data Deletion</a>
   </div>
 </div>
+</div>
+
+<div id="lang-ja" style="display:none">
+<div class="wrap">
+  <h1>プライバシーポリシー</h1>
+  <p class="meta">発効日：2026年1月1日 &nbsp;·&nbsp; Allerise Pte. Ltd.</p>
+
+  <h2>1. 収集する情報</h2>
+  <p>Poplistはサービス提供に必要な最小限のデータを収集します：</p>
+  <ul>
+    <li><strong>アカウントデータ</strong> — GoogleまたはEmailでサインインする際のメールアドレスと表示名。</li>
+    <li><strong>タスクデータ</strong> — 作成したタスクのテキスト、カテゴリー、期日ラベル。</li>
+    <li><strong>音声データ</strong> — デバイスの音声認識サービスを通じてローカルで処理されます。生の音声データは保存しません。</li>
+    <li><strong>利用分析</strong> — アプリ改善のためFirebase Analyticsを通じて収集される匿名のクラッシュレポートと機能利用イベント。</li>
+  </ul>
+
+  <h2>2. データの利用方法</h2>
+  <ul>
+    <li>サインイン時にデバイス間でタスクを同期するため。</li>
+    <li>AIを使用してタスクを分類・整理するため（OpenAI APIをサーバーサイドプロキシ経由で使用 — タスクテキストが処理のためOpenAIに送信される場合があります）。</li>
+    <li>集約された匿名化された分析を通じてPoplistを改善するため。</li>
+  </ul>
+
+  <h2>3. データの共有</h2>
+  <p>個人データを販売することはありません。以下とデータを共有します：</p>
+  <ul>
+    <li><strong>Google Firebase</strong> — 認証、クラウドストレージ、分析のため。</li>
+    <li><strong>OpenAI</strong> — AI分類のためにタスクテキストが送信される場合があります。その処理にはOpenAIの<a href="https://openai.com/policies/privacy-policy" target="_blank">プライバシーポリシー</a>が適用されます。</li>
+  </ul>
+
+  <h2>4. データの保持</h2>
+  <p>タスクとアカウントデータは、アカウントを削除するまで保持されます。設定 → 情報 → データ削除リクエストからいつでも削除を依頼できます。</p>
+
+  <h2>5. 子どものプライバシー</h2>
+  <p>Poplistは13歳未満の子どもを対象としていません。13歳未満の子どもからデータを意図的に収集することはありません。</p>
+
+  <h2>6. お客様の権利</h2>
+  <p>お住まいの地域によっては、個人データへのアクセス、修正、または削除の権利がある場合があります。これらの権利を行使するには、<a href="mailto:privacy@allerise.com">privacy@allerise.com</a>までご連絡ください。</p>
+
+  <h2>7. ポリシーの変更</h2>
+  <p>このポリシーを更新する場合があります。変更後もPoplistを継続してご利用いただくことで、改訂されたポリシーに同意したものとみなされます。</p>
+
+  <h2>8. お問い合わせ</h2>
+  <p>Allerise Pte. Ltd. &nbsp;·&nbsp; <a href="mailto:privacy@allerise.com">privacy@allerise.com</a></p>
+
+  <div class="footer">
+    <span>© 2026 Allerise Pte. Ltd.</span>
+    <a href="/terms.html">利用規約</a>
+    <a href="/eula.html">EULA</a>
+    <a href="/data-deletion.html">データ削除</a>
+  </div>
+</div>
+</div>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.getElementById('lang-en').style.display = lang === 'en' ? '' : 'none';
+  document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
+  document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
+}
+</script>
 </body>
 </html>
