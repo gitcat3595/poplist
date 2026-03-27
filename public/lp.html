@@ -136,14 +136,14 @@ nav {
 
 .feat-visual {
   width: 100%;
-  padding: 36px 24px 32px;
+  padding: 28px 20px 24px;
   display: flex; align-items: center; justify-content: center;
   position: relative;
   min-height: 220px;
 }
 
 .feat-text {
-  padding: 0 24px 28px;
+  padding: 20px 24px 28px;
 }
 .feat-title {
   font-size: 20px; font-weight: 900; letter-spacing: -.5px; line-height: 1.3;
@@ -167,8 +167,14 @@ nav {
 }
 .feat-link:hover { opacity: .7 }
 
+/* Shared noise texture data URL (fractal grain at low opacity) */
 /* ── VISUAL 1: Mic + listening animation ── */
-.visual-voice { background: linear-gradient(160deg, #EEF4FF 0%, #E0EBFF 100%) }
+.visual-voice {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 75% 15%, rgba(255,255,255,.45) 0%, transparent 55%),
+    linear-gradient(160deg, #BFDBFE 0%, #93C5FD 65%, #60A5FA 100%);
+}
 
 .mic-scene {
   position: relative;
@@ -183,18 +189,18 @@ nav {
   border-radius: 50%;
   border: 1.5px solid rgba(59,130,246,.28);
   width: 68px; height: 68px;
-  animation: ring-expand 2.4s ease-out infinite;
+  animation: ring-expand 3.5s ease-out infinite;
   pointer-events: none;
 }
 .ring-1 { animation-delay: 0s }
-.ring-2 { animation-delay: .48s }
-.ring-3 { animation-delay: .96s }
-.ring-4 { animation-delay: 1.44s }
-.ring-5 { animation-delay: 1.92s }
+.ring-2 { animation-delay: .7s }
+.ring-3 { animation-delay: 1.4s }
+.ring-4 { animation-delay: 2.1s }
+.ring-5 { animation-delay: 2.8s }
 
 @keyframes ring-expand {
   0%   { transform: scale(1);   opacity: .9 }
-  100% { transform: scale(3.2); opacity: 0  }
+  100% { transform: scale(2.7); opacity: 0  }
 }
 
 /* Centred mic button — matches the app's white circle voice-btn */
@@ -205,7 +211,7 @@ nav {
   border: 1.5px solid var(--blue);
   display: flex; align-items: center; justify-content: center;
   box-shadow: var(--shcard), 0 0 0 4px rgba(59,130,246,.18), 0 0 0 8px rgba(59,130,246,.18);
-  animation: mic-pulse-lp 1.4s ease infinite;
+  animation: mic-pulse-lp 2.2s ease infinite;
   flex-shrink: 0;
   color: var(--blue);
 }
@@ -244,7 +250,12 @@ nav {
 @keyframes vb-float-c { 0%,100%{transform:translateY(0)}    50%{transform:translateY(6px)} }
 
 /* ── VISUAL 2: Category task list ── */
-.visual-list { background: linear-gradient(160deg, #F0FDF4 0%, #DCFCE7 100%) }
+.visual-list {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 25% 80%, rgba(191,219,254,.55) 0%, transparent 60%),
+    linear-gradient(160deg, #EFF6FF 0%, #DBEAFE 65%, #BFDBFE 100%);
+}
 
 .cat-list-scene {
   width: 100%; max-width: 280px;
@@ -302,8 +313,10 @@ nav {
 
 /* ── VISUAL 3: Fees ── */
 .visual-fees {
-  background: linear-gradient(160deg, #F5F3FF 0%, #EDE9FE 100%);
-  padding: 28px 20px 24px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 80% 20%, rgba(255,255,255,.45) 0%, transparent 50%),
+    linear-gradient(160deg, #DBEAFE 0%, #BFDBFE 55%, #93C5FD 100%);
 }
 
 .fees-scene {
@@ -352,7 +365,11 @@ nav {
 /* ── CTA SECTION ── */
 .cta-section {
   margin: 8px 16px 48px;
-  background: var(--blue);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 15% 85%, rgba(30,64,175,.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(147,197,253,.3) 0%, transparent 45%),
+    linear-gradient(135deg, #1E40AF 0%, #2563EB 45%, var(--blue) 100%);
   border-radius: 24px;
   padding: 40px 28px;
   text-align: center;
