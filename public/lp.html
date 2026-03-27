@@ -159,164 +159,141 @@ nav {
   padding: 4px 12px; border-radius: var(--rp);
   margin-bottom: 12px;
 }
+.feat-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px; font-weight: 700; color: var(--blue);
+  transition: var(--tr);
+}
+.feat-link:hover { opacity: .7 }
 
-/* ── VISUAL 1: Phone with mic + task bubbles ── */
+/* ── VISUAL 1: Mic + listening animation ── */
 .visual-voice { background: linear-gradient(160deg, #EEF4FF 0%, #E0EBFF 100%) }
 
-.phone-scene {
+.mic-scene {
   position: relative;
-  width: 220px; height: 160px;
-}
-
-.phone-body {
-  position: absolute;
-  bottom: 0; left: 50%; transform: translateX(-50%) rotate(-6deg);
-  width: 180px; height: 108px;
-  background: white;
-  border-radius: 18px;
-  border: 2px solid #DDE3F0;
-  box-shadow: 0 8px 32px rgba(59,130,246,.12), 0 2px 8px rgba(0,0,0,.08);
-  overflow: hidden;
-}
-.phone-screen-inner {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #F8FAFF, #F0F4FF);
+  width: 280px; height: 200px;
   display: flex; align-items: center; justify-content: center;
-}
-.sound-bars {
-  display: flex; align-items: center; gap: 4px;
-  height: 40px;
-}
-.sound-bar {
-  width: 4px; border-radius: 4px;
-  background: var(--blue);
-  opacity: .7;
-  animation: bar-bounce 1.2s ease infinite;
-}
-.sound-bar:nth-child(1) { height: 14px; animation-delay: 0s }
-.sound-bar:nth-child(2) { height: 26px; animation-delay: .15s }
-.sound-bar:nth-child(3) { height: 36px; animation-delay: .3s }
-.sound-bar:nth-child(4) { height: 22px; animation-delay: .45s }
-.sound-bar:nth-child(5) { height: 30px; animation-delay: .6s }
-.sound-bar:nth-child(6) { height: 16px; animation-delay: .75s }
-.sound-bar:nth-child(7) { height: 24px; animation-delay: .9s }
-
-@keyframes bar-bounce {
-  0%,100% { transform: scaleY(1); opacity: .6 }
-  50%      { transform: scaleY(1.4); opacity: 1 }
+  flex-shrink: 0;
 }
 
-.mic-float-btn {
+/* Expanding listening rings */
+.listen-ring {
   position: absolute;
-  top: 4px; left: 50%; transform: translateX(-50%);
-  width: 48px; height: 48px; border-radius: 50%;
+  border-radius: 50%;
+  border: 2px solid rgba(59,130,246,.4);
+  width: 88px; height: 88px;
+  animation: ring-expand 2.4s ease-out infinite;
+  pointer-events: none;
+}
+.ring-1 { animation-delay: 0s }
+.ring-2 { animation-delay: .8s }
+.ring-3 { animation-delay: 1.6s }
+
+@keyframes ring-expand {
+  0%   { transform: scale(1);   opacity: .7 }
+  100% { transform: scale(2.5); opacity: 0  }
+}
+
+/* Centred mic button */
+.mic-center-btn {
+  position: relative; z-index: 3;
+  width: 68px; height: 68px; border-radius: 50%;
   background: var(--blue);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 16px rgba(59,130,246,.45), 0 0 0 6px rgba(59,130,246,.12);
-  animation: mic-float-pulse 2s ease infinite;
-  z-index: 2;
+  box-shadow: 0 4px 24px rgba(59,130,246,.55), 0 0 0 10px rgba(59,130,246,.1);
+  animation: mic-pulse 2s ease infinite;
+  flex-shrink: 0;
 }
-.mic-float-btn svg { width: 20px; height: 20px; color: white }
+.mic-center-btn svg { width: 30px; height: 30px; color: white }
 
-@keyframes mic-float-pulse {
-  0%,100% { box-shadow: 0 4px 16px rgba(59,130,246,.45), 0 0 0 6px rgba(59,130,246,.12) }
-  50%      { box-shadow: 0 4px 20px rgba(59,130,246,.55), 0 0 0 12px rgba(59,130,246,.06) }
+@keyframes mic-pulse {
+  0%,100% { box-shadow: 0 4px 24px rgba(59,130,246,.55), 0 0 0 10px rgba(59,130,246,.10) }
+  50%      { box-shadow: 0 6px 32px rgba(59,130,246,.65), 0 0 0 18px rgba(59,130,246,.05) }
 }
 
+/* Task bubbles */
 .task-bubble {
   position: absolute;
   background: white;
-  border-radius: 12px;
-  padding: 7px 12px;
-  font-size: 11px; font-weight: 700;
+  border-radius: 20px;
+  font-weight: 700;
   color: var(--t1);
-  box-shadow: 0 2px 12px rgba(0,0,0,.10);
+  box-shadow: 0 3px 14px rgba(0,0,0,.10);
   white-space: nowrap;
   display: flex; align-items: center; gap: 6px;
-  animation: bubble-float 3s ease infinite;
 }
-.task-bubble .dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-}
-.bubble-1 {
-  top: 6px; left: -8px;
-  animation-delay: 0s;
-}
-.bubble-2 {
-  top: 6px; right: -10px;
-  animation-delay: .8s;
-}
-.bubble-3 {
-  bottom: 18px; left: -4px;
-  animation-delay: 1.6s;
-}
+.task-bubble .dot { border-radius: 50%; flex-shrink: 0 }
 
-@keyframes bubble-float {
-  0%,100% { transform: translateY(0px) }
-  50%      { transform: translateY(-5px) }
-}
+/* Size variants */
+.tb-sm { font-size: 10px; padding: 5px 10px }
+.tb-sm .dot { width: 6px; height: 6px }
+.tb-md { font-size: 12px; padding: 7px 12px }
+.tb-md .dot { width: 7px; height: 7px }
+.tb-lg { font-size: 13px; padding: 9px 14px; font-weight: 800 }
+.tb-lg .dot { width: 9px; height: 9px }
 
-/* ── VISUAL 2: Auto task list ── */
+/* Bubble positions — surround the mic rings */
+.vb-1 { top: 6px;    left: -2px;   animation: vb-float-a 3.8s ease-in-out infinite }
+.vb-2 { top: 2px;    right: -6px;  animation: vb-float-b 4.2s ease-in-out infinite; animation-delay:.6s }
+.vb-3 { bottom: 10px; left: -2px;  animation: vb-float-c 3.5s ease-in-out infinite; animation-delay:1.2s }
+.vb-4 { bottom: 16px; right: -4px; animation: vb-float-a 4.6s ease-in-out infinite; animation-delay:.3s }
+.vb-5 { top: 76px;   right: -6px;  animation: vb-float-b 3.9s ease-in-out infinite; animation-delay:1.8s }
+
+@keyframes vb-float-a { 0%,100%{transform:translateY(0)}    50%{transform:translateY(-7px)} }
+@keyframes vb-float-b { 0%,100%{transform:translateY(0)}    40%{transform:translateY(-5px)} 70%{transform:translateY(4px)} }
+@keyframes vb-float-c { 0%,100%{transform:translateY(0)}    50%{transform:translateY(6px)} }
+
+/* ── VISUAL 2: Category task list ── */
 .visual-list { background: linear-gradient(160deg, #F0FDF4 0%, #DCFCE7 100%) }
 
-.list-scene {
+.cat-list-scene {
   width: 100%; max-width: 280px;
 }
-.list-mock {
+.cat-list-mock {
   background: white;
   border-radius: 18px;
   padding: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,.08);
   border: 1px solid rgba(0,0,0,.04);
 }
-.list-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #F0F0F0;
+.cat-section { margin-bottom: 14px }
+.cat-section:last-child { margin-bottom: 0 }
+.cat-header {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 7px;
 }
-.list-header-title {
-  font-size: 13px; font-weight: 800; color: var(--t1);
+.cat-dot { border-radius: 50%; flex-shrink: 0 }
+.cat-name {
+  font-size: 10px; font-weight: 800; color: var(--t2);
+  text-transform: uppercase; letter-spacing: .5px;
 }
-.list-count {
-  font-size: 11px; font-weight: 700;
-  background: #F3F4F6; color: var(--t2);
-  padding: 2px 8px; border-radius: 20px;
+.cat-task {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: var(--raised);
+  margin-bottom: 4px;
+  opacity: 0;
+  transform: translateX(-8px);
+  animation: task-slide-in .4s ease forwards;
 }
-.list-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid #F8F8F8;
-}
-.list-row:last-child { border-bottom: none; padding-bottom: 0 }
-.list-row.done .list-row-text { text-decoration: line-through; color: var(--t3) }
+.cat-task:last-child { margin-bottom: 0 }
+.cat-task.done .cat-task-text { text-decoration: line-through; color: var(--t3) }
 
-.row-check {
-  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+@keyframes task-slide-in {
+  to { opacity: 1; transform: translateX(0) }
+}
+
+.cat-check {
+  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
   border: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center;
 }
-.row-check.checked {
-  background: #22C55E; border-color: #22C55E;
-}
-.row-check.checked svg { width: 10px; height: 10px; color: white }
+.cat-check.done { background: #22C55E; border-color: #22C55E }
+.cat-check.done svg { width: 9px; height: 9px; color: white }
+.cat-task-text { font-size: 12px; font-weight: 600; color: var(--t1) }
 
-.list-row-info { flex: 1; min-width: 0 }
-.list-row-text {
-  font-size: 12px; font-weight: 600; color: var(--t1);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.list-row-cat {
-  font-size: 10px; font-weight: 600; color: var(--t3);
-  margin-top: 1px;
-}
-.row-pill {
-  font-size: 9px; font-weight: 800; letter-spacing: .3px;
-  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* AI wand icon + "organised by AI" badge */
 .list-ai-note {
   margin-top: 10px; padding-top: 10px; border-top: 1px solid #F0F0F0;
   display: flex; align-items: center; gap: 6px;
@@ -324,78 +301,54 @@ nav {
 }
 .list-ai-note svg { width: 12px; height: 12px; flex-shrink: 0 }
 
-/* ── VISUAL 3: Focus / energy ── */
-.visual-focus { background: linear-gradient(160deg, #FFF7ED 0%, #FEEFC9 100%) }
+/* ── VISUAL 3: Fees ── */
+.visual-fees {
+  background: linear-gradient(160deg, #F5F3FF 0%, #EDE9FE 100%);
+  padding: 28px 20px 24px;
+}
 
-.focus-scene {
-  display: flex; flex-direction: column; align-items: center; gap: 20px;
-  width: 100%;
+.fees-scene {
+  display: flex; gap: 10px; width: 100%; max-width: 300px;
 }
-.focus-compare {
-  display: flex; align-items: center; gap: 12px; width: 100%; max-width: 300px;
-}
-.compare-col {
+.tier-card {
   flex: 1;
-}
-.compare-label {
-  font-size: 9px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
-  color: var(--t3); margin-bottom: 8px; text-align: center;
-}
-.chaos-items {
-  display: flex; flex-direction: column; gap: 5px;
-}
-.chaos-item {
   background: white;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 10px; font-weight: 600; color: var(--t2);
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
-  opacity: .7;
-  border: 1px solid rgba(0,0,0,.04);
-  text-align: left;
+  border-radius: 16px;
+  padding: 14px 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  border: 1.5px solid var(--border);
   position: relative;
 }
-.chaos-item::after {
-  content: '?';
-  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  font-size: 9px; color: #FCA5A5; font-weight: 900;
+.tier-card.pro {
+  border-color: var(--blue);
+  box-shadow: 0 4px 20px rgba(59,130,246,.18);
 }
-.compare-arrow {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  flex-shrink: 0;
+.tier-label {
+  font-size: 10px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 6px;
 }
-.compare-arrow svg { width: 24px; height: 24px; color: #F59E0B }
-.compare-arrow span {
-  font-size: 8px; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .4px; color: #F59E0B;
+.tier-card.pro .tier-label { color: var(--blue) }
+.tier-price {
+  font-size: 22px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
+  margin-bottom: 10px; line-height: 1;
 }
-
-.clean-items {
-  display: flex; flex-direction: column; gap: 5px;
+.tier-price span { font-size: 12px; font-weight: 600; color: var(--t2); letter-spacing: 0 }
+.tier-feats { display: flex; flex-direction: column; gap: 5px }
+.tier-feat {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--t2);
 }
-.clean-item {
-  background: white;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 10px; font-weight: 600; color: var(--t1);
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
-  border: 1px solid rgba(0,0,0,.04);
-  display: flex; align-items: center; gap: 6px;
+.tier-feat-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  background: var(--t3);
 }
-.clean-item-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+.tier-card.pro .tier-feat-dot { background: var(--blue) }
+.tier-pro-badge {
+  position: absolute; top: -9px; left: 10px;
+  background: var(--blue); color: white;
+  font-size: 9px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: var(--rp);
 }
-
-.focus-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: white;
-  border-radius: 14px;
-  padding: 8px 16px;
-  font-size: 12px; font-weight: 800; color: #111;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  border: 1px solid rgba(0,0,0,.04);
-}
-.focus-badge svg { width: 16px; height: 16px; color: #F59E0B }
 
 /* ── CTA SECTION ── */
 .cta-section {
@@ -512,26 +465,18 @@ footer {
   <!-- ── FEATURES ── -->
   <div class="features">
 
-    <!-- Card 1: Voice capture -->
+    <!-- Card 1: Voice capture — mic + listening rings + task bubbles -->
     <div class="feat-card">
       <div class="feat-visual visual-voice">
-        <div class="phone-scene">
-          <!-- Floating task bubbles -->
-          <div class="task-bubble bubble-1">
-            <span class="dot" style="background:#3B82F6"></span>
-            Send report
-          </div>
-          <div class="task-bubble bubble-2">
-            <span class="dot" style="background:#22C55E"></span>
-            Buy oat milk
-          </div>
-          <div class="task-bubble bubble-3">
-            <span class="dot" style="background:#F59E0B"></span>
-            Call dentist
-          </div>
+        <div class="mic-scene">
 
-          <!-- Mic button floating above phone -->
-          <div class="mic-float-btn">
+          <!-- Expanding listen rings -->
+          <div class="listen-ring ring-1"></div>
+          <div class="listen-ring ring-2"></div>
+          <div class="listen-ring ring-3"></div>
+
+          <!-- Centred mic button — same icon as hero eyebrow -->
+          <div class="mic-center-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="2" width="6" height="11" rx="3"/>
               <path d="M5 10a7 7 0 0 0 14 0"/>
@@ -540,20 +485,23 @@ footer {
             </svg>
           </div>
 
-          <!-- Phone body -->
-          <div class="phone-body">
-            <div class="phone-screen-inner">
-              <div class="sound-bars">
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-                <div class="sound-bar"></div>
-              </div>
-            </div>
+          <!-- Task bubbles — multiple sizes, default app colours -->
+          <div class="task-bubble tb-md vb-1">
+            <span class="dot" style="background:#3B82F6"></span>Send report
           </div>
+          <div class="task-bubble tb-sm vb-2">
+            <span class="dot" style="background:#22C55E"></span>Buy oat milk
+          </div>
+          <div class="task-bubble tb-lg vb-3">
+            <span class="dot" style="background:#F59E0B"></span>Call dentist
+          </div>
+          <div class="task-bubble tb-sm vb-4">
+            <span class="dot" style="background:#EC4899"></span>Call Sarah
+          </div>
+          <div class="task-bubble tb-md vb-5">
+            <span class="dot" style="background:#14B8A6"></span>Book hotel
+          </div>
+
         </div>
       </div>
       <div class="feat-text">
@@ -569,52 +517,61 @@ footer {
       </div>
     </div>
 
-    <!-- Card 2: Auto-organised -->
+    <!-- Card 2: Category task list — tasks appear one by one per category -->
     <div class="feat-card">
       <div class="feat-visual visual-list">
-        <div class="list-scene">
-          <div class="list-mock">
-            <div class="list-header">
-              <span class="list-header-title">My tasks</span>
-              <span class="list-count">4 tasks</span>
+        <div class="cat-list-scene">
+          <div class="cat-list-mock">
+
+            <!-- Work -->
+            <div class="cat-section">
+              <div class="cat-header">
+                <span class="cat-dot" style="width:8px;height:8px;background:#3B82F6"></span>
+                <span class="cat-name">Work</span>
+              </div>
+              <div class="cat-task" style="animation-delay:.1s">
+                <div class="cat-check"></div>
+                <span class="cat-task-text">Send Q1 report to team</span>
+              </div>
+              <div class="cat-task" style="animation-delay:.45s">
+                <div class="cat-check"></div>
+                <span class="cat-task-text">Review design mockups</span>
+              </div>
             </div>
 
-            <div class="list-row">
-              <div class="row-check"></div>
-              <div class="list-row-info">
-                <div class="list-row-text">Send Q1 report to team</div>
-                <div class="list-row-cat">Work · Today</div>
+            <!-- Errands -->
+            <div class="cat-section">
+              <div class="cat-header">
+                <span class="cat-dot" style="width:8px;height:8px;background:#22C55E"></span>
+                <span class="cat-name">Errands</span>
               </div>
-              <span class="row-pill" style="background:#EFF6FF;color:#3B82F6;">Work</span>
+              <div class="cat-task" style="animation-delay:.75s">
+                <div class="cat-check"></div>
+                <span class="cat-task-text">Buy groceries + oat milk</span>
+              </div>
+              <div class="cat-task" style="animation-delay:1.05s">
+                <div class="cat-check"></div>
+                <span class="cat-task-text">Pick up dry cleaning</span>
+              </div>
             </div>
 
-            <div class="list-row">
-              <div class="row-check"></div>
-              <div class="list-row-info">
-                <div class="list-row-text">Buy groceries + oat milk</div>
-                <div class="list-row-cat">Errands · Today</div>
+            <!-- Health -->
+            <div class="cat-section">
+              <div class="cat-header">
+                <span class="cat-dot" style="width:8px;height:8px;background:#F59E0B"></span>
+                <span class="cat-name">Health</span>
               </div>
-              <span class="row-pill" style="background:#F0FDF4;color:#16A34A;">Errands</span>
-            </div>
-
-            <div class="list-row">
-              <div class="row-check"></div>
-              <div class="list-row-info">
-                <div class="list-row-text">Book dentist appointment</div>
-                <div class="list-row-cat">Health · This week</div>
+              <div class="cat-task" style="animation-delay:1.35s">
+                <div class="cat-check"></div>
+                <span class="cat-task-text">Book dentist appointment</span>
               </div>
-              <span class="row-pill" style="background:#FFF7ED;color:#D97706;">Health</span>
-            </div>
-
-            <div class="list-row done">
-              <div class="row-check checked">
-                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="2 6 5 9 10 3"/>
-                </svg>
-              </div>
-              <div class="list-row-info">
-                <div class="list-row-text">Morning run</div>
-                <div class="list-row-cat">Health · Done</div>
+              <div class="cat-task done" style="animation-delay:1.65s">
+                <div class="cat-check done">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="2 6 5 9 10 3"/>
+                  </svg>
+                </div>
+                <span class="cat-task-text">Morning run</span>
               </div>
             </div>
 
@@ -624,6 +581,7 @@ footer {
               </svg>
               Organised by AI
             </div>
+
           </div>
         </div>
       </div>
@@ -639,66 +597,48 @@ footer {
       </div>
     </div>
 
-    <!-- Card 3: No decision fatigue -->
+    <!-- Card 3: Fees -->
     <div class="feat-card">
-      <div class="feat-visual visual-focus">
-        <div class="focus-scene">
-          <div class="focus-compare">
-            <!-- Before: chaos -->
-            <div class="compare-col">
-              <div class="compare-label">Before</div>
-              <div class="chaos-items">
-                <div class="chaos-item" style="transform:rotate(-1.5deg)">call sarah back</div>
-                <div class="chaos-item" style="transform:rotate(1deg)">grocery run?</div>
-                <div class="chaos-item" style="transform:rotate(-.5deg)">finish slides</div>
-              </div>
-            </div>
+      <div class="feat-visual visual-fees">
+        <div class="fees-scene">
 
-            <!-- Arrow -->
-            <div class="compare-arrow">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13 2l8 10-8 10V14H3v-4h10z"/>
-              </svg>
-              <span>Poplist</span>
-            </div>
-
-            <!-- After: clean -->
-            <div class="compare-col">
-              <div class="compare-label">After</div>
-              <div class="clean-items">
-                <div class="clean-item">
-                  <span class="clean-item-dot" style="background:#3B82F6"></span>
-                  Finish slides
-                </div>
-                <div class="clean-item">
-                  <span class="clean-item-dot" style="background:#22C55E"></span>
-                  Grocery run
-                </div>
-                <div class="clean-item">
-                  <span class="clean-item-dot" style="background:#EC4899"></span>
-                  Call Sarah
-                </div>
-              </div>
+          <!-- Free tier -->
+          <div class="tier-card">
+            <div class="tier-label">Free</div>
+            <div class="tier-price">$0</div>
+            <div class="tier-feats">
+              <div class="tier-feat"><span class="tier-feat-dot"></span>10 tasks</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>Voice capture</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>AI sorting</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>Task rollover</div>
             </div>
           </div>
 
-          <div class="focus-badge">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-            Zero sorting needed
+          <!-- PRO tier -->
+          <div class="tier-card pro">
+            <div class="tier-pro-badge">PRO</div>
+            <div class="tier-label">PRO</div>
+            <div class="tier-price">$3.20<span>/mo</span></div>
+            <div class="tier-feats">
+              <div class="tier-feat"><span class="tier-feat-dot"></span>Unlimited tasks</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>All 13 themes</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>Cloud sync</div>
+              <div class="tier-feat"><span class="tier-feat-dot"></span>Custom categories</div>
+            </div>
           </div>
+
         </div>
       </div>
       <div class="feat-text">
-        <div class="feat-badge" style="background:#FFF7ED;color:#D97706;">
+        <div class="feat-badge" style="background:#EFF6FF;color:#3B82F6;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/>
           </svg>
-          No friction
+          Simple pricing
         </div>
-        <h2 class="feat-title">Save mental energy. Focus on the doing.</h2>
-        <p class="feat-desc">No more decision fatigue from sorting and prioritising. Poplist handles the mental overhead so your energy goes where it matters — getting things done.</p>
+        <h2 class="feat-title">Simple pricing,<br>zero surprises</h2>
+        <p class="feat-desc">Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo.</p>
+        <a href="/pricing.html" class="feat-link">See full pricing →</a>
       </div>
     </div>
 
