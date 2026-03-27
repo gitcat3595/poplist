@@ -1792,19 +1792,18 @@ GoogleService-Info.plist
     <!-- ══ SERVICE ══ -->
     <div class="settings-section" id="serviceSection">
       <div class="settings-section-label" data-en="Service" data-ja="サービス">Service</div>
-      <!-- Guest (not logged in) -->
-      <div id="serviceGuestRow">
+      <div id="serviceFreeRow">
         <div class="settings-row">
           <div style="flex:1;min-width:0">
-            <p class="settings-row-label" data-en="Guest" data-ja="ゲスト">Guest</p>
-            <p class="settings-row-sub" data-en="Up to 10 tasks · 4 default categories · default &amp; grey colours only" data-ja="タスク最大10件・4カテゴリー・デフォルト&amp;グレーカラーのみ">Up to 10 tasks · 4 default categories · default &amp; grey colours only</p>
+            <p class="settings-row-label" data-en="Free Plan" data-ja="フリープラン">Free Plan</p>
+            <p class="settings-row-sub" data-en="Up to 10 tasks · voice · manual add" data-ja="タスク最大10件・音声追加・手動追加">Up to 10 tasks · voice · manual add</p>
           </div>
-          <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--raised);color:var(--t2);border:1px solid var(--border)">GUEST</span>
+          <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--raised);color:var(--t2);border:1px solid var(--border)">FREE</span>
         </div>
         <div class="settings-row" id="upgradeProBtn" style="cursor:pointer;border-bottom:none">
           <div style="flex:1;min-width:0">
             <p class="settings-row-label" data-en="Upgrade to Pro" data-ja="Proにアップグレード">Upgrade to Pro</p>
-            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation · AI classification" data-ja="タスク無制限・同期・全カスタマイズ・AI分類">Unlimited tasks · sync · full customisation · AI classification</p>
+            <p class="settings-row-sub" data-en="Unlimited tasks · sync · customisation" data-ja="タスク無制限・同期・カスタマイズ">Unlimited tasks · sync · customisation</p>
           </div>
           <div class="settings-row-right" style="gap:6px">
             <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
@@ -1812,32 +1811,11 @@ GoogleService-Info.plist
           </div>
         </div>
       </div>
-      <!-- Free (logged in, not pro) -->
-      <div id="serviceFreeRow" style="display:none">
-        <div class="settings-row">
-          <div style="flex:1;min-width:0">
-            <p class="settings-row-label" data-en="Free Plan" data-ja="フリープラン">Free Plan</p>
-            <p class="settings-row-sub" data-en="Unlimited tasks · cloud sync · 4 categories · change categories" data-ja="タスク無制限・クラウド同期・4カテゴリー・カテゴリー変更可">Unlimited tasks · cloud sync · 4 categories · change categories</p>
-          </div>
-          <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--raised);color:var(--t2);border:1px solid var(--border)">FREE</span>
-        </div>
-        <div class="settings-row" id="upgradeFreeToProBtn" style="cursor:pointer;border-bottom:none">
-          <div style="flex:1;min-width:0">
-            <p class="settings-row-label" data-en="Upgrade to Pro" data-ja="Proにアップグレード">Upgrade to Pro</p>
-            <p class="settings-row-sub" data-en="Unlock all colours · bubble styles · AI classification · category management" data-ja="全カラー・バブルスタイル・AI分類・カテゴリー管理を解放">Unlock all colours · bubble styles · AI classification · category management</p>
-          </div>
-          <div class="settings-row-right" style="gap:6px">
-            <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-      </div>
-      <!-- Pro (logged in, is pro) -->
       <div id="serviceProRow" style="display:none">
         <div class="settings-row" style="border-bottom:none">
           <div style="flex:1;min-width:0">
             <p class="settings-row-label" data-en="Pro Plan" data-ja="プロプラン">Pro Plan</p>
-            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation · AI classification" data-ja="タスク無制限・同期・全カスタマイズ・AI分類">Unlimited tasks · sync · full customisation · AI classification</p>
+            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation" data-ja="タスク無制限・同期・全カスタマイズ">Unlimited tasks · sync · full customisation</p>
           </div>
           <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
         </div>
@@ -1971,7 +1949,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
-        <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category. (Requires sign-in)" data-ja="タスク名を長押しすると、カテゴリーを変更できます。（サインイン必要）">Press and hold the task name to move it to a different category. (Requires sign-in)</p></div>
+        <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
       </div>
     </div>
 
@@ -2506,16 +2484,11 @@ function updateAuthUI(user) {
     if (accountRow) accountRow.style.display = 'none';
   }
 
-  // Update Service section — three tiers: guest / free / pro
-  const guestRow = document.getElementById('serviceGuestRow');
-  const freeRow  = document.getElementById('serviceFreeRow');
-  const proRow   = document.getElementById('serviceProRow');
-  const isGuest  = !user;
-  const isFree   = !!user && !state.isProUser;
-  const isPro    = !!user && !!state.isProUser;
-  if (guestRow) guestRow.style.display = isGuest ? '' : 'none';
-  if (freeRow)  freeRow.style.display  = isFree  ? '' : 'none';
-  if (proRow)   proRow.style.display   = isPro   ? '' : 'none';
+  // Update Service section
+  const freeRow = document.getElementById('serviceFreeRow');
+  const proRow  = document.getElementById('serviceProRow');
+  if (freeRow) freeRow.style.display = state.isProUser ? 'none' : '';
+  if (proRow)  proRow.style.display  = state.isProUser ? '' : 'none';
 }
 
 /* ── Auth state listener ── */
@@ -2528,7 +2501,6 @@ if (FB_READY) {
     if (user) {
       localStorage.removeItem(TASK_CACHE_KEY); // Firestore takes over — discard local cache
       state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
-      updateAuthUI(user); // re-render service tier now that isProUser is resolved
       await mergePendingGuestTasks(user.uid);
       await fsLoadTasks(user.uid);
     } else {
@@ -2911,7 +2883,6 @@ function moveCatTaskItem(item, newCatEn) {
   });
 
   updateScreenState();
-  reapplyFilter(); // keep active filter consistent after category move
   const isJA = state.lang === 'ja';
   const catMeta = CAT_META.find(c => c.en === newCatEn);
   const label = isJA ? catMeta?.ja : catMeta?.en;
@@ -2943,12 +2914,6 @@ function attachTaskText(taskText) {
       taskText.releasePointerCapture(e.pointerId);
       // Prevent text selection during long press
       window.getSelection()?.removeAllRanges();
-      // Guests (not logged in) cannot change categories
-      if (FB_READY && !state.isLoggedIn) {
-        showToast(state.lang === 'ja' ? 'カテゴリー変更はサインインが必要です' : 'Sign in to change categories');
-        openM('settingsModal');
-        return;
-      }
       openCatEdit(taskText.closest('.task-item'));
     }, 500);
   });
@@ -4420,11 +4385,6 @@ updateClassifyModeUI();
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise bubble style');
-      openM('settingsModal');
-      return;
-    }
     document.querySelectorAll('.bst-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.bubbleStyle = tab.dataset.style;
@@ -4437,11 +4397,6 @@ document.querySelectorAll('.bst-tab').forEach(tab => {
 // Colour swatches
 document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
   sw.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise colours');
-      openM('settingsModal');
-      return;
-    }
     document.querySelectorAll('#colourGrid .cswatch').forEach(s => s.classList.remove('sel'));
     sw.classList.add('sel');
     state.bubbleColour = sw.dataset.colour;
@@ -4735,7 +4690,6 @@ function openLegal(key) {
   openM('legalModal');
 }
 
-document.getElementById('upgradeFreeToProBtn')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('aboutAppRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('closeAbout')?.addEventListener('click', () => closeM('aboutModal'));
 document.getElementById('plansLinkRow')?.addEventListener('click', () => {
