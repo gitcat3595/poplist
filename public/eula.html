@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>End User Licence Agreement — Poplist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  body { font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
          background: #ECEEF2; color: #111111; padding: 0;
          -webkit-font-smoothing: antialiased }
   nav { position: sticky; top: 0; z-index: 10;
@@ -20,9 +20,21 @@
   .nav-logo em { display: inline-block; width: 7px; height: 7px;
     background: #3B82F6; border-radius: 50%; margin-left: 2px;
     vertical-align: super; font-style: normal }
+  .nav-right { display: flex; align-items: center; gap: 8px }
   .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
           font-weight: 600; color: #3B82F6; text-decoration: none }
   .back svg { width: 15px; height: 15px; flex-shrink: 0 }
+  .lang-toggle {
+    display: flex; background: #fff; border-radius: 50px;
+    padding: 3px; border: 1px solid #D4D7DD; gap: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .lang-btn {
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 50px; color: #6B7280; transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer; border: none; background: none; font-family: inherit;
+  }
+  .lang-btn.active { background: #3B82F6; color: #fff }
   .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 80px }
   h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.3px }
   .meta { font-size: 12px; color: #9CA3AF; margin-bottom: 32px }
@@ -42,11 +54,19 @@
 <body>
 <nav>
   <span class="nav-logo">Poplist<em></em></span>
-  <a class="back" href="javascript:history.back()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+    <a class="back" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span id="back-label">Back</span>
+    </a>
+  </div>
 </nav>
+
+<div id="lang-en">
 <div class="wrap">
   <h1>End User Licence Agreement</h1>
   <p class="meta">Last updated: March 2025</p>
@@ -111,5 +131,83 @@
     <a href="/data-deletion.html">Data Deletion</a>
   </div>
 </div>
+</div>
+
+<div id="lang-ja" style="display:none">
+<div class="wrap">
+  <h1>エンドユーザーライセンス契約</h1>
+  <p class="meta">最終更新：2025年3月</p>
+
+  <p>このエンドユーザーライセンス契約（以下「EULA」）は、Poplistアプリケーション（以下「本アプリ」）の使用に関して、お客様（以下「ユーザー」）とPoplist（以下「ライセンサー」）の間の法的合意です。本アプリをインストールまたは使用することで、このEULAの条件に拘束されることに同意します。</p>
+
+  <h2>1. ライセンスの付与</h2>
+  <p>ライセンサーは、このEULAに従って、お客様が所有または管理するデバイスに本アプリをインストールして使用するための、限定的、非独占的、譲渡不可、取消可能なライセンスを個人的・非商業的目的のみでお客様に付与します。</p>
+
+  <h2>2. 制限事項</h2>
+  <p>以下のことは禁止されています：</p>
+  <ul>
+    <li>本アプリをサブライセンス、販売、貸与、リース、譲渡、割り当て、またはその他の方法で処分すること。</li>
+    <li>本アプリのリバースエンジニアリング、逆コンパイル、逆アセンブル、またはソースコードの取得を試みること。</li>
+    <li>本アプリのコピー、改変、または二次的著作物の作成。</li>
+    <li>本アプリ上の所有権表示を削除、変更、または隠蔽すること。</li>
+    <li>ライセンサーの事前書面による同意なしに本アプリを商業目的で使用すること。</li>
+    <li>第三者の知的財産権を侵害する方法で本アプリを使用すること。</li>
+  </ul>
+
+  <h2>3. Apple App Storeの追加条項</h2>
+  <p>App Storeから本アプリをダウンロードした場合、以下の追加条項が適用されます：</p>
+  <ul>
+    <li>このEULAはお客様とライセンサーの間のものであり、Apple Inc.（以下「Apple」）とのものではありません。Appleは本アプリまたはそのコンテンツに責任を負いません。</li>
+    <li>Appleは本アプリのメンテナンスまたはサポートを提供する義務を負いません。</li>
+    <li>本アプリが適用される保証に適合しない場合、AppleはApp Storeに支払われた購入代金（ある場合）を返金することができます。適用法の最大限の範囲で、Appleは本アプリに関するその他の保証義務を負いません。</li>
+    <li>Appleは、本アプリまたはお客様による本アプリの使用に関連するいかなるクレームにも対応する責任を負いません。これには、製品責任クレーム、法的・規制上の要件への不適合のクレーム、消費者保護法等に基づくクレームが含まれますがこれらに限定されません。</li>
+    <li>第三者が本アプリまたはお客様の本アプリの所持・使用が当該第三者の知的財産権を侵害すると主張する場合、Appleはそのようなクレームの調査、防御、解決、または解消に責任を負いません。</li>
+    <li>お客様は、(i) 米国政府の禁輸措置対象国、または「テロ支援」国に指定された国に所在していないこと、(ii) 米国政府の禁止または制限当事者リストに記載されていないことを表明・保証します。</li>
+    <li>お客様は本アプリの使用時に適用される第三者の利用規約を遵守する必要があります。</li>
+    <li>AppleとAppleの子会社はこのEULAの第三者受益者であり、EULAの条件をお客様に対して第三者受益者として執行する権利を有します。</li>
+  </ul>
+
+  <h2>4. 知的財産</h2>
+  <p>本アプリはライセンス付与されるものであり、販売されるものではありません。ライセンサーは本アプリに関するすべての権利、権原、および利益（すべての知的財産権を含む）を保持します。本アプリの知的財産の権原がお客様に移転しないことを認識します。</p>
+
+  <h2>5. プライバシー</h2>
+  <p>本アプリの使用は、このEULAに参照により組み込まれた<a href="/privacy.html">プライバシーポリシー</a>に従います。本アプリを使用することで、プライバシーポリシーに記載されたデータ慣行に同意します。</p>
+
+  <h2>6. アップデート</h2>
+  <p>ライセンサーは随時、本アプリのアップデートまたはアップグレードを開発することがあります。ライセンサーはアップデートを提供する義務を負わず、アップデートが提供される場合は、別途ライセンスが提供されない限り、このEULAの条件に従うことに同意します。</p>
+
+  <h2>7. 期間と解約</h2>
+  <p>このEULAは解約されるまで有効です。このEULAのいずれかの条件に違反した場合、お客様の権利はライセンサーからの通知なしに自動的に終了します。このEULAの終了時に、本アプリの使用を直ちに停止し、所持している本アプリのすべてのコピーを破棄する必要があります。</p>
+
+  <h2>8. 保証の免責</h2>
+  <p>本アプリは「現状のまま」で提供され、明示または黙示を問わずいかなる種類の保証もありません。ライセンサーは商品性、特定目的への適合性、および非侵害の黙示の保証を含むがこれに限らない、すべての保証を否認します。</p>
+
+  <h2>9. 責任の制限</h2>
+  <p>適用法が許容する最大限の範囲で、いかなる場合においても、ライセンサーは本アプリの使用から生じる間接的、付随的、特別、例示的、結果的、または懲罰的損害について責任を負いません。</p>
+
+  <h2>10. 準拠法</h2>
+  <p>このEULAは、抵触法の規定に関わらず、適用法に従って解釈されます。</p>
+
+  <h2>11. お問い合わせ</h2>
+  <p>このEULAについてご質問がある場合は、<a href="mailto:legal@poplist.app">legal@poplist.app</a>までご連絡ください。</p>
+
+  <div class="footer">
+    <span>© 2025 Poplist.</span>
+    <a href="/privacy.html">プライバシーポリシー</a>
+    <a href="/terms.html">利用規約</a>
+    <a href="/data-deletion.html">データ削除</a>
+  </div>
+</div>
+</div>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.getElementById('lang-en').style.display = lang === 'en' ? '' : 'none';
+  document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
+  document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
+}
+</script>
 </body>
 </html>

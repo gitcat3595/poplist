@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Deletion Request — Poplist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  body { font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
          background: #ECEEF2; color: #111111; padding: 0;
          -webkit-font-smoothing: antialiased }
   nav { position: sticky; top: 0; z-index: 10;
@@ -20,9 +20,21 @@
   .nav-logo em { display: inline-block; width: 7px; height: 7px;
     background: #3B82F6; border-radius: 50%; margin-left: 2px;
     vertical-align: super; font-style: normal }
+  .nav-right { display: flex; align-items: center; gap: 8px }
   .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
           font-weight: 600; color: #3B82F6; text-decoration: none }
   .back svg { width: 15px; height: 15px; flex-shrink: 0 }
+  .lang-toggle {
+    display: flex; background: #fff; border-radius: 50px;
+    padding: 3px; border: 1px solid #D4D7DD; gap: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .lang-btn {
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 50px; color: #6B7280; transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer; border: none; background: none; font-family: inherit;
+  }
+  .lang-btn.active { background: #3B82F6; color: #fff }
   .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 80px }
   h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.3px }
   .meta { font-size: 12px; color: #9CA3AF; margin-bottom: 32px }
@@ -57,11 +69,19 @@
 <body>
 <nav>
   <span class="nav-logo">Poplist<em></em></span>
-  <a class="back" href="javascript:history.back()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">JP</button>
+    </div>
+    <a class="back" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span id="back-label">Back</span>
+    </a>
+  </div>
 </nav>
+
+<div id="lang-en">
 <div class="wrap">
   <h1>Data Deletion Request</h1>
   <p class="meta">Last updated: March 2025</p>
@@ -121,5 +141,78 @@
     <a href="/eula.html">EULA</a>
   </div>
 </div>
+</div>
+
+<div id="lang-ja" style="display:none">
+<div class="wrap">
+  <h1>データ削除リクエスト</h1>
+  <p class="meta">最終更新：2025年3月</p>
+
+  <p>お客様はPoplistが保有する個人データの削除をいつでも要求する権利があります。このページでは、保有するデータ、削除される内容、およびリクエストの送信方法について説明します。</p>
+
+  <h2>保有するデータ</h2>
+  <p>Poplistのご利用状況によって、アカウントに関連する以下のデータを保有している場合があります：</p>
+  <ul>
+    <li>メールアドレスと表示名（アカウント登録またはGoogle Sign-Inより）。</li>
+    <li>データベースに保存されているタスク、カテゴリー、アプリ設定。</li>
+    <li>利用分析とクラッシュレポート（匿名化済み）。</li>
+    <li>サブスクリプションおよび請求情報（決済代行業者が管理。当社は顧客参照IDのみ保有）。</li>
+  </ul>
+
+  <h2>データ削除時の処理</h2>
+  <p>確認された削除リクエストを受け取ると：</p>
+  <ul>
+    <li>アカウントと関連するすべてのタスクおよび設定は<strong>30日以内</strong>に完全に削除されます。</li>
+    <li>メールとプロフィールデータは認証システムから削除されます。</li>
+    <li>お客様を特定できない匿名化・集約された分析データは保持される場合があります。</li>
+    <li>法的または財務上のコンプライアンスに必要な記録（請求履歴など）は法律の要求に従い最大7年間保持された後、削除されます。</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>注意：</strong>データの削除は永続的で取り消すことができません。タスク、設定、アカウントは復元不可能な形で削除されます。</p>
+  </div>
+
+  <h2>オプション1：アプリから削除する</h2>
+  <p>アカウントとデータを削除する最も簡単な方法はアプリから直接行うことです：</p>
+  <ol class="steps">
+    <li>Poplistを開き、<strong>設定</strong>アイコンをタップします。</li>
+    <li><strong>アカウント</strong>セクションまでスクロールします。</li>
+    <li><strong>アカウントを削除</strong>をタップし、確認画面で承認します。</li>
+  </ol>
+  <p>これにより、アカウントは直ちに削除キューに入ります。すべてのデータは30日以内に削除されます。</p>
+
+  <h2>オプション2：メールでリクエストを送信する</h2>
+  <p>アプリにアクセスできない場合や書面でのリクエストを希望する場合は、<a href="mailto:privacy@poplist.app">privacy@poplist.app</a>に件名<strong>「Data Deletion Request」</strong>でメールを送り、以下を含めてください：</p>
+  <ul>
+    <li>Poplistアカウントに関連するメールアドレス。</li>
+    <li>すべての個人データの削除リクエスト。</li>
+  </ul>
+  <p>リクエスト受領後<strong>30日以内</strong>に本人確認を行い、削除を確認します。</p>
+  <a class="email-btn" href="mailto:privacy@poplist.app?subject=Data%20Deletion%20Request">削除リクエストをメールで送る</a>
+
+  <h2>データの持ち出し</h2>
+  <p>アカウントを削除する前に、データのコピーをリクエストできます。件名<strong>「Data Export Request」</strong>で<a href="mailto:privacy@poplist.app">privacy@poplist.app</a>にメールをお送りください。30日以内に機械可読形式でデータを提供します。</p>
+
+  <h2>ご質問</h2>
+  <p>データや削除プロセスについてご質問がある場合は、<a href="/privacy.html">プライバシーポリシー</a>をご確認いただくか、<a href="mailto:privacy@poplist.app">privacy@poplist.app</a>までご連絡ください。</p>
+
+  <div class="footer">
+    <span>© 2025 Poplist.</span>
+    <a href="/privacy.html">プライバシーポリシー</a>
+    <a href="/terms.html">利用規約</a>
+    <a href="/eula.html">EULA</a>
+  </div>
+</div>
+</div>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.getElementById('lang-en').style.display = lang === 'en' ? '' : 'none';
+  document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
+  document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
+}
+</script>
 </body>
 </html>
