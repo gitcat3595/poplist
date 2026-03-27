@@ -1757,14 +1757,14 @@ GoogleService-Info.plist
       data-placeholder-en="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
       data-placeholder-ja="例：歯医者に電話、今週食料品を買う、月曜日にクライアントへレポート送付、土曜日にジム…"></textarea>
     <p style="font-size:11px;color:var(--t3);margin:6px 2px 0;text-align:right" data-en="Ctrl+Enter to process" data-ja="Ctrl+Enterで処理">Ctrl+Enter to process</p>
-    <button class="paste-list-process" id="pasteListProcess" data-en="Process &amp; add tasks" data-ja="タスクを追加する">Process &amp; add tasks</button>
+    <button class="paste-list-process" id="pasteListProcess" data-en="Add Tasks" data-ja="タスクを追加する">Add Tasks</button>
     <button class="modal-cancel" id="closePasteList" data-en="Cancel" data-ja="キャンセル">Cancel</button>
   </div>
 </div>
 
 <!-- ═══════ SETTINGS MODAL ═══════ -->
 <div class="modal-overlay" id="settingsModal">
-  <div class="modal-sheet">
+  <div class="modal-sheet" style="max-height:82vh">
     <div class="modal-handle"></div>
     <p class="modal-title" data-en="Settings" data-ja="設定">Settings</p>
 
@@ -2620,17 +2620,16 @@ function setBubbleClasses(el) {
 
 function syncAllBubbles() {
   document.querySelectorAll('.task-bubble').forEach(el => {
-    // Skip the add-bubble placeholder — it uses a fixed ring style
     if (el.id === 'addBubblePh') return;
     setBubbleClasses(el);
   });
-  // Sync add-preview bubble — always ring (transparent centre) so it looks like a placeholder
+  // Sync add-bubble placeholder — matches the chosen style at reduced opacity
   const ph = document.getElementById('addBubblePh');
   if (ph) {
     ph.className = '';
-    ph.classList.add('task-bubble', 'ring', state.bubbleColour);
+    ph.classList.add('task-bubble', state.bubbleStyle, state.bubbleColour);
     ph.style.pointerEvents = 'none';
-    ph.style.opacity = '0.55';
+    ph.style.opacity = '0.45';
   }
 }
 
