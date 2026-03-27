@@ -54,12 +54,11 @@ nav {
 }
 .nav-logo {
   font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--black);
-  display: flex; align-items: center; gap: 2px;
 }
-.nav-logo-dot {
+.nav-logo em {
   display: inline-block; width: 8px; height: 8px;
   background: var(--blue); border-radius: 50%;
-  margin-left: 2px; margin-bottom: 8px;
+  margin-left: 2px; vertical-align: super; font-style: normal;
   box-shadow: 0 0 0 2px var(--blue-glow), 0 0 8px var(--blue);
 }
 .nav-cta {
@@ -429,6 +428,11 @@ footer {
   font-size: 16px; font-weight: 900; letter-spacing: -.4px; color: var(--t2);
   margin-bottom: 16px; display: flex; align-items: center; justify-content: center;
 }
+.footer-logo em {
+  display: inline-block; width: 6px; height: 6px;
+  background: var(--blue); border-radius: 50%;
+  margin-left: 2px; vertical-align: super; font-style: normal;
+}
 .footer-links {
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
   gap: 4px 16px;
@@ -448,9 +452,7 @@ footer {
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    Poplist<span class="nav-logo-dot"></span>
-  </div>
+  <div class="nav-logo">Poplist<em></em></div>
   <a href="/" class="nav-cta">Get started</a>
 </nav>
 
@@ -651,7 +653,7 @@ footer {
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Poplist</div>
+  <div class="footer-logo">Poplist<em></em></div>
   <div class="footer-links">
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
