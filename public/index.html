@@ -1034,8 +1034,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 ════════════════════════════════════════ */
 .home-screen {
   display:flex; flex-direction:column; align-items:center;
-  padding:72px 0 40px;
+  padding:40px 0 40px;
   gap:0;
+  width:100%;
 }
 .home-title {
   font-size:22px; font-weight:900; letter-spacing:-.6px;
@@ -1046,9 +1047,153 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:13px; font-weight:700; color:var(--t2);
   padding:10px 24px; border-radius:var(--rp);
   background:var(--card); border:1.5px solid var(--border);
-  transition:var(--tr); margin-top:48px;
+  transition:var(--tr); margin-top:32px;
 }
 .home-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
+
+/* ════════════════════════════════════════
+   VOICE ASSISTANT — Full UI with floating bubbles
+════════════════════════════════════════ */
+.voice-assistant-ui {
+  position:relative;
+  width:100%;
+  max-width:420px;
+  height:380px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Center mic button */
+.va-mic-wrap {
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  z-index:10;
+  display:flex; align-items:center; justify-content:center;
+}
+.va-mic-btn {
+  width:84px; height:84px; border-radius:50%;
+  background:#fff;
+  border:2px solid var(--blue);
+  box-shadow:0 4px 24px rgba(59,130,246,.18), 0 2px 8px rgba(0,0,0,.08);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--blue); cursor:pointer;
+  transition:transform .15s ease, box-shadow .2s ease;
+  flex-shrink:0;
+}
+.va-mic-btn:hover { box-shadow:0 4px 32px rgba(59,130,246,.32), 0 2px 8px rgba(0,0,0,.08) }
+.va-mic-btn:active { transform:scale(.93) }
+.va-mic-btn.listening {
+  animation:va-mic-pulse 1.4s ease infinite;
+}
+@keyframes va-mic-pulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(59,130,246,.4), 0 4px 24px rgba(59,130,246,.18) }
+  50%      { box-shadow:0 0 0 16px rgba(59,130,246,.0), 0 4px 24px rgba(59,130,246,.18) }
+}
+.va-mic-icon { width:28px; height:28px }
+
+/* Wave bars left & right */
+.va-waves {
+  position:absolute;
+  top:50%; transform:translateY(-50%);
+  display:flex; align-items:center; gap:4px;
+  height:56px;
+}
+.va-waves-left  { left:calc(50% - 200px) }
+.va-waves-right { right:calc(50% - 200px) }
+.va-bar {
+  width:3.5px; border-radius:4px;
+  background:#2ec27e;
+  animation:va-wave 1.1s ease infinite;
+}
+.va-waves-left  .va-bar:nth-child(1)  { height:14px; animation-delay:0s }
+.va-waves-left  .va-bar:nth-child(2)  { height:28px; animation-delay:.08s }
+.va-waves-left  .va-bar:nth-child(3)  { height:42px; animation-delay:.16s }
+.va-waves-left  .va-bar:nth-child(4)  { height:36px; animation-delay:.24s }
+.va-waves-left  .va-bar:nth-child(5)  { height:22px; animation-delay:.08s }
+.va-waves-left  .va-bar:nth-child(6)  { height:30px; animation-delay:.32s }
+.va-waves-left  .va-bar:nth-child(7)  { height:16px; animation-delay:.16s }
+.va-waves-left  .va-bar:nth-child(8)  { height:10px; animation-delay:.40s }
+.va-waves-left  .va-bar:nth-child(9)  { height:20px; animation-delay:.24s }
+.va-waves-left  .va-bar:nth-child(10) { height:8px;  animation-delay:.12s }
+
+.va-waves-right .va-bar:nth-child(1)  { height:8px;  animation-delay:.12s }
+.va-waves-right .va-bar:nth-child(2)  { height:18px; animation-delay:.40s }
+.va-waves-right .va-bar:nth-child(3)  { height:30px; animation-delay:.24s }
+.va-waves-right .va-bar:nth-child(4)  { height:42px; animation-delay:.16s }
+.va-waves-right .va-bar:nth-child(5)  { height:36px; animation-delay:.08s }
+.va-waves-right .va-bar:nth-child(6)  { height:26px; animation-delay:.32s }
+.va-waves-right .va-bar:nth-child(7)  { height:18px; animation-delay:.08s }
+.va-waves-right .va-bar:nth-child(8)  { height:38px; animation-delay:.24s }
+.va-waves-right .va-bar:nth-child(9)  { height:24px; animation-delay:.16s }
+.va-waves-right .va-bar:nth-child(10) { height:12px; animation-delay:0s }
+
+@keyframes va-wave {
+  0%,100% { transform:scaleY(1); opacity:.85 }
+  50%      { transform:scaleY(1.7); opacity:1 }
+}
+
+/* Task bubbles */
+.va-bubble {
+  position:absolute;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center;
+  font-size:11.5px; font-weight:700;
+  line-height:1.3;
+  padding:16px;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+  animation:va-float 4s ease-in-out infinite;
+}
+.va-bubble:hover { transform:scale(1.06) }
+
+.va-bubble-1 {
+  width:118px; height:118px;
+  background:#3B82F6; color:#fff;
+  top:10px; left:20px;
+  box-shadow:0 8px 32px rgba(59,130,246,.35);
+  animation-delay:0s;
+}
+.va-bubble-2 {
+  width:96px; height:96px;
+  background:#93C5FD; color:#1D4ED8;
+  top:14px; right:22px;
+  box-shadow:0 6px 24px rgba(147,197,253,.4);
+  animation-delay:.7s;
+}
+.va-bubble-3 {
+  width:104px; height:104px;
+  background:#BFDBFE; color:#1E40AF;
+  bottom:24px; left:28px;
+  box-shadow:0 6px 24px rgba(191,219,254,.5);
+  animation-delay:1.4s;
+}
+.va-bubble-4 {
+  width:114px; height:114px;
+  background:#2563EB; color:#fff;
+  bottom:18px; right:18px;
+  box-shadow:0 8px 32px rgba(37,99,235,.35);
+  animation-delay:2.1s;
+}
+.va-bubble-5 {
+  width:78px; height:78px;
+  background:#60A5FA; color:#fff;
+  top:50%; left:8px;
+  transform:translateY(-50%);
+  box-shadow:0 4px 16px rgba(96,165,250,.3);
+  animation-delay:2.8s;
+  font-size:10px;
+}
+
+@keyframes va-float {
+  0%,100% { transform:translateY(0px) }
+  50%      { transform:translateY(-7px) }
+}
+.va-bubble-5 { animation-name:va-float-5 }
+@keyframes va-float-5 {
+  0%,100% { transform:translateY(-50%) translateX(0px) }
+  50%      { transform:translateY(-50%) translateX(-4px) }
+}
 
 /* ════════════════════════════════════════
    DONE SCREEN (all tasks cleared)
@@ -1367,17 +1512,67 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   <!-- HOME SCREEN — shown when no tasks exist -->
   <div id="homeScreen" class="home-screen">
     <h1 class="home-title" data-en="What's on your mind?" data-ja="今日のやることは？">What's on your mind?</h1>
-    <div class="voice-wrap">
-      <button class="voice-btn" id="voiceBtn">
-        <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="2" width="6" height="11" rx="3"/>
-          <path d="M5 10a7 7 0 0 0 14 0"/>
-          <line x1="12" y1="19" x2="12" y2="22"/>
-          <line x1="9" y1="22" x2="15" y2="22"/>
-        </svg>
-      </button>
-      <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</span>
-    </div>
+
+    <!-- Voice assistant UI with floating task bubbles -->
+    <div class="voice-assistant-ui">
+
+      <!-- Floating task bubbles -->
+      <div class="va-bubble va-bubble-1" onclick="document.getElementById('vaBtnMain').click()">
+        <span>Finish the proposal for next week</span>
+      </div>
+      <div class="va-bubble va-bubble-2" onclick="document.getElementById('vaBtnMain').click()">
+        <span>Book a ticket for the trip</span>
+      </div>
+      <div class="va-bubble va-bubble-3" onclick="document.getElementById('vaBtnMain').click()">
+        <span>Reschedule dentist appt</span>
+      </div>
+      <div class="va-bubble va-bubble-4" onclick="document.getElementById('vaBtnMain').click()">
+        <span>Check class schedule for next week</span>
+      </div>
+      <div class="va-bubble va-bubble-5" onclick="document.getElementById('vaBtnMain').click()">
+        <span>Call Sarah</span>
+      </div>
+
+      <!-- Left wave bars -->
+      <div class="va-waves va-waves-left" aria-hidden="true">
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div>
+      </div>
+
+      <!-- Center mic button -->
+      <div class="va-mic-wrap">
+        <button class="va-mic-btn" id="vaBtnMain" aria-label="Tap to add tasks by voice">
+          <svg class="va-mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="9" y1="22" x2="15" y2="22"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Right wave bars -->
+      <div class="va-waves va-waves-right" aria-hidden="true">
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div><div class="va-bar"></div><div class="va-bar"></div>
+        <div class="va-bar"></div>
+      </div>
+
+    </div><!-- /voice-assistant-ui -->
+
+    <!-- hidden original voiceBtn for JS compatibility -->
+    <button class="voice-btn" id="voiceBtn" style="display:none">
+      <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="11" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="9" y1="22" x2="15" y2="22"/>
+      </svg>
+    </button>
+    <span class="voice-transcript" id="voiceTranscript" data-en="Tap the mic to add tasks by voice" data-ja="タップして話す" style="font-size:13px;color:var(--t2);margin-top:-8px">Tap the mic to add tasks by voice</span>
     <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task manually</button>
   </div>
 
@@ -3772,6 +3967,7 @@ if (SR) {
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
+       document.getElementById('vaBtnMain'),
        document.getElementById('voiceBtnDone'),
        document.getElementById('voiceBtnBottom')
       ].forEach(b => b?.classList.add('listening'));
@@ -3898,6 +4094,7 @@ if (SR) {
   function _clearListeningUI() {
     state.isListening = false;
     [voiceBtn,
+     document.getElementById('vaBtnMain'),
      document.getElementById('voiceBtnDone'),
      document.getElementById('voiceBtnBottom')
     ].forEach(b => b?.classList.remove('listening'));
@@ -4002,6 +4199,7 @@ if (SR) {
     state.isListening = true;
     micModal?.classList.add('show');
     [voiceBtn,
+     document.getElementById('vaBtnMain'),
      document.getElementById('voiceBtnDone'),
      document.getElementById('voiceBtnBottom')
     ].forEach(b => b?.classList.add('listening'));
@@ -4036,6 +4234,7 @@ if (SR) {
     }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
+  document.getElementById('vaBtnMain')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
   micStopBtn?.addEventListener('click', () => stopListening());
@@ -4048,6 +4247,7 @@ if (SR) {
     transcriptEl.textContent = state.lang === 'ja' ? '音声未対応 — 入力してください ↓' : 'Voice not supported — type below ↓';
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
+  document.getElementById('vaBtnMain')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnDone')?.addEventListener('click', handleVoiceClick);
   document.getElementById('voiceBtnBottom')?.addEventListener('click', handleVoiceClick);
 }
