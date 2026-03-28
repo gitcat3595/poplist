@@ -616,25 +616,43 @@ nav {
 /* ── SLIDE 5: POP IT DONE animation ── */
 @keyframes pop-chk-bounce {
   0%   { transform: scale(1) }
-  40%  { transform: scale(1.55) }
+  18%  { transform: scale(0.65) }
+  52%  { transform: scale(1.8) }
+  75%  { transform: scale(0.88) }
+  90%  { transform: scale(1.06) }
   100% { transform: scale(1) }
+}
+@keyframes pop-burst {
+  0%   { transform: scale(1); opacity: .55 }
+  100% { transform: scale(4); opacity: 0 }
 }
 .pop-chk-done {
   background: #22C55E !important;
   border-color: #22C55E !important;
-  animation: pop-chk-bounce .3s cubic-bezier(.4,0,.2,1) forwards;
+  animation: pop-chk-bounce .48s cubic-bezier(.175,.885,.32,1.275) forwards;
+  position: relative;
+}
+.pop-chk-done::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(34,197,94,.45);
+  animation: pop-burst .48s ease forwards;
 }
 @keyframes pop-row-out {
-  0%   { opacity:1; transform:scale(1) translateX(0) }
-  18%  { opacity:1; transform:scale(1.03) translateX(2px) }
-  100% { opacity:0; transform:scale(0.84) translateX(-7px) }
+  0%   { opacity:1; transform:scale(1);           max-height:40px; padding-top:4px; padding-bottom:4px }
+  20%  { opacity:1; transform:scale(1.05) }
+  58%  { opacity:0; transform:scale(0.88) translateX(-6px); max-height:40px }
+  100% { opacity:0; transform:scale(0.88);        max-height:0; padding-top:0; padding-bottom:0 }
 }
-.pop-row-out { animation: pop-row-out .42s cubic-bezier(.4,0,.2,1) forwards }
+.pop-row-out { animation: pop-row-out .46s ease forwards; overflow: hidden }
 @keyframes pop-cat-out {
-  0%   { opacity:1; transform:translateY(0) }
-  100% { opacity:0; transform:translateY(-5px) }
+  0%   { opacity:1; max-height:80px }
+  35%  { opacity:0 }
+  100% { opacity:0; max-height:0 }
 }
-.pop-cat-out { animation: pop-cat-out .38s ease forwards }
+.pop-cat-out { animation: pop-cat-out .42s ease forwards; overflow: hidden }
 
 /* ── CTA SECTION ── */
 .cta-section {
@@ -1169,11 +1187,11 @@ footer {
       void el.offsetWidth;
     });
     // Sequence
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); }); }, 500));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 820));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); }); }, 1400));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 1720));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-cat').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-cat-out'); }); }, 2300));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); }); }, 300));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 560));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); }); }, 900));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 1160));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-cat').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-cat-out'); }); }, 1600));
   }
 
   function moveTo(n, animate) {
@@ -1210,7 +1228,7 @@ footer {
   }
   function startAuto() {
     clearInterval(timer);
-    if (!paused) timer = setInterval(function(){ advance(1); }, 2000);
+    if (!paused) timer = setInterval(function(){ advance(1); }, 3000);
   }
 
   dots.forEach(function(d, i) {
