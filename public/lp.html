@@ -380,29 +380,33 @@ nav {
   background: #fff;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 36px 0 32px;
+  padding: 0 0 32px;
   margin: 0 0 0;
 }
-.carousel-eyebrow {
-  display: flex; align-items: center;
-  gap: 8px;
-  padding: 0 24px;
-  margin-bottom: 28px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+.carousel-intro {
+  text-align: center;
+  /* Title → phone: ~70% of prior gap (16+22+6 ≈ 45px vs 24+32+8); wrap top still clears frame shadow */
+  padding: 40px 24px 16px;
+  max-width: 480px;
+  margin: 0 auto;
 }
-.carousel-eyebrow::-webkit-scrollbar { display: none }
-.carousel-eyebrow-inner {
-  display: inline-flex; align-items: center;
-  font-size: 13px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
-  padding: 8px 16px; border-radius: 50px;
-  white-space: nowrap; flex-shrink: 0;
-  opacity: 0.4;
-  transition: opacity .2s;
-  cursor: pointer;
+.carousel-how-label {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #9CA3AF;
 }
-.carousel-eyebrow-inner.active { opacity: 1 }
+.carousel-main-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -.6px;
+  line-height: 1.25;
+  color: var(--black);
+}
+body.lang-ja .carousel-main-title { letter-spacing: 0; font-size: 22px; }
 
 /* ── Due chip styles ── */
 .ps-due-chip {
@@ -418,16 +422,22 @@ nav {
 /* ── Task dot per category ── */
 .ps-task-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0 }
 
-/* ── Category block stagger animation ── */
-@keyframes ps-cat-appear {
-  from { opacity: 0; transform: translateY(5px) }
-  to   { opacity: 1; transform: translateY(0)   }
-}
-.ps-cat-anim {
+/* ── Slide 3: categories appear one-by-one (WORK → HOME → PERSONAL) — JS adds .ps-cat-seq-in */
+.ps-cat-seq {
   opacity: 0;
-  animation: ps-cat-appear 0.35s ease forwards;
+  transform: translateY(7px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.2,.85,.2,1);
 }
-.carousel-wrap { overflow: hidden; width: 100% }
+.ps-cat-seq.ps-cat-seq-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Padding inset so .phone-frame drop shadow isn’t clipped by overflow:hidden (same glow top/sides as bottom) */
+.carousel-wrap {
+  overflow: hidden;
+  width: 100%;
+  padding: 32px 22px 12px;
+}
 .carousel-track {
   display: flex;
   transition: transform .48s cubic-bezier(.4,0,.2,1);
@@ -436,12 +446,12 @@ nav {
 .carousel-slide {
   min-width: 100%;
   display: flex; flex-direction: column; align-items: center;
-  padding: 0 24px 4px;
+  padding: 6px 24px 4px;
 }
-/* Phone mockup */
+/* Phone mockup — iPhone Pro logical 393×852; +2% width so JA tabs stay one line */
 .slide-phone { position: relative; flex-shrink: 0; margin-bottom: 24px }
 .phone-frame {
-  width: 204px;
+  width: calc(408px * 393 / 852 * 1.02 + 20px);
   background: #111116;
   border-radius: 36px;
   padding: 10px;
@@ -484,6 +494,10 @@ nav {
 .ps-check.done { background: #22C55E; border-color: #22C55E }
 .ps-task-txt { font-size: 8.5px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .ps-task.done .ps-task-txt { text-decoration: line-through; color: #9CA3AF }
+/* JP in phone mock: slightly lighter strokes so long task lines don’t feel heavy */
+body.lang-ja .phone-screen .ps-task-txt { font-weight: 500 }
+body.lang-ja .phone-screen .ps-due-chip { font-weight: 600 }
+body.lang-ja .phone-screen .ps-cat-name { font-weight: 700; letter-spacing: 0.06em }
 /* Bottom bar */
 .ps-btmbar { display: flex; align-items: center; gap: 8px; padding: 7px 12px 14px; border-top: 1px solid rgba(0,0,0,.07); background: #ECEEF2; flex-shrink: 0 }
 .ps-add-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; background: #111; color: #fff; border-radius: 50px; padding: 7px 0; font-size: 9px; font-weight: 800 }
@@ -502,11 +516,531 @@ nav {
 @keyframes pswave { 0%,100%{height:5px} 50%{height:18px} }
 .ps-mic-hint { font-size: 7.5px; color: #6B7280; margin-bottom: 9px; text-align: center; line-height: 1.4 }
 .ps-stop { display: block; width: 100%; background: var(--blue); color: #fff; border-radius: 50px; padding: 7px; font-size: 9px; font-weight: 800; text-align: center }
+
+/* ── SLIDE 1: empty home → tap mic → listening modal (matches web app index.html) ── */
+.lp-voice-slide .phone-screen { position: relative }
+.lp-voice-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 14px 16px;
+  text-align: center;
+}
+.lp-home-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 12px;
+}
+.lp-home-title {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -.35px;
+  line-height: 1.2;
+  color: var(--black);
+  margin: 0 0 6px;
+  max-width: 100%;
+}
+body.lang-ja .lp-home-title {
+  font-size: 13px;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+.lp-home-sub {
+  margin: 0 0 14px;
+  padding: 0 2px;
+  font-size: 7.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--t2);
+  max-width: 220px;
+}
+body.lang-ja .lp-home-sub { font-size: 7px; line-height: 1.5 }
+.lp-home-voice-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shcard), 0 0 0 0 transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  cursor: default;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.lp-home-voice-btn .lp-home-mic-svg {
+  width: 17px;
+  height: 17px;
+}
+.lp-home-voice-btn.lp-mic-tap { transform: scale(0.93) }
+.lp-home-hint {
+  margin: 8px 0 0;
+  font-size: 7px;
+  font-weight: 500;
+  color: var(--t3);
+  line-height: 1.35;
+  max-width: 200px;
+}
+/* Full-screen modal inside phone (same structure as .mic-modal + .mic-card on index) */
+.lp-mic-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.lp-mic-modal.lp-mic-modal-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lp-mic-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 28px;
+}
+.lp-mic-card-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.lp-mic-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 268px;
+}
+.lp-mic-card-title {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--black);
+  letter-spacing: -0.2px;
+  text-align: center;
+}
+.lp-mic-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 22px;
+}
+.lp-mic-bar {
+  width: 2.5px;
+  border-radius: 3px;
+  background: var(--blue);
+  animation: lp-mic-wave-bar 1s ease infinite;
+}
+.lp-mic-bar:nth-child(1) { animation-delay: 0s;    height: 7px }
+.lp-mic-bar:nth-child(2) { animation-delay: 0.12s; height: 13px }
+.lp-mic-bar:nth-child(3) { animation-delay: 0.24s; height: 18px }
+.lp-mic-bar:nth-child(4) { animation-delay: 0.36s; height: 15px }
+.lp-mic-bar:nth-child(5) { animation-delay: 0.12s; height: 9px }
+.lp-mic-bar:nth-child(6) { animation-delay: 0.48s; height: 16px }
+.lp-mic-bar:nth-child(7) { animation-delay: 0.24s; height: 11px }
+@keyframes lp-mic-wave-bar {
+  0%, 100% { transform: scaleY(1) }
+  50%      { transform: scaleY(1.75) }
+}
+.lp-mic-card .lp-mic-hint {
+  font-size: 6.5px;
+  color: var(--t2);
+  text-align: center;
+  line-height: 1.55;
+  max-width: 100%;
+  margin: 0;
+}
+body.lang-ja .lp-mic-card .lp-mic-hint { font-size: 6px }
+.lp-mic-stop {
+  font-size: 7px;
+  font-weight: 800;
+  color: var(--t1);
+  padding: 6px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  background: var(--raised);
+  box-shadow: var(--shlift);
+  text-align: center;
+  width: 100%;
+  max-width: 200px;
+}
+
 /* Paste card elements */
 .ps-paste-title { font-size: 12px; font-weight: 900; color: #111; margin-bottom: 3px }
 .ps-paste-sub { font-size: 7.5px; color: #6B7280; font-weight: 500; margin-bottom: 9px; line-height: 1.4 }
 .ps-textarea { width: 100%; background: #F5F6F8; border-radius: 8px; padding: 7px 9px; font-size: 7.5px; color: #111; font-weight: 500; border: 1px solid #D4D7DD; line-height: 1.5; margin-bottom: 7px; font-family: var(--font); display: block }
 .ps-process-btn { display: block; width: 100%; background: var(--blue); color: #fff; border-radius: 50px; padding: 7px; font-size: 9px; font-weight: 800; text-align: center }
+
+/* ── SLIDE 2: iOS Paste menu → paste task string → keyboard → mic → mini HUD + dictation ── */
+.lp-paste-slide .ps-overlay-card.lp-paste-card {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 8px;
+  transition: padding-bottom 0.19s ease;
+}
+.lp-paste-card.lp-has-kbd {
+  padding-bottom: 108px;
+}
+.lp-paste-card.lp-voice-phase {
+  padding-bottom: 8px;
+}
+.lp-paste-slide .ps-process-btn {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 2px;
+}
+.lp-paste-field-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.ps-textarea.lp-paste-target {
+  position: relative;
+  z-index: 1;
+  min-height: 52px;
+  max-height: 102px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 0;
+  line-height: 1.45;
+  scrollbar-width: thin;
+}
+.ps-textarea.lp-paste-target::-webkit-scrollbar {
+  width: 3px;
+}
+.ps-textarea.lp-paste-target::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 3px;
+}
+.lp-paste-text {
+  font-size: 7.5px;
+  font-weight: 500;
+  color: #111;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.lp-paste-dict {
+  font-size: 7.5px;
+  font-weight: 500;
+  color: #2563eb;
+}
+.lp-paste-dict.lp-dict-done {
+  color: #111;
+  transition: color 0.35s ease;
+}
+/* iOS gold caret */
+.lp-paste-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 9px;
+  margin-left: 1px;
+  background: #ffd60a;
+  border-radius: 1px;
+  vertical-align: -1px;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.15);
+  animation: lp-ios-caret-blink 1.05s step-end infinite;
+}
+.lp-paste-caret.lp-caret-hide {
+  animation: none;
+  opacity: 0;
+}
+@keyframes lp-ios-caret-blink {
+  0%, 45% { opacity: 1 }
+  50%, 100% { opacity: 0 }
+}
+/* Dark pill context menu (Paste · … · AutoFill) */
+.lp-ios-cmenu {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%) translateY(4px) scale(0.94);
+  display: flex;
+  align-items: center;
+  padding: 5px 7px;
+  background: rgba(44, 44, 46, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+  max-width: 96%;
+}
+.lp-ios-cmenu.lp-cmenu-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+.lp-cm-item {
+  font-size: 6.5px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.lp-ios-cmenu.lp-cmenu-paste-hot .lp-cm-paste {
+  background: rgba(255, 255, 255, 0.18);
+}
+.lp-cm-div {
+  width: 1px;
+  height: 11px;
+  background: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+}
+.lp-cm-spark {
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.95);
+  padding: 0 5px;
+  line-height: 1;
+}
+.ps-textarea.lp-paste-target.lp-field-paste-pop {
+  animation: lp-field-paste-flash 0.4s ease;
+}
+@keyframes lp-field-paste-flash {
+  0%, 100% { box-shadow: 0 0 0 0 transparent }
+  35%      { box-shadow: 0 0 0 2px rgba(255, 214, 10, 0.55) }
+}
+/* Dark keyboard dock — pinned to bottom of sheet */
+.lp-ios-keyboard {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 5px 8px 10px;
+  background: #2c2c2e;
+  border-radius: 0 0 18px 18px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.21s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.15s ease;
+  z-index: 4;
+}
+.lp-ios-keyboard.lp-kbd-in {
+  transform: translateY(0);
+  opacity: 1;
+}
+/* Slide keyboard away when system dictation takes over */
+.lp-ios-keyboard:not(.lp-kbd-in) {
+  pointer-events: none;
+}
+.lp-ios-kbd-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 5px 5px;
+  margin-bottom: 3px;
+}
+.lp-ios-kbd-tool span {
+  font-size: 8px;
+  color: #8e8e93;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.lp-ios-kbd-tool .lp-kbd-done {
+  font-size: 9px;
+  color: var(--blue);
+  font-weight: 700;
+}
+.lp-ios-kbd-rows {
+  padding: 0 2px;
+}
+.lp-ios-kbd-row {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+/* Middle row inset like iOS */
+.lp-ios-kbd-row.lp-kbd-r2 {
+  padding: 0 9px;
+}
+.lp-ios-kbd-row .lp-ios-key {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 15px;
+  padding: 0 1px;
+  border-radius: 3px;
+  background: #636366;
+  box-shadow: 0 1px 0 #1c1c1e, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 5.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-transform: lowercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.lp-ios-kbd-row.lp-kbd-r3 .lp-ios-key-fn {
+  flex: 0 0 17px;
+  font-size: 6.5px;
+  font-weight: 600;
+  color: #d1d1d6;
+  text-transform: none;
+}
+.lp-ios-kbd-row.lp-kbd-r3 .lp-ios-key:not(.lp-ios-key-fn) {
+  flex: 1 1 0;
+}
+.lp-ios-kbd-bottom {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  padding-top: 2px;
+}
+.lp-ios-kb-globe {
+  font-size: 9px;
+  opacity: 0.85;
+}
+.lp-ios-space {
+  flex: 1;
+  height: 20px;
+  background: #636366;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 #1c1c1e;
+}
+.lp-ios-mic-btn {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  border: none;
+  background: #636366;
+  box-shadow: 0 1px 0 #1c1c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: default;
+  flex-shrink: 0;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.lp-ios-mic-btn svg {
+  width: 11px;
+  height: 11px;
+}
+.lp-ios-mic-btn.lp-mic-armed {
+  background: var(--blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+.lp-ios-mic-btn.lp-mic-pressed {
+  transform: scale(0.88);
+}
+/* Mini dictation bubble — above keyboard, then drops when keyboard dismisses */
+.lp-dict-hud {
+  position: absolute;
+  z-index: 8;
+  right: 10px;
+  bottom: 102px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: rgba(44, 44, 46, 0.96);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transform: scale(0.82);
+  pointer-events: none;
+  transition:
+    opacity 0.11s ease,
+    transform 0.14s cubic-bezier(0.34, 1.2, 0.64, 1),
+    bottom 0.17s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.lp-paste-card.lp-voice-phase .lp-dict-hud {
+  bottom: 38px;
+  right: 12px;
+}
+.lp-dict-hud.lp-dict-hud-on {
+  opacity: 1;
+  transform: scale(1);
+}
+.lp-dict-hud-mic {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  animation: lp-mini-mic-pulse 0.5s ease infinite;
+}
+.lp-dict-hud-mic svg {
+  width: 9px;
+  height: 9px;
+}
+@keyframes lp-mini-mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) }
+  50%      { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.12) }
+}
+.lp-dict-hud-waves {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 12px;
+}
+.lp-dict-hud-waves i {
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.85);
+  animation: lp-hud-wave 0.43s ease-in-out infinite;
+}
+.lp-dict-hud-waves i:nth-child(1) {
+  height: 5px;
+  animation-delay: 0s;
+}
+.lp-dict-hud-waves i:nth-child(2) {
+  height: 10px;
+  animation-delay: 0.06s;
+}
+.lp-dict-hud-waves i:nth-child(3) {
+  height: 6px;
+  animation-delay: 0.12s;
+}
+.lp-dict-hud-waves i:nth-child(4) {
+  height: 9px;
+  animation-delay: 0.04s;
+}
+@keyframes lp-hud-wave {
+  0%, 100% { transform: scaleY(1) }
+  50%      { transform: scaleY(1.65) }
+}
+body.lang-ja .lp-cm-item {
+  font-size: 5.8px;
+}
+
 /* Themes card elements */
 .ps-settings-title { font-size: 13px; font-weight: 900; color: #111; margin-bottom: 10px }
 .ps-section-label { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: #9CA3AF; margin-bottom: 7px }
@@ -523,7 +1057,6 @@ nav {
 .ps-green-dot { width: 5px; height: 5px; border-radius: 50%; background: #22C55E }
 /* Slide text */
 .slide-txt { text-align: center; max-width: 320px }
-.slide-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; padding: 4px 12px; border-radius: 50px; margin-bottom: 14px }
 .slide-title { font-size: 21px; font-weight: 900; letter-spacing: -.5px; line-height: 1.25; color: var(--black); margin-bottom: 7px }
 .slide-desc { font-size: 13px; line-height: 1.65; color: var(--t2); font-weight: 500 }
 /* Carousel dots */
@@ -569,8 +1102,8 @@ nav {
   background: var(--blue); color: #fff;
   padding: 2px 7px; border-radius: 50px;
 }
-/* ── PRICING COMPARE CHART ── */
-.lp-compare-wrap {
+/* ── FREE vs PRO chart (same markup as pricing; filled by /js/compare-chart.js) ── */
+.compare-wrap.lp-compare-wrap {
   margin: 0 16px;
   background: var(--card);
   border: 1px solid var(--border);
@@ -578,34 +1111,55 @@ nav {
   overflow: hidden;
   box-shadow: var(--shcard);
 }
-.lp-compare-header {
-  display: grid; grid-template-columns: 1fr 72px 72px;
+.compare-wrap.lp-compare-wrap .compare-header {
+  display: grid; grid-template-columns: 1fr 80px 80px;
   background: var(--raised);
   border-bottom: 1px solid var(--border);
   padding: 10px 14px; gap: 8px; align-items: center;
 }
-.lp-compare-row {
-  display: grid; grid-template-columns: 1fr 72px 72px;
+.compare-wrap.lp-compare-wrap .compare-header-label {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.compare-wrap.lp-compare-wrap .compare-col-head { text-align: center }
+.compare-wrap.lp-compare-wrap .col-plan-name {
+  font-size: 16px; font-weight: 800; color: var(--t2);
+}
+.compare-wrap.lp-compare-wrap .col-plan-pro { color: var(--blue) }
+.compare-wrap.lp-compare-wrap .compare-row {
+  display: grid; grid-template-columns: 1fr 80px 80px;
   padding: 11px 14px; gap: 8px; align-items: center;
   border-bottom: 1px solid var(--border);
+  background: var(--card);
 }
-.lp-compare-row:last-child { border-bottom: none }
-.lp-feat-label { font-size: 11px; font-weight: 700; color: var(--t3); letter-spacing: .5px; text-transform: uppercase }
-.lp-col-head { text-align: center }
-.lp-col-name { font-size: 15px; font-weight: 800; color: var(--t2) }
-.lp-col-pro-name { color: var(--blue) }
-.lp-row-left { display: flex; align-items: center; gap: 9px }
-.lp-row-icon {
-  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
-  background: var(--blue-lt); display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--blue-glow); color: var(--blue);
+.compare-wrap.lp-compare-wrap .compare-row:last-child { border-bottom: none }
+.compare-wrap.lp-compare-wrap .feat-row-left { display: flex; align-items: center; gap: 10px }
+.compare-wrap.lp-compare-wrap .feat-icon {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  background: var(--blue-lt);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--blue-glow);
 }
-.lp-row-name { font-size: 13px; font-weight: 600; color: var(--t1) }
-.lp-val { text-align: center }
-.lp-val-free { font-size: 13px; font-weight: 600; color: var(--t2); display: inline-block }
-.lp-val-pro  { font-size: 13px; font-weight: 700; color: var(--blue); display: inline-block }
-.lp-val-dash { font-size: 15px; color: var(--t3); display: block; text-align: center }
-.lp-val-check { font-size: 14px; color: var(--blue); display: block; text-align: center; font-weight: 800 }
+.compare-wrap.lp-compare-wrap .feat-icon svg { color: var(--blue); display: block }
+.compare-wrap.lp-compare-wrap .feat-name {
+  font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 1px;
+}
+.compare-wrap.lp-compare-wrap .feat-desc-small {
+  font-size: 12px; color: var(--t3); line-height: 1.3;
+}
+.compare-wrap.lp-compare-wrap .compare-val { text-align: center }
+.compare-wrap.lp-compare-wrap .val-free {
+  font-size: 13px; font-weight: 600; color: var(--t2); display: inline-block;
+}
+.compare-wrap.lp-compare-wrap .val-pro {
+  font-size: 13px; font-weight: 700; color: var(--blue); display: inline-block;
+}
+.compare-wrap.lp-compare-wrap .val-dash {
+  font-size: 15px; color: var(--t3); display: block; text-align: center;
+}
+.compare-wrap.lp-compare-wrap .val-check {
+  font-size: 14px; color: var(--blue); display: block; text-align: center; font-weight: 800;
+}
 .lp-pricing-link {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   font-size: 13px; font-weight: 700; color: var(--blue);
@@ -614,15 +1168,25 @@ nav {
 .lp-pricing-link:hover { opacity: .7 }
 
 /* ── SLIDE 4: COLOUR IT (bubble style animation) ── */
-.ci-tabs { display:flex; gap:3px; margin-bottom:6px }
-.ci-tab { flex:1; padding:4px 0; border:1.5px solid #E5E7EB; border-radius:6px; font-size:7px; font-weight:700; color:#6B7280; background:#fff; text-align:center; cursor:default }
+.ci-tabs { display:flex; flex-wrap:nowrap; gap:3px; margin-bottom:6px }
+.ci-tab { flex:1; padding:4px 0; border:1.5px solid #E5E7EB; border-radius:6px; font-size:7px; font-weight:700; color:#6B7280; background:#fff; text-align:center; white-space:nowrap; cursor:default }
 .ci-tab.ci-active { background:#111; color:#fff; border-color:#111 }
 body.lang-ja .ci-tab { font-size: 5.6px }
 .ci-bubble-preview { width:20px; height:20px; border-radius:50%; flex-shrink:0; transition:background .35s, border-color .35s, box-shadow .35s }
 .ci-bbl-luminous { background:#3B82F6; box-shadow:0 0 0 3px rgba(59,130,246,.18) }
 .ci-bbl-solid { background:radial-gradient(circle at 42% 32%, #93C5FD 0%, #2563EB 58%, #1E40AF 100%); box-shadow:inset 0 -2px 3px rgba(0,0,0,.22) }
+.ci-bbl-solid-pink { background:radial-gradient(circle at 42% 32%, #FBCFE8 0%, #EC4899 58%, #9D174D 100%); box-shadow:inset 0 -2px 3px rgba(0,0,0,.22) }
 .ci-bbl-ring { background:transparent; border:2px solid #3B82F6; box-shadow:none }
 .ci-bbl-ring-pink { background:transparent; border:2px solid #EC4899; box-shadow:none }
+/* Ink — soft radial wash (matches main app .task-bubble.ink) */
+.ci-bbl-ink {
+  background:radial-gradient(circle at 50% 50%, rgba(59,130,246,.42) 0%, rgba(59,130,246,.18) 60%, rgba(59,130,246,.06) 100%);
+  border:none; box-shadow:none;
+}
+.ci-bbl-ink-pink {
+  background:radial-gradient(circle at 50% 50%, rgba(236,72,153,.42) 0%, rgba(236,72,153,.18) 60%, rgba(236,72,153,.06) 100%);
+  border:none; box-shadow:none;
+}
 .ci-swatches { display:flex; flex-wrap:wrap; gap:5px }
 .ci-sw { width:18px; height:18px; border-radius:50% }
 .ci-sw.ci-sw-sel { box-shadow:0 0 0 2px #fff, 0 0 0 3.5px var(--ci-sw,#3B82F6) }
@@ -631,58 +1195,52 @@ body.lang-ja .ci-tab { font-size: 5.6px }
 .ci-bg-cat-name { transition:color .4s }
 .ci-bg-check { transition:border-color .4s }
 
-/* ── SLIDE 5: POP IT DONE animation ── */
-@keyframes pop-chk-bounce {
-  0%   { transform: scale(1) }
-  18%  { transform: scale(0.65) }
-  52%  { transform: scale(1.8) }
-  75%  { transform: scale(0.88) }
-  90%  { transform: scale(1.06) }
-  100% { transform: scale(1) }
-}
-@keyframes pop-burst {
-  0%   { transform: scale(1); opacity: .6 }
-  100% { transform: scale(5); opacity: 0 }
+/* ── SLIDE 5: POP IT DONE — one pop motion for blue checks + orange dot (colours differ, timing matches) ── */
+@keyframes lp-pop-bubble {
+  0%   { transform: scale(1);   opacity: 1 }
+  30%  { transform: scale(1.22); opacity: 1 }
+  100% { transform: scale(0.18); opacity: 0 }
 }
 .pop-chk-done {
-  background: #22C55E !important;
-  border-color: #22C55E !important;
-  animation: pop-chk-bounce .6s cubic-bezier(.175,.885,.32,1.275) forwards;
+  background: #3B82F6 !important;
+  border-color: #3B82F6 !important;
+  animation: lp-pop-bubble .7s cubic-bezier(.4,0,.6,1) forwards;
   position: relative;
+  transform-origin: center center;
 }
-.pop-chk-done::after {
-  content: '';
+/* LP burst particles — same idea as main app .burst-p, positioned inside .phone-screen */
+.lp-burst-p {
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: rgba(34,197,94,.45);
-  animation: pop-burst .6s ease forwards;
-}
-@keyframes pop-particle {
-  0%   { transform: translate(-50%,-50%) scale(1); opacity: 1 }
-  100% { transform: translate(calc(-50% + var(--px)), calc(-50% + var(--py))) scale(0); opacity: 0 }
-}
-.pop-particle {
-  position: absolute;
-  width: 4px; height: 4px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 20;
-  animation: pop-particle .6s cubic-bezier(.2,.8,.2,1) forwards;
+  z-index: 35;
+  box-sizing: border-box;
 }
 @keyframes pop-row-out {
   0%   { opacity:1; transform:scale(1);           max-height:40px; padding-top:4px; padding-bottom:4px }
-  20%  { opacity:1; transform:scale(1.05) }
-  58%  { opacity:0; transform:scale(0.88) translateX(-6px); max-height:40px }
+  22%  { opacity:1; transform:scale(1.05) }
+  60%  { opacity:0; transform:scale(0.88) translateX(-6px); max-height:40px }
   100% { opacity:0; transform:scale(0.88);        max-height:0; padding-top:0; padding-bottom:0 }
 }
-.pop-row-out { animation: pop-row-out .6s ease forwards; overflow: hidden }
+.pop-row-out { animation: pop-row-out .78s ease forwards; overflow: hidden }
 @keyframes pop-cat-out {
   0%   { opacity:1; max-height:80px }
   35%  { opacity:0 }
   100% { opacity:0; max-height:0 }
 }
-.pop-cat-out { animation: pop-cat-out .6s ease forwards; overflow: hidden }
+.pop-cat-out { animation: pop-cat-out .78s ease forwards; overflow: hidden }
+/* HOME row — orange dot same footprint as Work .ps-check (10px), not default 5px .ps-task-dot */
+.pop-home-task .pop-home-dot {
+  width: 10px;
+  height: 10px;
+}
+/* HOME row — orange dot uses same lp-pop-bubble as Work checks */
+.pop-home-dot.pop-dot-burst {
+  animation: lp-pop-bubble .7s cubic-bezier(.4,0,.6,1) forwards;
+  transform-origin: center center;
+  position: relative;
+  z-index: 2;
+}
 
 /* ── CTA SECTION ── */
 .cta-section {
@@ -811,30 +1369,44 @@ footer {
 
   <!-- ── KEY FEATURES CAROUSEL ── -->
   <section class="features-carousel">
-    <div class="carousel-eyebrow" id="carouselBanners">
-      <button class="carousel-eyebrow-inner active" style="background:var(--blue-lt);color:var(--blue);border:1.5px solid var(--blue-mid)"><span data-en="VOICE CAPTURE" data-ja="音声キャプチャ">VOICE CAPTURE</span></button>
-      <button class="carousel-eyebrow-inner" style="background:#F0FDF4;color:#16A34A;border:1.5px solid #BBF7D0"><span data-en="BRAIN DUMP" data-ja="まとめて追加">BRAIN DUMP</span></button>
-      <button class="carousel-eyebrow-inner" style="background:#F5F3FF;color:#7C3AED;border:1.5px solid #DDD6FE"><span data-en="INSTANTLY ORGANISED" data-ja="即整理">INSTANTLY ORGANISED</span></button>
-      <button class="carousel-eyebrow-inner" style="background:#FFF7ED;color:#F97316;border:1.5px solid #FED7AA"><span data-en="COLOUR IT" data-ja="カラー設定">COLOUR IT</span></button>
-      <button class="carousel-eyebrow-inner" style="background:#F0FDF4;color:#16A34A;border:1.5px solid #BBF7D0"><span data-en="POP IT DONE" data-ja="完了させよう">POP IT DONE</span></button>
+    <div class="carousel-intro">
+      <p class="carousel-how-label" data-en="HOW IT WORKS" data-ja="使い方の流れ">HOW IT WORKS</p>
+      <h2 class="carousel-main-title" data-en="See it in action" data-ja="実際の動きを見る">See it in action</h2>
     </div>
     <div class="carousel-wrap">
       <div class="carousel-track" id="carouselTrack">
 
-        <!-- SLIDE 1: Voice Capture -->
-        <div class="carousel-slide">
-          <span class="slide-badge" style="background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid)"><span data-en="VOICE CAPTURE" data-ja="音声キャプチャ">VOICE CAPTURE</span></span>
+        <!-- SLIDE 1: Voice Capture — empty home → tap mic → listening modal (like index.html) -->
+        <div class="carousel-slide lp-voice-slide">
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
               <div class="phone-screen">
                 <div class="ps-sb"><span class="ps-time">9:41</span><div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="12" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div></div>
                 <div class="ps-nav"><span class="ps-logo">Poplist<em></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
-                <div class="ps-content" style="opacity:.35;filter:blur(1.5px)">
-                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Send client update</span></div></div>
-                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#F97316"></span><span class="ps-cat-name">Home</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Buy groceries</span></div></div>
+                <div class="lp-voice-main">
+                  <div class="lp-home-empty">
+                    <h2 class="lp-home-title" data-en="What's on your mind?" data-ja="今日はなにをする？">What's on your mind?</h2>
+                    <p class="lp-home-sub" data-en="Tap the mic — we'll turn your words into tasks." data-ja="マイクをタップすると、話した内容がタスクになります。">Tap the mic — we'll turn your words into tasks.</p>
+                    <button type="button" class="lp-home-voice-btn" tabindex="-1" aria-hidden="true">
+                      <svg class="lp-home-mic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
+                    </button>
+                    <p class="lp-home-hint" data-en="Tap to add tasks by voice" data-ja="タップして話す">Tap to add tasks by voice</p>
+                  </div>
                 </div>
-                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div class="ps-mic-title">Listening…</div><div class="ps-waveform"><div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div></div><div class="ps-mic-hint">"Call dentist, buy oat milk, send the report…"</div><div class="ps-stop">Stop listening</div></div></div>
+                <div class="lp-mic-modal" aria-hidden="true">
+                  <div class="lp-mic-modal-backdrop"></div>
+                  <div class="lp-mic-card-wrap">
+                    <div class="lp-mic-card">
+                      <div class="lp-mic-card-title" data-en="Listening…" data-ja="聞いています…">Listening…</div>
+                      <div class="lp-mic-wave">
+                        <div class="lp-mic-bar"></div><div class="lp-mic-bar"></div><div class="lp-mic-bar"></div><div class="lp-mic-bar"></div><div class="lp-mic-bar"></div><div class="lp-mic-bar"></div><div class="lp-mic-bar"></div>
+                      </div>
+                      <p class="lp-mic-hint" data-en="Say your tasks naturally.<br>&quot;Email the client today, buy groceries this week&quot;" data-ja="自然に話してください。<br>「今日クライアントにメール、今週食料品を買う」">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</p>
+                      <div class="lp-mic-stop" data-en="Stop listening" data-ja="停止">Stop listening</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -844,9 +1416,8 @@ footer {
           </div>
         </div>
 
-        <!-- SLIDE 2: Brain Dump -->
-        <div class="carousel-slide">
-          <span class="slide-badge" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0"><span data-en="BRAIN DUMP" data-ja="まとめて追加">BRAIN DUMP</span></span>
+        <!-- SLIDE 2: iOS Paste menu → paste (same tasks as organised slide) → keyboard → mic → dictation -->
+        <div class="carousel-slide lp-paste-slide">
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
@@ -854,9 +1425,46 @@ footer {
                 <div class="ps-sb"><span class="ps-time">9:41</span><div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="8" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div></div>
                 <div class="ps-nav"><span class="ps-logo">Poplist<em></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
                 <div class="ps-content" style="opacity:.3;filter:blur(1.5px)">
-                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div></div>
+                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name" data-en="Work" data-ja="仕事">Work</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt"><span data-en="Review design mockups" data-ja="デザインモックを確認">Review design mockups</span></span></div></div>
                 </div>
-                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div class="ps-paste-title" data-en="Paste your list" data-ja="リストを貼り付け">Paste your list</div><div class="ps-paste-sub" data-en="Brain dump, transcript, bullet list — we'll sort everything." data-ja="メモ、テキスト、リストをそのまま貼るだけ — すべて整理します。">Brain dump, transcript, bullet list — we'll sort everything.</div><div class="ps-textarea">call the dentist, buy groceries this week, send report to client by Monday, gym on Saturday, book hotel for the trip</div><div class="ps-process-btn" data-en="Add Tasks" data-ja="タスクを追加する">Add Tasks</div></div></div>
+                <div class="ps-overlay"><div class="ps-overlay-card lp-paste-card"><div class="ps-sheet-handle"></div><div class="ps-paste-title" data-en="Paste your list" data-ja="リストを貼り付け">Paste your list</div><div class="ps-paste-sub" data-en="Brain dump, transcript, bullet list — we'll sort everything." data-ja="メモ、テキスト、リストをそのまま貼るだけ — すべて整理します。">Brain dump, transcript, bullet list — we'll sort everything.</div>
+                  <div class="lp-paste-field-wrap">
+                    <div class="ps-textarea lp-paste-target" data-paste-en="Send Q1 report to team, review design mockups, arrange make up lesson for kids, book dentist appointment, morning run, go to the art exhibition, look for a new jacket" data-paste-ja="チームにQ1レポートを送る、デザインモックを確認、子どものメイクレッスンを手配、歯医者の予約、朝のラン、美術展に行く、新しいジャケットを探す" data-dict-en=" I need to stop by the library, then finish the budget deck tonight." data-dict-ja=" メールしたあと図書館に寄って、今夜中に予算スライドを仕上げる。"><span class="lp-paste-text"></span><span class="lp-paste-dict"></span><span class="lp-paste-caret"></span></div>
+                    <div class="lp-ios-cmenu" aria-hidden="true">
+                      <span class="lp-cm-item lp-cm-paste" data-en="Paste" data-ja="貼り付け">Paste</span>
+                      <span class="lp-cm-div"></span>
+                      <span class="lp-cm-spark" aria-hidden="true">✦</span>
+                      <span class="lp-cm-div"></span>
+                      <span class="lp-cm-item" data-en="AutoFill" data-ja="自動入力">AutoFill</span>
+                    </div>
+                  </div>
+                  <div class="ps-process-btn" data-en="Add Tasks" data-ja="タスクを追加する">Add Tasks</div>
+                  <div class="lp-dict-hud" aria-hidden="true">
+                    <div class="lp-dict-hud-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg></div>
+                    <div class="lp-dict-hud-waves" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                  </div>
+                  <div class="lp-ios-keyboard" aria-hidden="true">
+                    <div class="lp-ios-kbd-tool"><span>‹ ›</span><span class="lp-kbd-done" data-en="Done" data-ja="完了">Done</span></div>
+                    <div class="lp-ios-kbd-rows">
+                      <div class="lp-ios-kbd-row lp-kbd-r1">
+                        <span class="lp-ios-key">q</span><span class="lp-ios-key">w</span><span class="lp-ios-key">e</span><span class="lp-ios-key">r</span><span class="lp-ios-key">t</span><span class="lp-ios-key">y</span><span class="lp-ios-key">u</span><span class="lp-ios-key">i</span><span class="lp-ios-key">o</span><span class="lp-ios-key">p</span>
+                      </div>
+                      <div class="lp-ios-kbd-row lp-kbd-r2">
+                        <span class="lp-ios-key">a</span><span class="lp-ios-key">s</span><span class="lp-ios-key">d</span><span class="lp-ios-key">f</span><span class="lp-ios-key">g</span><span class="lp-ios-key">h</span><span class="lp-ios-key">j</span><span class="lp-ios-key">k</span><span class="lp-ios-key">l</span>
+                      </div>
+                      <div class="lp-ios-kbd-row lp-kbd-r3">
+                        <span class="lp-ios-key lp-ios-key-fn" aria-hidden="true">⇧</span>
+                        <span class="lp-ios-key">z</span><span class="lp-ios-key">x</span><span class="lp-ios-key">c</span><span class="lp-ios-key">v</span><span class="lp-ios-key">b</span><span class="lp-ios-key">n</span><span class="lp-ios-key">m</span>
+                        <span class="lp-ios-key lp-ios-key-fn" aria-hidden="true">⌫</span>
+                      </div>
+                    </div>
+                    <div class="lp-ios-kbd-bottom">
+                      <span class="lp-ios-kb-globe" aria-hidden="true">🌐</span>
+                      <div class="lp-ios-space"></div>
+                      <button type="button" class="lp-ios-mic-btn" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg></button>
+                    </div>
+                  </div>
+                </div></div>
               </div>
             </div>
           </div>
@@ -867,8 +1475,7 @@ footer {
         </div>
 
         <!-- SLIDE 3: Instantly Organised -->
-        <div class="carousel-slide">
-          <span class="slide-badge" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE"><span data-en="INSTANTLY ORGANISED" data-ja="即整理">INSTANTLY ORGANISED</span></span>
+        <div class="carousel-slide slide-organised">
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
@@ -876,24 +1483,24 @@ footer {
                 <div class="ps-sb"><span class="ps-time">9:41</span><div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="12" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div></div>
                 <div class="ps-nav"><span class="ps-logo">Poplist<em></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
                 <div class="ps-content">
-                  <div class="ps-cat ps-cat-anim" style="animation-delay:0s">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">WORK</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt">Send Q1 report to team</span><span class="ps-due-chip ps-due-week">This Week</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt">Review design mockups</span><span class="ps-due-chip ps-due-today">Today</span></div>
+                  <div class="ps-cat ps-cat-seq">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="WORK" data-ja="仕事">WORK</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt"><span data-en="Send Q1 report to team" data-ja="チームにQ1レポートを送る">Send Q1 report to team</span></span><span class="ps-due-chip ps-due-week" data-en="This Week" data-ja="今週">This Week</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt"><span data-en="Review design mockups" data-ja="デザインモックを確認">Review design mockups</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
                   </div>
-                  <div class="ps-cat ps-cat-anim" style="animation-delay:0.5s">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">HOME</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#F97316"></div><span class="ps-task-txt">Arrange make up lesson for kids</span><span class="ps-due-chip ps-due-today">Today</span></div>
+                  <div class="ps-cat ps-cat-seq">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="HOME" data-ja="家のこと">HOME</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#F97316"></div><span class="ps-task-txt"><span data-en="Arrange make up lesson for kids" data-ja="子どものメイクレッスンを手配">Arrange make up lesson for kids</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
                   </div>
-                  <div class="ps-cat ps-cat-anim" style="animation-delay:1s">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">HEALTH</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Book dentist appointment</span><span class="ps-due-chip ps-due-today">Today</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Morning run</span><span class="ps-due-chip ps-due-today">Today</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Go to the art exhibition</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Look for a new jacket</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
+                  <div class="ps-cat ps-cat-seq">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="PERSONAL" data-ja="自分のこと">PERSONAL</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Book dentist appointment" data-ja="歯医者の予約">Book dentist appointment</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Morning run" data-ja="朝のラン">Morning run</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Go to the art exhibition" data-ja="美術展に行く">Go to the art exhibition</span></span><span class="ps-due-chip ps-due-soon" data-en="Soon" data-ja="そのうち">Soon</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Look for a new jacket" data-ja="新しいジャケットを探す">Look for a new jacket</span></span><span class="ps-due-chip ps-due-soon" data-en="Soon" data-ja="そのうち">Soon</span></div>
                   </div>
                 </div>
-                <div class="ps-btmbar"><div class="ps-add-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Task</div><div class="ps-mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div></div>
+                <div class="ps-btmbar"><div class="ps-add-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-en="Add Task" data-ja="タスクを追加">Add Task</span></div><div class="ps-mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div></div>
               </div>
             </div>
           </div>
@@ -905,7 +1512,6 @@ footer {
 
         <!-- SLIDE 4: Colour It -->
         <div class="carousel-slide ci-slide">
-          <span class="slide-badge" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA"><span data-en="COLOUR IT" data-ja="カラー設定">COLOUR IT</span></span>
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
@@ -913,9 +1519,9 @@ footer {
                 <div class="ps-sb"><span class="ps-time">9:41</span><div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="15" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div></div>
                 <div class="ps-nav"><span class="ps-logo">Poplist<em class="ci-logo-em"></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
                 <div class="ps-content ci-bg-content" style="opacity:.35;filter:blur(1.5px)">
-                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot ci-bg-dot" style="background:#3B82F6"></span><span class="ps-cat-name ci-bg-cat-name">Work</span></div><div class="ps-task"><div class="ps-check ci-bg-check"></div><span class="ps-task-txt">Send Q1 report</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review mockups</span></div></div>
+                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot ci-bg-dot" style="background:#3B82F6"></span><span class="ps-cat-name ci-bg-cat-name" data-en="Work" data-ja="仕事">Work</span></div><div class="ps-task"><div class="ps-check ci-bg-check"></div><span class="ps-task-txt"><span data-en="Send Q1 report" data-ja="Q1レポートを送る">Send Q1 report</span></span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt"><span data-en="Review mockups" data-ja="モックを確認">Review mockups</span></span></div></div>
                 </div>
-                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><span style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF" data-en="Customize" data-ja="カスタマイズ">カスタマイズ</span><span style="background:#111;color:#fff;font-size:6.5px;font-weight:800;padding:2px 5px;border-radius:50px">PRO</span></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Style" data-ja="バブルスタイル">バブルスタイル</div><div class="ci-tabs"><button class="ci-tab ci-active" data-ci="default" data-en="Default" data-ja="デフォルト">デフォルト</button><button class="ci-tab" data-ci="3d" data-en="3D" data-ja="3D">3D</button><button class="ci-tab" data-ci="ring" data-en="Ring" data-ja="リング">リング</button><button class="ci-tab" data-ci="ink" data-en="Ink" data-ja="インク">インク</button></div><div style="display:flex;align-items:center;gap:9px;background:#F5F6F8;border-radius:9px;padding:7px 9px;margin-bottom:7px"><div class="ci-bubble-preview ci-bbl-luminous"></div><div><div class="ci-preview-name" style="font-size:9px;font-weight:800;color:#111">Default</div><div class="ci-preview-desc" style="font-size:7px;color:#9CA3AF;font-weight:500;line-height:1.3">Solid fill with subtle edge gradient and soft colour glow</div></div></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Colour" data-ja="バブルカラー">バブルカラー</div><div class="ci-swatches"><div class="ci-sw ci-sw-sel" style="background:#3B82F6;--ci-sw:#3B82F6"></div><div class="ci-sw" style="background:#1E40AF;--ci-sw:#1E40AF"></div><div class="ci-sw" style="background:#0D9488;--ci-sw:#0D9488"></div><div class="ci-sw" style="background:#16A34A;--ci-sw:#16A34A"></div><div class="ci-sw" style="background:#65A30D;--ci-sw:#65A30D"></div><div class="ci-sw" style="background:#EAB308;--ci-sw:#EAB308"></div><div class="ci-sw" style="background:#F97316;--ci-sw:#F97316"></div><div class="ci-sw" style="background:#EF4444;--ci-sw:#EF4444"></div><div class="ci-sw" style="background:#EC4899;--ci-sw:#EC4899"></div><div class="ci-sw" style="background:#7C3AED;--ci-sw:#7C3AED"></div><div class="ci-sw" style="background:#111;--ci-sw:#111"></div><div class="ci-sw" style="background:#64748B;--ci-sw:#64748B"></div></div></div></div>
+                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><span style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF" data-en="Customize" data-ja="カスタマイズ">Customize</span><span style="background:#111;color:#fff;font-size:6.5px;font-weight:800;padding:2px 5px;border-radius:50px">PRO</span></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Style" data-ja="バブルスタイル">Bubble Style</div><div class="ci-tabs"><button class="ci-tab ci-active" data-ci="default" data-en="Default" data-ja="デフォルト">Default</button><button class="ci-tab" data-ci="3d" data-en="3D" data-ja="3D">3D</button><button class="ci-tab" data-ci="ring" data-en="Ring" data-ja="リング">Ring</button><button class="ci-tab" data-ci="ink" data-en="Ink" data-ja="インク">Ink</button></div><div style="display:flex;align-items:center;gap:9px;background:#F5F6F8;border-radius:9px;padding:7px 9px;margin-bottom:7px"><div class="ci-bubble-preview ci-bbl-luminous"></div><div><div class="ci-preview-name" style="font-size:9px;font-weight:800;color:#111">Default</div><div class="ci-preview-desc" style="font-size:7px;color:#9CA3AF;font-weight:500;line-height:1.3">Solid fill with subtle edge gradient and soft colour glow</div></div></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Colour" data-ja="バブルカラー">Bubble Colour</div><div class="ci-swatches"><div class="ci-sw ci-sw-sel" style="background:#3B82F6;--ci-sw:#3B82F6"></div><div class="ci-sw" style="background:#1E40AF;--ci-sw:#1E40AF"></div><div class="ci-sw" style="background:#0D9488;--ci-sw:#0D9488"></div><div class="ci-sw" style="background:#16A34A;--ci-sw:#16A34A"></div><div class="ci-sw" style="background:#65A30D;--ci-sw:#65A30D"></div><div class="ci-sw" style="background:#EAB308;--ci-sw:#EAB308"></div><div class="ci-sw" style="background:#F97316;--ci-sw:#F97316"></div><div class="ci-sw" style="background:#EF4444;--ci-sw:#EF4444"></div><div class="ci-sw" style="background:#EC4899;--ci-sw:#EC4899"></div><div class="ci-sw" style="background:#7C3AED;--ci-sw:#7C3AED"></div><div class="ci-sw" style="background:#111;--ci-sw:#111"></div><div class="ci-sw" style="background:#64748B;--ci-sw:#64748B"></div></div></div></div>
               </div>
             </div>
           </div>
@@ -927,7 +1533,6 @@ footer {
 
         <!-- SLIDE 5: Pop It Done -->
         <div class="carousel-slide">
-          <span class="slide-badge" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0"><span data-en="POP IT DONE" data-ja="完了させよう">POP IT DONE</span></span>
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
@@ -936,23 +1541,23 @@ footer {
                 <div class="ps-nav"><span class="ps-logo">Poplist<em></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
                 <div class="ps-content">
                   <div class="ps-cat pop-work-cat">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">WORK</span></div>
-                    <div class="ps-task pop-work-task-1"><div class="ps-check pop-work-chk-1"></div><span class="ps-task-txt">Send Q1 report to team</span><span class="ps-due-chip ps-due-week">This Week</span></div>
-                    <div class="ps-task pop-work-task-2"><div class="ps-check pop-work-chk-2"></div><span class="ps-task-txt">Review design mockups</span><span class="ps-due-chip ps-due-today">Today</span></div>
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="WORK" data-ja="仕事">WORK</span></div>
+                    <div class="ps-task pop-work-task-1" data-burst-color="#3B82F6"><div class="ps-check pop-work-chk-1"></div><span class="ps-task-txt"><span data-en="Send Q1 report to team" data-ja="チームにQ1レポートを送る">Send Q1 report to team</span></span><span class="ps-due-chip ps-due-week" data-en="This Week" data-ja="今週">This Week</span></div>
+                    <div class="ps-task pop-work-task-2" data-burst-color="#3B82F6"><div class="ps-check pop-work-chk-2"></div><span class="ps-task-txt"><span data-en="Review design mockups" data-ja="デザインモックを確認">Review design mockups</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
+                  </div>
+                  <div class="ps-cat pop-home-cat">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="HOME" data-ja="家">HOME</span></div>
+                    <div class="ps-task pop-home-task" data-burst-color="#F97316"><div class="ps-task-dot pop-home-dot" style="background:#F97316"></div><span class="ps-task-txt"><span data-en="Arrange make up lesson for kids" data-ja="子どものメイクレッスンを手配">Arrange make up lesson for kids</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
                   </div>
                   <div class="ps-cat">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">HOME</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#F97316"></div><span class="ps-task-txt">Arrange make up lesson for kids</span><span class="ps-due-chip ps-due-today">Today</span></div>
-                  </div>
-                  <div class="ps-cat">
-                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">PERSONAL</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Book dentist appointment</span><span class="ps-due-chip ps-due-today">Today</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Morning run</span><span class="ps-due-chip ps-due-today">Today</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Go to the art exhibition</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
-                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Look for a new jacket</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name" data-en="PERSONAL" data-ja="自分">PERSONAL</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Book dentist appointment" data-ja="歯医者の予約">Book dentist appointment</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Morning run" data-ja="朝のラン">Morning run</span></span><span class="ps-due-chip ps-due-today" data-en="Today" data-ja="今日">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Go to the art exhibition" data-ja="美術展に行く">Go to the art exhibition</span></span><span class="ps-due-chip ps-due-soon" data-en="Soon" data-ja="そのうち">Soon</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt"><span data-en="Look for a new jacket" data-ja="新しいジャケットを探す">Look for a new jacket</span></span><span class="ps-due-chip ps-due-soon" data-en="Soon" data-ja="そのうち">Soon</span></div>
                   </div>
                 </div>
-                <div class="ps-btmbar"><div class="ps-add-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Task</div><div class="ps-mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div></div>
+                <div class="ps-btmbar"><div class="ps-add-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-en="Add Task" data-ja="タスクを追加">Add Task</span></div><div class="ps-mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div></div>
               </div>
             </div>
           </div>
@@ -966,16 +1571,16 @@ footer {
     </div><!-- /carousel-wrap -->
 
     <div class="carousel-dots" id="carouselDots">
-      <button class="cdot active" aria-label="Slide 1"></button>
-      <button class="cdot" aria-label="Slide 2"></button>
-      <button class="cdot" aria-label="Slide 3"></button>
-      <button class="cdot" aria-label="Slide 4"></button>
-      <button class="cdot" aria-label="Slide 5"></button>
+      <button type="button" class="cdot active" data-aria-en="Slide 1" data-aria-ja="スライド1" aria-label="Slide 1"></button>
+      <button type="button" class="cdot" data-aria-en="Slide 2" data-aria-ja="スライド2" aria-label="Slide 2"></button>
+      <button type="button" class="cdot" data-aria-en="Slide 3" data-aria-ja="スライド3" aria-label="Slide 3"></button>
+      <button type="button" class="cdot" data-aria-en="Slide 4" data-aria-ja="スライド4" aria-label="Slide 4"></button>
+      <button type="button" class="cdot" data-aria-en="Slide 5" data-aria-ja="スライド5" aria-label="Slide 5"></button>
     </div>
 
   </section><!-- /features-carousel -->
 
-  \<div style="display:none;">
+  <div style="display:none;">
   <!-- ── KEY FEATURES ── -->
   <p class="lp-section-label" data-en="Key features" data-ja="主な機能">Key features</p>
   <div class="lp-features-wrap">
@@ -1089,8 +1694,10 @@ footer {
   </div>
   </div>
   
-  <!-- ── FREE vs PRO CHART ── -->
-  
+  <!-- ── FREE vs PRO CHART (same module as pricing.html) ── -->
+  <p class="lp-section-label" data-en="FREE vs PRO" data-ja="無料 vs PRO">FREE vs PRO</p>
+  <div class="compare-wrap lp-compare-wrap" id="lpCompareChart"></div>
+
   <a href="/pricing.html" class="lp-pricing-link" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
 
   <!-- ── CTA SECTION ── -->
@@ -1126,7 +1733,6 @@ footer {
 (function(){
   var track   = document.getElementById('carouselTrack');
   var dots    = document.querySelectorAll('#carouselDots .cdot');
-  var banners = document.querySelectorAll('#carouselBanners .carousel-eyebrow-inner');
   var REAL  = 5;
   var paused = false, timer, animating = false;
 
@@ -1140,36 +1746,64 @@ footer {
 
   var cur = 1;
   var popTimers = [];
+  var voiceSlideTimers = [];
+  var pasteSlideTimers = [];
+  var slide3SeqTimers = [];
+  function clearSlide3SeqTimers() { slide3SeqTimers.forEach(clearTimeout); slide3SeqTimers = []; }
 
   function setTr(on) {
     track.style.transition = on ? 'transform .45s cubic-bezier(.4,0,.2,1)' : 'none';
   }
 
-  // Slide 3 (di=2): replay category appear animations
+  // Slide 3 (di=2): WORK → HOME → PERSONAL appear one-by-one (each slide-organised block: original + clone)
   function replaySlide3Anims() {
-    track.querySelectorAll('.ps-cat-anim').forEach(function(el) {
-      el.style.animation = 'none';
-      el.offsetHeight;
-      el.style.animation = '';
+    clearSlide3SeqTimers();
+    track.querySelectorAll('.slide-organised').forEach(function(slide) {
+      slide.querySelectorAll('.ps-cat-seq').forEach(function(el) {
+        el.classList.remove('ps-cat-seq-in');
+      });
+    });
+    void track.offsetHeight;
+    var staggerMs = 450;
+    track.querySelectorAll('.slide-organised').forEach(function(slide) {
+      slide.querySelectorAll('.ps-cat-seq').forEach(function(el, i) {
+        slide3SeqTimers.push(setTimeout(function() {
+          el.classList.add('ps-cat-seq-in');
+        }, i * staggerMs));
+      });
     });
   }
 
   // Slide 4 (di=3): cycle through bubble style states
   var colorItTimers = [];
   function clearColorItTimers() { colorItTimers.forEach(clearTimeout); colorItTimers = []; }
+  var ciAnimStep = 0;
+  /* Blue default → blue 3D → pink 3D → pink ring → pink ink; blurred bg + swatches stay in sync */
   var CI_STATES = [
-    { tab:'default', bbl:'ci-bbl-luminous',  name:'Default', desc:'Solid fill with subtle edge gradient and soft colour glow', swatch:0, pink:false },
-    { tab:'3d',      bbl:'ci-bbl-solid',     name:'3D',      desc:'Sphere look \u2014 bright specular cap, deep shading',          swatch:0, pink:false },
-    { tab:'ring',    bbl:'ci-bbl-ring',      name:'Ring',    desc:'Colour outline only, transparent inside',                  swatch:0, pink:false },
-    { tab:'ring',    bbl:'ci-bbl-ring-pink', name:'Ring',    desc:'Colour outline only, transparent inside',                  swatch:8, pink:true  },
+    { tab:'default', bbl:'ci-bbl-luminous',   descEn:'Solid fill with subtle edge gradient and soft colour glow', descJa:'エッジのグラデーションと淡いカラーグロー', swatch:0, pink:false },
+    { tab:'3d',      bbl:'ci-bbl-solid',      descEn:'Sphere look \u2014 bright specular cap, deep shading', descJa:'球体のような立体感 — ハイライトと陰影', swatch:0, pink:false },
+    { tab:'3d',      bbl:'ci-bbl-solid-pink', descEn:'Sphere look \u2014 bright specular cap, deep shading', descJa:'球体のような立体感 — ハイライトと陰影', swatch:8, pink:true  },
+    { tab:'ring',    bbl:'ci-bbl-ring-pink',  descEn:'Colour outline only, transparent inside', descJa:'カラーの枠線のみ、内側は透明', swatch:8, pink:true  },
+    { tab:'ink',     bbl:'ci-bbl-ink-pink',   descEn:'Soft colour gradient wash, no border', descJa:'柔らかなカラーのグラデーション、枠なし', swatch:8, pink:true  },
   ];
+  function ciTabLabel(slide, tabId) {
+    var t = slide.querySelector('.ci-tab[data-ci="' + tabId + '"]');
+    if (!t) return '';
+    var lang = document.body.classList.contains('lang-ja') ? 'ja' : 'en';
+    return t.getAttribute('data-' + lang) || t.getAttribute('data-en') || '';
+  }
+  function ciDescForState(s) {
+    if (document.body.classList.contains('lang-ja') && s.descJa) return s.descJa;
+    return s.descEn || '';
+  }
   function applyColorItState(slide, si) {
+    ciAnimStep = si;
     var s = CI_STATES[si];
     slide.querySelectorAll('.ci-tab').forEach(function(t) { t.classList.toggle('ci-active', t.dataset.ci === s.tab); });
     var bub = slide.querySelector('.ci-bubble-preview');
     if (bub) bub.className = 'ci-bubble-preview ' + s.bbl;
-    var nm = slide.querySelector('.ci-preview-name'); if (nm) nm.textContent = s.name;
-    var dc = slide.querySelector('.ci-preview-desc'); if (dc) dc.textContent = s.desc;
+    var nm = slide.querySelector('.ci-preview-name'); if (nm) nm.textContent = ciTabLabel(slide, s.tab);
+    var dc = slide.querySelector('.ci-preview-desc'); if (dc) dc.textContent = ciDescForState(s);
     slide.querySelectorAll('.ci-sw').forEach(function(sw, i) { sw.classList.toggle('ci-sw-sel', i === s.swatch); });
     var em = slide.querySelector('.ci-logo-em'); if (em) em.style.background = s.pink ? '#EC4899' : '';
     var dot = slide.querySelector('.ci-bg-dot'); if (dot) dot.style.background = s.pink ? '#EC4899' : '#3B82F6';
@@ -1189,37 +1823,256 @@ footer {
     colorItTimers.push(setTimeout(nextStep, 500));
   }
 
+  function clearVoiceSlideTimers() { voiceSlideTimers.forEach(clearTimeout); voiceSlideTimers = []; }
+
+  function clearPasteSlideTimers() { pasteSlideTimers.forEach(clearTimeout); pasteSlideTimers = []; }
+
+  function resetPasteSlide(slide) {
+    var card = slide.querySelector('.lp-paste-card');
+    var target = slide.querySelector('.lp-paste-target');
+    var txt = slide.querySelector('.lp-paste-text');
+    var dict = slide.querySelector('.lp-paste-dict');
+    var caret = slide.querySelector('.lp-paste-caret');
+    var cmenu = slide.querySelector('.lp-ios-cmenu');
+    var kbd = slide.querySelector('.lp-ios-keyboard');
+    var hud = slide.querySelector('.lp-dict-hud');
+    var mic = slide.querySelector('.lp-ios-mic-btn');
+    if (txt) txt.textContent = '';
+    if (dict) {
+      dict.textContent = '';
+      dict.classList.remove('lp-dict-done');
+    }
+    if (caret) caret.classList.remove('lp-caret-hide');
+    if (cmenu) {
+      cmenu.classList.remove('lp-cmenu-show', 'lp-cmenu-paste-hot');
+      cmenu.setAttribute('aria-hidden', 'true');
+    }
+    if (target) target.classList.remove('lp-field-paste-pop');
+    if (kbd) {
+      kbd.classList.remove('lp-kbd-in');
+      kbd.setAttribute('aria-hidden', 'true');
+    }
+    if (card) {
+      card.classList.remove('lp-has-kbd', 'lp-voice-phase');
+    }
+    if (hud) {
+      hud.classList.remove('lp-dict-hud-on');
+      hud.setAttribute('aria-hidden', 'true');
+    }
+    if (mic) mic.classList.remove('lp-mic-pressed', 'lp-mic-armed');
+  }
+
+  function chunkPasteTasks(s, lang) {
+    if (!s) return [];
+    if (lang === 'ja' && s.indexOf('、') >= 0) return s.split('、').filter(function(p) { return p.length; });
+    return s.split(/\s*,\s*/).filter(function(p) { return p.length; });
+  }
+
+  /* Same step cadence as Color It (replayColorItAnim nextStep = 500ms). One-shot: ends on dictation, no loop. */
+  var PASTE_BEAT_MS = 500;
+  var PASTE_CHUNK_MS = 100;
+
+  function runPasteSlideAnimOnce(slide) {
+    resetPasteSlide(slide);
+    void slide.offsetHeight;
+    var lang = document.body.classList.contains('lang-ja') ? 'ja' : 'en';
+    var card = slide.querySelector('.lp-paste-card');
+    var target = slide.querySelector('.lp-paste-target');
+    var txtEl = slide.querySelector('.lp-paste-text');
+    var dictEl = slide.querySelector('.lp-paste-dict');
+    var caret = slide.querySelector('.lp-paste-caret');
+    var cmenu = slide.querySelector('.lp-ios-cmenu');
+    var kbd = slide.querySelector('.lp-ios-keyboard');
+    var hud = slide.querySelector('.lp-dict-hud');
+    var mic = slide.querySelector('.lp-ios-mic-btn');
+    if (!target || !txtEl || !dictEl || !caret || !cmenu || !kbd || !hud || !mic || !card) return;
+
+    var pasteRaw = target.getAttribute('data-paste-' + lang) || target.getAttribute('data-paste-en') || '';
+    var dictRaw = target.getAttribute('data-dict-' + lang) || target.getAttribute('data-dict-en') || '';
+    var chunks = chunkPasteTasks(pasteRaw, lang);
+    if (!chunks.length) chunks = [pasteRaw];
+
+    pasteSlideTimers.push(setTimeout(function() {
+      cmenu.classList.add('lp-cmenu-show');
+      cmenu.setAttribute('aria-hidden', 'false');
+    }, PASTE_BEAT_MS));
+    pasteSlideTimers.push(setTimeout(function() {
+      cmenu.classList.add('lp-cmenu-paste-hot');
+    }, PASTE_BEAT_MS * 2));
+    pasteSlideTimers.push(setTimeout(function() {
+      cmenu.classList.remove('lp-cmenu-show', 'lp-cmenu-paste-hot');
+      cmenu.setAttribute('aria-hidden', 'true');
+      target.classList.add('lp-field-paste-pop');
+      setTimeout(function() { target.classList.remove('lp-field-paste-pop'); }, 420);
+      var delim = lang === 'ja' && pasteRaw.indexOf('、') >= 0 ? '、' : ', ';
+      var i = 0;
+      function addChunk() {
+        if (i >= chunks.length) {
+          pasteSlideTimers.push(setTimeout(function() {
+            card.classList.add('lp-has-kbd');
+            kbd.classList.add('lp-kbd-in');
+            kbd.setAttribute('aria-hidden', 'false');
+          }, PASTE_BEAT_MS));
+          /* Three beats with keyboard visible before mic */
+          pasteSlideTimers.push(setTimeout(function() {
+            mic.classList.add('lp-mic-pressed');
+            pasteSlideTimers.push(setTimeout(function() { mic.classList.remove('lp-mic-pressed'); }, 80));
+          }, PASTE_BEAT_MS * 4));
+          pasteSlideTimers.push(setTimeout(function() {
+            mic.classList.add('lp-mic-armed');
+            kbd.classList.remove('lp-kbd-in');
+            kbd.setAttribute('aria-hidden', 'true');
+            card.classList.remove('lp-has-kbd');
+            card.classList.add('lp-voice-phase');
+            hud.classList.add('lp-dict-hud-on');
+            hud.setAttribute('aria-hidden', 'false');
+          }, PASTE_BEAT_MS * 5));
+          pasteSlideTimers.push(setTimeout(function() {
+            var j = 0;
+            function addD() {
+              if (j >= dictRaw.length) {
+                dictEl.classList.add('lp-dict-done');
+                return;
+              }
+              dictEl.textContent += dictRaw.charAt(j);
+              j += 1;
+              target.scrollTop = target.scrollHeight;
+              pasteSlideTimers.push(setTimeout(addD, 12));
+            }
+            addD();
+          }, PASTE_BEAT_MS * 6));
+          return;
+        }
+        txtEl.textContent += (i > 0 ? delim : '') + chunks[i];
+        target.scrollTop = target.scrollHeight;
+        i += 1;
+        pasteSlideTimers.push(setTimeout(addChunk, PASTE_CHUNK_MS));
+      }
+      addChunk();
+    }, PASTE_BEAT_MS * 3));
+  }
+
+  function replayPasteSlideAnim() {
+    clearPasteSlideTimers();
+    track.querySelectorAll('.lp-paste-slide').forEach(function(s) { runPasteSlideAnimOnce(s); });
+  }
+
+  function resetVoiceSlides() {
+    track.querySelectorAll('.lp-voice-slide').forEach(function(slide) {
+      var modal = slide.querySelector('.lp-mic-modal');
+      var btn = slide.querySelector('.lp-home-voice-btn');
+      if (modal) {
+        modal.classList.remove('lp-mic-modal-show');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      if (btn) btn.classList.remove('lp-mic-tap');
+    });
+  }
+
+  /* Slide 1 (di=0): home headline → mic tap → full-screen listening modal (matches index.html flow) */
+  function replayVoiceSlideAnim() {
+    clearVoiceSlideTimers();
+    resetVoiceSlides();
+    void track.offsetHeight;
+    track.querySelectorAll('.lp-voice-slide').forEach(function(slide) {
+      var modal = slide.querySelector('.lp-mic-modal');
+      var btn = slide.querySelector('.lp-home-voice-btn');
+      if (!modal || !btn) return;
+      voiceSlideTimers.push(setTimeout(function() {
+        btn.classList.add('lp-mic-tap');
+        voiceSlideTimers.push(setTimeout(function() { btn.classList.remove('lp-mic-tap'); }, 160));
+      }, 750));
+      voiceSlideTimers.push(setTimeout(function() {
+        modal.classList.add('lp-mic-modal-show');
+        modal.setAttribute('aria-hidden', 'false');
+      }, 920));
+      voiceSlideTimers.push(setTimeout(function() {
+        modal.classList.remove('lp-mic-modal-show');
+        modal.setAttribute('aria-hidden', 'true');
+      }, 2700));
+    });
+  }
+
   // Slide 5 (di=4): pop Work tasks then collapse category
   function clearPopTimers() { popTimers.forEach(clearTimeout); popTimers = []; }
 
+  /* Burst palette + motion aligned with main app burstBubble() — colour from task bubble / data-burst-color */
+  function lpBurstPalette(hex) {
+    var h = (hex || '#3B82F6').replace('#', '');
+    if (h.length !== 6) h = '3B82F6';
+    var cr = parseInt(h.slice(0, 2), 16), cg = parseInt(h.slice(2, 4), 16), cb = parseInt(h.slice(4, 6), 16);
+    function lt(v, a) { return Math.min(v + a, 255); }
+    function dk(v, a) { return Math.max(v - a, 0); }
+    return [
+      'rgba(' + cr + ',' + cg + ',' + cb + ',1)',
+      'rgba(' + lt(cr, 40) + ',' + lt(cg, 40) + ',' + lt(cb, 40) + ',.95)',
+      'rgba(' + lt(cr, 80) + ',' + lt(cg, 80) + ',' + lt(cb, 80) + ',.9)',
+      'rgba(' + dk(cr, 30) + ',' + dk(cg, 30) + ',' + dk(cb, 30) + ',.95)',
+      'rgba(' + lt(cr, 110) + ',' + lt(cg, 110) + ',' + lt(cb, 110) + ',.85)',
+      'rgba(255,255,255,.88)',
+      'rgba(' + cr + ',' + cg + ',' + cb + ',.72)'
+    ];
+  }
+  function lpBurstColorFromTask(el) {
+    var row = el.closest('.ps-task');
+    if (row && row.getAttribute('data-burst-color')) return row.getAttribute('data-burst-color');
+    var dot = row && row.querySelector('.ps-task-dot');
+    if (dot && dot.style && dot.style.background) {
+      var m = /#([0-9A-Fa-f]{6})/.exec(dot.style.background);
+      if (m) return '#' + m[1];
+    }
+    return '#3B82F6';
+  }
   function spawnParticles(el) {
     var screen = el.closest('.phone-screen');
-    if (!screen) return;
-    var screenRect = screen.getBoundingClientRect();
-    var elRect = el.getBoundingClientRect();
-    var cx = elRect.left - screenRect.left + elRect.width / 2;
-    var cy = elRect.top - screenRect.top + elRect.height / 2;
-    var colors = ['#22C55E','#86EFAC','#4ADE80','#16A34A','#BBF7D0','#fff','#22C55E','#4ADE80','#86EFAC','#16A34A'];
-    var angles = [0, 36, 72, 108, 144, 180, 216, 252, 288, 324];
-    angles.forEach(function(angle, i) {
+    if (!screen || !el.getBoundingClientRect) return;
+    var sr = screen.getBoundingClientRect();
+    var er = el.getBoundingClientRect();
+    var cx = er.left - sr.left + er.width / 2;
+    var cy = er.top - sr.top + er.height / 2;
+    var rawHex = lpBurstColorFromTask(el);
+    var palette = lpBurstPalette(rawHex);
+    var count = 22;
+    for (var i = 0; i < count; i++) {
       var p = document.createElement('div');
-      p.className = 'pop-particle';
-      var rad = angle * Math.PI / 180;
-      var dist = 10 + (i % 3) * 5;
-      p.style.left = cx + 'px';
-      p.style.top = cy + 'px';
-      p.style.setProperty('--px', (Math.cos(rad) * dist) + 'px');
-      p.style.setProperty('--py', (Math.sin(rad) * dist) + 'px');
-      p.style.background = colors[i % colors.length];
-      p.style.animationDelay = (i * 0.018) + 's';
+      p.className = 'lp-burst-p';
+      var size = Math.random() * 3.5 + 1.8;
+      var col = palette[~~(Math.random() * palette.length)];
+      var isRing = Math.random() > 0.52;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = (cx - size / 2) + 'px';
+      p.style.top = (cy - size / 2) + 'px';
+      if (isRing) {
+        p.style.background = 'transparent';
+        p.style.border = '1.5px solid ' + col;
+        p.style.boxShadow = 'none';
+      } else {
+        p.style.background = col;
+        p.style.border = 'none';
+        p.style.boxShadow = '0 0 ' + (size * 1.15) + 'px ' + col;
+      }
       screen.appendChild(p);
-      setTimeout(function() { if (p.parentElement) p.parentElement.removeChild(p); }, 800);
-    });
+      var ang = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.55;
+      var dist = Math.random() * 26 + 12;
+      var tx = Math.cos(ang) * dist;
+      var ty = Math.sin(ang) * dist;
+      var rot = Math.random() * 360;
+      var dur = 460 + ~~(Math.random() * 160);
+      p.animate(
+        [
+          { transform: 'translate(0,0) scale(1)', opacity: 1 },
+          { transform: 'translate(' + (tx * 0.26) + 'px,' + (ty * 0.26) + 'px) scale(1.06) rotate(' + (rot * 0.28) + 'deg)', opacity: 1, offset: 0.13 },
+          { transform: 'translate(' + tx + 'px,' + ty + 'px) scale(0) rotate(' + rot + 'deg)', opacity: 0 }
+        ],
+        { duration: dur, easing: 'cubic-bezier(.25,.46,.45,.94)', delay: i * 10, fill: 'forwards' }
+      ).onfinish = function() { if (p.parentNode) p.parentNode.removeChild(p); };
+    }
   }
 
   function replayPopAnim() {
     clearPopTimers();
-    // Reset
+    // Reset Work
     track.querySelectorAll('.pop-work-cat').forEach(function(el) {
       el.classList.remove('pop-cat-out'); el.style.opacity = ''; el.style.transform = '';
       void el.offsetWidth;
@@ -1232,12 +2085,28 @@ footer {
       el.classList.remove('pop-chk-done');
       void el.offsetWidth;
     });
-    // Sequence (0.6s animations)
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); spawnParticles(el); }); }, 300));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 620));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); spawnParticles(el); }); }, 1000));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 1320));
-    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-cat').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-cat-out'); }); }, 1800));
+    // Reset HOME (orange bubble + category)
+    track.querySelectorAll('.pop-home-cat').forEach(function(el) {
+      el.classList.remove('pop-cat-out'); el.style.opacity = ''; el.style.transform = '';
+      void el.offsetWidth;
+    });
+    track.querySelectorAll('.pop-home-task').forEach(function(el) {
+      el.classList.remove('pop-row-out'); el.style.opacity = '';
+      void el.offsetWidth;
+    });
+    track.querySelectorAll('.pop-home-dot').forEach(function(el) {
+      el.classList.remove('pop-dot-burst');
+      void el.offsetWidth;
+    });
+    // Sequence: Work → WORK collapses → HOME orange burst → row out — spaced for slower bubble pop
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); spawnParticles(el); }); }, 380));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-1').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 820));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-chk-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-chk-done'); spawnParticles(el); }); }, 1280));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-task-2').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 1680));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-work-cat').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-cat-out'); }); }, 2280));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-home-dot').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-dot-burst'); spawnParticles(el); }); }, 2620));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-home-task').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-row-out'); }); }, 2900));
+    popTimers.push(setTimeout(function(){ track.querySelectorAll('.pop-home-cat').forEach(function(el){ void el.offsetWidth; el.classList.add('pop-cat-out'); }); }, 3120));
   }
 
   function moveTo(n, animate) {
@@ -1246,11 +2115,17 @@ footer {
     track.style.transform = 'translateX(-' + (n * 100) + '%)';
     var di = ((n - 1 + REAL) % REAL);
     dots.forEach(function(d, i){ d.classList.toggle('active', i === di); });
-    banners.forEach(function(b, i){ b.classList.toggle('active', i === di); });
-    if (di === 2) { replaySlide3Anims(); }
+    if (di === 0) { replayVoiceSlideAnim(); } else { clearVoiceSlideTimers(); resetVoiceSlides(); }
+    if (di === 1) { replayPasteSlideAnim(); } else { clearPasteSlideTimers(); track.querySelectorAll('.lp-paste-slide').forEach(resetPasteSlide); }
+    if (di === 2) { replaySlide3Anims(); } else { clearSlide3SeqTimers(); }
     if (di === 3) { replayColorItAnim(); } else { clearColorItTimers(); }
     if (di === 4) { replayPopAnim(); } else { clearPopTimers(); }
+    if (!paused) startAuto();
   }
+
+  var CAROUSEL_MS_DEFAULT = 3000;
+  /* Paste slide: shorter hold; keyboard dismisses for voice + fast dictation */
+  var CAROUSEL_MS_PASTE = 7200;
 
   // Silent initial position
   moveTo(1, false);
@@ -1273,9 +2148,12 @@ footer {
     animating = true;
     moveTo(cur + dir, true);
   }
+  function carouselIntervalMs() {
+    return cur === 2 ? CAROUSEL_MS_PASTE : CAROUSEL_MS_DEFAULT;
+  }
   function startAuto() {
     clearInterval(timer);
-    if (!paused) timer = setInterval(function(){ advance(1); }, 3000);
+    if (!paused) timer = setInterval(function(){ advance(1); }, carouselIntervalMs());
   }
 
   dots.forEach(function(d, i) {
@@ -1283,16 +2161,6 @@ footer {
       if (animating) return;
       paused = false; animating = true;
       moveTo(i + 1, true);
-      startAuto();
-    });
-  });
-
-  banners.forEach(function(b, i) {
-    b.addEventListener('click', function(){
-      if (animating) return;
-      paused = false; animating = true;
-      moveTo(i + 1, true);
-      startAuto();
     });
   });
 
@@ -1305,7 +2173,7 @@ footer {
       var dx = e.changedTouches[0].clientX - wx;
       var dy = e.changedTouches[0].clientY - wy;
       if (Math.abs(dx) > 40) {
-        paused = false; advance(dx < 0 ? 1 : -1); startAuto();
+        paused = false; advance(dx < 0 ? 1 : -1);
       } else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
         paused = !paused;
         if (paused) clearInterval(timer); else startAuto();
@@ -1317,18 +2185,38 @@ footer {
     });
   }
 
-  startAuto();
+  window.lpRefreshColorItDescs = function() {
+    track.querySelectorAll('.ci-slide').forEach(function(slide) {
+      applyColorItState(slide, ciAnimStep);
+    });
+  };
 })();
 
 function setLang(lang) {
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.querySelector('.lang-btn[onclick="setLang(\'' + lang + '\')"]');
+  if (btn) btn.classList.add('active');
   document.body.classList.toggle('lang-ja', lang === 'ja');
-  document.querySelectorAll('[data-en][data-ja]').forEach(el => {
-    const txt = el.getAttribute('data-' + lang);
+  document.querySelectorAll('[data-en][data-ja]').forEach(function(el) {
+    var txt = el.getAttribute('data-' + lang);
     if (txt) el.innerHTML = txt;
   });
+  document.querySelectorAll('[data-aria-en][data-aria-ja]').forEach(function(el) {
+    var a = el.getAttribute('data-aria-' + lang) || el.getAttribute('data-aria-en');
+    if (a) el.setAttribute('aria-label', a);
+  });
+  document.querySelectorAll('.ci-slide').forEach(function(slide) {
+    var active = slide.querySelector('.ci-tab.ci-active');
+    var nm = slide.querySelector('.ci-preview-name');
+    if (active && nm) {
+      var t = active.getAttribute('data-' + lang) || active.getAttribute('data-en');
+      if (t) nm.textContent = t;
+    }
+  });
+  if (typeof window.lpRefreshColorItDescs === 'function') window.lpRefreshColorItDescs();
+  if (typeof window._lpRefreshCompareChart === 'function') window._lpRefreshCompareChart();
 }
+setLang('en');
 
 /* Sync accent colour from main app localStorage */
 (function applyAccent() {
@@ -1353,6 +2241,31 @@ function setLang(lang) {
     Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
   } catch(e) {}
 })();
+</script>
+<script type="module">
+let _lpCompareRender = null;
+let _lpCompareFeatures = null;
+try {
+  const mod = await import('./js/compare-chart.js');
+  _lpCompareRender = mod.renderCompareChart;
+  _lpCompareFeatures = mod.COMPARE_FEATURES;
+} catch (err) {
+  console.error('compare-chart:', err);
+  const box = document.getElementById('lpCompareChart');
+  if (box) {
+    box.innerHTML = '<p style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px;line-height:1.5">Comparison table needs <strong>HTTP</strong> (e.g. <code>npm run dev</code> or your live site). <code>file://</code> pages cannot load this module.</p>';
+  }
+}
+
+function lpCompareLang() {
+  return document.body.classList.contains('lang-ja') ? 'ja' : 'en';
+}
+window._lpRefreshCompareChart = function() {
+  if (!_lpCompareRender || !_lpCompareFeatures) return;
+  var el = document.getElementById('lpCompareChart');
+  if (el) _lpCompareRender('#lpCompareChart', _lpCompareFeatures, lpCompareLang());
+};
+window._lpRefreshCompareChart();
 </script>
 </body>
 </html>

@@ -6,7 +6,6 @@
 <title>Poplist — Plans & Pricing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -147,8 +146,7 @@ nav {
   display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--accent-glow);
 }
-.feat-icon svg { color: var(--accent) }
-.feat-icon i { color: var(--accent); font-size: 15px; }
+.feat-icon svg { color: var(--accent); display: block }
 .feat-row-left { display: flex; align-items: center; gap: 10px }
 .feat-info {}
 .feat-name {
@@ -419,15 +417,23 @@ nav {
 </div>
 
 <script type="module">
-import { renderCompareChart, COMPARE_FEATURES } from '/js/compare-chart.js';
-
-// ── Render comparison chart on load ──
 let currentLang = 'en';
-renderCompareChart('#compare-chart', COMPARE_FEATURES, currentLang);
 
-// ── Expose globals used by inline onclick handlers ──
-window._compareFeatures = COMPARE_FEATURES;
-window._renderCompareChart = renderCompareChart;
+// Relative URL works from /pricing.html next to /js/; fails on file:// — use a local server
+try {
+  const { renderCompareChart, COMPARE_FEATURES } = await import('./js/compare-chart.js');
+  renderCompareChart('#compare-chart', COMPARE_FEATURES, currentLang);
+  window._compareFeatures = COMPARE_FEATURES;
+  window._renderCompareChart = renderCompareChart;
+} catch (err) {
+  console.error('compare-chart:', err);
+  const box = document.getElementById('compare-chart');
+  if (box) {
+    box.innerHTML = '<p style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px;line-height:1.5">Comparison table needs <strong>HTTP</strong> (e.g. run <code>npm run dev</code> or open via your deployed URL). Opening HTML as a <code>file://</code> link blocks loading the script module.</p>';
+  }
+  window._compareFeatures = [];
+  window._renderCompareChart = function () {};
+}
 
 // ── Accent colour sync from main app ──
 (function applyAccent() {
@@ -459,7 +465,9 @@ function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   // Re-render the chart in the new language
-  window._renderCompareChart('#compare-chart', window._compareFeatures, lang);
+  if (window._compareFeatures && window._compareFeatures.length) {
+    window._renderCompareChart('#compare-chart', window._compareFeatures, lang);
+  }
   // Update remaining static data-en/data-ja elements
   document.querySelectorAll('[data-en][data-ja]').forEach(el => {
     const txt = el.getAttribute('data-' + lang);

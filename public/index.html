@@ -176,9 +176,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
 .voice-wrap { display:flex; flex-direction:column; align-items:center; gap:8px }
 
-/* Voice button — white circle, subtle shadow, blue ring on hover */
+/* Voice button — larger tap target for the main “talk your tasks” action */
 .voice-btn {
-  width:68px; height:68px; border-radius:50%;
+  width:88px; height:88px; border-radius:50%;
   background:var(--card);
   border:1.5px solid var(--border);
   box-shadow:var(--shcard), 0 0 0 0 transparent;
@@ -198,9 +198,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   color:var(--blue);
 }
 @keyframes mic-pulse {
-  0%,100% { box-shadow:var(--shcard), 0 0 0 4px var(--blue-glow), 0 0 0 8px var(--blue-glow) }
-  50%      { box-shadow:var(--shcard), 0 0 0 8px var(--blue-glow), 0 0 0 16px var(--blue-glow) }
+  0%,100% { box-shadow:var(--shcard), 0 0 0 4px var(--blue-glow), 0 0 0 10px var(--blue-glow) }
+  50%      { box-shadow:var(--shcard), 0 0 0 10px var(--blue-glow), 0 0 0 20px var(--blue-glow) }
 }
+.voice-btn .mic-icon { width:26px; height:26px }
 .mic-icon { width:20px; height:20px }
 .voice-label { display:none }
 .voice-transcript {
@@ -1062,14 +1063,35 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 ════════════════════════════════════════ */
 .home-screen {
   display:flex; flex-direction:column; align-items:center;
-  padding:40px 0 40px;
+  /* Top padding matches lp.html .carousel-intro (40px) below nav */
+  padding:40px 0 36px;
   gap:0;
   width:100%;
 }
-.home-title {
-  font-size:22px; font-weight:900; letter-spacing:-.6px;
-  color:var(--black); margin-bottom:32px; text-align:center;
+.home-head {
+  width:100%;
+  max-width:360px;
+  margin:0 auto 8px;
+  text-align:center;
 }
+.home-title {
+  font-size:30px; font-weight:900; letter-spacing:-.85px;
+  line-height:1.15;
+  color:var(--black); margin:0 0 10px; text-align:center;
+}
+body.lang-ja .home-title {
+  font-size:26px;
+  letter-spacing:-.02em;
+  line-height:1.22;
+}
+.home-prompt-sub {
+  margin:0 0 28px;
+  padding:0 4px;
+  font-size:15px; font-weight:500; line-height:1.45;
+  color:var(--t2);
+  text-align:center;
+}
+body.lang-ja .home-prompt-sub { font-size:14px; line-height:1.5 }
 .home-or { display:none }
 .home-manual-btn {
   font-size:13px; font-weight:700; color:var(--t2);
@@ -1539,7 +1561,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
   <!-- HOME SCREEN — shown when no tasks exist -->
   <div id="homeScreen" class="home-screen">
-    <h1 class="home-title" data-en="What's on your mind?" data-ja="今日のやることは？">What's on your mind?</h1>
+    <div class="home-head">
+      <h1 class="home-title" id="homePromptTitle"></h1>
+      <p class="home-prompt-sub" id="homePromptSub" aria-live="polite"></p>
+    </div>
 
     <button class="voice-btn" id="voiceBtn">
       <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -4525,13 +4550,17 @@ syncAllBubbles(); // sync add-preview bubble style on first load
 // Restore language from localStorage and sync all toggles + mic
 (function restoreLang() {
   const saved = localStorage.getItem('lang');
-  if (saved !== 'ja' && saved !== 'en') return;
-  if (saved === state.lang) return; // already default
-  state.lang = saved;
-  const isJA = saved === 'ja';
-  ['langEN','sLangEN'].forEach(id => document.getElementById(id)?.classList.toggle('active', !isJA));
-  ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
-  applyLang(saved);
+  if (saved === 'ja' || saved === 'en') {
+    state.lang = saved;
+    const isJA = saved === 'ja';
+    ['langEN','sLangEN'].forEach(id => document.getElementById(id)?.classList.toggle('active', !isJA));
+    ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
+    document.body.classList.toggle('lang-ja', isJA);
+    applyLang(saved); /* includes refreshHomePrompt */
+  } else {
+    document.body.classList.toggle('lang-ja', false);
+    refreshHomePrompt(state.lang);
+  }
 })();
 
 // Restore or clear doneForToday state on load
@@ -5261,6 +5290,59 @@ const _catContainerObserver = new MutationObserver(mutations => {
 const _catContainer = document.getElementById('tasksContainer');
 if (_catContainer) _catContainerObserver.observe(_catContainer, { childList:true, subtree:true });
 
+/* Home empty-state: headline + hint rotate each visit (session avoids same line twice in a row) */
+const HOME_PROMPTS = {
+  en: [
+    { t: 'What needs doing?', s: 'Groceries, meetings, errands — say it messy. We\'ll tidy it into tasks.' },
+    { t: 'Get it off your mind', s: 'Tap the mic and talk like you\'re thinking out loud.' },
+    { t: 'What\'s on your plate?', s: 'One breath is enough. We sort and schedule for you.' },
+    { t: 'Say what\'s bouncing around', s: 'No perfect wording — work, home, life, all in one go.' },
+    { t: 'Tell Poplist what\'s up', s: 'Voice in, clean list out. Come back here anytime to dump more.' },
+    { t: 'What are you carrying today?', s: 'Ramble through your to-dos; we catch what matters.' },
+    { t: 'Brain dump, voice edition', s: 'Lists, worries, half-formed plans — say them in any order.' },
+    { t: 'Anything to remember?', s: 'Deadlines, people to call, stuff to buy — we\'ll slot them in.' },
+    { t: 'Start with one thing', s: 'Or twenty. Either way, talking beats forgetting.' },
+    { t: 'Your turn to ramble', s: 'We listen for tasks hiding inside the noise.' },
+    { t: 'What would you forget by tonight?', s: 'Say it now; we\'ll hold it so you don\'t have to.' },
+    { t: 'Quick capture, big relief', s: 'Ten seconds of voice can empty a crowded head.' },
+    { t: 'Work, home, or in between?', s: 'Mix them up — we split and tag automatically.' },
+    { t: 'Fresh start, empty list', s: 'Fill it the easy way: speak, then sort later.' },
+  ],
+  ja: [
+    { t: '今日のやること、話してみる？', s: '買い物、メール、細かい用事 — 思いつくままで大丈夫。' },
+    { t: '頭の中を、そのまま', s: 'マイクをタップして、考えているように話すだけ。' },
+    { t: '今日なにを片付けたい？', s: '短くても長くても。話した内容からタスクにします。' },
+    { t: 'やること、声に出して', s: 'うまい言い方は不要。カテゴリと期限はこちらで整理します。' },
+    { t: 'いま気になっていることは？', s: '仕事・家・自分のこと、混ざってもOK。' },
+    { t: 'また積もってきた？', s: 'ここで一度吐き出して、リストにしましょう。' },
+    { t: '思いついた順にどうぞ', s: '順番や完璧な文章はいりません。' },
+    { t: '忘れそうなこと、先に', s: '期限や連絡、買い物 — 口に出せばリストに残ります。' },
+    { t: 'ひとことからでも', s: '長く話しても、ひとことでも。続きはあとから。' },
+    { t: 'ざっくり話してOK', s: 'タスクはこちらで拾い集めます。' },
+    { t: '今夜までに消したい用事', s: '今のうちに声にして、頭から外しましょう。' },
+    { t: '声にするとスッとする', s: '短い独り言でも、頭の中が軽くなります。' },
+    { t: '仕事も家のことも一気に', s: '混ぜて話して大丈夫。分類はおまかせ。' },
+    { t: '真っさらなリストから', s: '話して埋めていくのがいちばん早いです。' },
+  ],
+};
+function refreshHomePrompt(lang) {
+  const isJA = lang === 'ja';
+  const titleEl = document.getElementById('homePromptTitle');
+  const subEl = document.getElementById('homePromptSub');
+  if (!titleEl || !subEl) return;
+  const pool = isJA ? HOME_PROMPTS.ja : HOME_PROMPTS.en;
+  if (!pool || !pool.length) return;
+  let last = -1;
+  try { last = parseInt(sessionStorage.getItem('pl_homePromptIdx') || '-1', 10); } catch (e) {}
+  let idx = Math.floor(Math.random() * pool.length);
+  let tries = 0;
+  while (pool.length > 1 && idx === last && tries++ < 24)
+    idx = Math.floor(Math.random() * pool.length);
+  try { sessionStorage.setItem('pl_homePromptIdx', String(idx)); } catch (e) {}
+  titleEl.textContent = pool[idx].t;
+  subEl.textContent = pool[idx].s;
+}
+
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
 async function applyLang(lang) {
   const isJA = lang === 'ja';
@@ -5283,8 +5365,9 @@ async function applyLang(lang) {
   // New category input placeholder
   const newCatInp = document.getElementById('newCatInput');
   if (newCatInp) newCatInp.placeholder = isJA ? (newCatInp.dataset.placeholderJa || 'カテゴリー名…') : (newCatInp.dataset.placeholderEn || 'Category name...');
-  // Special: html lang attribute
+  // Special: html lang attribute + body class (typography hooks)
   document.documentElement.lang = isJA ? 'ja' : 'en';
+  document.body.classList.toggle('lang-ja', isJA);
   // Special: mic modal hint (uses innerHTML for <br>)
   const hint = document.getElementById('micModalHint');
   if (hint) hint.innerHTML = isJA
@@ -5312,6 +5395,8 @@ async function applyLang(lang) {
     const map = { 'Today': isJA ? '今日' : 'Today', 'This Week': isJA ? '今週' : 'This Week', 'Later': isJA ? 'そのうち' : 'Later' };
     if (map[timing]) ddc.textContent = map[timing];
   }
+
+  refreshHomePrompt(lang);
 
   // Translate task texts — use cached translation if available, else fetch from API
   const dataKey = isJA ? 'textJa' : 'textEn';
