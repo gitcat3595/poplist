@@ -498,6 +498,88 @@ nav {
 .cdot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .25s ease; padding: 0; flex-shrink: 0; cursor: pointer }
 .cdot.active { background: var(--blue); width: 24px; border-radius: 4px }
 
+/* ── KEY / PRO FEATURES SECTIONS ── */
+.lp-section-label {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  letter-spacing: .8px; text-transform: uppercase;
+  padding: 28px 20px 8px;
+}
+.lp-features-wrap {
+  margin: 0 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shcard);
+}
+.lp-feature-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.lp-feature-row:last-child { border-bottom: none }
+.lp-feat-icon {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  background: var(--blue-lt);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--blue-glow); color: var(--blue);
+  margin-top: 1px;
+}
+.lp-feat-body { flex: 1; min-width: 0 }
+.lp-feat-title {
+  font-size: 14px; font-weight: 700; color: var(--t1); margin-bottom: 3px;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.lp-feat-desc { font-size: 13px; color: var(--t2); line-height: 1.55; font-weight: 500 }
+.lp-feat-pro-tag {
+  font-size: 9px; font-weight: 800; letter-spacing: .4px;
+  background: var(--blue); color: #fff;
+  padding: 2px 7px; border-radius: 50px;
+}
+/* ── PRICING COMPARE CHART ── */
+.lp-compare-wrap {
+  margin: 0 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shcard);
+}
+.lp-compare-header {
+  display: grid; grid-template-columns: 1fr 72px 72px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px; gap: 8px; align-items: center;
+}
+.lp-compare-row {
+  display: grid; grid-template-columns: 1fr 72px 72px;
+  padding: 11px 14px; gap: 8px; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.lp-compare-row:last-child { border-bottom: none }
+.lp-feat-label { font-size: 11px; font-weight: 700; color: var(--t3); letter-spacing: .5px; text-transform: uppercase }
+.lp-col-head { text-align: center }
+.lp-col-name { font-size: 15px; font-weight: 800; color: var(--t2) }
+.lp-col-pro-name { color: var(--blue) }
+.lp-row-left { display: flex; align-items: center; gap: 9px }
+.lp-row-icon {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  background: var(--blue-lt); display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--blue-glow); color: var(--blue);
+}
+.lp-row-name { font-size: 13px; font-weight: 600; color: var(--t1) }
+.lp-val { text-align: center }
+.lp-val-free { font-size: 13px; font-weight: 600; color: var(--t2); display: inline-block }
+.lp-val-pro  { font-size: 13px; font-weight: 700; color: var(--blue); display: inline-block }
+.lp-val-dash { font-size: 15px; color: var(--t3); display: block; text-align: center }
+.lp-val-check { font-size: 14px; color: var(--blue); display: block; text-align: center; font-weight: 800 }
+.lp-pricing-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 13px; font-weight: 700; color: var(--blue);
+  padding: 18px 0 0; transition: var(--tr);
+}
+.lp-pricing-link:hover { opacity: .7 }
+
 /* ── CTA SECTION ── */
 .cta-section {
   margin: 8px 16px 48px;
@@ -907,6 +989,169 @@ footer {
 
   </section><!-- /features-carousel -->
 
+  <!-- ── KEY FEATURES ── -->
+  <p class="lp-section-label" data-en="Key features" data-ja="主な機能">Key features</p>
+  <div class="lp-features-wrap">
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title" data-en="Voice input" data-ja="音声で入力">Voice input</div>
+        <div class="lp-feat-desc" data-en="Speak naturally in English or Japanese. No special commands — just talk." data-ja="日本語でも英語でも自然に話しかけるだけ。">Speak naturally in English or Japanese. No special commands — just talk.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title" data-en="Instant categorisation" data-ja="自動で分類">Instant categorisation</div>
+        <div class="lp-feat-desc" data-en="Every task is auto-sorted into Work, Home, Personal, or Other with a timing assigned." data-ja="仕事・家・自分・その他に自動分類。期限も今日・今週・そのうちに割り当て。">Every task is auto-sorted into Work, Home, Personal, or Other with a timing assigned.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title" data-en="Bulk add (Brain Dump)" data-ja="まとめて追加">Bulk add (Brain Dump)</div>
+        <div class="lp-feat-desc" data-en="Paste a wall of text — Poplist extracts and sorts every task automatically." data-ja="大量のテキストを貼り付けるだけ。Poplistがきれいなタスクリストに整理します。">Paste a wall of text — Poplist extracts and sorts every task automatically.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title" data-en="Task rollover" data-ja="タスク繰越">Task rollover</div>
+        <div class="lp-feat-desc" data-en="Unfinished tasks automatically carry forward. Never lose track of what's left." data-ja="未完了タスクは自動的に繰り越されます。">Unfinished tasks automatically carry forward. Never lose track of what's left.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title" data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</div>
+        <div class="lp-feat-desc" data-en="Sign in and your tasks sync instantly across all your devices." data-ja="サインインするとタスクがすべてのデバイスに即時同期。">Sign in and your tasks sync instantly across all your devices.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── PRO FEATURES ── -->
+  <p class="lp-section-label" data-en="Get PRO for more" data-ja="PROならもっと便利に">Get PRO for more</p>
+  <div class="lp-features-wrap">
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6.5" cy="17" r="2.5"/><path d="M13.5 9L19 14.5M13.5 9L6.5 14.5"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title"><span data-en="Colour themes" data-ja="カラーテーマ">Colour themes</span><span class="lp-feat-pro-tag">PRO</span></div>
+        <div class="lp-feat-desc" data-en="Choose from 13 accent colours to match your mood or workspace." data-ja="13種類のアクセントカラーから選択。">Choose from 13 accent colours to match your mood or workspace.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title"><span data-en="Category colours" data-ja="カテゴリカラー">Category colours</span><span class="lp-feat-pro-tag">PRO</span></div>
+        <div class="lp-feat-desc" data-en="Set a different colour per category — Work in blue, Home in green, Personal in purple." data-ja="各カテゴリに異なるカラーを設定。">Set a different colour per category — Work in blue, Home in green, Personal in purple.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="16 13 12 17 8 13"/><line x1="12" y1="17" x2="12" y2="11"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title"><span data-en="Export" data-ja="エクスポート">Export</span><span class="lp-feat-pro-tag">PRO</span></div>
+        <div class="lp-feat-desc" data-en="Download as CSV, plain text, or copy to clipboard — paste anywhere." data-ja="CSV、テキスト、コピーして保存。どこにでも貼り付けられます。">Download as CSV, plain text, or copy to clipboard — paste anywhere.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title"><span data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</span><span class="lp-feat-pro-tag">PRO</span></div>
+        <div class="lp-feat-desc" data-en="Save keywords to improve AI categorisation accuracy." data-ja="キーワードを登録してAI分類の精度を上げます。">Save keywords to improve AI categorisation accuracy.</div>
+      </div>
+    </div>
+
+    <div class="lp-feature-row">
+      <div class="lp-feat-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <div class="lp-feat-body">
+        <div class="lp-feat-title"><span data-en="Weekly stats" data-ja="週間統計">Weekly stats</span><span class="lp-feat-pro-tag">PRO</span></div>
+        <div class="lp-feat-desc" data-en="See how productive you've been this week, broken down by category." data-ja="データでなにをやったかを確認。">See how productive you've been this week, broken down by category.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── FREE vs PRO CHART ── -->
+  <p class="lp-section-label" data-en="FREE vs PRO" data-ja="無料 vs PRO">FREE vs PRO</p>
+  <div class="lp-compare-wrap">
+    <div class="lp-compare-header">
+      <div class="lp-feat-label" data-en="Feature" data-ja="機能">Feature</div>
+      <div class="lp-col-head"><div class="lp-col-name" data-en="Free" data-ja="無料">Free</div></div>
+      <div class="lp-col-head"><div class="lp-col-name lp-col-pro-name">PRO</div></div>
+    </div>
+    <div class="lp-compare-row">
+      <div class="lp-row-left">
+        <div class="lp-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></div>
+        <div class="lp-row-name" data-en="Tasks" data-ja="タスク数">Tasks</div>
+      </div>
+      <div class="lp-val"><span class="lp-val-free">10</span></div>
+      <div class="lp-val"><span class="lp-val-pro">∞</span></div>
+    </div>
+    <div class="lp-compare-row">
+      <div class="lp-row-left">
+        <div class="lp-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6.5" cy="17" r="2.5"/><path d="M13.5 9L19 14.5M13.5 9L6.5 14.5"/></svg></div>
+        <div class="lp-row-name" data-en="Colour palettes" data-ja="カラーパレット">Colour palettes</div>
+      </div>
+      <div class="lp-val"><span class="lp-val-free">2</span></div>
+      <div class="lp-val"><span class="lp-val-pro">13</span></div>
+    </div>
+    <div class="lp-compare-row">
+      <div class="lp-row-left">
+        <div class="lp-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg></div>
+        <div class="lp-row-name" data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</div>
+      </div>
+      <div class="lp-val"><span class="lp-val-dash">—</span></div>
+      <div class="lp-val"><span class="lp-val-check">✓</span></div>
+    </div>
+    <div class="lp-compare-row">
+      <div class="lp-row-left">
+        <div class="lp-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></div>
+        <div class="lp-row-name" data-en="Task rollover" data-ja="タスク繰越">Task rollover</div>
+      </div>
+      <div class="lp-val"><span class="lp-val-check">✓</span></div>
+      <div class="lp-val"><span class="lp-val-check">✓</span></div>
+    </div>
+    <div class="lp-compare-row">
+      <div class="lp-row-left">
+        <div class="lp-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg></div>
+        <div class="lp-row-name" data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</div>
+      </div>
+      <div class="lp-val"><span class="lp-val-dash">—</span></div>
+      <div class="lp-val"><span class="lp-val-check">✓</span></div>
+    </div>
+  </div>
+  <a href="/pricing.html" class="lp-pricing-link" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
+
   <!-- ── CTA SECTION ── -->
   <section class="cta-section">
     <h2 class="cta-title"><span data-en="Ready to clear<br>your mind?" data-ja="頭をすっきり<br>させる準備はできてますか？">Ready to clear<br>your mind?</span></h2>
@@ -936,23 +1181,70 @@ footer {
 </footer>
 
 <script>
-// ── FEATURE CAROUSEL ──
+// ── FEATURE CAROUSEL (infinite smooth loop) ──
 (function(){
   var track = document.getElementById('carouselTrack');
   var dots  = document.querySelectorAll('#carouselDots .cdot');
-  var cur   = 0, timer;
-  function goTo(n){
-    cur = ((n % 5) + 5) % 5;
-    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
-    dots.forEach(function(d, i){ d.classList.toggle('active', i === cur); });
+  var REAL  = 5;
+  var paused = false, timer, animating = false;
+
+  // Clone first & last slides for seamless wrap-around
+  var origSlides = Array.prototype.slice.call(track.children);
+  var firstClone = origSlides[0].cloneNode(true);
+  var lastClone  = origSlides[REAL - 1].cloneNode(true);
+  track.appendChild(firstClone);                   // index 6 — clone of slide 1
+  track.insertBefore(lastClone, origSlides[0]);    // index 0 — clone of slide 5
+  // Layout: [clone-5 | 1 | 2 | 3 | 4 | 5 | clone-1]
+
+  var cur = 1;
+
+  function setTr(on) {
+    track.style.transition = on ? 'transform .45s cubic-bezier(.4,0,.2,1)' : 'none';
   }
-  function next(){ goTo(cur + 1); }
-  var paused = false;
-  function startAuto(){ clearInterval(timer); if (!paused) timer = setInterval(next, 1800); }
-  dots.forEach(function(d, i){
-    d.addEventListener('click', function(){ paused = false; goTo(i); startAuto(); });
+  function moveTo(n, animate) {
+    setTr(animate !== false);
+    cur = n;
+    track.style.transform = 'translateX(-' + (n * 100) + '%)';
+    var di = ((n - 1 + REAL) % REAL);
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === di); });
+  }
+
+  // Silent initial position
+  moveTo(1, false);
+  track.offsetHeight;
+  setTr(true);
+
+  // After each slide, teleport if we hit a clone
+  track.addEventListener('transitionend', function(e) {
+    if (e.propertyName !== 'transform') return;
+    animating = false;
+    if (cur >= REAL + 1) {
+      moveTo(1, false); track.offsetHeight; setTr(true);
+    } else if (cur <= 0) {
+      moveTo(REAL, false); track.offsetHeight; setTr(true);
+    }
   });
-  // Touch/swipe support + tap-to-pause
+
+  function advance(dir) {
+    if (animating) return;
+    animating = true;
+    moveTo(cur + dir, true);
+  }
+  function startAuto() {
+    clearInterval(timer);
+    if (!paused) timer = setInterval(function(){ advance(1); }, 2000);
+  }
+
+  dots.forEach(function(d, i) {
+    d.addEventListener('click', function(){
+      if (animating) return;
+      paused = false; animating = true;
+      moveTo(i + 1, true);
+      startAuto();
+    });
+  });
+
+  // Touch swipe + tap to pause
   var wx = 0, wy = 0;
   var wrap = document.querySelector('.carousel-wrap');
   if (wrap) {
@@ -961,21 +1253,18 @@ footer {
       var dx = e.changedTouches[0].clientX - wx;
       var dy = e.changedTouches[0].clientY - wy;
       if (Math.abs(dx) > 40) {
-        paused = false;
-        goTo(dx < 0 ? cur + 1 : cur - 1);
-        startAuto();
+        paused = false; advance(dx < 0 ? 1 : -1); startAuto();
       } else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
-        // tap — toggle pause
         paused = !paused;
-        if (paused) { clearInterval(timer); } else { startAuto(); }
+        if (paused) clearInterval(timer); else startAuto();
       }
     }, { passive: true });
-    // mouse click to toggle pause on desktop
     wrap.addEventListener('click', function(){
       paused = !paused;
-      if (paused) { clearInterval(timer); } else { startAuto(); }
+      if (paused) clearInterval(timer); else startAuto();
     });
   }
+
   startAuto();
 })();
 

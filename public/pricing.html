@@ -114,7 +114,7 @@ nav {
   box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
 }
 .compare-header {
-  display: grid; grid-template-columns: 36px 1fr 80px 80px;
+  display: grid; grid-template-columns: 1fr 80px 80px;
   background: var(--raised);
   border-bottom: 1px solid var(--border);
   padding: 10px 14px;
@@ -135,7 +135,7 @@ nav {
 }
 
 .compare-row {
-  display: grid; grid-template-columns: 36px 1fr 80px 80px;
+  display: grid; grid-template-columns: 1fr 80px 80px;
   padding: 11px 14px; gap: 8px; align-items: center;
   border-bottom: 1px solid var(--border);
   background: var(--card);
@@ -149,6 +149,7 @@ nav {
 }
 .feat-icon svg { color: var(--accent) }
 .feat-icon i { color: var(--accent); font-size: 15px; }
+.feat-row-left { display: flex; align-items: center; gap: 10px }
 .feat-info {}
 .feat-name {
   font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 1px;
@@ -345,7 +346,6 @@ nav {
   </div>
   <div class="compare-wrap">
     <div class="compare-header">
-      <div></div>
       <div class="compare-header-label">
         <span data-en="Feature" data-ja="機能">Feature</span>
       </div>
@@ -358,72 +358,90 @@ nav {
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Tasks" data-ja="タスク数">Tasks</div>
+      
         <div class="feat-desc-small" data-en="Max tasks per list" data-ja="リストの最大タスク数">Max tasks per list</div>
+      </div>
       </div>
       <div class="compare-val"><span class="val-free" data-en="10" data-ja="10">10</span></div>
       <div class="compare-val"><span class="val-pro" data-en="∞" data-ja="∞">∞</span></div>
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <i class="fa-solid fa-palette"></i>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Colour palettes" data-ja="カラーパレット">Colour palettes</div>
+      
         <div class="feat-desc-small" data-en="App theme colours" data-ja="アプリテーマカラー">App theme colours</div>
+      </div>
       </div>
       <div class="compare-val"><span class="val-free">2</span></div>
       <div class="compare-val"><span class="val-pro">13</span></div>
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</div>
+      
         <div class="feat-desc-small" data-en="AI learns your vocabulary" data-ja="AIがあなたの言葉を学習">AI learns your vocabulary</div>
       </div>
+      </div>
       <div class="compare-val"><span class="val-dash">—</span></div>
       <div class="compare-val"><span class="val-check">✓</span></div>
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Customize Category" data-ja="カテゴリのカスタマイズ">Customize Category</div>
+      
         <div class="feat-desc-small" data-en="Rename Work, Home, etc." data-ja="仕事、家など名前を変更">Rename Work, Home, etc.</div>
+      </div>
       </div>
       <div class="compare-val"><span class="val-dash">—</span></div>
       <div class="compare-val"><span class="val-check">✓</span></div>
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <i class="fa-solid fa-arrows-rotate"></i>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Task rollover" data-ja="タスク繰越">Task rollover</div>
+      
         <div class="feat-desc-small" data-en="Carry unfinished tasks forward" data-ja="未完了タスクを翌日へ繰越">Carry unfinished tasks forward</div>
+      </div>
       </div>
       <div class="compare-val"><span class="val-check">✓</span></div>
       <div class="compare-val"><span class="val-check">✓</span></div>
     </div>
 
     <div class="compare-row">
-      <div class="feat-icon">
+      <div class="feat-row-left">
+        <div class="feat-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
       </div>
-      <div class="feat-info">
+        <div class="feat-info">
         <div class="feat-name" data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</div>
+      
         <div class="feat-desc-small" data-en="Sync across all devices" data-ja="すべてのデバイスで同期">Sync across all devices</div>
+      </div>
       </div>
       <div class="compare-val"><span class="val-dash">—</span></div>
       <div class="compare-val"><span class="val-check">✓</span></div>
