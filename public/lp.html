@@ -381,19 +381,28 @@ nav {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   padding: 36px 0 32px;
-  overflow: hidden;
   margin: 0 0 0;
 }
 .carousel-eyebrow {
-  text-align: center;
+  display: flex; align-items: center;
+  gap: 8px;
+  padding: 0 24px;
   margin-bottom: 28px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.carousel-eyebrow::-webkit-scrollbar { display: none }
 .carousel-eyebrow-inner {
   display: inline-flex; align-items: center;
   font-size: 13px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
-  padding: 8px 20px; border-radius: 50px;
-  background: var(--blue-lt); color: var(--blue); border: 1.5px solid var(--blue-mid);
+  padding: 8px 16px; border-radius: 50px;
+  white-space: nowrap; flex-shrink: 0;
+  opacity: 0.4;
+  transition: opacity .2s;
+  cursor: pointer;
 }
+.carousel-eyebrow-inner.active { opacity: 1 }
 
 /* ── Due chip styles ── */
 .ps-due-chip {
@@ -754,6 +763,13 @@ footer {
 
   <!-- ── KEY FEATURES CAROUSEL ── -->
   <section class="features-carousel">
+    <div class="carousel-eyebrow" id="carouselBanners">
+      <button class="carousel-eyebrow-inner active" style="background:var(--blue-lt);color:var(--blue);border:1.5px solid var(--blue-mid)"><span data-en="VOICE CAPTURE" data-ja="音声キャプチャ">VOICE CAPTURE</span></button>
+      <button class="carousel-eyebrow-inner" style="background:#F0FDF4;color:#16A34A;border:1.5px solid #BBF7D0"><span data-en="BRAIN DUMP" data-ja="まとめて追加">BRAIN DUMP</span></button>
+      <button class="carousel-eyebrow-inner" style="background:#F5F3FF;color:#7C3AED;border:1.5px solid #DDD6FE"><span data-en="INSTANTLY ORGANISED" data-ja="即整理">INSTANTLY ORGANISED</span></button>
+      <button class="carousel-eyebrow-inner" style="background:#FFF7ED;color:#F97316;border:1.5px solid #FED7AA"><span data-en="COLOUR IT" data-ja="カラー設定">COLOUR IT</span></button>
+      <button class="carousel-eyebrow-inner" style="background:#F0FDF4;color:#16A34A;border:1.5px solid #BBF7D0"><span data-en="POP IT DONE" data-ja="完了させよう">POP IT DONE</span></button>
+    </div>
     <div class="carousel-wrap">
       <div class="carousel-track" id="carouselTrack">
 
@@ -1105,8 +1121,9 @@ footer {
 <script>
 // ── FEATURE CAROUSEL (infinite smooth loop) ──
 (function(){
-  var track = document.getElementById('carouselTrack');
-  var dots  = document.querySelectorAll('#carouselDots .cdot');
+  var track   = document.getElementById('carouselTrack');
+  var dots    = document.querySelectorAll('#carouselDots .cdot');
+  var banners = document.querySelectorAll('#carouselBanners .carousel-eyebrow-inner');
   var REAL  = 5;
   var paused = false, timer, animating = false;
 
@@ -1165,6 +1182,7 @@ footer {
     track.style.transform = 'translateX(-' + (n * 100) + '%)';
     var di = ((n - 1 + REAL) % REAL);
     dots.forEach(function(d, i){ d.classList.toggle('active', i === di); });
+    banners.forEach(function(b, i){ b.classList.toggle('active', i === di); });
     if (di === 2) { replaySlide3Anims(); }
     if (di === 4) { replayPopAnim(); } else { clearPopTimers(); }
   }
@@ -1197,6 +1215,15 @@ footer {
 
   dots.forEach(function(d, i) {
     d.addEventListener('click', function(){
+      if (animating) return;
+      paused = false; animating = true;
+      moveTo(i + 1, true);
+      startAuto();
+    });
+  });
+
+  banners.forEach(function(b, i) {
+    b.addEventListener('click', function(){
       if (animating) return;
       paused = false; animating = true;
       moveTo(i + 1, true);
