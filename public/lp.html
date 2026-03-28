@@ -386,13 +386,37 @@ nav {
 }
 .carousel-eyebrow {
   text-align: center;
-  font-size: 10px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
-  color: var(--t3); margin-bottom: 6px;
+  margin-bottom: 28px;
 }
-.carousel-heading {
-  text-align: center;
-  font-size: 24px; font-weight: 900; letter-spacing: -.6px; line-height: 1.2;
-  color: var(--black); margin-bottom: 28px; padding: 0 24px;
+.carousel-eyebrow-inner {
+  display: inline-flex; align-items: center;
+  font-size: 13px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+  padding: 8px 20px; border-radius: 50px;
+  background: var(--blue-lt); color: var(--blue); border: 1.5px solid var(--blue-mid);
+}
+
+/* ── Due chip styles ── */
+.ps-due-chip {
+  margin-left: auto;
+  font-size: 6px; font-weight: 700;
+  padding: 2px 5px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0; line-height: 1.5;
+}
+.ps-due-today { background: #EFF6FF; color: #3B82F6 }
+.ps-due-week  { background: #F5F3FF; color: #7C3AED }
+.ps-due-soon  { background: #F5F5F4; color: #78716C }
+
+/* ── Task dot per category ── */
+.ps-task-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0 }
+
+/* ── Category block stagger animation ── */
+@keyframes ps-cat-appear {
+  from { opacity: 0; transform: translateY(5px) }
+  to   { opacity: 1; transform: translateY(0)   }
+}
+.ps-cat-anim {
+  opacity: 0;
+  animation: ps-cat-appear 0.35s ease forwards;
 }
 .carousel-wrap { overflow: hidden; width: 100% }
 .carousel-track {
@@ -707,8 +731,7 @@ footer {
 
   <!-- ── KEY FEATURES CAROUSEL ── -->
   <section class="features-carousel">
-    <p class="carousel-eyebrow" data-en="HOW IT WORKS" data-ja="使い方">HOW IT WORKS</p>
-    <h2 class="carousel-heading" data-en="See it in action" data-ja="実際に見てみよう">See it in action</h2>
+    <p class="carousel-eyebrow"><span class="carousel-eyebrow-inner" data-en="HOW IT WORKS" data-ja="使い方">HOW IT WORKS</span></p>
 
     <div class="carousel-wrap">
       <div class="carousel-track" id="carouselTrack">
@@ -783,20 +806,21 @@ footer {
                   <div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
                 </div>
                 <div class="ps-content">
-                  <div class="ps-cat">
-                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div>
-                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Send Q1 report to team</span></div>
-                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div>
+                  <div class="ps-cat ps-cat-anim" style="animation-delay:0s">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">WORK</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt">Send Q1 report to team</span><span class="ps-due-chip ps-due-week">This Week</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#3B82F6"></div><span class="ps-task-txt">Review design mockups</span><span class="ps-due-chip ps-due-today">Today</span></div>
                   </div>
-                  <div class="ps-cat">
-                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#F97316"></span><span class="ps-cat-name">Errands</span></div>
-                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Buy groceries + oat milk</span></div>
-                    <div class="ps-task done"><div class="ps-check done"></div><span class="ps-task-txt">Pick up dry cleaning</span></div>
+                  <div class="ps-cat ps-cat-anim" style="animation-delay:0.5s">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">ERRANDS</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#F97316"></div><span class="ps-task-txt">Arrange make up lesson for kids</span><span class="ps-due-chip ps-due-today">Today</span></div>
                   </div>
-                  <div class="ps-cat">
-                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#22C55E"></span><span class="ps-cat-name">Health</span></div>
-                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Book dentist appointment</span></div>
-                    <div class="ps-task done"><div class="ps-check done"></div><span class="ps-task-txt">Morning run</span></div>
+                  <div class="ps-cat ps-cat-anim" style="animation-delay:1s">
+                    <div class="ps-cat-hdr" style="background:rgba(0,0,0,.02)"><span class="ps-cat-name">HEALTH</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Book dentist appointment</span><span class="ps-due-chip ps-due-today">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Morning run</span><span class="ps-due-chip ps-due-today">Today</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Go to the art exhibition</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
+                    <div class="ps-task"><div class="ps-task-dot" style="background:#22C55E"></div><span class="ps-task-txt">Look for a new jacket</span><span class="ps-due-chip ps-due-soon">Soon</span></div>
                   </div>
                 </div>
                 <div class="ps-btmbar">
@@ -1201,12 +1225,22 @@ footer {
   function setTr(on) {
     track.style.transition = on ? 'transform .45s cubic-bezier(.4,0,.2,1)' : 'none';
   }
+  function replaySlide2Anims() {
+    var cats = track.querySelectorAll('.ps-cat-anim');
+    cats.forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight; // force reflow
+      el.style.animation = '';
+    });
+  }
+
   function moveTo(n, animate) {
     setTr(animate !== false);
     cur = n;
     track.style.transform = 'translateX(-' + (n * 100) + '%)';
     var di = ((n - 1 + REAL) % REAL);
     dots.forEach(function(d, i){ d.classList.toggle('active', i === di); });
+    if (((n - 1 + REAL) % REAL) === 1) { replaySlide2Anims(); }
   }
 
   // Silent initial position
