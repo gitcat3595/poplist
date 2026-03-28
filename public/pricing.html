@@ -216,7 +216,7 @@ nav {
 }
 .plan-price-card.active-plan {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 16px rgba(0,0,0,.06);
+  box-shadow: 0 0 24px var(--accent-glow), 0 4px 16px rgba(0,0,0,.06);
 }
 .price-row {
   display: flex; align-items: flex-end; gap: 8px; margin-bottom: 6px;
@@ -293,8 +293,8 @@ nav {
   display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0;
 }
 .perk-chip {
-  font-size: 12px; font-weight: 600; color: var(--t2);
-  background: var(--raised); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  background: var(--accent-lt); border: 1px solid var(--accent-glow);
   padding: 3px 9px; border-radius: var(--rp);
 }
 
@@ -487,9 +487,9 @@ nav {
       </div>
       <button class="lifetime-cta-btn" onclick="goNotify('lifetime')" data-en="Get Lifetime Access →" data-ja="買い切りプランを入手 →">Get Lifetime Access →</button>
       <div class="lifetime-perks">
-        <span class="perk-chip" data-en="All PRO features" data-ja="全PRO機能">All PRO features</span>
-        <span class="perk-chip" data-en="Future updates" data-ja="将来のアップデート">Future updates</span>
-        <span class="perk-chip" data-en="No recurring fees" data-ja="継続費用なし">No recurring fees</span>
+        <span class="perk-chip" data-en="No recurring fees" data-ja="月額費用なし">No recurring fees</span>
+        <span class="perk-chip" data-en="All PRO features" data-ja="プロの全機能">All PRO features</span>
+        <span class="perk-chip" data-en="More updates on the way" data-ja="どんどんアップデート">More updates on the way</span>
       </div>
     </div>
   </div>
