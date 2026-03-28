@@ -84,7 +84,7 @@ nav {
   background: var(--accent-lt); color: var(--accent);
   font-size: 12px; font-weight: 700; letter-spacing: .4px;
   padding: 5px 12px; border-radius: var(--rp);
-  border: 1px solid rgba(59,130,246,.25);
+  border: 1px solid var(--accent-glow);
   margin-bottom: 14px;
 }
 .hero-title {
@@ -144,7 +144,7 @@ nav {
   width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
   background: var(--accent-lt);
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(59,130,246,.15);
+  border: 1px solid var(--accent-glow);
 }
 .feat-icon svg { color: var(--accent) }
 .feat-info {}
@@ -192,7 +192,7 @@ nav {
 }
 .toggle-pill.active {
   background: var(--accent); color: #fff;
-  box-shadow: 0 2px 12px rgba(59,130,246,.4);
+  box-shadow: 0 2px 12px var(--accent-glow);
 }
 .save-badge {
   font-size: 10px; font-weight: 700;
@@ -200,7 +200,7 @@ nav {
   padding: 1px 6px; border-radius: var(--rp);
 }
 .toggle-pill:not(.active) .save-badge {
-  background: rgba(59,130,246,.12); color: var(--accent);
+  background: var(--accent-glow); color: var(--accent);
 }
 
 /* ── PLAN CARD ── */
@@ -216,7 +216,7 @@ nav {
 }
 .plan-price-card.active-plan {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59,130,246,.12), 0 4px 16px rgba(0,0,0,.06);
+  box-shadow: 0 0 24px var(--accent-glow), 0 4px 16px rgba(0,0,0,.06);
 }
 .price-row {
   display: flex; align-items: flex-end; gap: 8px; margin-bottom: 6px;
@@ -236,7 +236,7 @@ nav {
   font-size: 16px; font-weight: 800; font-family: var(--font);
   letter-spacing: -.2px;
   transition: var(--tr); border: none; cursor: pointer;
-  box-shadow: 0 4px 20px rgba(59,130,246,.38);
+  box-shadow: 0 4px 20px var(--accent-glow);
 }
 .price-cta-btn:hover { filter: brightness(0.88); transform: translateY(-1px) }
 .price-cta-btn:active { filter: brightness(0.82); transform: none }
@@ -293,8 +293,8 @@ nav {
   display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0;
 }
 .perk-chip {
-  font-size: 12px; font-weight: 600; color: var(--t2);
-  background: var(--raised); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  background: var(--accent-lt); border: 1px solid var(--accent-glow);
   padding: 3px 9px; border-radius: var(--rp);
 }
 
@@ -487,9 +487,9 @@ nav {
       </div>
       <button class="lifetime-cta-btn" onclick="goNotify('lifetime')" data-en="Get Lifetime Access →" data-ja="買い切りプランを入手 →">Get Lifetime Access →</button>
       <div class="lifetime-perks">
-        <span class="perk-chip" data-en="All PRO features" data-ja="全PRO機能">All PRO features</span>
-        <span class="perk-chip" data-en="Future updates" data-ja="将来のアップデート">Future updates</span>
-        <span class="perk-chip" data-en="No recurring fees" data-ja="継続費用なし">No recurring fees</span>
+        <span class="perk-chip" data-en="No recurring fees" data-ja="月額費用なし">No recurring fees</span>
+        <span class="perk-chip" data-en="All PRO features" data-ja="プロの全機能">All PRO features</span>
+        <span class="perk-chip" data-en="More updates on the way" data-ja="どんどんアップデート">More updates on the way</span>
       </div>
     </div>
   </div>
