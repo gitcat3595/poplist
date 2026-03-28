@@ -3933,9 +3933,10 @@ async function classifyTranscript(transcript) {
 
 const SR       = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isSafari = !!(window.safari || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-               || /iPad|iPhone|iPod/.test(navigator.userAgent));
-// iOS: Safari + Chrome iOS both need getUserMedia before every SR start (including restarts)
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+               || /iPad|iPhone|iPod/i.test(navigator.userAgent));
+// iOS + iPadOS “Request Desktop Website” (reports as MacIntel + touch)
+const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent)
+  || (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 let recognition    = null;
 let fullTranscript = '';
@@ -3946,6 +3947,15 @@ let voiceErrorCount = 0;    // counts transient errors (audio-capture, network);
 // Desktop browsers (Chrome/Edge/Safari macOS): SR handles its own mic permission — start directly.
 // iOS: requires getUserMedia before EVERY recognition.start() — never cache.
 let micPermGranted = !isIOS;
+
+/* iOS/WebKit: stopping getUserMedia tracks *before* SpeechRecognition has started leaves SR with no live
+   audio session → not-allowed / audio-capture even when Settings show mic allowed. Hold probe until onstart. */
+let micProbeStream = null;
+function releaseMicProbe() {
+  if (!micProbeStream) return;
+  try { micProbeStream.getTracks().forEach(t => t.stop()); } catch (e) { /* ignore */ }
+  micProbeStream = null;
+}
 
 // Compile overlay helpers
 const compileOverlay = document.getElementById('compileOverlay');
@@ -3974,6 +3984,8 @@ if (SR) {
     r.maxAlternatives = 1;
 
     r.onstart = () => {
+      // Defer one frame so WebKit can attach SR to the audio session before we stop the probe stream
+      requestAnimationFrame(() => releaseMicProbe());
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
@@ -4045,10 +4057,24 @@ if (SR) {
         }
 
         if (isIOS) {
-          // Even on iOS, probe getUserMedia to ensure the audio session is live before restarting
-          navigator.mediaDevices?.getUserMedia({ audio: true })
-            .then(stream => { stream.getTracks().forEach(t => t.stop()); _doRestart(); })
-            .catch(err => { console.warn('[SR] getUserMedia failed on restart:', err); shouldRestart = false; _clearListeningUI(); });
+          const md = navigator.mediaDevices;
+          if (!md || typeof md.getUserMedia !== 'function') {
+            shouldRestart = false;
+            _clearListeningUI();
+            return;
+          }
+          md.getUserMedia({ audio: true })
+            .then(stream => {
+              releaseMicProbe();
+              micProbeStream = stream;
+              _doRestart();
+            })
+            .catch(err => {
+              console.warn('[SR] getUserMedia failed on restart:', err);
+              shouldRestart = false;
+              releaseMicProbe();
+              _clearListeningUI();
+            });
         } else {
           _doRestart();
         }
@@ -4081,11 +4107,21 @@ if (SR) {
 
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         micPermGranted = false;
-        const msg = isIOS
-          ? (state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed')
-          : (state.lang === 'ja'
+        const isChrome = /Chrome|Chromium|Edg/i.test(navigator.userAgent) && !/Brave/i.test(navigator.userAgent);
+        let msg;
+        if (isIOS) {
+          msg = state.lang === 'ja'
+            ? '設定 → Safari → マイク、または画面のマイク許可を確認してください'
+            : 'Check iOS Settings → Safari → Microphone, and allow mic for this site.';
+        } else if (isChrome) {
+          msg = state.lang === 'ja'
+            ? 'Chrome の鍵アイコン → サイトの設定 → マイク「許可」。音声認識は Google のサーバーを使います。'
+            : 'Click the lock in the address bar → Site settings → Microphone: Allow. Speech recognition uses Google’s servers.';
+        } else {
+          msg = state.lang === 'ja'
             ? 'マイク許可：アドレスバーのマイクアイコンをクリック→「許可」'
-            : 'Allow mic: click the mic icon in the address bar → Allow');
+            : 'Allow microphone for this site (address bar → site settings).';
+        }
         showToast(msg);
       } else if (e.error === 'audio-capture') {
         showToast(state.lang === 'ja'
@@ -4102,13 +4138,14 @@ if (SR) {
   }
 
   function _clearListeningUI() {
+    releaseMicProbe();
     state.isListening = false;
     [voiceBtn,
      document.getElementById('vaBtnMain'),
      document.getElementById('voiceBtnDone'),
      document.getElementById('voiceBtnBottom')
     ].forEach(b => b?.classList.remove('listening'));
-    micModal.classList.remove('show');
+    micModal?.classList.remove('show');
     transcriptEl.style.color = '';
     transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
     // Reset mic hint for next session
@@ -4200,6 +4237,13 @@ if (SR) {
   function handleVoiceClick() {
     if (state.isListening) { stopListening(); return; }
 
+    if (!window.isSecureContext) {
+      showToast(state.lang === 'ja'
+        ? '音声入力は HTTPS（または localhost）が必要です'
+        : 'Voice needs HTTPS or localhost (opening as a file won’t work).');
+      return;
+    }
+
     fullTranscript = '';
     interimText    = '';
     shouldRestart  = true;
@@ -4221,26 +4265,52 @@ if (SR) {
       : 'Say your tasks naturally…';
 
     if (isIOS) {
-      // iOS (Safari & Chrome): getUserMedia probe required before EVERY recognition.start()
-      navigator.mediaDevices?.getUserMedia({ audio: true })
-        .then(stream => {
-          stream.getTracks().forEach(t => t.stop());
-          recognition = createRecognition();
-          try { recognition.start(); }
-          catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
-        })
-        .catch(e => {
-          console.warn('mic permission denied:', e);
+      const md = navigator.mediaDevices;
+      if (!md || typeof md.getUserMedia !== 'function') {
+        console.warn('[SR] mediaDevices.getUserMedia missing — try SpeechRecognition without probe');
+        recognition = createRecognition();
+        try { recognition.start(); }
+        catch (e) {
+          console.warn('start error:', e);
           shouldRestart = false;
           _clearListeningUI();
-          showToast(state.lang === 'ja' ? 'マイク許可が必要です' : 'Microphone permission needed');
+          showToast(state.lang === 'ja' ? 'このブラウザではマイクに接続できません' : 'Cannot access microphone in this browser.');
+        }
+        return;
+      }
+      md.getUserMedia({ audio: true })
+        .then(stream => {
+          releaseMicProbe();
+          micProbeStream = stream;
+          recognition = createRecognition();
+          try { recognition.start(); }
+          catch (e) {
+            console.warn('start error:', e);
+            releaseMicProbe();
+            shouldRestart = false;
+            _clearListeningUI();
+          }
+        })
+        .catch(e => {
+          console.warn('[SR] getUserMedia:', e && e.name, e && e.message);
+          shouldRestart = false;
+          _clearListeningUI();
+          let msg;
+          if (e && (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError')) {
+            msg = state.lang === 'ja' ? 'マイクの使用が拒否されました（アドレスバーまたは設定で許可）' : 'Microphone blocked — allow it in the address bar or site settings.';
+          } else if (e && e.name === 'NotReadableError') {
+            msg = state.lang === 'ja' ? 'マイクは他のアプリが使用中かもしれません' : 'Microphone may be in use by another app.';
+          } else {
+            msg = state.lang === 'ja' ? 'マイクに接続できませんでした' : 'Could not open microphone.';
+          }
+          showToast(msg);
         });
     } else {
       // Desktop Chrome / Edge / Safari macOS: SR handles its own mic permission.
       // Do NOT call getUserMedia first — it conflicts with the SR audio stream on Chrome.
       recognition = createRecognition();
       try { recognition.start(); }
-      catch(e) { console.warn('start error:', e); shouldRestart = false; _clearListeningUI(); }
+      catch (e) { console.warn('start error:', e); shouldRestart = false; releaseMicProbe(); _clearListeningUI(); }
     }
   }
   voiceBtn?.addEventListener('click', handleVoiceClick);
