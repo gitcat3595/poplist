@@ -2575,6 +2575,7 @@ const state = {
   isLoggedIn:   false,
   carryOverCount: 0,         // tasks carrying over after Done for today
   defaultTiming:  'This Week', // new tasks default; restored from localStorage on load
+  aiClassify:     true,        // false = skip /api/classify, on-device split only
 };
 
 /* ══════════════════════════════════════════
@@ -3419,38 +3420,67 @@ function makeTaskItem(text, timing, cat, fsId) {
   return item;
 }
 
-function submitAddTask() {
+let _submitAddTaskBusy = false;
+async function submitAddTask() {
   const text = addInput?.value.trim();
   if (!text) { addInput?.focus(); return; }
-
-  // Guest limit: nudge sign-in after GUEST_MAX_TASKS tasks (only when Firebase is configured)
-  if (FB_READY && !state.isLoggedIn) {
-    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
-    if (count >= GUEST_MAX_TASKS) {
-      showToast(state.lang === 'ja'
-        ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
-        : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
-      openM('settingsModal');
-      return;
+  if (_submitAddTaskBusy) return;
+  _submitAddTaskBusy = true;
+  try {
+    const defaultTiming = state.defaultTiming || 'This Week';
+    let tasks = [];
+    try {
+      tasks = await classifyTranscript(text);
+    } catch (e) {
+      console.warn('classify on manual add:', e);
+      tasks = localClassify(text, defaultTiming);
     }
-  }
+    if (!tasks || tasks.length === 0) {
+      tasks = [{ text, timing: defaultTiming, category: detectCat(text) || 'Other' }];
+    }
 
-  const timing = state.defaultTiming || 'This Week';
-  const cat    = detectCat(text) || 'Other';
-  const item   = makeTaskItem(text, timing, cat);
-  addInput.value = '';
-  setSelectedCat('Other');
-  showToast(state.lang === 'ja' ? 'タスクを追加しました' : 'Task added');
-  requestAnimationFrame(() => addInput?.focus());
+    if (FB_READY && !state.isLoggedIn) {
+      const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
+      const allowed = Math.max(0, GUEST_MAX_TASKS - count);
+      if (allowed === 0) {
+        showToast(state.lang === 'ja'
+          ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
+          : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
+        openM('settingsModal');
+        return;
+      }
+      if (tasks.length > allowed) tasks = tasks.slice(0, allowed);
+    }
 
-  // Persist to Firestore if signed in
-  if (state.isLoggedIn && item) {
-    fsAddTask(text, cat, timing).then(id => { if (id) item.dataset.fsId = id; });
+    addInput.value = '';
+    setSelectedCat('Other');
+
+    tasks.forEach((task, i) => {
+      setTimeout(() => {
+        const item = makeTaskItem(
+          task.text,
+          task.timing || defaultTiming,
+          task.category || 'Other'
+        );
+        if (state.isLoggedIn && item) {
+          fsAddTask(task.text, task.category || 'Other', task.timing || defaultTiming)
+            .then(id => { if (id) item.dataset.fsId = id; });
+        }
+      }, i * 90);
+    });
+
+    const n = tasks.length;
+    showToast(state.lang === 'ja'
+      ? (n > 1 ? `${n}件のタスクを追加しました` : 'タスクを追加しました')
+      : (n > 1 ? `${n} tasks added` : 'Task added'));
+    requestAnimationFrame(() => addInput?.focus());
+  } finally {
+    _submitAddTaskBusy = false;
   }
 }
-document.getElementById('addTaskBtn')?.addEventListener('click', submitAddTask);
+document.getElementById('addTaskBtn')?.addEventListener('click', () => { void submitAddTask(); });
 addInput?.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); submitAddTask(); }
+  if (e.key === 'Enter') { e.preventDefault(); void submitAddTask(); }
 });
 
 /* ══════════════════════════════════════════
@@ -3697,25 +3727,42 @@ document.getElementById('tasksContainer')?.addEventListener('click', e => {
   inp.focus();
 
   let _done = false;
-  function _commit() {
+  async function _commit() {
     if (_done) return; _done = true;
     const text = inp.value.trim();
     inp.remove();
     if (textEl) textEl.style.display = '';
     row.style.opacity = '';
     if (!text) return;
-    const timing = state.defaultTiming || 'This Week';
-    const item = makeTaskItem(text, timing, catEn);
-    if (state.isLoggedIn && item) {
-      fsAddTask(text, catEn, timing).then(id => { if (id && item) item.dataset.fsId = id; });
+    const defaultTiming = state.defaultTiming || 'This Week';
+    let tasks = [];
+    try {
+      tasks = await classifyTranscript(text);
+    } catch (e) {
+      tasks = localClassify(text, defaultTiming);
     }
-    showToast(state.lang === 'ja' ? 'タスクを追加しました' : 'Task added');
+    if (!tasks || tasks.length === 0) {
+      tasks = [{ text, timing: defaultTiming, category: catEn }];
+    }
+    tasks.forEach((task, i) => {
+      setTimeout(() => {
+        const c = task.category && task.category !== 'Other' ? task.category : catEn;
+        const item = makeTaskItem(task.text, task.timing || defaultTiming, c);
+        if (state.isLoggedIn && item) {
+          fsAddTask(task.text, c, task.timing || defaultTiming).then(id => { if (id && item) item.dataset.fsId = id; });
+        }
+      }, i * 90);
+    });
+    const n = tasks.length;
+    showToast(state.lang === 'ja'
+      ? (n > 1 ? `${n}件のタスクを追加しました` : 'タスクを追加しました')
+      : (n > 1 ? `${n} tasks added` : 'Task added'));
   }
   inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter')  { e.preventDefault(); _commit(); }
-    if (e.key === 'Escape') { inp.value = ''; _commit(); }
+    if (e.key === 'Enter')  { e.preventDefault(); void _commit(); }
+    if (e.key === 'Escape') { inp.value = ''; void _commit(); }
   });
-  inp.addEventListener('blur', _commit);
+  inp.addEventListener('blur', () => { void _commit(); });
 });
 
 /* Voice buttons wired inside the SR block below */
@@ -3859,6 +3906,84 @@ function localDetectTiming(text, def) {
   return def || 'This Week';
 }
 
+function countCjkChars(s) {
+  return (s.match(/[\u3040-\u30ff\u4e00-\u9fff]/g) || []).length;
+}
+
+/* Japanese run-ons often omit 、 between actions (て-chain). Split into separate task strings. */
+function splitLongJapaneseRunOn(s) {
+  const MAX = 34;
+  const cjk = countCjkChars(s);
+  if (s.length <= MAX && cjk < 9) return [s];
+
+  let bits = s.split(/(?:^|[\s。、，])(?:また|そして|それから|そのあと|その後|あとで|加えて|なお|ちなみに|および|並びに)\s+/);
+  if (bits.length > 1) {
+    return bits.flatMap(b => {
+      b = b.trim();
+      return b.length > 1 ? splitLongJapaneseRunOn(b) : [];
+    }).filter(Boolean);
+  }
+
+  bits = s.split(/[、，・｜|／/]+/).map(x => x.trim()).filter(x => x.length > 1);
+  if (bits.length > 1) return bits.flatMap(b => splitLongJapaneseRunOn(b));
+
+  bits = s.split(/\u3000+/).map(x => x.trim()).filter(x => x.length > 1);
+  if (bits.length > 1) return bits.flatMap(b => splitLongJapaneseRunOn(b));
+
+  const out = [];
+  let buf = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === 'て' && buf.length >= 5 && i < s.length - 4) {
+      const tailSlice = s.slice(i + 1);
+      if (/につい$|におい$|ように$/.test(buf)) {
+        buf += ch;
+        continue;
+      }
+      if (/^[\u3040-\u30ff\u4e00-\u9fff]{3,}/.test(tailSlice)) {
+        const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある)/.test(tailSlice);
+        if (!badFollow) {
+          out.push((buf + 'て').trim());
+          buf = '';
+          continue;
+        }
+      }
+    }
+    buf += ch;
+  }
+  if (buf.trim()) out.push(buf.trim());
+  if (out.length > 1) return out.flatMap(b => splitLongJapaneseRunOn(b));
+  return [s];
+}
+
+function splitLongEnglishRunOn(s) {
+  if (s.length < 56) return [s];
+  let bits = s.split(/\s*(?:\band\b|\bthen\b|\balso\b|\bplus\b)\s+/i);
+  if (bits.length > 1) return bits.map(x => x.trim()).filter(x => x.length > 1);
+  bits = s.split(/\s*,\s+/).map(x => x.trim()).filter(x => x.length > 3);
+  if (bits.length > 1) return bits;
+  return [s];
+}
+
+/* After API classify: break any remaining long lines (esp. Japanese) into multiple tasks. */
+function subdivideTaskObjects(tasks, defaultTiming) {
+  return tasks.flatMap(t => {
+    const u = (t.text != null ? String(t.text) : '').trim();
+    if (!u) return [];
+    const segs = countCjkChars(u) >= 6 ? splitLongJapaneseRunOn(u) : splitLongEnglishRunOn(u);
+    if (segs.length <= 1) return [t];
+    return segs.map(p => {
+      p = p.trim();
+      if (!p.length) return null;
+      return {
+        text: p,
+        timing: localDetectTiming(p, t.timing || defaultTiming),
+        category: localDetectCat(p) || t.category || 'Other'
+      };
+    }).filter(Boolean);
+  });
+}
+
 // Split transcript into tasks — no lookbehind regex (unsupported on older Safari)
 function localClassify(transcript, defaultTiming) {
   const cleanText = t => t
@@ -3866,12 +3991,29 @@ function localClassify(transcript, defaultTiming) {
     .replace(/今日|今週|そのうち|急ぎ|いつか|後で/g, '')
     .replace(/\s+/g, ' ').trim();
 
-  // Replace sentence-ending punctuation with comma, then split
-  const parts = transcript
-    .replace(/[。.!?！？]/g, '$&,')
-    .split(/,\s*and\s+|\s+and\s+|\s+then\s+|\s+also\s+|[、。；;,]\s*/)
+  const t0 = (transcript || '').trim();
+  if (!t0) return [];
+
+  const phase1 = t0
+    .replace(/[。.!?！？]/g, '$&\n')
+    .split(/\n+/)
+    .map(seg => seg.trim())
+    .filter(seg => seg.length > 0)
+    .flatMap(seg => seg.split(/\r?\n+/))
+    .flatMap(seg =>
+      seg.split(/(?:,\s*and\s+|\s+and\s+|\s+then\s+|\s+also\s+|[、，・｜|／/;；]\s*|,\s+)/i)
+    )
     .map(s => s.replace(/^(and|also|then|next|そして|それから|あと|また|さらに|次に)\s+/i, '').trim())
     .filter(s => s.length > 1);
+
+  const base = phase1.length ? phase1 : [t0];
+
+  const parts = base.flatMap(p => {
+    const ck = countCjkChars(p);
+    if (ck >= 6 && p.length > 22) return splitLongJapaneseRunOn(p);
+    if (ck < 6 && p.length > 56) return splitLongEnglishRunOn(p);
+    return [p];
+  });
 
   if (parts.length === 0) {
     const cleaned = cleanText(transcript);
@@ -3892,34 +4034,48 @@ async function classifyTranscript(transcript) {
   const categories    = state.categories.map(c => c.en);
   const defaultTiming = state.defaultTiming || 'This Week';
 
+  if (state.aiClassify === false) {
+    return localClassify(transcript, defaultTiming);
+  }
+
   // Build custom keyword map for AI: { Work: ['client1', 'boss'], Home: ['mom', 'cleaner'] }
   const categoryKeywords = {};
   state.categories.forEach(c => { if (c.keywords.length) categoryKeywords[c.en] = c.keywords; });
+
+  const tr = (transcript || '').trim();
+  const localTasks = () => localClassify(tr, defaultTiming);
 
   // Try Cloudflare Worker → OpenAI (key lives in Cloudflare secrets, never in browser)
   try {
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript, categories, categoryKeywords, defaultTiming, lang: state.lang })
+      body: JSON.stringify({ transcript: tr, categories, categoryKeywords, defaultTiming, lang: state.lang })
     });
     if (res.ok) {
       const data = await res.json();
       if (data.tasks && data.tasks.length > 0) {
-        // If AI returned only 1 task for a long transcript, try local split too
-        if (data.tasks.length === 1 && transcript.length > 50) {
-          const localTasks = localClassify(transcript, defaultTiming);
-          if (localTasks.length > 1) return localTasks;
+        let tasks = data.tasks
+          .map(x => ({
+            text:     (x.text != null ? String(x.text) : '').trim(),
+            timing:   x.timing || defaultTiming,
+            category: x.category || 'Other'
+          }))
+          .filter(x => x.text.length > 0);
+        if (tasks.length > 0) {
+          tasks = subdivideTaskObjects(tasks, defaultTiming);
+          const loc = localTasks();
+          if (loc.length > tasks.length) return loc;
+          if (tasks.length === 1 && (tr.length > 28 || countCjkChars(tr) >= 10) && loc.length > 1) return loc;
+          return tasks;
         }
-        return data.tasks;
       }
     }
-  } catch(e) {
+  } catch (e) {
     console.warn('API classify failed, using local:', e);
   }
 
-  // Local fallback
-  return localClassify(transcript, defaultTiming);
+  return localTasks();
 }
 
 /* ══════════════════════════════════════════════════════

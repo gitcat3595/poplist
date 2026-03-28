@@ -49,7 +49,8 @@ app.post('/api/classify', async (c) => {
 The user spoke or typed the following: "${transcript}"
 
 Your job:
-1. Split this into INDIVIDUAL actionable tasks (one task per item).
+1. Split this into INDIVIDUAL actionable tasks (one task per item). Never return one giant task when the user listed several things.
+   Japanese input often chains actions with て (e.g. メールして資料を送る) or omits 、 between items — still output separate JSON objects for each distinct action.
 2. For each task output:
    - "text": clean concise task in the SAME LANGUAGE as the input. Remove timing words like "today","this week","今日","今週".
    - "timing": exactly one of "Today", "This Week", "Later" — always English.
@@ -69,6 +70,9 @@ Output: [{"text":"Send proposal to client","timing":"Today","category":"Work"},{
 
 Input (Japanese): "今日クライアントにメールして、今週中に部屋を掃除する"
 Output: [{"text":"クライアントにメールする","timing":"Today","category":"Work"},{"text":"部屋を掃除する","timing":"This Week","category":"Home"}]
+
+Input (Japanese, no commas): "銀行に行って買い物してレポートを書く"
+Output: [{"text":"銀行に行く","timing":"This Week","category":"Personal"},{"text":"買い物する","timing":"This Week","category":"Home"},{"text":"レポートを書く","timing":"This Week","category":"Work"}]
 
 Return ONLY a valid JSON array. No markdown, no explanation.`
 
