@@ -1229,9 +1229,9 @@ footer {
     function nextStep() {
       step = (step + 1) % CI_STATES.length;
       ciSlides.forEach(function(slide) { applyColorItState(slide, step); });
-      colorItTimers.push(setTimeout(nextStep, step === CI_STATES.length - 1 ? 2500 : 2000));
+      colorItTimers.push(setTimeout(nextStep, 500));
     }
-    colorItTimers.push(setTimeout(nextStep, 2000));
+    colorItTimers.push(setTimeout(nextStep, 500));
   }
 
   // Slide 5 (di=4): pop Work tasks then collapse category
