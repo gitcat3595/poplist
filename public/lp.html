@@ -613,6 +613,23 @@ nav {
 }
 .lp-pricing-link:hover { opacity: .7 }
 
+/* ── SLIDE 4: COLOUR IT (bubble style animation) ── */
+.ci-tabs { display:flex; gap:3px; margin-bottom:6px }
+.ci-tab { flex:1; padding:4px 0; border:1.5px solid #E5E7EB; border-radius:6px; font-size:7px; font-weight:700; color:#6B7280; background:#fff; text-align:center; cursor:default }
+.ci-tab.ci-active { background:#111; color:#fff; border-color:#111 }
+.ci-bubble-preview { width:20px; height:20px; border-radius:50%; flex-shrink:0; transition:background .35s, border-color .35s, box-shadow .35s }
+.ci-bbl-luminous { background:#3B82F6; box-shadow:0 0 0 3px rgba(59,130,246,.18) }
+.ci-bbl-solid { background:radial-gradient(circle at 42% 32%, #93C5FD 0%, #2563EB 58%, #1E40AF 100%); box-shadow:inset 0 -2px 3px rgba(0,0,0,.22) }
+.ci-bbl-ring { background:transparent; border:2px solid #3B82F6; box-shadow:none }
+.ci-bbl-ring-pink { background:transparent; border:2px solid #EC4899; box-shadow:none }
+.ci-swatches { display:flex; flex-wrap:wrap; gap:5px }
+.ci-sw { width:18px; height:18px; border-radius:50% }
+.ci-sw.ci-sw-sel { box-shadow:0 0 0 2px #fff, 0 0 0 3.5px var(--ci-sw,#3B82F6) }
+.ci-logo-em { transition:background .4s }
+.ci-bg-dot { transition:background .4s }
+.ci-bg-cat-name { transition:color .4s }
+.ci-bg-check { transition:border-color .4s }
+
 /* ── SLIDE 5: POP IT DONE animation ── */
 @keyframes pop-chk-bounce {
   0%   { transform: scale(1) }
@@ -886,18 +903,18 @@ footer {
         </div>
 
         <!-- SLIDE 4: Colour It -->
-        <div class="carousel-slide">
+        <div class="carousel-slide ci-slide">
           <span class="slide-badge" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA"><span data-en="COLOUR IT" data-ja="カラー設定">COLOUR IT</span></span>
           <div class="slide-phone">
             <div class="phone-frame">
               <div class="phone-island"></div>
               <div class="phone-screen">
                 <div class="ps-sb"><span class="ps-time">9:41</span><div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="15" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div></div>
-                <div class="ps-nav"><span class="ps-logo" style="color:#EC4899">Poplist<em style="background:#EC4899"></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
-                <div class="ps-content" style="opacity:.4;filter:blur(1px)">
-                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#EC4899"></span><span class="ps-cat-name" style="color:#EC4899">Work</span></div><div class="ps-task"><div class="ps-check" style="border-color:#EC4899"></div><span class="ps-task-txt">Send Q1 report</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review mockups</span></div></div>
+                <div class="ps-nav"><span class="ps-logo">Poplist<em class="ci-logo-em"></em></span><div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div></div>
+                <div class="ps-content ci-bg-content" style="opacity:.35;filter:blur(1.5px)">
+                  <div class="ps-cat"><div class="ps-cat-hdr"><span class="ps-cat-dot ci-bg-dot" style="background:#3B82F6"></span><span class="ps-cat-name ci-bg-cat-name">Work</span></div><div class="ps-task"><div class="ps-check ci-bg-check"></div><span class="ps-task-txt">Send Q1 report</span></div><div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review mockups</span></div></div>
                 </div>
-                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div class="ps-settings-title" data-en="Settings" data-ja="設定">Settings</div><div class="ps-section-label" data-en="Accent colour" data-ja="アクセントカラー">Accent colour</div><div class="ps-swatches"><div class="ps-sw" style="background:#3B82F6"></div><div class="ps-sw" style="background:#1E40AF"></div><div class="ps-sw" style="background:#0D9488"></div><div class="ps-sw" style="background:#16A34A"></div><div class="ps-sw" style="background:#65A30D"></div><div class="ps-sw" style="background:#F97316"></div><div class="ps-sw" style="background:#EF4444"></div><div class="ps-sw sel" style="background:#EC4899;--sw-color:#EC4899"></div><div class="ps-sw" style="background:#7C3AED"></div></div><div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-top:1px solid rgba(0,0,0,.06)"><div style="width:14px;height:14px;border-radius:50%;background:#EC4899;flex-shrink:0"></div><span style="font-size:9px;font-weight:700;color:#111" data-en="Rose applied" data-ja="ローズ適用中">Rose applied</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" style="margin-left:auto"><polyline points="20 6 9 17 4 12"/></svg></div></div></div>
+                <div class="ps-overlay"><div class="ps-overlay-card"><div class="ps-sheet-handle"></div><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><span style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF" data-en="Customize" data-ja="カスタマイズ">カスタマイズ</span><span style="background:#111;color:#fff;font-size:6.5px;font-weight:800;padding:2px 5px;border-radius:50px">PRO</span></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Style" data-ja="バブルスタイル">バブルスタイル</div><div class="ci-tabs"><button class="ci-tab ci-active" data-ci="default" data-en="Default" data-ja="デフォルト">デフォルト</button><button class="ci-tab" data-ci="3d" data-en="3D" data-ja="3D">3D</button><button class="ci-tab" data-ci="ring" data-en="Ring" data-ja="リング">リング</button><button class="ci-tab" data-ci="ink" data-en="Ink" data-ja="インク">インク</button></div><div style="display:flex;align-items:center;gap:9px;background:#F5F6F8;border-radius:9px;padding:7px 9px;margin-bottom:7px"><div class="ci-bubble-preview ci-bbl-luminous"></div><div><div class="ci-preview-name" style="font-size:9px;font-weight:800;color:#111">Default</div><div class="ci-preview-desc" style="font-size:7px;color:#9CA3AF;font-weight:500;line-height:1.3">Solid fill with subtle edge gradient and soft colour glow</div></div></div><div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#9CA3AF;margin-bottom:5px" data-en="Bubble Colour" data-ja="バブルカラー">バブルカラー</div><div class="ci-swatches"><div class="ci-sw ci-sw-sel" style="background:#3B82F6;--ci-sw:#3B82F6"></div><div class="ci-sw" style="background:#1E40AF;--ci-sw:#1E40AF"></div><div class="ci-sw" style="background:#0D9488;--ci-sw:#0D9488"></div><div class="ci-sw" style="background:#16A34A;--ci-sw:#16A34A"></div><div class="ci-sw" style="background:#65A30D;--ci-sw:#65A30D"></div><div class="ci-sw" style="background:#EAB308;--ci-sw:#EAB308"></div><div class="ci-sw" style="background:#F97316;--ci-sw:#F97316"></div><div class="ci-sw" style="background:#EF4444;--ci-sw:#EF4444"></div><div class="ci-sw" style="background:#EC4899;--ci-sw:#EC4899"></div><div class="ci-sw" style="background:#7C3AED;--ci-sw:#7C3AED"></div><div class="ci-sw" style="background:#111;--ci-sw:#111"></div><div class="ci-sw" style="background:#64748B;--ci-sw:#64748B"></div></div></div></div>
               </div>
             </div>
           </div>
@@ -1181,6 +1198,41 @@ footer {
     });
   }
 
+  // Slide 4 (di=3): cycle through bubble style states
+  var colorItTimers = [];
+  function clearColorItTimers() { colorItTimers.forEach(clearTimeout); colorItTimers = []; }
+  var CI_STATES = [
+    { tab:'default', bbl:'ci-bbl-luminous',  name:'Default', desc:'Solid fill with subtle edge gradient and soft colour glow', swatch:0, pink:false },
+    { tab:'3d',      bbl:'ci-bbl-solid',     name:'3D',      desc:'Sphere look \u2014 bright specular cap, deep shading',          swatch:0, pink:false },
+    { tab:'ring',    bbl:'ci-bbl-ring',      name:'Ring',    desc:'Colour outline only, transparent inside',                  swatch:0, pink:false },
+    { tab:'ring',    bbl:'ci-bbl-ring-pink', name:'Ring',    desc:'Colour outline only, transparent inside',                  swatch:8, pink:true  },
+  ];
+  function applyColorItState(slide, si) {
+    var s = CI_STATES[si];
+    slide.querySelectorAll('.ci-tab').forEach(function(t) { t.classList.toggle('ci-active', t.dataset.ci === s.tab); });
+    var bub = slide.querySelector('.ci-bubble-preview');
+    if (bub) bub.className = 'ci-bubble-preview ' + s.bbl;
+    var nm = slide.querySelector('.ci-preview-name'); if (nm) nm.textContent = s.name;
+    var dc = slide.querySelector('.ci-preview-desc'); if (dc) dc.textContent = s.desc;
+    slide.querySelectorAll('.ci-sw').forEach(function(sw, i) { sw.classList.toggle('ci-sw-sel', i === s.swatch); });
+    var em = slide.querySelector('.ci-logo-em'); if (em) em.style.background = s.pink ? '#EC4899' : '';
+    var dot = slide.querySelector('.ci-bg-dot'); if (dot) dot.style.background = s.pink ? '#EC4899' : '#3B82F6';
+    var catname = slide.querySelector('.ci-bg-cat-name'); if (catname) catname.style.color = s.pink ? '#EC4899' : '';
+    var chk = slide.querySelector('.ci-bg-check'); if (chk) chk.style.borderColor = s.pink ? '#EC4899' : '';
+  }
+  function replayColorItAnim() {
+    clearColorItTimers();
+    var ciSlides = track.querySelectorAll('.ci-slide');
+    ciSlides.forEach(function(slide) { applyColorItState(slide, 0); });
+    var step = 0;
+    function nextStep() {
+      step = (step + 1) % CI_STATES.length;
+      ciSlides.forEach(function(slide) { applyColorItState(slide, step); });
+      colorItTimers.push(setTimeout(nextStep, step === CI_STATES.length - 1 ? 2500 : 2000));
+    }
+    colorItTimers.push(setTimeout(nextStep, 2000));
+  }
+
   // Slide 5 (di=4): pop Work tasks then collapse category
   function clearPopTimers() { popTimers.forEach(clearTimeout); popTimers = []; }
 
@@ -1240,6 +1292,7 @@ footer {
     dots.forEach(function(d, i){ d.classList.toggle('active', i === di); });
     banners.forEach(function(b, i){ b.classList.toggle('active', i === di); });
     if (di === 2) { replaySlide3Anims(); }
+    if (di === 3) { replayColorItAnim(); } else { clearColorItTimers(); }
     if (di === 4) { replayPopAnim(); } else { clearPopTimers(); }
   }
 
