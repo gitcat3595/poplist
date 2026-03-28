@@ -6,6 +6,7 @@
 <title>Poplist — How to Use</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -153,6 +154,7 @@ nav {
   display: flex; align-items: center; justify-content: center;
   font-size: 17px; flex-shrink: 0;
 }
+.feat-icon i { color: var(--t2); font-size: 16px; }
 .feat-body { flex: 1 }
 .feat-title {
   font-size: 13.5px; font-weight: 700; color: var(--t1); margin-bottom: 3px;
@@ -335,7 +337,7 @@ nav {
   <div class="features-wrap">
 
     <div class="feature-row">
-      <div class="feat-icon">🎤</div>
+      <div class="feat-icon"><i class="fa-solid fa-microphone"></i></div>
       <div class="feat-body">
         <div class="feat-title" data-en="Voice input" data-ja="音声で入力">Voice input</div>
         <div class="feat-desc" data-en="Speak naturally in English or Japanese. No special commands — just talk like you normally would." data-ja="日本語でも英語でも自然に話しかけてください。いつも通り話すだけです。">Speak naturally in English or Japanese. No special commands — just talk like you normally would.</div>
@@ -343,7 +345,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">🤖</div>
+      <div class="feat-icon"><i class="fa-solid fa-robot"></i></div>
       <div class="feat-body">
         <div class="feat-title" data-en="Instant categorisation" data-ja="自動で分類">Instant categorisation</div>
         <div class="feat-desc" data-en="Every task is automatically placed into Work, Home, Personal, or Other. Timing is assigned too — Today, This Week, or Later. You can refine later." data-ja="話したことが仕事・家・自分・その他に自動で分類されます。期限も今日・今週・そのうちに割り当て。あとは必要に応じて直すだけ。">Every task is automatically placed into Work, Home, Personal, or Other. Timing is assigned too — Today, This Week, or Later. You can refine later.</div>
@@ -351,7 +353,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">📋</div>
+      <div class="feat-icon"><i class="fa-solid fa-list-check"></i></div>
       <div class="feat-body">
         <div class="feat-title" data-en="Bulk add (Brain Dump)" data-ja="まとめて追加（ブレインダンプ）">Bulk add (Brain Dump)</div>
         <div class="feat-desc" data-en="Paste a wall of text that you typed or text-to-speech using your device — Poplist extracts and sorts every task automatically." data-ja="大量のテキストの貼付けもできます。スマホの音声入力でテキスト化したメモなどを貼付けてください。Poplistがきれいなタスクリストに整理します。">Paste a wall of text that you typed or text-to-speech using your device — Poplist extracts and sorts every task automatically.</div>
@@ -359,7 +361,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">🔁</div>
+      <div class="feat-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
       <div class="feat-body">
         <div class="feat-title" data-en="Task rollover" data-ja="タスク繰越">Task rollover</div>
         <div class="feat-desc" data-en="Unfinished tasks automatically carry forward. Never lose track of what's left — it's handled for you." data-ja="未完了タスクは自動的に繰り越され。終わっていないタスクを見失いません。">Unfinished tasks automatically carry forward. Never lose track of what's left — it's handled for you.</div>
@@ -367,7 +369,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">☁️</div>
+      <div class="feat-icon"><i class="fa-solid fa-cloud"></i></div>
       <div class="feat-body">
         <div class="feat-title" data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</div>
         <div class="feat-desc" data-en="Sign in with Google, Apple (coming) or Email and your tasks sync across all your devices instantly. Pick up where you left off." data-ja="Google、Apple（準備中）、メールアドレスサインインすると、タスクがすべてのデバイスに即時同期。タスクリストをいつでもどこでも確認できます。">Sign in with Google, Apple (coming) or Email and your tasks sync across all your devices instantly. Pick up where you left off.</div>
@@ -383,7 +385,7 @@ nav {
   <div class="features-wrap">
 
     <div class="feature-row">
-      <div class="feat-icon">🎨</div>
+      <div class="feat-icon"><i class="fa-solid fa-palette"></i></div>
       <div class="feat-body">
         <div class="feat-title">
           <span data-en="Colour themes" data-ja="カラーテーマ">Colour themes</span>
@@ -394,7 +396,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">🔵</div>
+      <div class="feat-icon"><i class="fa-solid fa-swatchbook"></i></div>
       <div class="feat-body">
         <div class="feat-title">
           <span data-en="Category colours" data-ja="カテゴリカラー">Category colours</span>
@@ -405,7 +407,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">📤</div>
+      <div class="feat-icon"><i class="fa-solid fa-file-export"></i></div>
       <div class="feat-body">
         <div class="feat-title">
           <span data-en="Export" data-ja="エクスポート">Export</span>
@@ -416,7 +418,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">🔑</div>
+      <div class="feat-icon"><i class="fa-solid fa-key"></i></div>
       <div class="feat-body">
         <div class="feat-title">
           <span data-en="Custom keywords" data-ja="カスタムキーワード">Custom keywords</span>
@@ -427,7 +429,7 @@ nav {
     </div>
 
     <div class="feature-row">
-      <div class="feat-icon">📊</div>
+      <div class="feat-icon"><i class="fa-solid fa-chart-bar"></i></div>
       <div class="feat-body">
         <div class="feat-title">
           <span data-en="Weekly stats (coming)" data-ja="週間統計（準備中）">Weekly stats (coming)</span>
