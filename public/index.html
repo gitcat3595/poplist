@@ -264,7 +264,8 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .category-header {
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 16px; border-bottom:1px solid var(--border);
-  background:var(--raised);
+  background:var(--raised); position:relative;
+  -webkit-tap-highlight-color:transparent;
 }
 .category-card.filtered-empty { display:none }
 
@@ -283,13 +284,11 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .category-card.cat-collapsed .category-header {
   border-bottom:none;
 }
-.category-header {
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-/* Right-side group: count badge + arrow */
+/* Right-side group: count badge + arrow — click target for collapse */
 .cat-header-right {
   display:flex; align-items:center; gap:6px; flex-shrink:0;
+  cursor:pointer; padding:4px 0 4px 12px;
+  -webkit-tap-highlight-color:transparent;
 }
 .cat-collapse-arrow {
   font-size:10px; color:var(--t3);
@@ -302,6 +301,22 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .cat-name {
   font-size:11px; font-weight:800; letter-spacing:.8px;
   text-transform:uppercase; color:var(--t2);
+}
+/* Inline rename input (PRO) */
+.cat-name-input {
+  font-size:11px; font-weight:800; letter-spacing:.8px;
+  text-transform:uppercase; color:var(--t2);
+  background:transparent; border:none; border-bottom:1.5px solid var(--blue);
+  outline:none; padding:0; font-family:inherit; min-width:60px; width:auto;
+}
+/* Mini PRO nudge tooltip */
+.cat-pro-nudge {
+  position:absolute; top:calc(100% - 4px); left:16px;
+  background:var(--black,#1a1a2e); color:#fff; font-size:11px; font-weight:700;
+  padding:5px 11px; border-radius:8px; white-space:nowrap;
+  pointer-events:none; z-index:200; opacity:0;
+  transition:opacity .18s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.28);
 }
 .cat-count {
   font-size:11px; font-weight:700; color:var(--blue);
@@ -5117,9 +5132,64 @@ document.getElementById('closeExport')?.addEventListener('click', () => closeM('
 document.getElementById('exportModal')?.addEventListener('click', e => { if(e.target.id==='exportModal') closeM('exportModal') });
 
 /* ══════════════════════════════════════════
-   CATEGORY COLLAPSE — double-tap header to fold/unfold
-   Works on both touch (iOS) and desktop (dblclick)
+   CATEGORY COLLAPSE — single-click on count/arrow to fold/unfold
+   Double-click cat-name: inline rename (PRO) or PRO nudge popup
 ══════════════════════════════════════════ */
+
+/* Inline category rename (PRO only) */
+function startCatNameEdit(catNameEl) {
+  const card = catNameEl.closest('.category-card');
+  if (!card) return;
+  const catId = card.id.replace('cat-', '');
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+
+  const currentName = catNameEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'cat-name-input';
+  input.value = currentName;
+  // Match width to content
+  input.style.width = Math.max(currentName.length * 9, 60) + 'px';
+
+  catNameEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function commit() {
+    const newName = input.value.trim();
+    if (newName) {
+      if (state.lang === 'ja') cat.ja = newName; else cat.en = newName;
+      catNameEl.dataset[state.lang === 'ja' ? 'ja' : 'en'] = newName;
+      catNameEl.textContent = newName;
+    }
+    input.replaceWith(catNameEl);
+    refreshCatChips();
+  }
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = currentName; input.blur(); }
+  });
+}
+
+/* Mini "Try PRO?" nudge near the cat-name */
+function showCatProNudge(el) {
+  const header = el.closest('.category-header');
+  if (!header) return;
+  header.querySelector('.cat-pro-nudge')?.remove();
+  const nudge = document.createElement('div');
+  nudge.className = 'cat-pro-nudge';
+  nudge.textContent = state.lang === 'ja' ? 'PROなら変更可能' : 'Try PRO?';
+  header.appendChild(nudge);
+  requestAnimationFrame(() => nudge.style.opacity = '1');
+  setTimeout(() => {
+    nudge.style.opacity = '0';
+    setTimeout(() => nudge.remove(), 200);
+  }, 2000);
+}
+
 function initCatCollapseHeader(header) {
   // Skip if already initialised
   if (header.dataset.collapseInit) return;
@@ -5140,21 +5210,41 @@ function initCatCollapseHeader(header) {
     if (card) card.classList.toggle('cat-collapsed');
   }
 
-  // Desktop: native dblclick
-  header.addEventListener('dblclick', e => { e.preventDefault(); toggleCollapse(); });
-
-  // Touch: detect two taps ≤ 320ms apart on the same header
-  let _lastTap = 0;
-  header.addEventListener('touchend', e => {
-    const now = Date.now();
-    if (now - _lastTap < 320) {
-      e.preventDefault();
-      toggleCollapse();
-      _lastTap = 0;
-    } else {
-      _lastTap = now;
-    }
+  // ── Single click/tap on right group (count + arrow) → collapse/expand ──
+  rightGroup.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleCollapse();
+  });
+  rightGroup.addEventListener('touchend', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCollapse();
   }, { passive: false });
+
+  // ── Double-click on cat-name → inline rename (PRO) or nudge (non-PRO) ──
+  const catNameEl = header.querySelector('.cat-name');
+  if (catNameEl) {
+    catNameEl.addEventListener('dblclick', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (state.isProUser) startCatNameEdit(catNameEl);
+      else showCatProNudge(catNameEl);
+    });
+    // Touch: double-tap on cat-name
+    let _nameTapTime = 0;
+    catNameEl.addEventListener('touchend', e => {
+      const now = Date.now();
+      if (now - _nameTapTime < 320) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (state.isProUser) startCatNameEdit(catNameEl);
+        else showCatProNudge(catNameEl);
+        _nameTapTime = 0;
+      } else {
+        _nameTapTime = now;
+      }
+    }, { passive: false });
+  }
 }
 
 // Init on all existing static category headers
