@@ -947,19 +947,34 @@ footer {
     dots.forEach(function(d, i){ d.classList.toggle('active', i === cur); });
   }
   function next(){ goTo(cur + 1); }
-  function startAuto(){ clearInterval(timer); timer = setInterval(next, 4200); }
+  var paused = false;
+  function startAuto(){ clearInterval(timer); if (!paused) timer = setInterval(next, 1800); }
   dots.forEach(function(d, i){
-    d.addEventListener('click', function(){ goTo(i); startAuto(); });
+    d.addEventListener('click', function(){ paused = false; goTo(i); startAuto(); });
   });
-  // Touch/swipe support
-  var wx = 0;
+  // Touch/swipe support + tap-to-pause
+  var wx = 0, wy = 0;
   var wrap = document.querySelector('.carousel-wrap');
   if (wrap) {
-    wrap.addEventListener('touchstart', function(e){ wx = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchstart', function(e){ wx = e.touches[0].clientX; wy = e.touches[0].clientY; }, { passive: true });
     wrap.addEventListener('touchend', function(e){
       var dx = e.changedTouches[0].clientX - wx;
-      if (Math.abs(dx) > 40){ goTo(dx < 0 ? cur + 1 : cur - 1); startAuto(); }
+      var dy = e.changedTouches[0].clientY - wy;
+      if (Math.abs(dx) > 40) {
+        paused = false;
+        goTo(dx < 0 ? cur + 1 : cur - 1);
+        startAuto();
+      } else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+        // tap — toggle pause
+        paused = !paused;
+        if (paused) { clearInterval(timer); } else { startAuto(); }
+      }
     }, { passive: true });
+    // mouse click to toggle pause on desktop
+    wrap.addEventListener('click', function(){
+      paused = !paused;
+      if (paused) { clearInterval(timer); } else { startAuto(); }
+    });
   }
   startAuto();
 })();
