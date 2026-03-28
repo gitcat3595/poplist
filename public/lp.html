@@ -375,6 +375,129 @@ nav {
   padding: 2px 8px; border-radius: var(--rp);
 }
 
+/* ── FEATURES CAROUSEL ── */
+.features-carousel {
+  background: #fff;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 0 32px;
+  overflow: hidden;
+  margin: 0 0 0;
+}
+.carousel-eyebrow {
+  text-align: center;
+  font-size: 10px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 6px;
+}
+.carousel-heading {
+  text-align: center;
+  font-size: 24px; font-weight: 900; letter-spacing: -.6px; line-height: 1.2;
+  color: var(--black); margin-bottom: 28px; padding: 0 24px;
+}
+.carousel-wrap { overflow: hidden; width: 100% }
+.carousel-track {
+  display: flex;
+  transition: transform .48s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+.carousel-slide {
+  min-width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 24px 4px;
+}
+/* Phone mockup */
+.slide-phone { position: relative; flex-shrink: 0; margin-bottom: 24px }
+.phone-frame {
+  width: 204px;
+  background: #111116;
+  border-radius: 36px;
+  padding: 10px;
+  box-shadow: 0 20px 56px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.1);
+  position: relative;
+}
+.phone-island {
+  position: absolute;
+  top: 17px; left: 50%; transform: translateX(-50%);
+  width: 68px; height: 9px;
+  background: #111116; border-radius: 8px; z-index: 5;
+}
+.phone-screen {
+  background: #ECEEF2;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  height: 408px;
+  position: relative;
+}
+/* Status bar */
+.ps-sb { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 2px; flex-shrink: 0 }
+.ps-time { font-size: 10px; font-weight: 700; color: #111; letter-spacing: -.2px }
+.ps-batt { display: flex; align-items: center }
+/* App nav */
+.ps-nav { display: flex; align-items: center; justify-content: space-between; padding: 5px 12px 6px; flex-shrink: 0 }
+.ps-logo { font-size: 14px; font-weight: 900; letter-spacing: -.4px; color: #111 }
+.ps-logo em { display: inline-block; width: 5px; height: 5px; background: var(--blue); border-radius: 50%; margin-left: 1px; vertical-align: super; font-style: normal }
+.ps-nav-btn { width: 26px; height: 26px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.08) }
+/* Content area */
+.ps-content { flex: 1; padding: 2px 10px 0; overflow: hidden; display: flex; flex-direction: column; gap: 6px }
+/* Category cards */
+.ps-cat { background: #fff; border-radius: 11px; border: 1px solid rgba(0,0,0,.06); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04) }
+.ps-cat-hdr { display: flex; align-items: center; gap: 5px; padding: 6px 9px 4px; border-bottom: 1px solid rgba(0,0,0,.05) }
+.ps-cat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0 }
+.ps-cat-name { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #6B7280 }
+.ps-task { display: flex; align-items: center; gap: 5px; padding: 4px 9px; border-bottom: 1px solid rgba(0,0,0,.04) }
+.ps-task:last-child { border-bottom: none }
+.ps-check { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid #D4D7DD }
+.ps-check.done { background: #22C55E; border-color: #22C55E }
+.ps-task-txt { font-size: 8.5px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.ps-task.done .ps-task-txt { text-decoration: line-through; color: #9CA3AF }
+/* Bottom bar */
+.ps-btmbar { display: flex; align-items: center; gap: 8px; padding: 7px 12px 14px; border-top: 1px solid rgba(0,0,0,.07); background: #ECEEF2; flex-shrink: 0 }
+.ps-add-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; background: #111; color: #fff; border-radius: 50px; padding: 7px 0; font-size: 9px; font-weight: 800 }
+.ps-mic { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1.5px solid #D4D7DD; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.06); color: #6B7280; flex-shrink: 0 }
+.ps-mic.on { background: var(--blue); border-color: var(--blue); color: #fff; animation: psmic 1.4s ease infinite }
+@keyframes psmic { 0%,100%{box-shadow:0 0 0 3px rgba(59,130,246,.2)} 50%{box-shadow:0 0 0 7px rgba(59,130,246,.12)} }
+/* Bottom sheet overlay */
+.ps-overlay { position: absolute; inset: 0; z-index: 10; background: rgba(0,0,0,.38); border-radius: 28px; display: flex; align-items: flex-end }
+.ps-overlay-card { background: #fff; border-radius: 18px 18px 28px 28px; padding: 0 14px 20px; width: 100% }
+.ps-sheet-handle { width: 32px; height: 3px; background: #D4D7DD; border-radius: 2px; margin: 10px auto 12px }
+/* Mic card elements */
+.ps-mic-title { font-size: 11px; font-weight: 900; color: #111; margin-bottom: 9px; text-align: center }
+.ps-waveform { display: flex; align-items: center; justify-content: center; gap: 2.5px; height: 22px; margin-bottom: 8px }
+.ps-wbar { width: 3px; background: var(--blue); border-radius: 2px; animation: pswave 1s ease-in-out infinite }
+.ps-wbar:nth-child(1){animation-delay:0s}.ps-wbar:nth-child(2){animation-delay:.1s}.ps-wbar:nth-child(3){animation-delay:.2s}.ps-wbar:nth-child(4){animation-delay:.3s}.ps-wbar:nth-child(5){animation-delay:.4s}.ps-wbar:nth-child(6){animation-delay:.3s}.ps-wbar:nth-child(7){animation-delay:.2s}
+@keyframes pswave { 0%,100%{height:5px} 50%{height:18px} }
+.ps-mic-hint { font-size: 7.5px; color: #6B7280; margin-bottom: 9px; text-align: center; line-height: 1.4 }
+.ps-stop { display: block; width: 100%; background: var(--blue); color: #fff; border-radius: 50px; padding: 7px; font-size: 9px; font-weight: 800; text-align: center }
+/* Paste card elements */
+.ps-paste-title { font-size: 12px; font-weight: 900; color: #111; margin-bottom: 3px }
+.ps-paste-sub { font-size: 7.5px; color: #6B7280; font-weight: 500; margin-bottom: 9px; line-height: 1.4 }
+.ps-textarea { width: 100%; background: #F5F6F8; border-radius: 8px; padding: 7px 9px; font-size: 7.5px; color: #111; font-weight: 500; border: 1px solid #D4D7DD; line-height: 1.5; margin-bottom: 7px; font-family: var(--font); display: block }
+.ps-process-btn { display: block; width: 100%; background: var(--blue); color: #fff; border-radius: 50px; padding: 7px; font-size: 9px; font-weight: 800; text-align: center }
+/* Themes card elements */
+.ps-settings-title { font-size: 13px; font-weight: 900; color: #111; margin-bottom: 10px }
+.ps-section-label { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: #9CA3AF; margin-bottom: 7px }
+.ps-swatches { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px }
+.ps-sw { width: 22px; height: 22px; border-radius: 50% }
+.ps-sw.sel { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--sw-color, #EC4899) }
+/* Sync/account rows */
+.ps-settings-card { background: #F5F6F8; border-radius: 11px; overflow: hidden; margin-bottom: 8px }
+.ps-settings-section-label { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: #9CA3AF; padding: 7px 9px 4px }
+.ps-settings-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 9px; border-top: 1px solid rgba(0,0,0,.06) }
+.ps-settings-row-label { font-size: 8.5px; font-weight: 600; color: #111 }
+.ps-settings-row-val { font-size: 8px; color: #6B7280; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.ps-sync-badge { display: flex; align-items: center; gap: 3px; font-size: 8px; font-weight: 700; color: #22C55E }
+.ps-green-dot { width: 5px; height: 5px; border-radius: 50%; background: #22C55E }
+/* Slide text */
+.slide-txt { text-align: center; max-width: 320px }
+.slide-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; padding: 4px 12px; border-radius: 50px; margin-bottom: 9px }
+.slide-title { font-size: 21px; font-weight: 900; letter-spacing: -.5px; line-height: 1.25; color: var(--black); margin-bottom: 7px }
+.slide-desc { font-size: 13px; line-height: 1.65; color: var(--t2); font-weight: 500 }
+/* Carousel dots */
+.carousel-dots { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px }
+.cdot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .25s ease; padding: 0; flex-shrink: 0; cursor: pointer }
+.cdot.active { background: var(--blue); width: 24px; border-radius: 4px }
+
 /* ── CTA SECTION ── */
 .cta-section {
   margin: 8px 16px 48px;
@@ -500,165 +623,289 @@ footer {
     <p class="hero-note" data-en="No account needed to start" data-ja="アカウント不要で始められます">No account needed to start</p>
   </section>
 
-  <!-- ── FEATURES ── -->
-  <div class="features">
+  <!-- ── KEY FEATURES CAROUSEL ── -->
+  <section class="features-carousel">
+    <p class="carousel-eyebrow" data-en="Key Features" data-ja="主な機能">Key Features</p>
+    <h2 class="carousel-heading" data-en="See it in action" data-ja="実際に見てみよう">See it in action</h2>
 
-    <!-- Card 1: Voice capture — mic + listening rings + task bubbles -->
-    <div class="feat-card">
-      <div class="feat-visual visual-voice">
-        <div class="mic-scene">
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carouselTrack">
 
-          <!-- Expanding listen rings -->
-          <div class="listen-ring ring-1"></div>
-          <div class="listen-ring ring-2"></div>
-          <div class="listen-ring ring-3"></div>
-          <div class="listen-ring ring-4"></div>
-          <div class="listen-ring ring-5"></div>
-
-          <!-- Centred mic button — matches the app's white circle voice-btn -->
-          <div class="mic-center-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="2" width="6" height="11" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-              <line x1="9" y1="22" x2="15" y2="22"/>
-            </svg>
-          </div>
-
-          <!-- Task bubbles -->
-          <div class="task-bubble tb-md vb-1" data-en="Send report" data-ja="レポートを送る">Send report</div>
-          <div class="task-bubble tb-sm vb-2" data-en="Buy oat milk" data-ja="オーツミルクを買う">Buy oat milk</div>
-          <div class="task-bubble tb-lg vb-3" data-en="Call dentist" data-ja="歯医者に電話">Call dentist</div>
-          <div class="task-bubble tb-sm vb-4" data-en="Book hotel" data-ja="ホテルを予約">Book hotel</div>
-          <div class="task-bubble tb-md vb-5" data-en="Call Sarah" data-ja="サラに電話">Call Sarah</div>
-
-        </div>
-      </div>
-      <div class="feat-text" style="padding-top:24px">
-        <span class="feat-badge" style="background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px">
-            <rect x="9" y="2" width="6" height="11" rx="3"/>
-            <path d="M5 10a7 7 0 0 0 14 0"/>
-            <line x1="12" y1="19" x2="12" y2="22"/>
-          </svg>
-          <span data-en="Voice capture" data-ja="音声キャプチャ">Voice capture</span>
-        </span>
-        <h2 class="feat-title" data-en="Capture tasks the moment they appear" data-ja="タスクが浮かんだ瞬間にキャプチャ">Capture tasks the moment they appear</h2>
-        <p class="feat-desc" data-en="Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears." data-ja="頭に浮かんだことを話すだけ。アイデアが生まれた瞬間にPoplistを開いて話しかければ、考えが消える前にタスクが保存されます。">Just talk out what's on your mind. The moment an idea hits, open Poplist and speak — your task is saved before the thought disappears.</p>
-      </div>
-    </div>
-
-    <!-- Card 2: Category task list — tasks appear one by one per category -->
-    <div class="feat-card">
-      <div class="feat-visual visual-list">
-        <div class="cat-list-scene">
-          <div class="cat-list-mock">
-
-            <!-- Work -->
-            <div class="cat-section">
-              <div class="cat-header">
-                <span class="cat-name" data-en="Work" data-ja="仕事">Work</span>
-              </div>
-              <div class="cat-task" style="animation-delay:.1s">
-                <div class="cat-check"></div>
-                <span class="cat-task-text" data-en="Send Q1 report to team" data-ja="Q1レポートをチームに送る">Send Q1 report to team</span>
-              </div>
-              <div class="cat-task" style="animation-delay:.45s">
-                <div class="cat-check"></div>
-                <span class="cat-task-text" data-en="Review design mockups" data-ja="デザインモックアップを確認">Review design mockups</span>
-              </div>
-            </div>
-
-            <!-- Errands -->
-            <div class="cat-section">
-              <div class="cat-header">
-                <span class="cat-name" data-en="Errands" data-ja="用事">Errands</span>
-              </div>
-              <div class="cat-task" style="animation-delay:.75s">
-                <div class="cat-check"></div>
-                <span class="cat-task-text" data-en="Buy groceries + oat milk" data-ja="食料品＋オーツミルクを買う">Buy groceries + oat milk</span>
-              </div>
-              <div class="cat-task" style="animation-delay:1.05s">
-                <div class="cat-check"></div>
-                <span class="cat-task-text" data-en="Pick up dry cleaning" data-ja="クリーニングを受け取る">Pick up dry cleaning</span>
-              </div>
-            </div>
-
-            <!-- Health -->
-            <div class="cat-section">
-              <div class="cat-header">
-                <span class="cat-name" data-en="Health" data-ja="健康">Health</span>
-              </div>
-              <div class="cat-task" style="animation-delay:1.35s">
-                <div class="cat-check"></div>
-                <span class="cat-task-text" data-en="Book dentist appointment" data-ja="歯医者の予約を入れる">Book dentist appointment</span>
-              </div>
-              <div class="cat-task done" style="animation-delay:1.65s">
-                <div class="cat-check done">
-                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="2 6 5 9 10 3"/>
-                  </svg>
+        <!-- SLIDE 1: Voice Capture -->
+        <div class="carousel-slide">
+          <div class="slide-phone">
+            <div class="phone-frame">
+              <div class="phone-island"></div>
+              <div class="phone-screen">
+                <div class="ps-sb">
+                  <span class="ps-time">9:41</span>
+                  <div class="ps-batt">
+                    <svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="12" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg>
+                  </div>
                 </div>
-                <span class="cat-task-text" data-en="Morning run" data-ja="朝のランニング">Morning run</span>
+                <div class="ps-nav">
+                  <span class="ps-logo">Poplist<em></em></span>
+                  <div class="ps-nav-btn">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  </div>
+                </div>
+                <div class="ps-content" style="opacity:.35;filter:blur(1.5px)">
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Send client update</span></div>
+                  </div>
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#F97316"></span><span class="ps-cat-name">Errands</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Buy groceries</span></div>
+                  </div>
+                </div>
+                <div class="ps-overlay">
+                  <div class="ps-overlay-card">
+                    <div class="ps-sheet-handle"></div>
+                    <div class="ps-mic-title">Listening…</div>
+                    <div class="ps-waveform">
+                      <div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div>
+                      <div class="ps-wbar"></div><div class="ps-wbar"></div><div class="ps-wbar"></div>
+                      <div class="ps-wbar"></div>
+                    </div>
+                    <div class="ps-mic-hint">"Call dentist, buy oat milk, send the report…"</div>
+                    <div class="ps-stop">Stop listening</div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="list-ai-note">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-              </svg>
-              <span data-en="Organised by AI" data-ja="AIが整理">Organised by AI</span>
-            </div>
-
+          </div>
+          <div class="slide-txt">
+            <span class="slide-badge" style="background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-mid)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+              <span data-en="Voice Capture" data-ja="音声キャプチャ">Voice Capture</span>
+            </span>
+            <h3 class="slide-title" data-en="Speak, and<br>it's captured" data-ja="話すだけで<br>キャプチャ完了">Speak, and<br>it's captured</h3>
+            <p class="slide-desc" data-en="Tap the mic and say your tasks naturally. No typing, no special commands — just talk." data-ja="マイクをタップして自然に話すだけ。タイピング不要 — ただ話すだけ。">Tap the mic and say your tasks naturally. No typing, no special commands — just talk.</p>
           </div>
         </div>
-      </div>
-      <div class="feat-text">
-        <h2 class="feat-title" data-en="Everything you say is automatically organised" data-ja="話すだけでやることリストのできあがり">Everything you say is automatically organised</h2>
-        <p class="feat-desc" data-en="Your spoken tasks are categorised instantly with a due date. You get a clean, task list without lifting a finger. All set for action." data-ja="カテゴリーに自動的に分類して期限を入れたリストができあがります。指一本動かさずに、すっきりしたタスクリストが完成。あとはやるだけ。">Your spoken tasks are categorised instantly with a due date. You get a clean, task list without lifting a finger. All set for action.</p>
-      </div>
-    </div>
 
-    <!-- Card 3: Fees -->
-    <div class="feat-card">
-      <div class="feat-visual visual-fees">
-        <div class="fees-scene">
-
-          <!-- Free tier -->
-          <div class="tier-card">
-            <div class="tier-label" data-en="Free" data-ja="無料">Free</div>
-            <div class="tier-price">$0</div>
-            <div class="tier-feats">
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="10 tasks" data-ja="10タスク">10 tasks</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Voice capture" data-ja="音声キャプチャ">Voice capture</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="AI sorting" data-ja="AI分類">AI sorting</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Task rollover" data-ja="タスク繰越">Task rollover</span></div>
+        <!-- SLIDE 2: AI Sorting -->
+        <div class="carousel-slide">
+          <div class="slide-phone">
+            <div class="phone-frame">
+              <div class="phone-island"></div>
+              <div class="phone-screen">
+                <div class="ps-sb">
+                  <span class="ps-time">9:41</span>
+                  <div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="12" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div>
+                </div>
+                <div class="ps-nav">
+                  <span class="ps-logo">Poplist<em></em></span>
+                  <div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                </div>
+                <div class="ps-content">
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Send Q1 report to team</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div>
+                  </div>
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#F97316"></span><span class="ps-cat-name">Errands</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Buy groceries + oat milk</span></div>
+                    <div class="ps-task done"><div class="ps-check done"></div><span class="ps-task-txt">Pick up dry cleaning</span></div>
+                  </div>
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#22C55E"></span><span class="ps-cat-name">Health</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Book dentist appointment</span></div>
+                    <div class="ps-task done"><div class="ps-check done"></div><span class="ps-task-txt">Morning run</span></div>
+                  </div>
+                </div>
+                <div class="ps-btmbar">
+                  <div class="ps-add-btn">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Task
+                  </div>
+                  <div class="ps-mic">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- PRO tier -->
-          <div class="tier-card pro">
-            <div class="tier-pro-badge">PRO</div>
-            <div class="tier-label">PRO</div>
-            <div class="tier-price">$3.20<span data-en="/mo" data-ja="/月">/mo</span></div>
-            <div class="tier-feats">
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Unlimited tasks" data-ja="無制限タスク">Unlimited tasks</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="All 13 themes" data-ja="全13テーマ">All 13 themes</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Cloud sync" data-ja="クラウド同期">Cloud sync</span></div>
-              <div class="tier-feat"><span class="tier-feat-dot"></span><span data-en="Custom categories" data-ja="カスタムカテゴリ">Custom categories</span></div>
-            </div>
+          <div class="slide-txt">
+            <span class="slide-badge" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+              <span data-en="AI Sorting" data-ja="AI整理">AI Sorting</span>
+            </span>
+            <h3 class="slide-title" data-en="Everything sorted<br>automatically" data-ja="すべて自動で<br>整理される">Everything sorted<br>automatically</h3>
+            <p class="slide-desc" data-en="Your spoken tasks are categorised instantly — Work, Errands, Health. No manual filing, ever." data-ja="話したタスクは瞬時にカテゴリ分け — 仕事、用事、健康。手動整理は不要。">Your spoken tasks are categorised instantly — Work, Errands, Health. No manual filing, ever.</p>
           </div>
-
         </div>
-      </div>
-      <div class="feat-text">
-        <h2 class="feat-title"><span data-en="Simple pricing,<br>zero surprises" data-ja="シンプルな料金、<br>驚きなし">Simple pricing,<br>zero surprises</span></h2>
-        <p class="feat-desc" data-en="Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo." data-ja="無料でスタート。PRO版にアップグレードして、タスク無制限、全テーマ、クラウド同期などをわずか$3.20/月から。">Free to start. Upgrade to PRO for unlimited tasks, all themes, cloud sync, and more — from just $3.20/mo.</p>
-        <a href="/pricing.html" class="feat-link" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
-      </div>
+
+        <!-- SLIDE 3: Brain Dump -->
+        <div class="carousel-slide">
+          <div class="slide-phone">
+            <div class="phone-frame">
+              <div class="phone-island"></div>
+              <div class="phone-screen">
+                <div class="ps-sb">
+                  <span class="ps-time">9:41</span>
+                  <div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="8" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div>
+                </div>
+                <div class="ps-nav">
+                  <span class="ps-logo">Poplist<em></em></span>
+                  <div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                </div>
+                <div class="ps-content" style="opacity:.3;filter:blur(1.5px)">
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review design mockups</span></div>
+                  </div>
+                </div>
+                <div class="ps-overlay">
+                  <div class="ps-overlay-card">
+                    <div class="ps-sheet-handle"></div>
+                    <div class="ps-paste-title" data-en="Paste your list" data-ja="リストを貼り付け">Paste your list</div>
+                    <div class="ps-paste-sub" data-en="Brain dump, transcript, bullet list — we'll sort everything." data-ja="メモ、テキスト、リストをそのまま貼るだけ — すべて整理します。">Brain dump, transcript, bullet list — we'll sort everything.</div>
+                    <div class="ps-textarea">call the dentist, buy groceries this week, send report to client by Monday, gym on Saturday, book hotel for the trip</div>
+                    <div class="ps-process-btn" data-en="Add Tasks" data-ja="タスクを追加する">Add Tasks</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-txt">
+            <span class="slide-badge" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              <span data-en="Brain Dump" data-ja="まとめて追加">Brain Dump</span>
+            </span>
+            <h3 class="slide-title" data-en="Paste anything,<br>get a list" data-ja="何でも貼り付けて<br>リストに変換">Paste anything,<br>get a list</h3>
+            <p class="slide-desc" data-en="Dump your notes, a transcript, or a stream of thoughts. Poplist extracts and sorts every task automatically." data-ja="メモ、テキスト、思いつきをまとめて貼るだけ。Poplistがすべてのタスクを抽出して自動整理します。">Dump your notes, a transcript, or a stream of thoughts. Poplist extracts and sorts every task automatically.</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 4: Themes (PRO) -->
+        <div class="carousel-slide">
+          <div class="slide-phone">
+            <div class="phone-frame">
+              <div class="phone-island"></div>
+              <div class="phone-screen">
+                <div class="ps-sb">
+                  <span class="ps-time">9:41</span>
+                  <div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="15" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div>
+                </div>
+                <div class="ps-nav">
+                  <span class="ps-logo" style="color:#EC4899">Poplist<em style="background:#EC4899"></em></span>
+                  <div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                </div>
+                <div class="ps-content" style="opacity:.4;filter:blur(1px)">
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#EC4899"></span><span class="ps-cat-name" style="color:#EC4899">Work</span></div>
+                    <div class="ps-task"><div class="ps-check" style="border-color:#EC4899"></div><span class="ps-task-txt">Send Q1 report</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review mockups</span></div>
+                  </div>
+                </div>
+                <div class="ps-overlay">
+                  <div class="ps-overlay-card">
+                    <div class="ps-sheet-handle"></div>
+                    <div class="ps-settings-title" data-en="Settings" data-ja="設定">Settings</div>
+                    <div class="ps-section-label" data-en="Accent colour" data-ja="アクセントカラー">Accent colour</div>
+                    <div class="ps-swatches">
+                      <div class="ps-sw" style="background:#3B82F6"></div>
+                      <div class="ps-sw" style="background:#1E40AF"></div>
+                      <div class="ps-sw" style="background:#0D9488"></div>
+                      <div class="ps-sw" style="background:#16A34A"></div>
+                      <div class="ps-sw" style="background:#65A30D"></div>
+                      <div class="ps-sw" style="background:#F97316"></div>
+                      <div class="ps-sw" style="background:#EF4444"></div>
+                      <div class="ps-sw sel" style="background:#EC4899;--sw-color:#EC4899"></div>
+                      <div class="ps-sw" style="background:#7C3AED"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-top:1px solid rgba(0,0,0,.06)">
+                      <div style="width:14px;height:14px;border-radius:50%;background:#EC4899;flex-shrink:0"></div>
+                      <span style="font-size:9px;font-weight:700;color:#111" data-en="Rose applied" data-ja="ローズ適用中">Rose applied</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" style="margin-left:auto"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-txt">
+            <span class="slide-badge" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px"><path d="M12 2l1.4 4.3h4.5l-3.6 2.6 1.4 4.3L12 10.6l-3.7 2.6 1.4-4.3L6 6.3h4.6z"/></svg>
+              <span data-en="PRO Feature" data-ja="PRO機能">PRO Feature</span>
+            </span>
+            <h3 class="slide-title" data-en="Make it<br>your own" data-ja="自分だけの<br>カラーに">Make it<br>your own</h3>
+            <p class="slide-desc" data-en="13 accent colours to match your mood or style. A small touch that makes it feel truly yours." data-ja="13種類のアクセントカラーで自分らしくカスタマイズ。毎日使うアプリを自分色に。">13 accent colours to match your mood or style. A small touch that makes it feel truly yours.</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 5: Cloud Sync -->
+        <div class="carousel-slide">
+          <div class="slide-phone">
+            <div class="phone-frame">
+              <div class="phone-island"></div>
+              <div class="phone-screen">
+                <div class="ps-sb">
+                  <span class="ps-time">9:41</span>
+                  <div class="ps-batt"><svg width="14" height="7" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2" stroke="#111" stroke-width="1"/><rect x="2" y="2" width="15" height="7" rx="1" fill="#111"/><path d="M20.5 3.5v4a2 2 0 000-4z" fill="#111"/></svg></div>
+                </div>
+                <div class="ps-nav">
+                  <span class="ps-logo">Poplist<em></em></span>
+                  <div class="ps-nav-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                </div>
+                <div class="ps-content" style="opacity:.3;filter:blur(1px)">
+                  <div class="ps-cat">
+                    <div class="ps-cat-hdr"><span class="ps-cat-dot" style="background:#3B82F6"></span><span class="ps-cat-name">Work</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Send Q1 report</span></div>
+                    <div class="ps-task"><div class="ps-check"></div><span class="ps-task-txt">Review mockups</span></div>
+                  </div>
+                </div>
+                <div class="ps-overlay">
+                  <div class="ps-overlay-card">
+                    <div class="ps-sheet-handle"></div>
+                    <div class="ps-settings-title" data-en="Settings" data-ja="設定">Settings</div>
+                    <div class="ps-settings-card">
+                      <div class="ps-settings-section-label" data-en="Account" data-ja="アカウント">Account</div>
+                      <div class="ps-settings-row" style="border-top:none">
+                        <span class="ps-settings-row-label" data-en="Signed in as" data-ja="サインイン中">Signed in as</span>
+                        <span class="ps-settings-row-val">user@gmail.com</span>
+                      </div>
+                      <div class="ps-settings-row">
+                        <span class="ps-settings-row-label" data-en="Sync status" data-ja="同期状態">Sync status</span>
+                        <span class="ps-sync-badge"><span class="ps-green-dot"></span><span data-en="Active" data-ja="有効">Active</span></span>
+                      </div>
+                      <div class="ps-settings-row">
+                        <span class="ps-settings-row-label" data-en="Last synced" data-ja="最終同期">Last synced</span>
+                        <span class="ps-settings-row-val" style="color:#22C55E" data-en="just now" data-ja="たった今">just now</span>
+                      </div>
+                    </div>
+                    <div style="font-size:8px;color:#6B7280;line-height:1.5" data-en="Tasks sync instantly across all your devices." data-ja="すべてのデバイスで即座に同期されます。">Tasks sync instantly across all your devices.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-txt">
+            <span class="slide-badge" style="background:#F0FDFA;color:#0D9488;border:1px solid #CCFBF1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><path d="M18 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+              <span data-en="Cloud Sync" data-ja="クラウド同期">Cloud Sync</span>
+            </span>
+            <h3 class="slide-title" data-en="Always in sync,<br>everywhere" data-ja="いつでもどこでも<br>同期">Always in sync,<br>everywhere</h3>
+            <p class="slide-desc" data-en="Sign in and your tasks sync instantly across every device. Start on your phone, continue on your laptop." data-ja="サインインすると、すべてのデバイスで即座に同期。スマホで始めてPCで続けられます。">Sign in and your tasks sync instantly across every device. Start on your phone, continue on your laptop.</p>
+          </div>
+        </div>
+
+      </div><!-- /carousel-track -->
+    </div><!-- /carousel-wrap -->
+
+    <div class="carousel-dots" id="carouselDots">
+      <button class="cdot active" aria-label="Slide 1"></button>
+      <button class="cdot" aria-label="Slide 2"></button>
+      <button class="cdot" aria-label="Slide 3"></button>
+      <button class="cdot" aria-label="Slide 4"></button>
+      <button class="cdot" aria-label="Slide 5"></button>
     </div>
 
-  </div><!-- /features -->
+  </section><!-- /features-carousel -->
 
   <!-- ── CTA SECTION ── -->
   <section class="cta-section">
@@ -689,6 +936,34 @@ footer {
 </footer>
 
 <script>
+// ── FEATURE CAROUSEL ──
+(function(){
+  var track = document.getElementById('carouselTrack');
+  var dots  = document.querySelectorAll('#carouselDots .cdot');
+  var cur   = 0, timer;
+  function goTo(n){
+    cur = ((n % 5) + 5) % 5;
+    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === cur); });
+  }
+  function next(){ goTo(cur + 1); }
+  function startAuto(){ clearInterval(timer); timer = setInterval(next, 4200); }
+  dots.forEach(function(d, i){
+    d.addEventListener('click', function(){ goTo(i); startAuto(); });
+  });
+  // Touch/swipe support
+  var wx = 0;
+  var wrap = document.querySelector('.carousel-wrap');
+  if (wrap) {
+    wrap.addEventListener('touchstart', function(e){ wx = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', function(e){
+      var dx = e.changedTouches[0].clientX - wx;
+      if (Math.abs(dx) > 40){ goTo(dx < 0 ? cur + 1 : cur - 1); startAuto(); }
+    }, { passive: true });
+  }
+  startAuto();
+})();
+
 function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
