@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --blue: #3B82F6;
+    --blue-dim: #1D4ED8;
+    --blue-lt: #EFF6FF;
+    --blue-glow: rgba(59,130,246,.18);
+    --blue-mid: #DBEAFE;
+    --shbtn: 0 4px 16px rgba(59,130,246,.38);
+  }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
   body { font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
          background: #ECEEF2; color: #111111; padding: 0;
@@ -16,13 +24,13 @@
         -webkit-backdrop-filter: blur(20px) saturate(1.4);
         border-bottom: 1px solid #D4D7DD; padding: 13px 24px;
         display: flex; align-items: center; justify-content: space-between }
-  .nav-logo { font-size: 17px; font-weight: 900; letter-spacing: -.4px; color: #111111 }
+  .nav-logo { font-size: 17px; font-weight: 900; letter-spacing: -.4px; color: #111111; text-decoration: none }
   .nav-logo em { display: inline-block; width: 7px; height: 7px;
-    background: #3B82F6; border-radius: 50%; margin-left: 2px;
+    background: var(--blue); border-radius: 50%; margin-left: 2px;
     vertical-align: super; font-style: normal }
   .nav-right { display: flex; align-items: center; gap: 8px }
   .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
-          font-weight: 600; color: #3B82F6; text-decoration: none }
+          font-weight: 600; color: var(--blue); text-decoration: none }
   .back svg { width: 15px; height: 15px; flex-shrink: 0 }
   .lang-toggle {
     display: flex; background: #fff; border-radius: 50px;
@@ -34,7 +42,7 @@
     border-radius: 50px; color: #6B7280; transition: 0.18s cubic-bezier(0.4,0,0.2,1);
     cursor: pointer; border: none; background: none; font-family: inherit;
   }
-  .lang-btn.active { background: #3B82F6; color: #fff }
+  .lang-btn.active { background: var(--blue); color: #fff }
   .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 80px }
   h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.3px }
   .meta { font-size: 12px; color: #9CA3AF; margin-bottom: 32px }
@@ -43,7 +51,7 @@
   p  { font-size: 14px; color: #374151; margin-bottom: 12px; line-height: 1.7 }
   ul { padding-left: 18px; margin-bottom: 12px }
   li { font-size: 14px; color: #374151; margin-bottom: 5px; line-height: 1.65 }
-  a  { color: #3B82F6; text-decoration: none }
+  a  { color: var(--blue); text-decoration: none }
   a:hover { text-decoration: underline }
   strong { color: #111111; font-weight: 700 }
   .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #D4D7DD;
@@ -53,7 +61,7 @@
 </head>
 <body>
 <nav>
-  <span class="nav-logo">Poplist<em></em></span>
+  <a href="/" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -178,6 +186,30 @@ function setLang(lang) {
   document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
   document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
 }
+
+/* Sync accent colour from main app localStorage */
+(function applyAccent() {
+  const ACCENT = {
+    'bc-blue':   {'--blue':'#3B82F6','--blue-dim':'#1D4ED8','--blue-lt':'#EFF6FF','--blue-glow':'rgba(59,130,246,.18)','--blue-mid':'#DBEAFE','--shbtn':'0 4px 16px rgba(59,130,246,.38)'},
+    'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--blue-mid':'#C7D2FE','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
+    'bc-teal':   {'--blue':'#0D9488','--blue-dim':'#0f766e','--blue-lt':'#F0FDFA','--blue-glow':'rgba(13,148,136,.18)','--blue-mid':'#CCFBF1','--shbtn':'0 4px 16px rgba(13,148,136,.38)'},
+    'bc-green':  {'--blue':'#16A34A','--blue-dim':'#15803d','--blue-lt':'#F0FDF4','--blue-glow':'rgba(22,163,74,.18)','--blue-mid':'#BBF7D0','--shbtn':'0 4px 16px rgba(22,163,74,.38)'},
+    'bc-lime':   {'--blue':'#65A30D','--blue-dim':'#4d7c0f','--blue-lt':'#F7FEE7','--blue-glow':'rgba(101,163,13,.18)','--blue-mid':'#D9F99D','--shbtn':'0 4px 16px rgba(101,163,13,.38)'},
+    'bc-yellow': {'--blue':'#FACC15','--blue-dim':'#ca8a04','--blue-lt':'#FEFCE8','--blue-glow':'rgba(250,204,21,.18)','--blue-mid':'#FEF08A','--shbtn':'0 4px 16px rgba(250,204,21,.38)'},
+    'bc-amber':  {'--blue':'#F97316','--blue-dim':'#ea580c','--blue-lt':'#FFF7ED','--blue-glow':'rgba(249,115,22,.18)','--blue-mid':'#FED7AA','--shbtn':'0 4px 16px rgba(249,115,22,.38)'},
+    'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--blue-mid':'#FECACA','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
+    'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--blue-mid':'#FBCFE8','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
+    'bc-purple': {'--blue':'#7C3AED','--blue-dim':'#6d28d9','--blue-lt':'#F5F3FF','--blue-glow':'rgba(124,58,237,.18)','--blue-mid':'#DDD6FE','--shbtn':'0 4px 16px rgba(124,58,237,.38)'},
+    'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--blue-mid':'#E5E7EB','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
+    'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--blue-mid':'#E2E8F0','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
+    'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--blue-mid':'#E5E7EB','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
+  };
+  try {
+    const c = localStorage.getItem('bubbleColour') || 'bc-blue';
+    const vars = ACCENT[c] || ACCENT['bc-blue'];
+    Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>

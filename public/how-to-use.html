@@ -251,7 +251,7 @@ nav {
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo">Poplist<em></em></a>
+  <a href="/" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -510,6 +510,30 @@ nav {
 </div>
 
 <script>
+// ── Accent colour sync from main app ──
+(function applyAccent() {
+  const ACCENT = {
+    'bc-blue':   {'--accent':'#3B82F6','--accent-lt':'#EFF6FF','--accent-glow':'rgba(59,130,246,.18)'},
+    'bc-navy':   {'--accent':'#1E40AF','--accent-lt':'#EFF6FF','--accent-glow':'rgba(30,64,175,.18)'},
+    'bc-teal':   {'--accent':'#0D9488','--accent-lt':'#F0FDFA','--accent-glow':'rgba(13,148,136,.18)'},
+    'bc-green':  {'--accent':'#16A34A','--accent-lt':'#F0FDF4','--accent-glow':'rgba(22,163,74,.18)'},
+    'bc-lime':   {'--accent':'#65A30D','--accent-lt':'#F7FEE7','--accent-glow':'rgba(101,163,13,.18)'},
+    'bc-yellow': {'--accent':'#FACC15','--accent-lt':'#FEFCE8','--accent-glow':'rgba(250,204,21,.18)'},
+    'bc-amber':  {'--accent':'#F97316','--accent-lt':'#FFF7ED','--accent-glow':'rgba(249,115,22,.18)'},
+    'bc-rose':   {'--accent':'#EF4444','--accent-lt':'#FEF2F2','--accent-glow':'rgba(239,68,68,.18)'},
+    'bc-pink':   {'--accent':'#EC4899','--accent-lt':'#FDF2F8','--accent-glow':'rgba(236,72,153,.18)'},
+    'bc-purple': {'--accent':'#7C3AED','--accent-lt':'#F5F3FF','--accent-glow':'rgba(124,58,237,.18)'},
+    'bc-black':  {'--accent':'#374151','--accent-lt':'#F9FAFB','--accent-glow':'rgba(55,65,81,.18)'},
+    'bc-slate':  {'--accent':'#475569','--accent-lt':'#F8FAFC','--accent-glow':'rgba(71,85,105,.18)'},
+    'bc-grey':   {'--accent':'#9CA3AF','--accent-lt':'#F3F4F6','--accent-glow':'rgba(156,163,175,.18)'},
+  };
+  try {
+    const c = localStorage.getItem('bubbleColour') || 'bc-blue';
+    const vars = ACCENT[c] || ACCENT['bc-blue'];
+    Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  } catch(e) {}
+})();
+
 // ── Language toggle ──
 function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
