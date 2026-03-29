@@ -377,16 +377,29 @@ nav {
 
 /* ── FEATURES CAROUSEL ── */
 .features-carousel {
+  position: relative;
   background: #fff;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 0 0 32px;
-  margin: 0 0 0;
+  border-top: none;
+  border-bottom: none;
+  padding: 0;
+  margin: 0;
+}
+/* Soften harsh cut from page bg — top + bottom blend (PC & mobile) */
+.features-carousel::before {
+  content: '';
+  display: block;
+  height: 44px;
+  background: linear-gradient(180deg, var(--bg) 0%, #ffffff 100%);
+}
+.features-carousel::after {
+  content: '';
+  display: block;
+  height: 56px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
 }
 .carousel-intro {
   text-align: center;
-  /* Title → phone: ~70% of prior gap (16+22+6 ≈ 45px vs 24+32+8); wrap top still clears frame shadow */
-  padding: 40px 24px 16px;
+  padding: 28px 28px 20px;
   max-width: 480px;
   margin: 0 auto;
 }
@@ -1073,7 +1086,7 @@ body.lang-ja .lp-cm-item {
 .slide-title { font-size: 21px; font-weight: 900; letter-spacing: -.5px; line-height: 1.25; color: var(--black); margin-bottom: 7px }
 .slide-desc { font-size: 13px; line-height: 1.65; color: var(--t2); font-weight: 500 }
 /* Carousel dots */
-.carousel-dots { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px }
+.carousel-dots { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; padding: 0 20px 28px }
 .cdot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .25s ease; padding: 0; flex-shrink: 0; cursor: pointer }
 .cdot.active { background: var(--blue); width: 24px; border-radius: 4px }
 
@@ -1185,90 +1198,252 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   z-index: 2;
 }
 
-/* ── CTA SECTION ── */
-.cta-section {
-  margin: 8px 16px 48px;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E") repeat,
-    radial-gradient(ellipse at 15% 85%, rgba(30,64,175,.5) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 15%, rgba(147,197,253,.3) 0%, transparent 45%),
-    linear-gradient(135deg, var(--blue-dim) 0%, var(--blue) 45%, var(--blue) 100%);
+/* ── PHILOSOPHY — translucent blue “bubble” (old CTA vibe + stronger transparency) ── */
+.lp-philosophy {
+  width: 100%;
+  background: var(--bg);
+  padding: 12px 16px 28px;
+  position: relative;
+}
+.lp-philo-bubble {
+  max-width: 448px;
+  margin: 0 auto;
   border-radius: 24px;
-  padding: 40px 28px;
-  text-align: center;
-  box-shadow: 0 8px 40px var(--blue-glow);
+  padding: 28px 18px 32px;
   position: relative;
   overflow: hidden;
+  /* Deeper accent blue + layered grain, diagonal mesh, soft orbs */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E") repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M0 20 L20 0' stroke='rgba(255,255,255,.07)' stroke-width='0.6'/%3E%3C/svg%3E") repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='2' cy='3' r='0.65' fill='rgba(255,255,255,.14)'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 12% 90%, rgba(37,99,235,.55) 0%, transparent 52%),
+    radial-gradient(ellipse at 92% 8%, rgba(96,165,250,.35) 0%, transparent 46%),
+    radial-gradient(ellipse at 50% 50%, rgba(30,58,138,.25) 0%, transparent 70%),
+    linear-gradient(145deg, rgba(23,37,84,.88) 0%, rgba(29,78,216,.82) 42%, rgba(30,64,175,.86) 100%);
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow:
+    0 12px 44px rgba(15,23,42,.28),
+    0 1px 0 rgba(255,255,255,.12) inset;
 }
-.cta-section::before {
+.lp-philo-bubble::before {
   content: '';
-  position: absolute; top: -40px; right: -40px;
-  width: 160px; height: 160px;
-  background: rgba(255,255,255,.06);
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(147,197,253,.22) 0%, transparent 68%);
   border-radius: 50%;
+  pointer-events: none;
 }
-.cta-section::after {
+.lp-philo-bubble::after {
   content: '';
-  position: absolute; bottom: -60px; left: -30px;
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,.04);
+  position: absolute;
+  bottom: -52px;
+  left: -28px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(59,130,246,.18) 0%, transparent 65%);
   border-radius: 50%;
+  pointer-events: none;
 }
-.cta-title {
-  font-size: 26px; font-weight: 900; letter-spacing: -.7px; line-height: 1.2;
-  color: white; margin-bottom: 12px;
-  position: relative; z-index: 1;
+.lp-philo-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  margin: 0 auto;
 }
-.cta-sub {
-  font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.75);
-  font-weight: 500; margin-bottom: 28px;
-  position: relative; z-index: 1;
+.lp-philo-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.88);
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,.16);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22);
 }
-.cta-btn-white {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: white; color: var(--blue);
-  font-size: 15px; font-weight: 800; letter-spacing: -.2px;
-  padding: 14px 32px; border-radius: var(--rp);
-  box-shadow: 0 4px 16px rgba(0,0,0,.15);
-  transition: var(--tr);
-  position: relative; z-index: 1;
+.lp-philo-title {
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.45;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 28px;
+  text-shadow: 0 1px 16px rgba(0,0,0,.12);
 }
-.cta-btn-white:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
-.cta-btn-white:active { transform: scale(.97) }
-.cta-btn-white svg { width: 16px; height: 16px }
-.cta-note-white {
-  margin-top: 14px; font-size: 11px; color: rgba(255,255,255,.55);
-  font-weight: 500; position: relative; z-index: 1;
+body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
+.lp-philo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lp-philo-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: rgba(255,255,255,.93);
+  border-radius: 18px;
+  padding: 18px 16px;
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 4px 18px rgba(15,23,42,.08);
+  position: relative;
+}
+.lp-philo-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d4ed8;
+  /* Light isometric tilt — shape stays readable */
+  transform: perspective(280px) rotateX(-5deg) rotateY(6deg);
+  transform-style: preserve-3d;
+  /* “Tile face”: top-left light → bottom-right shade (no outer blur) */
+  background:
+    linear-gradient(128deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.12) 32%, transparent 48%),
+    linear-gradient(158deg, #f8fafc 0%, #dbeafe 42%, #93c5fd 78%, #7aa8f0 100%);
+  border: 1px solid rgba(30,64,175,.52);
+  /* Sharp inset bevel only — defines edges without haze */
+  box-shadow:
+    inset 1px 1px 0 rgba(255,255,255,.9),
+    inset -1px -1px 0 rgba(30,58,138,.24),
+    inset 0 -1px 0 rgba(30,64,175,.12);
+}
+.lp-philo-icon svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  stroke: currentColor;
+  stroke-width: 2.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  shape-rendering: geometricPrecision;
+}
+.lp-philo-body { flex: 1; min-width: 0; padding-left: 2px; }
+.lp-philo-h {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+.lp-philo-p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--t2);
+  font-weight: 500;
+  margin: 0;
 }
 
-/* ── FOOTER ── */
-footer {
-  width: 100%; max-width: 480px;
-  padding: 24px 24px 40px;
+/* ── FINAL CTA — typical LP strip (like hero: dark text + blue button) ── */
+.lp-final-cta {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 24px 52px;
   text-align: center;
-  border-top: 1px solid var(--border);
+  background: var(--bg);
 }
-.footer-logo {
-  font-size: 16px; font-weight: 900; letter-spacing: -.4px; color: var(--t2);
-  margin-bottom: 16px; display: flex; align-items: center; justify-content: center;
+.lp-final-cta-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.35;
+  color: var(--black);
+  margin-bottom: 14px;
 }
-.footer-logo em {
-  display: inline-block; width: 6px; height: 6px;
-  background: var(--blue); border-radius: 50%;
-  margin-left: 2px; vertical-align: super; font-style: normal;
+body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
+.lp-final-cta-sub {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--t2);
+  font-weight: 500;
+  margin-bottom: 22px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.footer-links {
-  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
-  gap: 4px 16px;
-}
-.footer-links a {
-  font-size: 12px; color: var(--t3); font-weight: 500;
+.lp-final-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding: 15px 28px;
+  border-radius: var(--rp);
+  box-shadow: var(--shbtn);
   transition: var(--tr);
+  margin-bottom: 16px;
 }
-.footer-links a:hover { color: var(--t2) }
-.footer-copy {
-  margin-top: 16px;
-  font-size: 11px; color: var(--t3); font-weight: 400;
+.lp-final-cta-btn:hover {
+  filter: brightness(0.92);
+  transform: translateY(-2px);
+}
+.lp-final-cta-btn:active { transform: scale(.97) }
+.lp-final-cta-btn svg { width: 16px; height: 16px; flex-shrink: 0 }
+.lp-final-cta-note {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--t3);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ── FOOTER (matches index.html footer-a; scrolls with page, not fixed) ── */
+.site-footer {
+  width: 100%; max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background: var(--bg);
+}
+.site-footer.footer-a {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px; padding-bottom: 28px;
+}
+.footer-a-top {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex-wrap: wrap; width: 100%;
+}
+.footer-a-logo {
+  font-size: 13px; font-weight: 900; letter-spacing: -.3px; color: var(--t2);
+  white-space: nowrap; flex-shrink: 0;
+  background: none; border: none; cursor: pointer; padding: 0; font-family: inherit;
+  text-decoration: none;
+}
+.footer-a-logo:hover { color: var(--blue) }
+.footer-a-logo em {
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--blue); border-radius: 50%;
+  margin-left: 1px; vertical-align: super; font-style: normal;
+}
+.footer-a-links {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0; justify-content: center;
+}
+.footer-a-links a {
+  font-size: 10px; font-weight: 600; color: var(--t3);
+  text-decoration: none; padding: 2px 8px;
+  transition: color .18s;
+  border-right: 1px solid var(--border);
+}
+.footer-a-links a:last-child { border-right: none }
+.footer-a-links a:hover { color: var(--blue) }
+.footer-a-copy {
+  font-size: 10px; color: var(--t3); font-weight: 500;
+  text-align: center; width: 100%;
 }
 
 /* ── LP1: Timing + export slide (filter bar matches index.html) ── */
@@ -1717,6 +1892,55 @@ footer {
 
   </section><!-- /features-carousel -->
 
+  <!-- ── DESIGN PHILOSOPHY ── -->
+  <section class="lp-philosophy" aria-labelledby="lp-philo-heading">
+    <div class="lp-philo-bubble">
+    <div class="lp-philo-inner">
+      <p class="lp-philo-kicker" data-en="Design philosophy" data-ja="設計思想">設計思想</p>
+      <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Clear thinking first — we design so your attention doesn’t scatter." data-ja="思考が散らからない設計を第一に">思考が散らからない設計を第一に</h2>
+      <div class="lp-philo-grid">
+        <article class="lp-philo-card">
+          <div class="lp-philo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5" opacity=".5"/><rect x="14" y="14" width="7" height="7" rx="1.5" opacity=".5"/><rect x="3" y="14" width="7" height="7" rx="1.5" opacity=".5"/></svg>
+          </div>
+          <div class="lp-philo-body">
+            <h3 class="lp-philo-h" data-en="Less visual noise, stronger focus" data-ja="視覚ノイズを減らして集中力を守る">視覚ノイズを減らして集中力を守る</h3>
+            <p class="lp-philo-p" data-en="Only what you need stays on screen. No clutter — so professionals and students can stay in flow." data-ja="必要以上の情報を置かず、見るべきものだけを残したUI。ノイズを減らして集中力を守ります。">必要以上の情報を置かず、見るべきものだけを残したUI。ノイズを減らして集中力を守ります。</p>
+          </div>
+        </article>
+        <article class="lp-philo-card">
+          <div class="lp-philo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          </div>
+          <div class="lp-philo-body">
+            <h3 class="lp-philo-h" data-en="Cut decision fatigue" data-ja="判断コストを極力カット">判断コストを極力カット</h3>
+            <p class="lp-philo-p" data-en="Fewer fields and manual sorting. Less “where do I put this?” so busy people don’t burn out on admin." data-ja="入力項目や分類の手間を減らし、意思決定を最小限に。タスク管理で疲れない。">入力項目や分類の手間を減らし、意思決定を最小限に。タスク管理で疲れない。</p>
+          </div>
+        </article>
+        <article class="lp-philo-card">
+          <div class="lp-philo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="lp-philo-body">
+            <h3 class="lp-philo-h" data-en="Fewer steps, faster execution" data-ja="余計なステップを省いて効率を重視">余計なステップを省いて効率を重視</h3>
+            <p class="lp-philo-p" data-en="Features stay intentionally tight — speed matters when you’re executing, not configuring." data-ja="あえて機能を絞り、処理の速さを実現。実行のスピードを落としません。">あえて機能を絞り、処理の速さを実現。実行のスピードを落としません。</p>
+          </div>
+        </article>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <section class="lp-final-cta" aria-labelledby="lp-final-cta-heading">
+    <h2 id="lp-final-cta-heading" class="lp-final-cta-title" data-en="Try it free — feel the difference" data-ja="無料でつかって体感しよう">無料でつかって体感しよう</h2>
+    <p class="lp-final-cta-sub" data-en="No install. Runs in your browser." data-ja="インストール不要、ブラウザで動きます。">インストール不要、ブラウザで動きます。</p>
+    <a href="/" class="lp-final-cta-btn">
+      <span data-en="Try without signing in →" data-ja="ログインなしで試す→">ログインなしで試す→</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <p class="lp-final-cta-note" data-en="Sign in for more tasks and sync across devices." data-ja="ログインすれば、タスク数も増えて同期可能に">ログインすれば、タスク数も増えて同期可能に</p>
+  </section>
+
   <div style="display:none;">
   <!-- ── KEY FEATURES ── -->
   <p class="lp-section-label" data-en="Key features" data-ja="主な機能">Key features</p>
@@ -1831,32 +2055,20 @@ footer {
   </div>
   </div>
   
-  <!-- ── CTA SECTION ── -->
-  <section class="cta-section">
-    <h2 class="cta-title"><span data-en="Try it free.<br>Login to get more tasks and device syncing." data-ja="無料でつかえます。<br>ログインでタスク数も増えて同期可能に。">Try it free.<br>Login for more tasks and device syncing.</span></h2>
-    <p class="cta-sub" data-en="Open Poplist in your browser — no install, no login. Try it to see if it fits your brain." data-ja="ブラウザを開くだけ。インストールもログインも不要。自分にあうか試せます。">Open Poplist in your browser — no install, no card. See if it fits your brain in under a minute.</p>
-    <a href="/" class="cta-btn-white">
-      <span data-en="Open Poplist free" data-ja="ログインなしで試す">Open Poplist free</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12"/>
-        <polyline points="12 5 19 12 12 19"/>
-      </svg>
-    </a>
-    <p class="cta-note-white" data-en="No account needed · Works in your browser" data-ja="アカウント不要 · ブラウザで動作">No account needed · Works in your browser</p>
-  </section>
-
 </div><!-- /page -->
 
-<!-- FOOTER -->
-<footer>
-  <a href="/" class="footer-logo">Poplist<em></em></a>
-  <div class="footer-links">
-    <a href="/privacy.html" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-    <a href="/terms.html" data-en="Terms" data-ja="利用規約">Terms</a>
-    <a href="/pricing.html" data-en="Pricing" data-ja="料金">Pricing</a>
-    <a href="/how-to-use.html" data-en="How to use" data-ja="使い方">How to use</a>
+<!-- FOOTER (same pattern as index.html · Ghost Strip) -->
+<footer class="site-footer footer-a" id="siteFooter">
+  <div class="footer-a-top">
+    <button type="button" class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
+    <nav class="footer-a-links" aria-label="Footer">
+      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+      <a href="/pricing.html" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms" data-ja="利用規約">Terms</a>
+    </nav>
   </div>
-  <p class="footer-copy">© 2025 Poplist</p>
+  <span class="footer-a-copy">© 2026 ALLERISE</span>
 </footer>
 
 <script>
@@ -2523,6 +2735,10 @@ setLang('ja');
     Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
   } catch(e) {}
 })();
+
+document.getElementById('footerLogoBtn')?.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
 </body>
 </html>
