@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poplist — あそびのあるミニマリスト（デザインモック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --canvas: #e9f1fb;
+  --canvas-warm: #f3f7fd;
+  --card: #ffffff;
+  --ink: #111;
+  --muted: #5c6570;
+  --soft: #8b95a5;
+  --blue: #3b82f6;
+  --blue-soft: #dbeafe;
+  --shadow: 0 10px 40px rgba(30, 64, 120, 0.08), 0 2px 12px rgba(30, 64, 120, 0.04);
+  --shadow-hover: 0 16px 48px rgba(30, 64, 120, 0.12), 0 4px 16px rgba(30, 64, 120, 0.06);
+  --r: 28px;
+  --font: 'Plus Jakarta Sans', 'Noto Sans JP', system-ui, sans-serif;
+  --pop-yellow: #fde047;
+  --pop-pink: #f9a8d4;
+  --pop-mint: #5eead4;
+  --pop-coral: #fb923c;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: linear-gradient(165deg, var(--canvas) 0%, var(--canvas-warm) 45%, #eef4fc 100%);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: none; background: none; }
+
+/* ── Nav ── */
+.pm-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px;
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid rgba(255,255,255,.8);
+  max-width: 1100px; margin: 0 auto;
+}
+.pm-logo { font-size: 19px; font-weight: 900; letter-spacing: -0.03em; }
+.pm-logo em {
+  display: inline-block; width: 8px; height: 8px; background: var(--blue);
+  border-radius: 50%; margin-left: 3px; vertical-align: super; font-style: normal;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+.pm-nav-links { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.pm-pill {
+  font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px;
+  background: rgba(255,255,255,.9); border: 1px solid rgba(59,130,246,.15);
+  color: var(--blue); transition: transform .2s, box-shadow .2s;
+}
+.pm-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(59,130,246,.15); }
+.pm-lang {
+  display: flex; background: #fff; border-radius: 999px; padding: 3px; border: 1px solid rgba(0,0,0,.06);
+}
+.pm-lang button {
+  font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 999px; color: var(--muted);
+}
+.pm-lang button.active { background: var(--ink); color: #fff; }
+
+/* ── Compare strip ── */
+.pm-compare {
+  max-width: 1100px; margin: 0 auto; padding: 18px 22px 0;
+  font-size: 13px; color: var(--muted); line-height: 1.5;
+}
+.pm-compare strong { color: var(--ink); font-weight: 800; }
+.pm-compare a { color: var(--blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── Intro ── */
+.pm-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 22px 80px; }
+.pm-kicker {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--blue); margin-bottom: 12px;
+}
+.pm-title {
+  font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -0.03em;
+  line-height: 1.2; margin-bottom: 14px; max-width: 18ch;
+}
+body.lang-en .pm-title { max-width: 22ch; }
+.pm-lead {
+  font-size: 16px; line-height: 1.75; color: var(--muted); max-width: 36em; margin-bottom: 10px; font-weight: 500;
+}
+.pm-concept {
+  font-size: 15px; line-height: 1.8; color: var(--soft); max-width: 36em; margin-bottom: 36px;
+  padding: 16px 20px; background: rgba(255,255,255,.55); border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.9);
+}
+body.lang-en .pm-concept { font-size: 14px; }
+
+/* ── Bento ── */
+.pm-bento {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "a b"
+    "a d"
+    "c d";
+}
+@media (max-width: 820px) {
+  .pm-bento {
+    grid-template-columns: 1fr;
+    grid-template-areas: "a" "b" "c" "d";
+  }
+}
+
+.pm-card {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 28px 26px 26px;
+  display: flex; flex-direction: column;
+  transition: transform .35s cubic-bezier(.34,1.2,.64,1), box-shadow .35s ease;
+  border: 1px solid rgba(255,255,255,.95);
+  overflow: hidden;
+  position: relative;
+}
+.pm-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+}
+.pm-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+}
+.pm-card-a { grid-area: a; min-height: 320px; }
+.pm-card-b { grid-area: b; min-height: 200px; }
+.pm-card-c { grid-area: c; min-height: 160px; }
+.pm-card-d { grid-area: d; min-height: 300px; }
+
+.pm-card h3 {
+  font-size: clamp(18px, 2.2vw, 22px); font-weight: 800; letter-spacing: -0.02em;
+  line-height: 1.35; margin-bottom: 12px; position: relative; z-index: 1;
+}
+.pm-bento-desc {
+  font-size: 13px; line-height: 1.65; color: var(--muted); font-weight: 500;
+  position: relative; z-index: 1; margin-bottom: 8px;
+}
+.pm-bento-desc:last-of-type { margin-bottom: 0; }
+
+/* Bento clay stage — flat clay + subtle bubble reflection (not loud 3D) */
+.pm-vis {
+  flex: 1; min-height: 132px; margin-top: 22px; position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.pm-clay-stage {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 12px 14px; width: 100%; max-width: 300px;
+}
+
+/* Round clay bubble: soft radial fill, inset shade, subtle specular blob */
+.pm-clay {
+  position: relative;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pm-clay-bob 4.2s ease-in-out infinite;
+  isolation: isolate;
+}
+.pm-clay::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 14%;
+  width: 46%;
+  height: 32%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 100% 100% at 35% 28%, rgba(255,255,255,.5) 0%, rgba(255,255,255,.12) 45%, transparent 72%);
+  pointer-events: none;
+  animation: pm-clay-gloss 5s ease-in-out infinite;
+}
+.pm-clay::after {
+  content: '';
+  position: absolute;
+  bottom: 8%;
+  right: 12%;
+  width: 28%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.22) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: .65;
+}
+@keyframes pm-clay-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.03); }
+}
+@keyframes pm-clay-gloss {
+  0%, 100% { opacity: .75; transform: translate(0, 0); }
+  50% { opacity: 1; transform: translate(1px, -1px); }
+}
+
+.pm-clay--xs { width: 36px; height: 36px; animation-duration: 3.6s; }
+.pm-clay--sm { width: 48px; height: 48px; animation-duration: 3.9s; }
+.pm-clay--md { width: 62px; height: 62px; }
+.pm-clay--lg { width: 84px; height: 84px; animation-duration: 4.6s; }
+.pm-clay--xl { width: 100px; height: 100px; animation-duration: 5s; }
+
+.pm-clay--blue {
+  background: radial-gradient(circle at 32% 28%, color-mix(in srgb, #fff 38%, transparent) 0%, color-mix(in srgb, var(--blue) 28%, #fff) 28%, var(--blue) 55%, color-mix(in srgb, var(--blue) 70%, #1e3a8a) 100%);
+  box-shadow:
+    inset 0 -12px 22px rgba(0,0,0,.1),
+    inset 0 5px 18px rgba(255,255,255,.42),
+    0 10px 26px color-mix(in srgb, var(--blue) 22%, transparent);
+}
+.pm-clay--sky {
+  background: radial-gradient(circle at 30% 26%, rgba(255,255,255,.4) 0%, #7dd3fc 35%, #0ea5e9 70%, #0369a1 100%);
+  box-shadow: inset 0 -10px 20px rgba(0,0,0,.09), inset 0 4px 16px rgba(255,255,255,.4), 0 8px 22px rgba(14,165,233,.2);
+}
+.pm-clay--sun {
+  background: radial-gradient(circle at 32% 26%, rgba(255,255,255,.55) 0%, var(--pop-yellow) 40%, #eab308 85%, #ca8a04 100%);
+  box-shadow: inset 0 -10px 20px rgba(180,120,0,.12), inset 0 5px 16px rgba(255,255,255,.5), 0 10px 24px rgba(234,179,8,.22);
+}
+.pm-clay--mint {
+  background: radial-gradient(circle at 30% 28%, rgba(255,255,255,.45) 0%, var(--pop-mint) 38%, #14b8a6 78%, #0f766e 100%);
+  box-shadow: inset 0 -10px 20px rgba(0,80,70,.1), inset 0 4px 16px rgba(255,255,255,.38), 0 8px 22px rgba(20,184,166,.2);
+}
+.pm-clay--pink {
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.48) 0%, var(--pop-pink) 42%, #ec4899 80%, #9d174d 100%);
+  box-shadow: inset 0 -10px 20px rgba(120,30,60,.1), inset 0 4px 14px rgba(255,255,255,.4), 0 8px 22px rgba(236,72,153,.18);
+}
+.pm-clay--cloud {
+  background: radial-gradient(circle at 28% 24%, #fff 0%, #f1f5f9 40%, #e2e8f0 100%);
+  box-shadow: inset 0 -8px 18px rgba(0,0,0,.06), inset 0 4px 14px rgba(255,255,255,.9), 0 8px 20px rgba(30,64,120,.08);
+}
+.pm-clay--coral {
+  background: radial-gradient(circle at 30% 28%, rgba(255,255,255,.4) 0%, #fdba74 35%, var(--pop-coral) 72%, #c2410c 100%);
+  box-shadow: inset 0 -10px 18px rgba(120,50,0,.1), inset 0 4px 14px rgba(255,255,255,.35), 0 8px 22px rgba(251,146,60,.2);
+}
+
+.pm-clay:nth-child(2) { animation-delay: -.4s; }
+.pm-clay:nth-child(3) { animation-delay: -.8s; }
+.pm-clay:nth-child(4) { animation-delay: -1.2s; }
+
+/* Inner feature glyphs (flat shapes inside bubbles) */
+.pm-clay-inner {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.pm-clay-inner.pm-clay-mic-col { flex-direction: column; gap: 4px; justify-content: center; }
+.pm-clay-stage--h {
+  flex-wrap: nowrap; flex-direction: row; align-items: center; justify-content: center;
+  gap: 14px; max-width: 320px;
+}
+.pm-clay-waves {
+  display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 36px;
+}
+.pm-clay-waves span {
+  width: 5px; border-radius: 99px; background: rgba(255,255,255,.88);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  animation: pm-clay-bar 1.05s ease-in-out infinite;
+}
+.pm-clay-waves span:nth-child(1) { height: 12px; }
+.pm-clay-waves span:nth-child(2) { height: 20px; animation-delay: .08s; }
+.pm-clay-waves span:nth-child(3) { height: 28px; animation-delay: .16s; }
+.pm-clay-waves span:nth-child(4) { height: 18px; animation-delay: .12s; }
+.pm-clay-waves span:nth-child(5) { height: 14px; animation-delay: .04s; }
+@keyframes pm-clay-bar {
+  0%, 100% { transform: scaleY(.7); opacity: .85; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.pm-clay-mic-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.92);
+  margin-top: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+.pm-clay-mic-col {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+
+.pm-clay-chip-txt {
+  font-size: 15px; font-weight: 900; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.15);
+  position: relative; z-index: 1;
+}
+
+.pm-clay-check {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid rgba(17,17,17,.88);
+  position: relative;
+}
+.pm-clay-check::after {
+  content: ''; position: absolute; left: 5px; top: 5px; width: 10px; height: 6px;
+  border-left: 3px solid rgba(17,17,17,.88); border-bottom: 3px solid rgba(17,17,17,.88);
+  transform: rotate(-45deg);
+}
+
+.pm-clay-pill {
+  border-radius: 999px;
+  animation: pm-clay-bob 4s ease-in-out infinite;
+}
+.pm-clay-pill.pm-clay--cloud {
+  width: auto; min-width: 120px; max-width: 92%; height: 76px; border-radius: 38px !important;
+  padding: 14px 18px;
+  display: flex; flex-direction: column; justify-content: center; gap: 7px;
+}
+.pm-clay-pill.pm-clay--cloud::before {
+  top: 12%; left: 10%; width: 40%; height: 35%;
+}
+.pm-clay-line {
+  position: relative;
+  z-index: 1;
+  height: 6px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--blue) 35%, #e2e8f0), #e2e8f0);
+  animation: pm-clay-line-pulse 2.4s ease-in-out infinite;
+}
+.pm-clay-line:nth-child(2) { width: 88%; animation-delay: .15s; }
+.pm-clay-line:nth-child(3) { width: 72%; animation-delay: .3s; }
+@keyframes pm-clay-line-pulse {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+
+.pm-clay-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.pm-clay-stack-v { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.pm-clay-satellites { display: flex; gap: 8px; align-items: flex-end; }
+
+/* Footer CTAs */
+.pm-footer-cta {
+  margin-top: 48px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.pm-btn-primary {
+  font-size: 15px; font-weight: 800; padding: 14px 28px; border-radius: 999px;
+  background: var(--ink); color: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.15);
+  transition: transform .2s, box-shadow .2s;
+}
+.pm-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.2); }
+.pm-btn-ghost {
+  font-size: 13px; font-weight: 700; padding: 12px 22px; border-radius: 999px;
+  background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.06);
+  color: var(--muted); display: inline-flex; align-items: center; gap: 8px;
+}
+.pm-btn-ghost:hover { background: #fff; color: var(--ink); }
+
+.pm-footnote {
+  text-align: center; margin-top: 40px; font-size: 12px; color: var(--soft);
+}
+
+/* ═══ Comparison strips — text + poster image (not screen UI) ═══ */
+.pm-divider {
+  margin: 56px 0 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--blue) 28%, transparent), transparent);
+  border: none;
+}
+.pm-v2-kicker {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink); margin-top: 28px; margin-bottom: 10px;
+  padding: 6px 12px; border-radius: 999px;
+  background: color-mix(in srgb, var(--pop-yellow) 55%, #fff);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.pm-v2-title {
+  font-size: clamp(22px, 3.2vw, 30px); font-weight: 900; letter-spacing: -0.03em;
+  line-height: 1.25; margin-bottom: 10px; max-width: 24ch;
+}
+.pm-v2-lead {
+  font-size: 14px; line-height: 1.75; color: var(--muted); max-width: 40em; margin-bottom: 28px; font-weight: 500;
+}
+
+/* ═══ Version B — bold pop / editorial illustration (flat, black outlines, accent from tokens) ═══ */
+.pm-fluid-section {
+  --fluid-halftone: color-mix(in srgb, var(--blue) 22%, transparent);
+  position: relative;
+  margin-top: 8px;
+  padding: 32px 18px 40px;
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--pop-yellow) 42%, #fff);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  overflow: hidden;
+}
+.pm-fluid-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--fluid-halftone) 1.1px, transparent 1.1px);
+  background-size: 6px 6px;
+  pointer-events: none;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+.pm-fluid-section::after {
+  content: '';
+  position: absolute;
+  width: 140%;
+  height: 55%;
+  left: -20%;
+  bottom: -8%;
+  background: color-mix(in srgb, var(--blue) 12%, transparent);
+  border-radius: 50% 48% 52% 50% / 60% 58% 42% 40%;
+  pointer-events: none;
+  animation: pm-fluid-blob 14s ease-in-out infinite;
+}
+@keyframes pm-fluid-blob {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); border-radius: 50% 48% 52% 50% / 60% 58% 42% 40%; }
+  50% { transform: translate(4%, -2%) rotate(4deg); border-radius: 46% 54% 48% 52% / 55% 45% 55% 45%; }
+}
+
+.pm-fluid-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (max-width: 600px) {
+  .pm-fluid-grid { grid-template-columns: 1fr; }
+}
+
+.pm-fluid-card {
+  position: relative;
+  padding: 20px 18px 22px;
+  border-radius: 22px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--ink);
+  animation: pm-fluid-card-in .65s cubic-bezier(.34, 1.2, .64, 1) both;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.pm-fluid-card:nth-child(1) { animation-delay: .04s; }
+.pm-fluid-card:nth-child(2) { animation-delay: .1s; }
+.pm-fluid-card:nth-child(3) { animation-delay: .16s; }
+.pm-fluid-card:nth-child(4) { animation-delay: .22s; }
+@keyframes pm-fluid-card-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pm-fluid-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--ink);
+}
+
+.pm-fluid-card--sun { background: color-mix(in srgb, var(--pop-yellow) 78%, #fff); }
+.pm-fluid-card--mint { background: color-mix(in srgb, var(--pop-mint) 55%, #fff); }
+.pm-fluid-card--pink { background: color-mix(in srgb, var(--pop-pink) 52%, #fff); }
+.pm-fluid-card--accent {
+  background: color-mix(in srgb, var(--blue) 14%, #fff);
+}
+
+.pm-fluid-art {
+  height: 112px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.pm-fluid-art svg {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  overflow: visible;
+}
+.pm-fluid-stroke {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pm-fluid-fill-accent { fill: color-mix(in srgb, var(--blue) 88%, #000); }
+.pm-fluid-fill-sun { fill: var(--pop-yellow); }
+.pm-fluid-fill-mint { fill: color-mix(in srgb, var(--pop-mint) 70%, #fff); }
+.pm-fluid-fill-pink { fill: color-mix(in srgb, var(--pop-pink) 75%, #fff); }
+.pm-fluid-fill-ink { fill: var(--ink); }
+.pm-fluid-chip-mint {
+  fill: color-mix(in srgb, var(--pop-mint) 85%, #fff);
+}
+
+.pm-fluid-wiggle {
+  animation: pm-fluid-wiggle 3.5s ease-in-out infinite;
+}
+@keyframes pm-fluid-wiggle {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-4px); }
+}
+
+.pm-fluid-cap {
+  font-size: 15px; font-weight: 900; letter-spacing: -0.02em;
+  line-height: 1.3; color: var(--ink);
+  margin-bottom: 6px;
+}
+.pm-fluid-sub {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  line-height: 1.55;
+  max-width: 28ch;
+}
+
+.pm-strip-block { margin-top: 36px; }
+.pm-strip-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(20px, 4vw, 36px);
+  align-items: center;
+  margin-top: 6px;
+}
+@media (max-width: 820px) {
+  .pm-strip-row { grid-template-columns: 1fr; }
+}
+.pm-strip-copy { max-width: 38em; }
+.pm-strip-line {
+  font-size: 13px;
+  line-height: 1.68;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.pm-strip-line:last-child { margin-bottom: 0; }
+.pm-strip-visual {
+  margin: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--card) 92%, var(--blue-soft));
+  border: 2px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: var(--shadow);
+  line-height: 0;
+}
+.pm-strip-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pm-kicker--c {
+  background: color-mix(in srgb, var(--pop-mint) 38%, #fff);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.pm-kicker--d {
+  background: color-mix(in srgb, var(--pop-pink) 32%, #fff);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.pm-kicker--e {
+  background: color-mix(in srgb, var(--blue) 18%, #1e293b);
+  color: #f8fafc;
+  border-color: #f8fafc;
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--pop-mint) 65%, #fff);
+}
+
+/* Illustration style matrix — feature metaphors, not layout texture studies */
+.pm-style-lab { margin-top: 52px; }
+.pm-style-lab-kicker {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink); margin-bottom: 10px;
+  padding: 6px 14px; border-radius: 999px;
+  background: color-mix(in srgb, var(--blue-soft) 70%, #fff);
+  border: 2px solid color-mix(in srgb, var(--blue) 35%, var(--ink));
+}
+.pm-style-lab-title {
+  font-size: clamp(22px, 3.2vw, 30px); font-weight: 900; letter-spacing: -0.03em;
+  line-height: 1.2; margin-bottom: 12px; max-width: 22ch;
+}
+.pm-style-lab-intro {
+  font-size: 14px; line-height: 1.72; color: var(--muted); max-width: 46em;
+  font-weight: 500; margin-bottom: 10px;
+}
+.pm-style-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+.pm-style-card {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 18px 16px 20px;
+  border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
+  box-shadow: var(--shadow);
+}
+.pm-style-sample {
+  border-radius: 18px;
+  background: linear-gradient(155deg, color-mix(in srgb, var(--canvas) 65%, #fff) 0%, #fff 100%);
+  border: 1px solid color-mix(in srgb, var(--ink) 6%, transparent);
+  padding: 14px;
+  margin-bottom: 14px;
+  min-height: 122px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pm-style-sample svg { width: 100%; max-width: 228px; height: auto; display: block; }
+.pm-style-name {
+  font-size: 14px; font-weight: 800; margin-bottom: 8px;
+  letter-spacing: -0.02em; color: var(--ink);
+}
+.pm-style-desc {
+  font-size: 12px; line-height: 1.62; color: var(--muted);
+  font-weight: 500; margin-bottom: 8px;
+}
+.pm-style-note {
+  font-size: 11px; line-height: 1.55; color: var(--soft); font-weight: 500;
+}
+</style>
+</head>
+<body class="lang-ja">
+
+<nav class="pm-nav">
+  <a href="/" class="pm-logo">Poplist<em></em></a>
+  <div class="pm-nav-links">
+    <a class="pm-pill" href="/lp1.html" data-en="Compare: carousel LP (lp1)" data-ja="比較: カルーセル版 lp1">比較: カルーセル版 lp1</a>
+    <div class="pm-lang">
+      <button type="button" class="pm-lang-btn" data-set-lang="en">EN</button>
+      <button type="button" class="pm-lang-btn active" data-set-lang="ja">JP</button>
+    </div>
+    <a class="pm-pill" href="/" style="background:var(--blue);color:#fff;border-color:transparent" data-en="Open app" data-ja="アプリを開く">アプリを開く</a>
+  </div>
+</nav>
+
+<p class="pm-compare">
+  <span data-en="Design mock — playful bento features section inspired by" data-ja="デザインモック — 参考:">デザインモック — 参考:</span>
+  <a href="https://nani.now/ja" target="_blank" rel="noopener">nani.now/ja</a>
+  <span data-en="· Contrast with" data-ja=" · 従来の"> · 従来の</span>
+  <a href="/lp1.html">lp1</a>
+  <span data-en="carousel layout on" data-ja="（カルーセル）は">（カルーセル）は</span>
+  <strong data-en="poplist.pages.dev" data-ja="poplist.pages.dev">poplist.pages.dev</strong>
+  <span data-en="· Bento + bold grid + posters + illustration style matrix at the bottom." data-ja="· ベントー・太線格子・ポスター帯・最下部にイラストの作風マトリクス。">· ベントー・太線格子・ポスター帯・最下部にイラストの作風マトリクス。</span>
+</p>
+
+<main class="pm-wrap">
+  <p class="pm-kicker" data-en="Playful minimal" data-ja="あそびのあるミニマリスト">あそびのあるミニマリスト</p>
+  <h1 class="pm-title" data-en="Tasks that feel a little lighter." data-ja="やることリストが、少し軽くなる。">やることリストが、少し軽くなる。</h1>
+  <p class="pm-lead" data-en="Poplist removes the boring parts of lists — voice, paste, smart sorting, gentle due dates, colours, export. This page is a visual experiment: same product, friendlier layout." data-ja="Poplistはリストの「しんどいところ」を減らします。話す・貼る・自動整理・やさしい期限・色・エクスポート。同じプロダクトを、もう少し“近い”見た目で試すモックです。">Poplistはリストの「しんどいところ」を減らします。話す・貼る・自動整理・やさしい期限・色・エクスポート。同じプロダクトを、もう少し“近い”見た目で試すモックです。</p>
+  <p class="pm-concept" data-en="Bento above: nani-like asymmetric grid, two lines per tile, round flat-clay bubbles with a subtle gloss (not loud 3D). Further down: bold line art, posters, and style matrix." data-ja="上のベントーは非対称格子＋各タイトル2行。丸いフラットクレイ気泡に、控えめなツヤ反射（派手な3Dではない）。下段は太線・ポスター・作風マトリクス。">上のベントーは非対称格子＋各タイトル2行。丸いフラットクレイ気泡に、控えめなツヤ反射（派手な3Dではない）。下段は太線・ポスター・作風マトリクス。</p>
+
+  <section class="pm-bento" aria-label="Features">
+    <article class="pm-card pm-card-a">
+      <h3 data-en="Talk — we sort it" data-ja="話すだけ。整理はおまかせ">話すだけ。整理はおまかせ</h3>
+      <p class="pm-bento-desc" data-en="Speak naturally in Japanese or English." data-ja="日本語でも英語でも、思いついたまま話せます。">日本語でも英語でも、思いついたまま話せます。</p>
+      <p class="pm-bento-desc" data-en="Poplist turns your stream of thought into tasks — no rigid commands." data-ja="コマンド暗記は不要。流れがそのままタスクに並びます。">コマンド暗記は不要。流れがそのままタスクに並びます。</p>
+      <div class="pm-vis">
+        <div class="pm-clay-stage" aria-hidden="true">
+          <div class="pm-clay-stack-v">
+            <div class="pm-clay pm-clay--xl pm-clay--blue">
+              <div class="pm-clay-inner pm-clay-mic-col">
+                <div class="pm-clay-waves" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="pm-clay-mic-dot" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="pm-clay-satellites">
+              <div class="pm-clay pm-clay--sm pm-clay--mint"></div>
+              <div class="pm-clay pm-clay--xs pm-clay--sun"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="pm-card pm-card-b">
+      <h3 data-en="Work · Home · You" data-ja="仕事・家・自分">仕事・家・自分</h3>
+      <p class="pm-bento-desc" data-en="Auto categories plus Today / This week / Later." data-ja="仕事・家・自分などに自動分類。今日・今週・そのうち。">仕事・家・自分などに自動分類。今日・今週・そのうち。</p>
+      <p class="pm-bento-desc" data-en="Less mental filing, more doing." data-ja="頭の棚卸しを減らして、やることに集中。">頭の棚卸しを減らして、やることに集中。</p>
+      <div class="pm-vis">
+        <div class="pm-clay-row" aria-hidden="true">
+          <div class="pm-clay pm-clay--md pm-clay--blue"><div class="pm-clay-inner"><span class="pm-clay-chip-txt">A</span></div></div>
+          <div class="pm-clay pm-clay--md pm-clay--sky"><div class="pm-clay-inner"><span class="pm-clay-chip-txt">B</span></div></div>
+          <div class="pm-clay pm-clay--md pm-clay--coral"><div class="pm-clay-inner"><span class="pm-clay-chip-txt">C</span></div></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="pm-card pm-card-c">
+      <h3 data-en="Tap done — head clears" data-ja="タップで完了。頭もすっきり">タップで完了。頭もすっきり</h3>
+      <p class="pm-bento-desc" data-en="Complete tasks with a satisfying pop." data-ja="完了は軽いポップで気持ちよく。">完了は軽いポップで気持ちよく。</p>
+      <p class="pm-bento-desc" data-en="Save energy for what matters." data-ja="覚えるエネルギーは、本当にやりたいことへ。">覚えるエネルギーは、本当にやりたいことへ。</p>
+      <div class="pm-vis">
+        <div class="pm-clay-stage pm-clay-stage--h" aria-hidden="true">
+          <div class="pm-clay pm-clay--lg pm-clay--sun">
+            <div class="pm-clay-inner"><div class="pm-clay-check"></div></div>
+          </div>
+          <div class="pm-clay-satellites">
+            <div class="pm-clay pm-clay--xs pm-clay--pink"></div>
+            <div class="pm-clay pm-clay--sm pm-clay--mint"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="pm-card pm-card-d">
+      <h3 data-en="Paste chaos, get clarity" data-ja="ぐちゃっと貼って、すっきり">ぐちゃっと貼って、すっきり</h3>
+      <p class="pm-bento-desc" data-en="Wall of text, meeting notes, or a transcript — paste once." data-ja="長文も議事録も文字起こしも、一度貼るだけ。">長文も議事録も文字起こしも、一度貼るだけ。</p>
+      <p class="pm-bento-desc" data-en="Poplist extracts and lines everything up." data-ja="Poplistが抜き出して、きれいに並べます。">Poplistが抜き出して、きれいに並べます。</p>
+      <div class="pm-vis">
+        <div class="pm-clay-stage" aria-hidden="true">
+          <div class="pm-clay pm-clay-pill pm-clay--cloud" style="animation-delay:-.5s">
+            <div class="pm-clay-line"></div>
+            <div class="pm-clay-line"></div>
+            <div class="pm-clay-line"></div>
+          </div>
+          <div class="pm-clay pm-clay--sm pm-clay--blue" style="animation-delay:-1s"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <hr class="pm-divider" />
+  <p class="pm-v2-kicker" data-en="Version B — bold pop strip" data-ja="バージョンB — 太線ポップ">バージョンB — 太線ポップ</p>
+  <h2 class="pm-v2-title" data-en="Four beats. Loud lines, flat colour." data-ja="4つの要点。太線とフラットカラー。">4つの要点。太線とフラットカラー。</h2>
+  <p class="pm-v2-lead" data-en="Same highlights as the bento above — voice, paste, auto buckets, tap to complete — drawn like editorial pop: halftone, black outlines, and accent tints from your theme tokens (not a separate blue)." data-ja="上のベントーと同じ見せ方 — 話す・貼る・自動分類・タップ完了。編集デザインのポップ寄り：ハーフトーン、黒の輪郭、アクセントはテーマのトークンから（別色のブルー固定ではありません）。">上のベントーと同じ見せ方 — 話す・貼る・自動分類・タップ完了。編集デザインのポップ寄り：ハーフトーン、黒の輪郭、アクセントはテーマのトークンから（別色のブルー固定ではありません）。</p>
+
+  <section class="pm-fluid-section" aria-label="Bold pop feature highlights">
+    <div class="pm-fluid-grid">
+      <article class="pm-fluid-card pm-fluid-card--accent">
+        <div class="pm-fluid-art pm-fluid-wiggle" aria-hidden="true">
+          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse class="pm-fluid-fill-accent" cx="52" cy="64" rx="28" ry="32" stroke="var(--ink)" stroke-width="3.5"/>
+            <path class="pm-fluid-stroke" d="M96 40c18 0 32 14 32 32s-14 32-32 32"/>
+            <path class="pm-fluid-stroke" d="M108 28c28 4 48 28 48 56s-20 52-48 56"/>
+            <path class="pm-fluid-stroke" d="M120 18c36 8 62 38 62 74s-26 66-62 74"/>
+            <circle class="pm-fluid-fill-sun" cx="168" cy="28" r="10" stroke="var(--ink)" stroke-width="3"/>
+          </svg>
+        </div>
+        <p class="pm-fluid-cap" data-en="Talk — we sort it" data-ja="話すだけ。整理はおまかせ">話すだけ。整理はおまかせ</p>
+        <p class="pm-fluid-sub" data-en="Stream of thought becomes tasks; accent mic + waves follow your theme." data-ja="思いつきがタスクに。マイクと波はアクセント色に追従します。">思いつきがタスクに。マイクと波はアクセント色に追従します。</p>
+      </article>
+
+      <article class="pm-fluid-card pm-fluid-card--sun">
+        <div class="pm-fluid-art pm-fluid-wiggle" aria-hidden="true">
+          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect class="pm-fluid-fill-mint" x="38" y="22" width="104" height="76" rx="10" stroke="var(--ink)" stroke-width="3.5"/>
+            <path class="pm-fluid-stroke" d="M54 48h72M54 62h56M54 76h64"/>
+            <path class="pm-fluid-fill-pink" d="M152 34l28 14v48l-28 14V48z" stroke="var(--ink)" stroke-width="3.5" stroke-linejoin="round"/>
+            <circle class="pm-fluid-fill-accent" cx="168" cy="42" r="6" stroke="var(--ink)" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <p class="pm-fluid-cap" data-en="Paste chaos, get clarity" data-ja="ぐちゃっと貼って、すっきり">ぐちゃっと貼って、すっきり</p>
+        <p class="pm-fluid-sub" data-en="Long text in → clean lines out. Stamp uses your accent." data-ja="長文を貼ると行に。スタンプはアクセント色。">長文を貼ると行に。スタンプはアクセント色。</p>
+      </article>
+
+      <article class="pm-fluid-card pm-fluid-card--mint">
+        <div class="pm-fluid-art" aria-hidden="true">
+          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect class="pm-fluid-fill-accent" x="24" y="44" width="152" height="28" rx="14" stroke="var(--ink)" stroke-width="3.5"/>
+            <rect class="pm-fluid-fill-sun" x="32" y="50" width="36" height="16" rx="8" stroke="var(--ink)" stroke-width="3"/>
+            <rect class="pm-fluid-fill-pink" x="78" y="50" width="36" height="16" rx="8" stroke="var(--ink)" stroke-width="3"/>
+            <rect class="pm-fluid-chip-mint" x="124" y="50" width="44" height="16" rx="8" stroke="var(--ink)" stroke-width="3"/>
+            <path class="pm-fluid-stroke" d="M40 22c28-8 56 8 84 0s56-8 84 0" style="stroke-dasharray:6 10"/>
+          </svg>
+        </div>
+        <p class="pm-fluid-cap" data-en="Work · Home · You" data-ja="仕事・家・自分">仕事・家・自分</p>
+        <p class="pm-fluid-sub" data-en="Auto buckets + Today / This week / Later — thick rails, readable at a glance." data-ja="自動バケツ＋今日・今週・そのうち。太いレールで一目で。">自動バケツ＋今日・今週・そのうち。太いレールで一目で。</p>
+      </article>
+
+      <article class="pm-fluid-card pm-fluid-card--pink">
+        <div class="pm-fluid-art pm-fluid-wiggle" aria-hidden="true">
+          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle class="pm-fluid-fill-sun" cx="100" cy="58" r="36" stroke="var(--ink)" stroke-width="3.5"/>
+            <path d="M88 58l10 10 22-26" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="pm-fluid-stroke" d="M100 10v14M100 92v14M34 58h14M152 58h14M48 30l12 12M140 76l12 12M152 30l-12 12M60 76l-12 12" style="stroke-width:3"/>
+          </svg>
+        </div>
+        <p class="pm-fluid-cap" data-en="Tap done — head clears" data-ja="タップで完了。頭もすっきり">タップで完了。頭もすっきり</p>
+        <p class="pm-fluid-sub" data-en="One decisive pop; burst lines keep the energy editorial, not skeuomorphic." data-ja="一度のポップで完了。放射線は編集っぽい勢いで、擬物ではなく。">一度のポップで完了。放射線は編集っぽい勢いで、擬物ではなく。</p>
+      </article>
+    </div>
+  </section>
+
+  <hr class="pm-divider" />
+  <section class="pm-strip-block" aria-labelledby="pm-strip-c-label">
+    <p id="pm-strip-c-label" class="pm-v2-kicker pm-kicker--c" data-en="Version C — sticker mood" data-ja="バージョンC — ステッカー気分">バージョンC — ステッカー気分</p>
+    <div class="pm-strip-row">
+      <div class="pm-strip-copy">
+        <p class="pm-strip-line" data-en="The art is the product story: talk → paste → sort → done. Stickers are just the costume, not random texture." data-ja="画はプロダクトの流れが主役：話す→貼る→分ける→完了。ステッカーは外装で、テクスチャ遊びではありません。">画はプロダクトの流れが主役：話す→貼る→分ける→完了。ステッカーは外装で、テクスチャ遊びではありません。</p>
+        <p class="pm-strip-line" data-en="Same Poplist palette and black ink, but the composition is playful collage — closer to merch or social cover art." data-ja="色はPoplistのまま、黒インクで締める。構図はコラージュ寄りで、グッズやSNSカバーに近いノリです。">色はPoplistのまま、黒インクで締める。構図はコラージュ寄りで、グッズやSNSカバーに近いノリです。</p>
+        <p class="pm-strip-line" data-en="Use this when you want emotional hook first; the product screenshot can come after trust is there." data-ja="感情のフックを先に置きたいとき向き。実画面のスクショは、信頼が乗ってからでも十分、という比較用。">感情のフックを先に置きたいとき向き。実画面のスクショは、信頼が乗ってからでも十分、という比較用。</p>
+      </div>
+      <figure class="pm-strip-visual">
+        <img class="pm-strip-img" src="./pm-mock-visual-c.svg" width="400" height="240" alt="" decoding="async" loading="lazy" />
+      </figure>
+    </div>
+  </section>
+
+  <hr class="pm-divider" />
+  <section class="pm-strip-block" aria-labelledby="pm-strip-d-label">
+    <p id="pm-strip-d-label" class="pm-v2-kicker pm-kicker--d" data-en="Version D — magazine cut" data-ja="バージョンD — 雑誌の切り抜き">バージョンD — 雑誌の切り抜き</p>
+    <div class="pm-strip-row">
+      <div class="pm-strip-copy">
+        <p class="pm-strip-line" data-en="Panels carry the same feature beats: mic in halftone, paste block, sorted column, check — layout serves the narrative." data-ja="パネルごとに同じ機能の流れ：ハーフトーンのマイク、貼り付け、整列カラム、チェック。レイアウトは物語のため。">パネルごとに同じ機能の流れ：ハーフトーンのマイク、貼り付け、整列カラム、チェック。レイアウトは物語のため。</p>
+        <p class="pm-strip-line" data-en="This is “campaign poster” energy: good for landing hero art or a press kit slide, not a feature walkthrough." data-ja="キャンペーン用ポスターの勢い。LPのヒーローアートやプレス資料向きで、機能説明の代わりにはしない比較。">キャンペーン用ポスターの勢い。LPのヒーローアートやプレス資料向きで、機能説明の代わりにはしない比較。</p>
+        <p class="pm-strip-line" data-en="Keeps contrast and line weight loud like Version B, but with a calmer page rhythm because it’s one image, not four cards." data-ja="バージョンBと同じくコントラストと線は太め。ただしカード4枚ではなく1枚画なので、ページのリズムはやや静か。">バージョンBと同じくコントラストと線は太め。ただしカード4枚ではなく1枚画なので、ページのリズムはやや静か。</p>
+      </div>
+      <figure class="pm-strip-visual">
+        <img class="pm-strip-img" src="./pm-mock-visual-d.svg" width="400" height="260" alt="" decoding="async" loading="lazy" />
+      </figure>
+    </div>
+  </section>
+
+  <hr class="pm-divider" />
+  <section class="pm-strip-block" aria-labelledby="pm-strip-e-label">
+    <p id="pm-strip-e-label" class="pm-v2-kicker pm-kicker--e" data-en="Version E — night pop (still on-brand)" data-ja="バージョンE — ナイトポップ（ブランドは維持）">バージョンE — ナイトポップ（ブランドは維持）</p>
+    <div class="pm-strip-row">
+      <div class="pm-strip-copy">
+        <p class="pm-strip-line" data-en="Night mode still shows the journey: glowing voice, paste resolving to lines, bucket bars, bright done pop." data-ja="ナイトでも流れは同じ：光る音声、行に落ちる貼り付け、バケツの帯、完了のポップ。">ナイトでも流れは同じ：光る音声、行に落ちる貼り付け、バケツの帯、完了のポップ。</p>
+        <p class="pm-strip-line" data-en="Illustration-only: suggests “your list, settled” after hours — companion to the bright daytime bento, not a replacement." data-ja="イラストのみで「一日の後に落ち着いたリスト」を連想。昼の明るいベントーと並べる補助線で、置き換えではない比較。">イラストのみで「一日の後に落ち着いたリスト」を連想。昼の明るいベントーと並べる補助線で、置き換えではない比較。</p>
+        <p class="pm-strip-line" data-en="Swap the SVG for a photo later; the layout is built so copy + image stay balanced on mobile." data-ja="あとでSVGを写真に差し替えても、コピーと画のバランスがモバイルで崩れないように組んであります。">あとでSVGを写真に差し替えても、コピーと画のバランスがモバイルで崩れないように組んであります。</p>
+      </div>
+      <figure class="pm-strip-visual">
+        <img class="pm-strip-img" src="./pm-mock-visual-e.svg" width="400" height="240" alt="" decoding="async" loading="lazy" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="pm-style-lab" aria-labelledby="pm-style-lab-title">
+    <hr class="pm-divider" />
+    <p class="pm-style-lab-kicker" data-en="Illustration directions" data-ja="イラストの方向性">イラストの方向性</p>
+    <h2 id="pm-style-lab-title" class="pm-style-lab-title" data-en="Ten feature-first styles (not SaaS people, not nani clones)" data-ja="機能が主役の作風10種（SaaS人物／naniコピーではない）">機能が主役の作風10種（SaaS人物／naniコピーではない）</h2>
+    <p class="pm-style-lab-intro" data-en="Each tile shows the same story in miniature: voice in → messy paste → sorted buckets → tap done. Pick a lane for heroes across pages; mix with real UI when you need proof." data-ja="各タイルは同じ物語のミニ版です：音声入力→ぐちゃっと貼る→バケツ分け→タップ完了。サイト全体のヒーローに一本化する lane を選び、説得力が要る所は実UIと混ぜてください。">各タイルは同じ物語のミニ版です：音声入力→ぐちゃっと貼る→バケツ分け→タップ完了。サイト全体のヒーローに一本化する lane を選び、説得力が要る所は実UIと混ぜてください。</p>
+    <p class="pm-style-lab-intro" data-en="Aim: a little 3D / motion energy without corporate stock humans or flat-empty minimalism. Tokens stay Poplist (blue-led + yellow · mint · pink accents + black ink)." data-ja="狙い：コーポレートの人物ストックでも、空っぽの超フラットでもない。少し3Dや動きの気配。色はPoplistのトークン（青軸＋黄・ミント・ピンク＋黒インク）で統一。">狙い：コーポレートの人物ストックでも、空っぽの超フラットでもない。少し3Dや動きの気配。色はPoplistのトークン（青軸＋黄・ミント・ピンク＋黒インク）で統一。</p>
+
+    <div class="pm-style-grid">
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="pmSt1" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#fff" stop-opacity=".85"/><stop offset="50%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></radialGradient><radialGradient id="pmSt1b" cx="35%" cy="30%" r="55%"><stop offset="0%" stop-color="#fff" stop-opacity=".7"/><stop offset="100%" stop-color="#5eead4"/></radialGradient></defs><circle cx="44" cy="52" r="26" fill="url(#pmSt1)" stroke="#111" stroke-width="2.5"/><path d="M72 46h10q8 0 8 8v12" stroke="#111" stroke-width="2.2" stroke-linecap="round" fill="none"/><rect x="96" y="34" width="56" height="36" rx="10" fill="#fff" stroke="#111" stroke-width="2"/><path d="M106 48h36M106 58h24M106 68h32" stroke="#111" stroke-width="1.8" stroke-linecap="round" opacity=".35"/><path d="M106 50h34M106 60h28M106 70h30" stroke="#111" stroke-width="2" stroke-linecap="round"/><circle cx="138" cy="86" r="16" fill="url(#pmSt1b)" stroke="#111" stroke-width="2"/><path d="M130 86l5 6 14-18" stroke="#111" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Soft clay 3D" data-ja="やわらかクレイ3D">やわらかクレイ3D</h3>
+        <p class="pm-style-desc" data-en="Rounded volumes, gentle highlights — objects (mic, note, chips) read as touchable, not interface chrome." data-ja="丸い立体とやわらかいハイライト。マイク・メモ・チップが「触れそうなモノ」に見え、UIの枠に見えにくい。">丸い立体とやわらかいハイライト。マイク・メモ・チップが「触れそうなモノ」に見え、UIの枠に見えにくい。</p>
+        <p class="pm-style-note" data-en="Good for: marketing heroes, onboarding. Avoid: hyper-gloss toy ads; keep specular subtle." data-ja="向き：マーケのヒーロー／オンボ。避けたい：ギラギラしたおもちゃ広告。光は抑えめに。">向き：マーケのヒーロー／オンボ。避けたい：ギラギラしたおもちゃ広告。光は抑えめに。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#3b82f6" stroke="#111" stroke-width="2.2" d="M24 78 L52 60 L80 78 L52 96Z"/><path fill="#fde047" stroke="#111" stroke-width="2.2" d="M52 60 L80 42 L108 60 L80 78Z"/><path fill="#f9a8d4" stroke="#111" stroke-width="2.2" d="M80 78 L108 60 L108 82 L80 100Z"/><ellipse cx="52" cy="38" rx="14" ry="18" fill="#5eead4" stroke="#111" stroke-width="2"/><path d="M40 38h24M46 32v12" stroke="#111" stroke-width="1.6" stroke-linecap="round"/><circle cx="132" cy="72" r="18" fill="#fde047" stroke="#111" stroke-width="2"/><path d="M124 72l5 7 14-16" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Chunky isometric" data-ja="分厚いアイソメ">分厚いアイソメ</h3>
+        <p class="pm-style-desc" data-en="Toy blocks for “sorting into piles” — spatial metaphor without dashboard grids." data-ja="「山に分ける」玩具ブロックの比喩。ダッシュボードの格子には寄せない。">「山に分ける」玩具ブロックの比喩。ダッシュボードの格子には寄せない。</p>
+        <p class="pm-style-note" data-en="Good for: explainers, feature compare. Avoid: thin wireframe isometric (feels SaaS 2019)." data-ja="向き：説明図・機能比較。避けたい：細いワイヤのアイソメ（古いSaaS感）。">向き：説明図・機能比較。避けたい：細いワイヤのアイソメ（古いSaaS感）。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="46" cy="52" rx="22" ry="28" fill="#2563eb" stroke="#111" stroke-width="2.8"/><path d="M32 44h28" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" opacity=".35"/><path d="M70 48h12v14" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M88 40c18-6 32 8 38 24" stroke="#fde047" stroke-width="4" stroke-linecap="round" fill="none" opacity=".9"/><rect x="96" y="36" width="54" height="34" rx="6" fill="#fff" stroke="#111" stroke-width="2.5"/><path d="M104 50h38M104 60h22" stroke="#111" stroke-width="2" stroke-linecap="round"/><rect x="102" y="78" width="18" height="10" rx="3" fill="#f9a8d4" stroke="#111" stroke-width="1.8"/><rect x="124" y="78" width="18" height="10" rx="3" fill="#5eead4" stroke="#111" stroke-width="1.8"/><rect x="146" y="78" width="14" height="10" rx="3" fill="#fde047" stroke="#111" stroke-width="1.8"/><circle cx="132" cy="22" r="10" fill="#fde047" stroke="#111" stroke-width="2"/><path d="M126 22l4 5 10-12" stroke="#111" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Cel shade + motion smear" data-ja="セル影＋動きのにじみ">セル影＋動きのにじみ</h3>
+        <p class="pm-style-desc" data-en="Animation-cel logic: one shadow tone + speed streaks on the mic path — feels like a paused frame." data-ja="アニメセル的な陰1段＋マイク周りのスピード線。「止め画」の気配。">アニメセル的な陰1段＋マイク周りのスピード線。「止め画」の気配。</p>
+        <p class="pm-style-note" data-en="Good for: loops, social clips. Avoid: full anime characters; keep props abstract." data-ja="向き：ループ動画・SNS。避けたい：キャラ本体まで描く。小道具は抽象のまま。">向き：ループ動画・SNS。避けたい：キャラ本体まで描く。小道具は抽象のまま。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="20" y="28" width="52" height="56" rx="26" fill="rgba(59,130,246,.25)" stroke="#111" stroke-width="2.5"/><rect x="28" y="36" width="36" height="40" rx="18" fill="rgba(255,255,255,.5)" stroke="#111" stroke-width="2"/><path d="M78 48h12v20" stroke="#111" stroke-width="2" stroke-linecap="round" opacity=".5"/><rect x="96" y="32" width="52" height="40" rx="8" fill="rgba(253,224,71,.35)" stroke="#111" stroke-width="2"/><path d="M104 48h36M104 58h28M104 68h32" stroke="#111" stroke-width="1.8" stroke-linecap="round" opacity=".5"/><rect x="98" y="78" width="50" height="22" rx="11" fill="rgba(94,234,212,.3)" stroke="#111" stroke-width="2"/><circle cx="132" cy="90" r="8" fill="rgba(249,168,212,.5)" stroke="#111" stroke-width="1.8"/><path d="M128 90l3 4 8-10" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Frosted glass props" data-ja="すりガラスの小道具">すりガラスの小道具</h3>
+        <p class="pm-style-desc" data-en="Translucent blobs over flat colour — “modern” without glassmorphism UI clones." data-ja="フラット色の上に半透明の塊。流行のガラスUIのコピーにはならない程度に。">フラット色の上に半透明の塊。流行のガラスUIのコピーにはならない程度に。</p>
+        <p class="pm-style-note" data-en="Good for: dark mode art, contrast with sharp screenshots. Avoid: fake window chrome." data-ja="向き：ダークモードの画・鋭いスクショとの対比。避けたい：偽OSウィンドウ。">向き：ダークモードの画・鋭いスクショとの対比。避けたい：偽OSウィンドウ。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><filter id="pmSt5"><feDropShadow dx="3" dy="3" stdDeviation="0" flood-color="#111" flood-opacity=".25"/></filter><g filter="url(#pmSt5)"><rect x="38" y="22" width="44" height="56" rx="22" fill="#3b82f6" stroke="#111" stroke-width="2.5"/><rect x="32" y="28" width="44" height="56" rx="22" fill="#fde047" stroke="#111" stroke-width="2.5"/><rect x="26" y="34" width="44" height="56" rx="22" fill="#fff" stroke="#111" stroke-width="2.5"/></g><path d="M36 62h24" stroke="#111" stroke-width="2" stroke-linecap="round"/><rect x="90" y="30" width="56" height="38" rx="6" fill="#fff" stroke="#111" stroke-width="2.5" filter="url(#pmSt5)"/><path d="M98 44h40M98 54h26M98 64h34" stroke="#111" stroke-width="2" stroke-linecap="round"/><circle cx="132" cy="86" r="16" fill="#5eead4" stroke="#111" stroke-width="2" filter="url(#pmSt5)"/><path d="M124 86l5 6 12-14" stroke="#111" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Paper cut-out depth" data-ja="紙の層（切り抜き）">紙の層（切り抜き）</h3>
+        <p class="pm-style-desc" data-en="Stacked sheets tell “paste then reorder” — tactile stop-motion vibe." data-ja="紙が積われる＝貼ってから並べ替え。ストップモーションの手触り。">紙が積われる＝貼ってから並べ替え。ストップモーションの手触り。</p>
+        <p class="pm-style-note" data-en="Good for: editorial pages, changelog headers. Avoid: noisy torn edges everywhere." data-ja="向き：編集ページ・更新ログ見出し。避けたい：破れ目を全面に。">向き：編集ページ・更新ログ見出し。避けたい：破れ目を全面に。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g opacity=".85"><ellipse cx="48" cy="52" rx="20" ry="26" fill="none" stroke="#06b6d4" stroke-width="3"/><path d="M68 48h10v12" stroke="#06b6d4" stroke-width="2.5" fill="none"/></g><g transform="translate(4,2)"><ellipse cx="48" cy="52" rx="20" ry="26" fill="none" stroke="#ec4899" stroke-width="3"/><path d="M68 48h10v12" stroke="#ec4899" stroke-width="2.5" fill="none"/></g><ellipse cx="48" cy="52" rx="20" ry="26" fill="#3b82f6" stroke="#111" stroke-width="2"/><rect x="86" y="34" width="52" height="36" rx="6" fill="#fff" stroke="#111" stroke-width="2"/><g opacity=".7" transform="translate(3,0)"><path d="M94 48h34M94 58h20M94 68h30" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/></g><path d="M94 48h34M94 58h20M94 68h30" stroke="#111" stroke-width="2" stroke-linecap="round"/><circle cx="132" cy="82" r="14" fill="#fde047" stroke="#111" stroke-width="2"/><path d="M125 82l4 5 10-12" stroke="#111" stroke-width="2" fill="none"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Risograph drift" data-ja="リソのズレ">リソのズレ</h3>
+        <p class="pm-style-desc" data-en="Mis-registered inks on the same objects — print warmth, still reads as product story." data-ja="同じ形にシアン／マゼンタがズレる。印刷の温かみで、話はプロダクトのまま。">同じ形にシアン／マゼンタがズレる。印刷の温かみで、話はプロダクトのまま。</p>
+        <p class="pm-style-note" data-en="Good for: blog, zine drops. Avoid: so much noise that tasks look like errors." data-ja="向き：ブログ・ジーン的キャンペーン。避けたい：ノイズでタスクが誤植に見える。">向き：ブログ・ジーン的キャンペーン。避けたい：ノイズでタスクが誤植に見える。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="168" height="104" fill="#fff9e6"/><rect x="18" y="20" width="48" height="64" rx="24" fill="#3b82f6" stroke="#111" stroke-width="3"/><path d="M68 44h14v24" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="90" y="24" width="60" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="3"/><path d="M98 40h44M98 52h28M98 64h36" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><rect x="88" y="76" width="62" height="20" rx="0" fill="#f9a8d4" stroke="#111" stroke-width="3" transform="skewX(-6)"/><circle cx="138" cy="86" r="18" fill="#fde047" stroke="#111" stroke-width="3"/><path d="M130 86l5 7 12-14" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Neobrutal playful" data-ja="ネオブルタル（遊び）">ネオブルタル（遊び）</h3>
+        <p class="pm-style-desc" data-en="Hard black rules + loud fills — matches Version B energy but still explains features." data-ja="黒のルール＋はっきりした塗り。B帯の勢いと揃えつつ、機能説明は残す。">黒のルール＋はっきりした塗り。B帯の勢いと揃えつつ、機能説明は残す。</p>
+        <p class="pm-style-note" data-en="Good for: bold LPs, launch moments. Avoid: clashing with delicate in-app UI on the same fold." data-ja="向き：攻めのLP・ローンチ。避けたい：同じ画面でアプリ内UIの繊細さと喧嘩。">向き：攻めのLP・ローンチ。避けたい：同じ画面でアプリ内UIの繊細さと喧嘩。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#60a5fa" stroke="#111" stroke-width="2" d="M36 72 L52 32 L68 72Z"/><path fill="#3b82f6" stroke="#111" stroke-width="2" d="M52 32 L68 72 L44 72Z"/><path fill="#93c5fd" stroke="#111" stroke-width="2" d="M72 48 L88 72 L56 72Z"/><path d="M78 44h12v16" stroke="#111" stroke-width="2" fill="none"/><polygon fill="#fde047" stroke="#111" stroke-width="2" points="98,38 118,38 108,58"/><rect x="94" y="62" width="48" height="28" fill="#f9a8d4" stroke="#111" stroke-width="2"/><path d="M100 72h36M100 80h24" stroke="#111" stroke-width="1.6"/><polygon fill="#5eead4" stroke="#111" stroke-width="2" points="132,78 142,92 122,92"/><path d="M128 88l6 8 10-12" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Low-poly facets" data-ja="ローポリの面">ローポリの面</h3>
+        <p class="pm-style-desc" data-en="Faceted gems instead of humans — “pieces snapping into place” for sort + done." data-ja="人物の代わりに面の塊。「パチッとはまる」感じで分類と完了を表す。">人物の代わりに面の塊。「パチッとはまる」感じで分類と完了を表す。</p>
+        <p class="pm-style-note" data-en="Good for: 3D-adjacent motion tests. Avoid: gamey loot-box clichés." data-ja="向き：3D寄りモーションの試し。避けたい：ゲームのガチャ箱ネタ。">向き：3D寄りモーションの試し。避けたい：ゲームのガチャ箱ネタ。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pmSt9" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff"/><stop offset="35%" stop-color="#93c5fd"/><stop offset="70%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1e3a8a"/></linearGradient></defs><ellipse cx="44" cy="54" rx="22" ry="28" fill="url(#pmSt9)" stroke="#111" stroke-width="2.5"/><path d="M68 50h10v14" stroke="#111" stroke-width="2.2" fill="none"/><rect x="90" y="36" width="54" height="34" rx="6" fill="#f8fafc" stroke="#111" stroke-width="2"/><path d="M98 50h38M98 60h22" stroke="#cbd5e1" stroke-width="2"/><path d="M98 52h36M98 62h26" stroke="#111" stroke-width="2" stroke-linecap="round"/><ellipse cx="132" cy="86" rx="16" ry="14" fill="url(#pmSt9)" stroke="#111" stroke-width="2"/><path d="M124 86l5 6 12-14" stroke="#111" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Soft chrome rim" data-ja="やわらかクローム縁">やわらかクローム縁</h3>
+        <p class="pm-style-desc" data-en="Y2K-adjacent shine on objects only — suggests motion capture / highlight passes." data-ja="Y2K寄りの光はモノだけに。ハイライトが動いてるような連想。">Y2K寄りの光はモノだけに。ハイライトが動いてるような連想。</p>
+        <p class="pm-style-note" data-en="Good for: hero stills that need extra depth. Avoid: full liquid-metal backgrounds." data-ja="向き：立体感が欲しい静止ヒーロー。避けたい：液体金属の背景全面。">向き：立体感が欲しい静止ヒーロー。避けたい：液体金属の背景全面。</p>
+      </article>
+
+      <article class="pm-style-card">
+        <div class="pm-style-sample">
+          <svg viewBox="0 0 168 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="skewX(-8)"><ellipse cx="42" cy="52" rx="18" ry="24" fill="#3b82f6" stroke="#111" stroke-width="2.5"/><path d="M62 48h14v12" stroke="#111" stroke-width="2.5" fill="none"/></g><path d="M20 52h-6M14 46l-4-4M14 58l-4 4" stroke="#111" stroke-width="1.8" stroke-linecap="round"/><rect x="86" y="38" width="46" height="32" rx="4" fill="#fff" stroke="#111" stroke-width="2.5" transform="rotate(-3 109 54)"/><path d="M92 50h34M92 60h20" stroke="#111" stroke-width="2" stroke-linecap="round"/><rect x="100" y="76" width="14" height="8" rx="2" fill="#fde047" stroke="#111" stroke-width="1.8"/><rect x="118" y="74" width="14" height="10" rx="2" fill="#f9a8d4" stroke="#111" stroke-width="1.8"/><rect x="136" y="76" width="12" height="8" rx="2" fill="#5eead4" stroke="#111" stroke-width="1.8"/><circle cx="132" cy="28" r="12" fill="#fde047" stroke="#111" stroke-width="2.5"/><path d="M126 28l4 5 10-11" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M108 18l8-6M120 14l4-8M132 12v-8" stroke="#111" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>
+        </div>
+        <h3 class="pm-style-name" data-en="Kinetic glyphs" data-ja="キネティックな記号">キネティックな記号</h3>
+        <p class="pm-style-desc" data-en="Squash, skew, speed lines on icons — reads “animated” even as a still." data-ja="アイコンにスキューとスピード線。静止画でも「動いてる」読み。">アイコンにスキューとスピード線。静止画でも「動いてる」読み。</p>
+        <p class="pm-style-note" data-en="Good for: micro-campaigns, motion handoff. Avoid: warping so far shapes lose meaning." data-ja="向き：小キャンペーン・モーションへの引き継ぎ。避けたい：歪みすぎて意味が消える。">向き：小キャンペーン・モーションへの引き継ぎ。避けたい：歪みすぎて意味が消える。</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="pm-footer-cta">
+    <a href="/" class="pm-btn-primary" data-en="Try Poplist free" data-ja="無料で試す">無料で試す</a>
+    <a href="/lp1.html" class="pm-btn-ghost">
+      <span data-en="See carousel version (lp1) →" data-ja="カルーセル版 lp1 を見る →">カルーセル版 lp1 を見る →</span>
+    </a>
+  </div>
+
+  <p class="pm-footnote" data-en="Mock for internal design comparison — not final marketing copy." data-ja="社内・デザイン比較用モックです。最終コピーではありません。">社内・デザイン比較用モックです。最終コピーではありません。</p>
+</main>
+
+<script>
+(function () {
+  var LABEL = { en: 'en', ja: 'ja' };
+  function setLang(lang) {
+    document.body.classList.toggle('lang-ja', lang === 'ja');
+    document.body.classList.toggle('lang-en', lang === 'en');
+    document.querySelectorAll('.pm-lang-btn').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-set-lang') === lang);
+    });
+    document.querySelectorAll('[data-en][data-ja]').forEach(function (el) {
+      var t = el.getAttribute('data-' + lang);
+      if (t) el.textContent = t;
+    });
+    document.documentElement.lang = lang === 'ja' ? 'ja' : 'en';
+  }
+  document.querySelectorAll('.pm-lang-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      setLang(b.getAttribute('data-set-lang') || 'ja');
+    });
+  });
+  setLang('ja');
+})();
+</script>
+</body>
+</html>

@@ -2102,6 +2102,18 @@ GoogleService-Info.plist
           </div>
         </div>
       </div>
+      <div class="settings-row">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Burst effect" data-ja="バブル効果">Burst effect</p>
+          <p class="settings-row-sub" data-en="Particle celebration when you complete a task" data-ja="タスク完了時のパーティクル演出">Particle celebration when you complete a task</p>
+        </div>
+        <div class="settings-row-right">
+          <div class="pill-toggle">
+            <button type="button" class="colour-scheme-btn active" id="burstEffectOn" data-en="On" data-ja="オン">On</button>
+            <button type="button" class="colour-scheme-btn" id="burstEffectOff" data-en="Off" data-ja="オフ">Off</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ══ CUSTOMISE PRO ══ -->
@@ -2571,6 +2583,7 @@ const state = {
   bubbleColour: 'bc-blue',  // bc-* class
   isProUser:    false,       // set true after Firebase auth confirms Pro; always true when no Firebase config
   greyBubbles:  false,       // FREE — greyscale mode
+  burstEffect:  true,        // particle burst on complete (settings: Burst effect / バブル効果)
   lang:         'en',
   isListening:  false,
   userId:       null,        // Firebase UID when signed in, null for guest
@@ -2876,7 +2889,9 @@ function burstBubble(el, item) {
   ];
 
   const count = 28;
-  for (let i = 0; i < count; i++) {
+  if (!state.burstEffect) {
+    /* skip particles; popping + collapse continue below */
+  } else for (let i = 0; i < count; i++) {
     const p    = document.createElement('div');
     p.className = 'burst-p';
     const size  = Math.random() * 13 + 4;
@@ -2952,6 +2967,7 @@ function burstBubble(el, item) {
    fired in 3 waves for a swirling celebration
 ══════════════════════════════════════════ */
 function spawnDoneBurst(bubbleColor, anchorEl) {
+  if (!state.burstEffect) return;
   const anchor = anchorEl || document.getElementById('doneBubblesAnchor') || document.querySelector('.done-bubbles');
   if (!anchor) return;
   const r  = anchor.getBoundingClientRect();
@@ -5348,6 +5364,22 @@ document.getElementById('colourModeGrey')?.addEventListener('click', () => {
   showToast('Greyscale on');
 });
 
+/* ── Burst effect (particles on task complete / done screen) ── */
+document.getElementById('burstEffectOn')?.addEventListener('click', () => {
+  if (state.burstEffect) return;
+  state.burstEffect = true;
+  localStorage.setItem('burstEffect', 'true');
+  updateBurstEffectUI();
+  showToast(state.lang === 'ja' ? 'バブル効果：オン' : 'Burst effect on');
+});
+document.getElementById('burstEffectOff')?.addEventListener('click', () => {
+  if (!state.burstEffect) return;
+  state.burstEffect = false;
+  localStorage.setItem('burstEffect', 'false');
+  updateBurstEffectUI();
+  showToast(state.lang === 'ja' ? 'バブル効果：オフ' : 'Burst effect off');
+});
+
 /* ── Greyscale vars & helper (used by colour mode toggle above) ── */
 const GREY_VARS = {
   '--blue':      '#6B7280',
@@ -5391,12 +5423,23 @@ const COLOUR_ACCENT_VARS = {
   'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
 };
 
+function updateBurstEffectUI() {
+  const on = document.getElementById('burstEffectOn');
+  const off = document.getElementById('burstEffectOff');
+  if (!on || !off) return;
+  on.classList.toggle('active', state.burstEffect);
+  off.classList.toggle('active', !state.burstEffect);
+}
+
 /* Restore persisted prefs — runs after GREY_VARS + COLOUR_ACCENT_VARS are defined */
 (function restorePrefs() {
   const c  = localStorage.getItem('bubbleColour');
   const s  = localStorage.getItem('bubbleStyle');
   const g  = localStorage.getItem('greyBubbles');
   const ai = localStorage.getItem('aiClassify');
+  const burst = localStorage.getItem('burstEffect');
+  if (burst === 'false') state.burstEffect = false;
+  else state.burstEffect = true;
 
   if (c && document.querySelector(`[data-colour="${c}"]`)) {
     state.bubbleColour = c;
@@ -5420,6 +5463,7 @@ const COLOUR_ACCENT_VARS = {
     state.aiClassify = true;
     updateClassifyModeUI();
   }
+  updateBurstEffectUI();
   if (c || s || g || ai) {
     if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
       applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
