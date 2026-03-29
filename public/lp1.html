@@ -458,7 +458,11 @@ body.lang-ja .carousel-main-title { letter-spacing: 0; font-size: 22px; }
   padding: 6px 24px 4px;
 }
 /* Phone mockup — iPhone Pro logical 393×852; +2% width so JA tabs stay one line */
-.slide-phone { position: relative; flex-shrink: 0; margin-bottom: 24px }
+.slide-phone {
+  position: relative; flex-shrink: 0; margin-bottom: 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
 .phone-frame {
   width: calc(408px * 393 / 852 * 1.02 + 20px);
   background: #111116;
@@ -2415,31 +2419,48 @@ function lpExpSetAnimChip(chip, timing) {
   }
 
   dots.forEach(function(d, i) {
-    d.addEventListener('click', function(){
-      if (animating) return;
-      paused = false; animating = true;
+    d.addEventListener('click', function() {
+      animating = false;
+      paused = false;
+      clearInterval(timer);
       moveTo(i + 1, true);
     });
   });
 
-  // Touch swipe + tap to pause
-  var wx = 0, wy = 0;
+  var ignorePhoneClickUntil = 0;
+  function toggleCarouselPause() {
+    paused = !paused;
+    if (paused) clearInterval(timer);
+    else startAuto();
+  }
+
+  /* Swipe on strip; tap on phone mock only = pause / resume (headline under phone does not toggle) */
+  var wx = 0, wy = 0, touchStartedOnPhone = false;
   var wrap = document.querySelector('.carousel-wrap');
   if (wrap) {
-    wrap.addEventListener('touchstart', function(e){ wx = e.touches[0].clientX; wy = e.touches[0].clientY; }, { passive: true });
-    wrap.addEventListener('touchend', function(e){
+    wrap.addEventListener('touchstart', function(e) {
+      wx = e.touches[0].clientX;
+      wy = e.touches[0].clientY;
+      var t = e.target;
+      touchStartedOnPhone = !!(t && t.closest && t.closest('.slide-phone'));
+    }, { passive: true });
+    wrap.addEventListener('touchend', function(e) {
       var dx = e.changedTouches[0].clientX - wx;
       var dy = e.changedTouches[0].clientY - wy;
       if (Math.abs(dx) > 40) {
-        paused = false; advance(dx < 0 ? 1 : -1);
-      } else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
-        paused = !paused;
-        if (paused) clearInterval(timer); else startAuto();
+        paused = false;
+        clearInterval(timer);
+        advance(dx < 0 ? 1 : -1);
+      } else if (touchStartedOnPhone && Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+        ignorePhoneClickUntil = Date.now() + 380;
+        toggleCarouselPause();
       }
+      touchStartedOnPhone = false;
     }, { passive: true });
-    wrap.addEventListener('click', function(){
-      paused = !paused;
-      if (paused) clearInterval(timer); else startAuto();
+    wrap.addEventListener('click', function(e) {
+      if (!e.target.closest('.slide-phone')) return;
+      if (Date.now() < ignorePhoneClickUntil) return;
+      toggleCarouselPause();
     });
   }
 
