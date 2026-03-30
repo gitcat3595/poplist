@@ -1202,49 +1202,54 @@ body.lang-ja .ci-tab { font-size: 5.6px }
 .lp-philosophy {
   width: 100%;
   background: var(--bg);
-  padding: 12px 16px 28px;
+  padding: 16px 16px 32px;
   position: relative;
 }
 .lp-philo-bubble {
   max-width: 448px;
   margin: 0 auto;
-  border-radius: 24px;
-  padding: 28px 18px 32px;
+  border-radius: 26px;
+  padding: 32px 20px 34px;
   position: relative;
   overflow: hidden;
-  /* Deeper accent blue + layered grain, diagonal mesh, soft orbs */
+  /* Accent bubble — uses current accent colour tokens */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E") repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M0 20 L20 0' stroke='rgba(255,255,255,.07)' stroke-width='0.6'/%3E%3C/svg%3E") repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='2' cy='3' r='0.65' fill='rgba(255,255,255,.14)'/%3E%3C/svg%3E") repeat,
-    radial-gradient(ellipse at 12% 90%, rgba(37,99,235,.55) 0%, transparent 52%),
-    radial-gradient(ellipse at 92% 8%, rgba(96,165,250,.35) 0%, transparent 46%),
-    radial-gradient(ellipse at 50% 50%, rgba(30,58,138,.25) 0%, transparent 70%),
-    linear-gradient(145deg, rgba(23,37,84,.88) 0%, rgba(29,78,216,.82) 42%, rgba(30,64,175,.86) 100%);
-  border: 1px solid rgba(255,255,255,.22);
+    /* base card in accent colour */
+    linear-gradient(145deg, var(--blue-dim) 0%, var(--blue) 40%, var(--blue-mid) 100%),
+    /* noisy texture on top */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E") repeat,
+    /* diagonal mesh + dots for interest */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M0 20 L20 0' stroke='rgba(255,255,255,.16)' stroke-width='0.7'/%3E%3C/svg%3E") repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='2' cy='3' r='0.65' fill='rgba(255,255,255,.18)'/%3E%3C/svg%3E") repeat,
+    /* accent orbs driven by accent colour — multiple soft circles */
+    radial-gradient(circle at 12% 82%, color-mix(in srgb, var(--blue) 30%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--blue-mid) 32%, transparent) 0%, transparent 60%),
+    radial-gradient(circle at 60% 72%, color-mix(in srgb, var(--blue-dim) 26%, transparent) 0%, transparent 70%),
+    radial-gradient(circle at 32% 32%, color-mix(in srgb, var(--blue) 20%, transparent) 0%, transparent 65%);
+  border: 1px solid color-mix(in srgb, var(--blue-mid) 80%, #ffffff 20%);
   box-shadow:
-    0 12px 44px rgba(15,23,42,.28),
-    0 1px 0 rgba(255,255,255,.12) inset;
+    0 18px 46px rgba(15,23,42,.18),
+    0 1px 0 rgba(255,255,255,.9) inset;
 }
 .lp-philo-bubble::before {
   content: '';
   position: absolute;
   top: -40px;
   right: -40px;
-  width: 160px;
-  height: 160px;
-  background: radial-gradient(circle, rgba(147,197,253,.22) 0%, transparent 68%);
+  width: 190px;
+  height: 190px;
+  background: radial-gradient(circle, rgba(191,219,254,.68) 0%, transparent 72%);
   border-radius: 50%;
   pointer-events: none;
 }
 .lp-philo-bubble::after {
   content: '';
   position: absolute;
-  bottom: -52px;
-  left: -28px;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(59,130,246,.18) 0%, transparent 65%);
+  bottom: -64px;
+  left: -32px;
+  width: 230px;
+  height: 230px;
+  background: radial-gradient(circle, rgba(59,130,246,.26) 0%, transparent 68%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -1253,28 +1258,25 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   z-index: 1;
   max-width: 100%;
   margin: 0 auto;
+  text-align: center;
 }
 .lp-philo-kicker {
-  display: inline-block;
+  display: block;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .2em;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  color: rgba(255,255,255,.88);
-  margin-bottom: 14px;
-  padding: 6px 12px;
-  background: rgba(255,255,255,.16);
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.22);
+  color: var(--t3);
+  margin-bottom: 10px;
 }
 .lp-philo-title {
   font-size: 23px;
   font-weight: 900;
   line-height: 1.45;
   letter-spacing: -0.03em;
-  color: #fff;
-  margin-bottom: 28px;
-  text-shadow: 0 1px 16px rgba(0,0,0,.12);
+  color: #ffffff;
+  margin-bottom: 24px;
+  text-shadow: none;
 }
 body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
 .lp-philo-grid {
@@ -1301,27 +1303,27 @@ body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1d4ed8;
-  /* Light isometric tilt — shape stays readable */
-  transform: perspective(280px) rotateX(-5deg) rotateY(6deg);
+  color: var(--blue-dim); /* use the darkest accent in this component */
+  /* Gentle isometric tilt — cube stays clear */
+  transform: perspective(320px) rotateX(-4deg) rotateY(4deg);
   transform-style: preserve-3d;
   /* “Tile face”: top-left light → bottom-right shade (no outer blur) */
   background:
-    linear-gradient(128deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.12) 32%, transparent 48%),
-    linear-gradient(158deg, #f8fafc 0%, #dbeafe 42%, #93c5fd 78%, #7aa8f0 100%);
-  border: 1px solid rgba(30,64,175,.52);
+    linear-gradient(130deg, rgba(255,255,255,.95) 0%, rgba(241,245,249,.9) 30%, rgba(219,234,254,.92) 70%, rgba(148,197,254,.96) 100%),
+    linear-gradient(150deg, rgba(255,255,255,.85) 0%, transparent 46%);
+  border: 1px solid rgba(30,64,175,.5);
   /* Sharp inset bevel only — defines edges without haze */
   box-shadow:
     inset 1px 1px 0 rgba(255,255,255,.9),
-    inset -1px -1px 0 rgba(30,58,138,.24),
-    inset 0 -1px 0 rgba(30,64,175,.12);
+    inset -1px -1px 0 rgba(30,58,138,.26),
+    inset 0 -1px 0 rgba(30,64,175,.16);
 }
 .lp-philo-icon svg {
   width: 24px;
   height: 24px;
   display: block;
-  stroke: currentColor;
-  stroke-width: 2.35;
+  stroke: var(--blue-dim);
+  stroke-width: 2.1;
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
@@ -1335,6 +1337,7 @@ body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
   line-height: 1.4;
   color: var(--black);
   margin-bottom: 8px;
+  text-align: left;
 }
 .lp-philo-p {
   font-size: 13px;
@@ -1342,6 +1345,7 @@ body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
   color: var(--t2);
   font-weight: 500;
   margin: 0;
+  text-align: left;
 }
 
 /* ── FINAL CTA — typical LP strip (like hero: dark text + blue button) ── */
@@ -1896,12 +1900,24 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   <section class="lp-philosophy" aria-labelledby="lp-philo-heading">
     <div class="lp-philo-bubble">
     <div class="lp-philo-inner">
-      <p class="lp-philo-kicker" data-en="Design philosophy" data-ja="設計思想">設計思想</p>
-      <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Clear thinking first — we design so your attention doesn’t scatter." data-ja="思考が散らからない設計を第一に">思考が散らからない設計を第一に</h2>
+      <p class="lp-philo-kicker" data-en="WHY POPLIST" data-ja="WHY POPLIST">WHY POPLIST</p>
+      <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Designed to minimise decision fatigue." data-ja="判断疲れを最小限に抑える設計。">判断疲れを最小限に抑える設計。</h2>
       <div class="lp-philo-grid">
         <article class="lp-philo-card">
           <div class="lp-philo-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5" opacity=".5"/><rect x="14" y="14" width="7" height="7" rx="1.5" opacity=".5"/><rect x="3" y="14" width="7" height="7" rx="1.5" opacity=".5"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <!-- head side profile -->
+              <path d="M10 4c-2 0-3.6 1.6-3.6 3.6 0 .6.2 1.2.4 1.7C5.9 9.7 5.3 10.6 5.3 11.7c0 1.2.7 2.2 1.8 2.7V18c0 .6.4 1 1 1h3.4" />
+              <path d="M10 4c.6-1.1 1.6-1.8 2.9-1.8 1.9 0 3.4 1.5 3.4 3.5 0 .5-.1 1-.3 1.4.8.5 1.3 1.4 1.3 2.4 0 1.1-.6 2.1-1.6 2.6" />
+              <!-- network nodes inside head -->
+              <circle cx="11" cy="7.3" r="1" />
+              <circle cx="14.4" cy="6.6" r="1" />
+              <circle cx="14.1" cy="9.7" r="1" />
+              <circle cx="9.3" cy="10.3" r="1" />
+              <path d="M11.8 7.4 13.6 6.9" />
+              <path d="M11 8.2 9.9 9.5" />
+              <path d="M11.6 8 13.4 9" />
+            </svg>
           </div>
           <div class="lp-philo-body">
             <h3 class="lp-philo-h" data-en="Less visual noise, stronger focus" data-ja="視覚ノイズを減らして集中力を守る">視覚ノイズを減らして集中力を守る</h3>
@@ -1935,7 +1951,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     <h2 id="lp-final-cta-heading" class="lp-final-cta-title" data-en="Try it free — feel the difference" data-ja="無料でつかって体感しよう">無料でつかって体感しよう</h2>
     <p class="lp-final-cta-sub" data-en="No install. Runs in your browser." data-ja="インストール不要、ブラウザで動きます。">インストール不要、ブラウザで動きます。</p>
     <a href="/" class="lp-final-cta-btn">
-      <span data-en="Try without signing in →" data-ja="ログインなしで試す→">ログインなしで試す→</span>
+      <span data-en="Try without signing in" data-ja="ログインなしで試す">ログインなしで試す</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </a>
     <p class="lp-final-cta-note" data-en="Sign in for more tasks and sync across devices." data-ja="ログインすれば、タスク数も増えて同期可能に">ログインすれば、タスク数も増えて同期可能に</p>
