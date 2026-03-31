@@ -45,6 +45,14 @@
    DESIGN TOKENS — Grey base, blue + black accents
    (Inspired by Apple HIG light mode + brand blue)
 ════════════════════════════════════════ */
+/* ============================================================
+   QUICK EDIT GUIDE — ACCENT & PALETTE
+   1) Default accent (Default mode): edit :root --blue vars below
+   2) Chrome mode accent: edit GREY_VARS (used by colourModeGrey)
+   3) Colour palette list: edit swatches in #colourGrid (HTML)
+   4) Per-colour accent map: edit COLOUR_ACCENT_VARS (JS)
+   5) Bubble colour tokens: edit .bc-* classes (CSS)
+   ============================================================ */
 :root {
   /* ── Backgrounds — light grey base ── */
   --bg:        #ECEEF2;   /* page background */
@@ -62,10 +70,10 @@
   --border:    #D4D7DD;
   --brim:      #BFC3CA;
 
-  /* ── Accent: Blue ── */
+  /* ── EDIT HERE: Accent Blue (Default mode) ───────────────── */
   --blue:      #3B82F6;
   --blue-dim:  #1D4ED8;
-  --blue-lt:   #EFF6FF;   /* blue tint bg */
+  --blue-lt:   #EFF6FF;
   --blue-glow: rgba(59,130,246,.18);
 
   /* ── Accent: Black ── */
@@ -444,6 +452,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   Greyscale equivalent: #6B7280 / rgba(107,114,128,.45)
   ════════════════════════════════════════════════════════
 */
+/* ── EDIT HERE: Bubble colour tokens per palette colour (bc-*) ─ */
 .bc-blue   { --bubble-color:#3B82F6; --bubble-color-glow:rgba(59,130,246,.55);  --bubble-color-ink:rgba(59,130,246,.2);  --bubble-color-ink-border:rgba(59,130,246,.35);  --bubble-color-ink-glow:rgba(59,130,246,.18) }
 .bc-navy   { --bubble-color:#1E40AF; --bubble-color-glow:rgba(30,64,175,.55);   --bubble-color-ink:rgba(30,64,175,.22);  --bubble-color-ink-border:rgba(30,64,175,.38);   --bubble-color-ink-glow:rgba(30,64,175,.18) }
 .bc-black  { --bubble-color:#111111; --bubble-color-glow:rgba(0,0,0,.55);      --bubble-color-ink:rgba(17,17,17,.16);   --bubble-color-ink-border:rgba(0,0,0,.3);        --bubble-color-ink-glow:rgba(0,0,0,.18) }
@@ -2020,8 +2029,8 @@ GoogleService-Info.plist
         <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
         <div class="settings-row-right">
           <div class="pill-toggle">
-            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="カラー">Default</button>
-            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Grey" data-ja="グレー">Grey</button>
+            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="デフォルト">Default</button>
+            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Chrome" data-ja="クローム">Chrome</button>
           </div>
         </div>
       </div>
@@ -2065,6 +2074,7 @@ GoogleService-Info.plist
         <div class="pro-divider"></div>
         <div class="pro-block">
           <div class="pro-block-title" data-en="Colour Scheme" data-ja="バブルカラー">Colour Scheme</div>
+          <!-- EDIT HERE: Colour palette swatches shown in settings -->
           <div class="colour-grid" id="colourGrid">
             <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
             <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
@@ -2961,7 +2971,7 @@ function showTodayDoneInline() {
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#111111','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
-  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
+  const bubbleColor = state.greyBubbles ? '#2C3539' : (_dcMap[state.bubbleColour] || '#3B82F6');
   panel.style.setProperty('--bubble-color', bubbleColor);
   panel.style.setProperty('--done-glow', bubbleColor + '18');
 
@@ -3464,7 +3474,7 @@ function showDoneScreen() {
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
     'bc-black':'#111111','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
-  const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
+  const bubbleColor = state.greyBubbles ? '#2C3539' : (_dcMap[state.bubbleColour] || '#3B82F6');
 
   // Set theme colour for CSS bubble animations + radial glow
   el.style.setProperty('--bubble-color', bubbleColor);
@@ -5292,14 +5302,15 @@ document.getElementById('burstEffectOff')?.addEventListener('click', () => {
   showToast(state.lang === 'ja' ? 'バブル効果：オフ' : 'Burst effect off');
 });
 
-/* ── Greyscale vars & helper (used by colour mode toggle above) ── */
+/* ── EDIT HERE: Chrome mode accent vars (colourModeGrey button) ── */
 const GREY_VARS = {
-  '--blue':      '#6B7280',
-  '--blue-dim':  '#4B5563',
-  '--blue-lt':   '#F3F4F6',
-  '--blue-glow': 'rgba(107,114,128,.18)',
-  '--shbtn':     '0 4px 16px rgba(107,114,128,.28)',
+  '--blue':      '#2C3539',
+  '--blue-dim':  '#1F2629',
+  '--blue-lt':   '#EEF1F2',
+  '--blue-glow': 'rgba(44,53,57,.22)',
+  '--shbtn':     '0 4px 16px rgba(44,53,57,.34)',
 };
+/* ── EDIT HERE: Default mode accent vars (colourModeBlue button) ─ */
 const BLUE_VARS = {
   '--blue':      '#3B82F6',
   '--blue-dim':  '#1D4ED8',
@@ -5316,7 +5327,7 @@ function applyAccentVars(vars) {
   s.textContent = `:root{${Object.entries(vars).map(([k,v])=>`${k}:${v}`).join(';')}}`;
 }
 
-/* Per-colour accent vars — used by Pro colour picker to tint the whole UI */
+/* ── EDIT HERE: Per-palette accent vars (used when a colour swatch is selected) */
 const COLOUR_ACCENT_VARS = {
   'bc-blue':   {'--blue':'#3B82F6','--blue-dim':'#1D4ED8','--blue-lt':'#EFF6FF','--blue-glow':'rgba(59,130,246,.18)','--shbtn':'0 4px 16px rgba(59,130,246,.38)'},
   'bc-navy':   {'--blue':'#1E40AF','--blue-dim':'#1e3a8a','--blue-lt':'#EFF6FF','--blue-glow':'rgba(30,64,175,.18)','--shbtn':'0 4px 16px rgba(30,64,175,.38)'},
