@@ -401,16 +401,16 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .task-bubble.ring::before,
 .task-bubble.ring::after { display:none }
 
-/* ── INK — subtle colour gradient, no border, no highlight ── */
+/* ── INK — soft watercolour wash: centre lighter, edge slightly deeper ── */
 .task-bubble.ink {
   background: radial-gradient(
     circle at 50% 50%,
-    var(--bubble-color-ink, rgba(59,130,246,.42)) 0%,
-    var(--bubble-color-ink, rgba(59,130,246,.18)) 60%,
-    var(--bubble-color-ink, rgba(59,130,246,.06)) 100%
+    var(--bubble-color-ink, rgba(59,130,246,.08)) 0%,
+    var(--bubble-color-ink, rgba(59,130,246,.22)) 50%,
+    var(--bubble-color-ink, rgba(59,130,246,.36)) 100%
   );
   border: none;
-  box-shadow: none;
+  box-shadow: 0 0 0 1px var(--bubble-color-ink-border, rgba(59,130,246,.25));
   overflow: hidden;
 }
 .task-bubble.ink::before { display:none }
@@ -446,7 +446,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 */
 .bc-blue   { --bubble-color:#3B82F6; --bubble-color-glow:rgba(59,130,246,.55);  --bubble-color-ink:rgba(59,130,246,.2);  --bubble-color-ink-border:rgba(59,130,246,.35);  --bubble-color-ink-glow:rgba(59,130,246,.18) }
 .bc-navy   { --bubble-color:#1E40AF; --bubble-color-glow:rgba(30,64,175,.55);   --bubble-color-ink:rgba(30,64,175,.22);  --bubble-color-ink-border:rgba(30,64,175,.38);   --bubble-color-ink-glow:rgba(30,64,175,.18) }
-.bc-black  { --bubble-color:#374151; --bubble-color-glow:rgba(55,65,81,.45);    --bubble-color-ink:rgba(17,17,17,.14);   --bubble-color-ink-border:rgba(17,17,17,.25);    --bubble-color-ink-glow:rgba(17,17,17,.12) }
+.bc-black  { --bubble-color:#111111; --bubble-color-glow:rgba(0,0,0,.55);      --bubble-color-ink:rgba(17,17,17,.16);   --bubble-color-ink-border:rgba(0,0,0,.3);        --bubble-color-ink-glow:rgba(0,0,0,.18) }
 .bc-slate  { --bubble-color:#475569; --bubble-color-glow:rgba(71,85,105,.5);    --bubble-color-ink:rgba(71,85,105,.18);  --bubble-color-ink-border:rgba(71,85,105,.32);   --bubble-color-ink-glow:rgba(71,85,105,.15) }
 .bc-teal   { --bubble-color:#0D9488; --bubble-color-glow:rgba(13,148,136,.55);  --bubble-color-ink:rgba(13,148,136,.2);  --bubble-color-ink-border:rgba(13,148,136,.35);  --bubble-color-ink-glow:rgba(13,148,136,.18) }
 .bc-green  { --bubble-color:#16A34A; --bubble-color-glow:rgba(22,163,74,.55);   --bubble-color-ink:rgba(22,163,74,.2);   --bubble-color-ink-border:rgba(22,163,74,.35);   --bubble-color-ink-glow:rgba(22,163,74,.18) }
@@ -680,6 +680,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .settings-row-sub   { font-size:11px; color:var(--t3); margin-top:2px }
 .settings-row-right { font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px }
 
+/* Simple horizontal divider between groups inside one settings section */
+.settings-divider {
+  height:1px;
+  background:var(--border);
+  margin:10px 0 8px;
+}
+
 .pro-badge {
   font-size:10px; font-weight:800; padding:2px 8px;
   background:var(--blue-lt); border:1px solid var(--blue-glow);
@@ -770,7 +777,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .pro-active .cat-drag-handle { display:flex }
 .cat-item.dragging { opacity:.35; }
 .cat-item.drag-over { border-color:var(--blue); box-shadow:0 0 0 2px var(--blue-glow); }
-.cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0 }
+.cat-item-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0; cursor:pointer; position:relative }
 .cat-item-name { flex:1; font-size:13px; font-weight:700 }
 .cat-item-kw   { font-size:11px; color:var(--t3) }
 .cat-item-chevron { font-size:10px; color:var(--t3); transition:transform .2s; line-height:1 }
@@ -796,6 +803,35 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-family:inherit; width:90px;
 }
 .kw-add-input::placeholder { color:var(--t3); font-weight:500 }
+
+/* mini colour picker popover for category dot */
+.cat-colour-popover {
+  position: fixed;
+  z-index: 1000;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shcard);
+  padding: 8px;
+  width: 166px;
+}
+.cat-colour-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.cat-colour-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.08);
+  cursor: pointer;
+  padding: 0;
+}
+.cat-colour-swatch.sel {
+  outline: 2px solid var(--brim);
+  outline-offset: 1px;
+}
 
 .guide-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border) }
 .guide-row:last-child { border-bottom:none; padding-bottom:0 }
@@ -2032,7 +2068,9 @@ GoogleService-Info.plist
         <div class="settings-row" id="upgradeProBtn" style="cursor:pointer;border-bottom:none">
           <div style="flex:1;min-width:0">
             <p class="settings-row-label" data-en="Upgrade to Pro" data-ja="Proにアップグレード">Upgrade to Pro</p>
-            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation · AI classification" data-ja="タスク無制限・同期・全カスタマイズ・AI分類">Unlimited tasks · sync · full customisation · AI classification</p>
+            <p class="settings-row-sub"
+               data-en="Custom categories &amp; colours · extra keywords · export tools"
+               data-ja="カテゴリー名と色のカスタマイズ・追加キーワード登録・エクスポート機能">Custom categories &amp; colours · extra keywords · export tools</p>
           </div>
           <div class="settings-row-right" style="gap:6px">
             <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
@@ -2062,10 +2100,12 @@ GoogleService-Info.plist
       </div>
       <!-- Pro (logged in, is pro) -->
       <div id="serviceProRow" style="display:none">
-        <div class="settings-row" style="border-bottom:none">
+          <div class="settings-row" style="border-bottom:none">
           <div style="flex:1;min-width:0">
             <p class="settings-row-label" data-en="Pro Plan" data-ja="プロプラン">Pro Plan</p>
-            <p class="settings-row-sub" data-en="Unlimited tasks · sync · full customisation · AI classification" data-ja="タスク無制限・同期・全カスタマイズ・AI分類">Unlimited tasks · sync · full customisation · AI classification</p>
+            <p class="settings-row-sub"
+               data-en="Everything in Free, plus category editor, per-category colours, extra keywords, export"
+               data-ja="Freeの内容に加え、カテゴリー名・色の編集、追加キーワード登録、エクスポート機能が使えます">Everything in Free, plus category editor, per-category colours, extra keywords, export</p>
           </div>
           <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--blue);color:#fff">PRO</span>
         </div>
@@ -2094,15 +2134,6 @@ GoogleService-Info.plist
         </div>
       </div>
       <div class="settings-row">
-        <p class="settings-row-label" data-en="Colour scheme" data-ja="カラーモード">Colour scheme</p>
-        <div class="settings-row-right">
-          <div class="pill-toggle">
-            <button class="colour-scheme-btn active" id="colourModeBlue" data-en="Default" data-ja="カラー">Default</button>
-            <button class="colour-scheme-btn" id="colourModeGrey" data-en="Grey" data-ja="グレー">Grey</button>
-          </div>
-        </div>
-      </div>
-      <div class="settings-row">
         <div style="flex:1;min-width:0">
           <p class="settings-row-label" data-en="Burst effect" data-ja="バブル効果">Burst effect</p>
           <p class="settings-row-sub" data-en="Particle celebration when you complete a task" data-ja="タスク完了時のパーティクル演出">Particle celebration when you complete a task</p>
@@ -2114,52 +2145,62 @@ GoogleService-Info.plist
           </div>
         </div>
       </div>
+      <!-- Bubble style row -->
+      <div class="settings-row" style="margin-top:6px;border-bottom:none;padding-bottom:4px">
+        <div style="flex:1;min-width:0">
+          <p class="settings-row-label" data-en="Bubble style" data-ja="バブルスタイル">Bubble style</p>
+          <p class="settings-row-sub"
+             data-en="Default, 3D, Ring, Ink"
+             data-ja="デフォルト・3D・リング・インクから選べます">Default, 3D, Ring, Ink</p>
+        </div>
+      </div>
+      <div style="padding:4px 0 0">
+        <div class="bubble-style-tabs">
+          <button class="bst-tab active" data-style="luminous" data-en="Default" data-ja="デフォルト">Default</button>
+          <button class="bst-tab" data-style="solid" data-en="3D" data-ja="3D">3D</button>
+          <button class="bst-tab" data-style="ring" data-en="Ring" data-ja="リング">Ring</button>
+          <button class="bst-tab" data-style="ink" data-en="Ink" data-ja="インク">Ink</button>
+        </div>
+        <div class="bubble-preview-row">
+          <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:24px;height:24px"></div>
+          <div style="flex:1;padding-left:4px">
+            <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
+            <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-divider"></div>
+      <!-- Colour palette row -->
+      <div class="settings-row" style="margin-top:0;border-bottom:none;padding-bottom:8px">
+        <p class="settings-row-label" data-en="Colour palette" data-ja="カラーパレット">Colour palette</p>
+      </div>
+      <div style="padding:2px 0 0">
+        <div class="colour-grid" id="colourGrid">
+          <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
+          <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
+          <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
+          <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
+          <div class="cswatch"     data-colour="bc-lime"   style="background:#65A30D"></div>
+          <div class="cswatch"     data-colour="bc-yellow" style="background:#FACC15"></div>
+          <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
+          <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
+          <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
+          <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
+          <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
+          <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
+          <div class="cswatch"     data-colour="bc-chrome" style="background:#374151"></div>
+          <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;outline:1px solid var(--border)"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- ══ CUSTOMISE PRO ══ -->
+    <!-- ══ CUSTOMISE PRO (Categories only) ══ -->
     <div class="settings-section">
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
       </div>
       <div class="pro-wrap" id="proPickerWrap">
-        <div class="pro-block">
-          <div class="pro-block-title" data-en="Bubble Style" data-ja="バブルスタイル">Bubble Style</div>
-          <div class="bubble-style-tabs">
-            <button class="bst-tab active" data-style="luminous" data-en="Default" data-ja="デフォルト">Default</button>
-            <button class="bst-tab" data-style="solid" data-en="3D" data-ja="3D">3D</button>
-            <button class="bst-tab" data-style="ring" data-en="Ring" data-ja="リング">Ring</button>
-            <button class="bst-tab" data-style="ink" data-en="Ink" data-ja="インク">Ink</button>
-          </div>
-          <div class="bubble-preview-row" style="margin-top:10px;margin-bottom:0">
-            <div class="task-bubble luminous bc-blue" id="previewBubble" style="width:24px;height:24px"></div>
-            <div style="flex:1;padding-left:4px">
-              <div style="font-size:13px;font-weight:700;color:var(--black)" id="previewStyleName">Default</div>
-              <div style="font-size:11px;color:var(--t3)" id="previewStyleDesc">Solid fill with subtle edge gradient</div>
-            </div>
-          </div>
-        </div>
-        <div class="pro-divider"></div>
-        <div class="pro-block">
-          <div class="pro-block-title" data-en="Colour Scheme" data-ja="バブルカラー">Colour Scheme</div>
-          <div class="colour-grid" id="colourGrid">
-            <div class="cswatch sel" data-colour="bc-blue"   style="background:#3B82F6"></div>
-            <div class="cswatch"     data-colour="bc-navy"   style="background:#1E40AF"></div>
-            <div class="cswatch"     data-colour="bc-teal"   style="background:#0D9488"></div>
-            <div class="cswatch"     data-colour="bc-green"  style="background:#16A34A"></div>
-            <div class="cswatch"     data-colour="bc-lime"   style="background:#65A30D"></div>
-            <div class="cswatch"     data-colour="bc-yellow" style="background:#FACC15"></div>
-            <div class="cswatch"     data-colour="bc-amber"  style="background:#F97316"></div>
-            <div class="cswatch"     data-colour="bc-rose"   style="background:#EF4444"></div>
-            <div class="cswatch"     data-colour="bc-pink"   style="background:#EC4899"></div>
-            <div class="cswatch"     data-colour="bc-purple" style="background:#7C3AED"></div>
-            <div class="cswatch"     data-colour="bc-black"  style="background:#111111"></div>
-            <div class="cswatch"     data-colour="bc-slate"  style="background:#475569"></div>
-            <div class="cswatch"     data-colour="bc-chrome" style="background:#374151"></div>
-            <div class="cswatch"     data-colour="bc-white"  style="background:#E5E7EB;outline:1px solid var(--border)"></div>
-          </div>
-        </div>
-        <div class="pro-divider"></div>
         <div class="pro-block">
           <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
           <div id="catList"></div>
@@ -2822,10 +2863,30 @@ function _friendlyAuthError(e) {
    DESIGN TOKEN helpers
 ══════════════════════════════════════════ */
 const STYLE_META = {
-  luminous: { name:'Default',  desc:'Solid fill with subtle edge gradient and soft colour glow' },
-  solid:    { name:'3D',       desc:'Sphere look — bright specular cap, deep shading' },
-  ring:     { name:'Ring',     desc:'Colour outline only, transparent inside' },
-  ink:      { name:'Ink',      desc:'Soft colour gradient wash, no border' },
+  luminous: {
+    name:'Default',
+    nameJa:'デフォルト',
+    desc:'Solid fill with subtle edge gradient and soft colour glow',
+    descJa:'しっかり塗りつぶし＋ふちにかけてのグラデーションとやわらかい光'
+  },
+  solid: {
+    name:'3D',
+    nameJa:'3D',
+    desc:'Sphere look — bright highlight on top and deeper shading',
+    descJa:'球体っぽい見た目。上にハイライト、下にかけて陰影が強くなるスタイル'
+  },
+  ring: {
+    name:'Ring',
+    nameJa:'リング',
+    desc:'Colour outline only, transparent inside',
+    descJa:'ふちだけ色が付いたリング。中は透明'
+  },
+  ink: {
+    name:'Ink',
+    nameJa:'インク',
+    desc:'Watercolour-style wash — softer in the centre, deeper towards the edge',
+    descJa:'中心が少し薄く、ふちに向かって濃くなる水彩インクのようなにじみ'
+  },
 };
 
 /* ══════════════════════════════════════════
@@ -2871,7 +2932,7 @@ function burstBubble(el, item) {
   const _bcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
-    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
+    'bc-black':'#111111','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
   const _bcClass = [...el.classList].find(c => c.startsWith('bc-'));
   const rawHex = _bcMap[_bcClass] || _bcMap[state.bubbleColour] || '#3B82F6';
@@ -3051,7 +3112,7 @@ function showTodayDoneInline() {
   const _dcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
-    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
+    'bc-black':'#111111','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
   const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
   panel.style.setProperty('--bubble-color', bubbleColor);
@@ -3092,10 +3153,10 @@ function showTodayDoneInline() {
    • Long press → open "Move to…" category sheet
 ══════════════════════════════════════════ */
 const CAT_META = [
-  { en:'Work',     ja:'仕事',    colour:'var(--blue)' },
-  { en:'Home',     ja:'家の事',  colour:'var(--blue)' },
-  { en:'Personal', ja:'自分の事',colour:'var(--blue)' },
-  { en:'Other',    ja:'その他',  colour:'var(--blue)' },
+  { en:'Work',     ja:'仕事' },
+  { en:'Home',     ja:'家の事' },
+  { en:'Personal', ja:'自分の事' },
+  { en:'Other',    ja:'その他' },
 ];
 
 let _catEditTarget = null; // the task-item DOM node currently being moved
@@ -3114,6 +3175,11 @@ function openCatEdit(taskItem) {
   const opts = document.getElementById('catEditOptions');
   opts.innerHTML = '';
   CAT_META.forEach((cat, idx) => {
+    const catState = state.categories.find(c => c.en === cat.en);
+    const dotColor = catState?.customColour ? (CAT_COLOUR_HEX[catState.customColour] || 'var(--blue)') : 'var(--blue)';
+    const dotShadow = catState?.customColour
+      ? `0 0 0 3px ${dotColor}33,0 0 8px 2px ${dotColor}55`
+      : '0 0 0 3px var(--blue-glow),0 0 8px 2px var(--blue-glow)';
     const isCurrent = currentCatId === 'cat-' + cat.en.toLowerCase();
     const btn = document.createElement('button');
     btn.style.cssText = `display:flex;align-items:center;gap:14px;padding:14px 18px;
@@ -3122,7 +3188,7 @@ function openCatEdit(taskItem) {
       border-bottom:${idx < CAT_META.length-1 ? '1px solid var(--border)' : 'none'};
       -webkit-tap-highlight-color:transparent;touch-action:manipulation;`;
     btn.innerHTML = `
-      <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0;${isCurrent ? `box-shadow:0 0 0 3px ${cat.colour}33,0 0 8px 2px ${cat.colour}55` : ''}"></span>
+      <span style="width:12px;height:12px;border-radius:50%;background:${dotColor};flex-shrink:0;${isCurrent ? `box-shadow:${dotShadow}` : ''}"></span>
       <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
     `;
     btn.addEventListener('click', () => {
@@ -3554,7 +3620,7 @@ function showDoneScreen() {
   const _dcMap = {
     'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
     'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED',
-    'bc-black':'#374151','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
+    'bc-black':'#111111','bc-slate':'#475569','bc-grey':'#9CA3AF','bc-chrome':'#374151','bc-white':'#CBD5E1'
   };
   const bubbleColor = state.greyBubbles ? '#9CA3AF' : (_dcMap[state.bubbleColour] || '#3B82F6');
 
@@ -4558,6 +4624,23 @@ state.categories = [
   { id:'other',    en:'Other',    ja:'その他',  keywords:[], customKeywords:[] },
 ];
 
+const CAT_COLOUR_HEX = {
+  'bc-blue':'#3B82F6','bc-navy':'#1E40AF','bc-teal':'#0D9488','bc-green':'#16A34A','bc-lime':'#65A30D','bc-yellow':'#FACC15',
+  'bc-amber':'#F97316','bc-rose':'#EF4444','bc-pink':'#EC4899','bc-purple':'#7C3AED','bc-black':'#111111','bc-slate':'#475569',
+  'bc-chrome':'#374151','bc-white':'#E5E7EB'
+};
+const CAT_COLOUR_KEYS = Object.keys(CAT_COLOUR_HEX);
+let _activeCatPopover = null;
+function categoryDotColor(cat) {
+  return cat?.customColour ? (CAT_COLOUR_HEX[cat.customColour] || 'var(--blue)') : 'var(--blue)';
+}
+function closeCatColourPopover() {
+  if (_activeCatPopover) {
+    _activeCatPopover.remove();
+    _activeCatPopover = null;
+  }
+}
+
 function buildCatList() {
   const list = document.getElementById('catList');
   if (!list) return;
@@ -4577,7 +4660,9 @@ function buildCatList() {
     handle.setAttribute('title', 'Drag to reorder');
     row.appendChild(handle);
     const dotEl = document.createElement('div');
-    dotEl.className = 'cat-item-dot'; dotEl.style.background = 'var(--blue)';
+    dotEl.className = 'cat-item-dot';
+    dotEl.style.background = categoryDotColor(cat);
+    dotEl.title = state.lang === 'ja' ? '色を変更' : 'Change colour';
     row.appendChild(dotEl);
     const nameEl = document.createElement('span');
     nameEl.className = 'cat-item-name';
@@ -4594,7 +4679,59 @@ function buildCatList() {
     row.appendChild(chevron);
     row.addEventListener('click', e => {
       if (e.target.closest('.cat-drag-handle')) return;
+      if (e.target.closest('.cat-item-dot')) return;
       item.classList.toggle('open');
+    });
+    dotEl.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!state.isProUser) {
+        showToast(state.lang === 'ja' ? 'Proでカテゴリ色を変更できます' : 'Upgrade to Pro for per-category colours');
+        return;
+      }
+      if (_activeCatPopover) closeCatColourPopover();
+      const pop = document.createElement('div');
+      pop.className = 'cat-colour-popover';
+      const grid = document.createElement('div');
+      grid.className = 'cat-colour-grid';
+      const defaultSw = document.createElement('button');
+      defaultSw.type = 'button';
+      defaultSw.className = 'cat-colour-swatch' + (!cat.customColour ? ' sel' : '');
+      defaultSw.style.background = 'var(--blue)';
+      defaultSw.title = state.lang === 'ja' ? 'アクセントカラーを使う' : 'Use accent colour';
+      defaultSw.innerHTML = '<span style="display:block;width:100%;height:100%;border-radius:50%;border:1px dashed rgba(255,255,255,.65)"></span>';
+      defaultSw.addEventListener('click', ev => {
+        ev.stopPropagation();
+        delete cat.customColour;
+        dotEl.style.background = categoryDotColor(cat);
+        closeCatColourPopover();
+      });
+      grid.appendChild(defaultSw);
+      CAT_COLOUR_KEYS.forEach(k => {
+        const sw = document.createElement('button');
+        sw.type = 'button';
+        sw.className = 'cat-colour-swatch' + (cat.customColour === k ? ' sel' : '');
+        sw.style.background = CAT_COLOUR_HEX[k];
+        sw.setAttribute('aria-label', k);
+        sw.addEventListener('click', ev => {
+          ev.stopPropagation();
+          cat.customColour = k;
+          dotEl.style.background = categoryDotColor(cat);
+          closeCatColourPopover();
+        });
+        grid.appendChild(sw);
+      });
+      pop.appendChild(grid);
+      document.body.appendChild(pop);
+      const r = dotEl.getBoundingClientRect();
+      const pw = 166;
+      const left = Math.min(window.innerWidth - pw - 8, Math.max(8, r.left - 8));
+      const top = Math.min(window.innerHeight - 54, r.bottom + 8);
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      _activeCatPopover = pop;
+      setTimeout(() => {
+        document.addEventListener('click', closeCatColourPopover, { once: true });
+      }, 0);
     });
     // Desktop: HTML5 drag-and-drop via handle
     item.draggable = false; // only enable when handle is grabbed
@@ -4969,8 +5106,11 @@ updateClassifyModeUI();
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise bubble style');
+    // Style change is available for logged-in users (Free & Pro). Guests see upgrade prompt.
+    if (!state.isLoggedIn && !state.isProUser) {
+      showToast(state.lang === 'ja'
+        ? 'ログインするとバブルスタイルを変更できます'
+        : 'Sign in to customise bubble style');
       openM('settingsModal');
       return;
     }
@@ -4986,8 +5126,11 @@ document.querySelectorAll('.bst-tab').forEach(tab => {
 // Colour swatches
 document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
   sw.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise colours');
+    // Full colour palette is available for logged-in users (Free & Pro). Guests stay on default/grey.
+    if (!state.isLoggedIn && !state.isProUser) {
+      showToast(state.lang === 'ja'
+        ? 'ログインするとカラーモードを変更できます'
+        : 'Sign in to customise colours');
       openM('settingsModal');
       return;
     }
@@ -5009,8 +5152,9 @@ function updateBubblePreview() {
   if (!preview) return;
   setBubbleClasses(preview);
   const meta = STYLE_META[state.bubbleStyle];
-  document.getElementById('previewStyleName').textContent = meta.name;
-  document.getElementById('previewStyleDesc').textContent = meta.desc;
+  const useJa = document.body.classList.contains('lang-ja');
+  document.getElementById('previewStyleName').textContent = useJa && meta.nameJa ? meta.nameJa : meta.name;
+  document.getElementById('previewStyleDesc').textContent = useJa && meta.descJa ? meta.descJa : meta.desc;
 }
 
 /* ══════════════════════════════════════════
@@ -5416,7 +5560,7 @@ const COLOUR_ACCENT_VARS = {
   'bc-rose':   {'--blue':'#EF4444','--blue-dim':'#dc2626','--blue-lt':'#FEF2F2','--blue-glow':'rgba(239,68,68,.18)','--shbtn':'0 4px 16px rgba(239,68,68,.38)'},
   'bc-pink':   {'--blue':'#EC4899','--blue-dim':'#db2777','--blue-lt':'#FDF2F8','--blue-glow':'rgba(236,72,153,.18)','--shbtn':'0 4px 16px rgba(236,72,153,.38)'},
   'bc-purple': {'--blue':'#7C3AED','--blue-dim':'#6d28d9','--blue-lt':'#F5F3FF','--blue-glow':'rgba(124,58,237,.18)','--shbtn':'0 4px 16px rgba(124,58,237,.38)'},
-  'bc-black':  {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
+  'bc-black':  {'--blue':'#111111','--blue-dim':'#000000','--blue-lt':'#F9FAFB','--blue-glow':'rgba(0,0,0,.18)','--shbtn':'0 4px 16px rgba(0,0,0,.46)'},
   'bc-slate':  {'--blue':'#475569','--blue-dim':'#334155','--blue-lt':'#F8FAFC','--blue-glow':'rgba(71,85,105,.18)','--shbtn':'0 4px 16px rgba(71,85,105,.38)'},
   'bc-grey':   {'--blue':'#9CA3AF','--blue-dim':'#6B7280','--blue-lt':'#F3F4F6','--blue-glow':'rgba(156,163,175,.18)','--shbtn':'0 4px 16px rgba(156,163,175,.38)'},
   'bc-chrome': {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
