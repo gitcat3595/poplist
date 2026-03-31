@@ -4887,15 +4887,16 @@ updateClassifyModeUI();
 // Style tabs
 document.querySelectorAll('.bst-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise bubble style');
-      openM('settingsModal');
-      return;
-    }
     document.querySelectorAll('.bst-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.bubbleStyle = tab.dataset.style;
-    localStorage.setItem('bubbleStyle', state.bubbleStyle);
+    if (state.isProUser) {
+      localStorage.setItem('bubbleStyle', state.bubbleStyle);
+    } else {
+      showToast(state.lang === 'ja'
+        ? '今すぐ試せます。保存はPROでご利用いただけます'
+        : 'Try it now — save your style with Pro');
+    }
     updateBubblePreview();
     syncAllBubbles();
   });
@@ -4904,15 +4905,16 @@ document.querySelectorAll('.bst-tab').forEach(tab => {
 // Colour swatches
 document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
   sw.addEventListener('click', () => {
-    if (!state.isProUser) {
-      showToast(state.lang === 'ja' ? 'Proプランにアップグレードしてください' : 'Upgrade to Pro to customise colours');
-      openM('settingsModal');
-      return;
-    }
     document.querySelectorAll('#colourGrid .cswatch').forEach(s => s.classList.remove('sel'));
     sw.classList.add('sel');
     state.bubbleColour = sw.dataset.colour;
-    localStorage.setItem('bubbleColour', state.bubbleColour);
+    if (state.isProUser) {
+      localStorage.setItem('bubbleColour', state.bubbleColour);
+    } else {
+      showToast(state.lang === 'ja'
+        ? '今すぐ試せます。保存はPROでご利用いただけます'
+        : 'Try it now — save your style with Pro');
+    }
     updateBubblePreview();
     syncAllBubbles();
     // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
