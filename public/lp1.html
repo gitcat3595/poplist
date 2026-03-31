@@ -1209,25 +1209,24 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   max-width: 448px;
   margin: 0 auto;
   border-radius: 26px;
-  padding: 32px 20px 34px;
+  padding: 28px 18px 30px;
   position: relative;
   overflow: hidden;
-  /* Accent bubble — uses current accent colour tokens */
+  /* Accent bubble — softer, lighter wash */
   background:
-    /* sandy grain texture */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.05' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.2'/%3E%3C/svg%3E") repeat,
-    /* noisy texture on top */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E") repeat,
-    /* accent orbs driven by accent colour — multiple soft circles */
-    radial-gradient(circle at 12% 82%, color-mix(in srgb, var(--blue) 30%, transparent) 0%, transparent 55%),
-    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--blue-mid) 32%, transparent) 0%, transparent 60%),
-    radial-gradient(circle at 60% 72%, color-mix(in srgb, var(--blue-dim) 26%, transparent) 0%, transparent 70%),
-    radial-gradient(circle at 32% 32%, color-mix(in srgb, var(--blue) 20%, transparent) 0%, transparent 65%),
-    /* base card in accent colour (last layer) */
-    linear-gradient(145deg, var(--blue-dim) 0%, var(--blue) 40%, var(--blue-mid) 100%);
-  border: 1px solid color-mix(in srgb, var(--blue-mid) 80%, #ffffff 20%);
+    /* very soft paper grain */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.12'/%3E%3C/svg%3E") repeat,
+    /* light accent wash */
+    radial-gradient(circle at 18% 78%, color-mix(in srgb, var(--blue-lt) 80%, #ffffff 20%) 0%, transparent 60%),
+    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--blue-mid) 40%, #ffffff 60%) 0%, transparent 55%),
+    /* base card — mostly white with a hint of accent */
+    linear-gradient(150deg,
+      color-mix(in srgb, #ffffff 90%, var(--blue-lt) 10%) 0%,
+      color-mix(in srgb, #ffffff 80%, var(--blue-lt) 20%) 42%,
+      color-mix(in srgb, #ffffff 78%, var(--blue-mid) 22%) 100%);
+  border: 1px solid color-mix(in srgb, var(--blue-lt) 70%, #ffffff 30%);
   box-shadow:
-    0 18px 46px rgba(15,23,42,.18),
+    0 10px 26px rgba(15,23,42,.08),
     0 1px 0 rgba(255,255,255,.9) inset;
 }
 .lp-philo-bubble::before {
@@ -1322,7 +1321,7 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   font-weight: 900;
   line-height: 1.45;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: var(--black);
   margin-bottom: 24px;
   text-shadow: none;
 }
@@ -1369,27 +1368,7 @@ body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
   position: relative;
 }
 .lp-philo-icon {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--blue-dim); /* use the darkest accent in this component */
-  /* Gentle isometric tilt — cube stays clear */
-  transform: perspective(320px) rotateX(-4deg) rotateY(4deg);
-  transform-style: preserve-3d;
-  /* “Tile face”: top-left light → bottom-right shade (no outer blur) */
-  background:
-    linear-gradient(130deg, rgba(255,255,255,.95) 0%, rgba(241,245,249,.9) 30%, rgba(219,234,254,.92) 70%, rgba(148,197,254,.96) 100%),
-    linear-gradient(150deg, rgba(255,255,255,.85) 0%, transparent 46%);
-  border: 1px solid rgba(30,64,175,.5);
-  /* Sharp inset bevel only — defines edges without haze */
-  box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.9),
-    inset -1px -1px 0 rgba(30,58,138,.26),
-    inset 0 -1px 0 rgba(30,64,175,.16);
+  display: none;
 }
 .lp-philo-icon svg {
   width: 24px;
@@ -1408,7 +1387,7 @@ body.lang-ja .lp-philo-title { font-size: 21px; letter-spacing: 0.04em; }
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.4;
-  color: var(--black);
+  color: var(--blue);
   margin-bottom: 8px;
   text-align: left;
 }
@@ -1472,11 +1451,73 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
 .lp-final-cta-btn:active { transform: scale(.97) }
 .lp-final-cta-btn svg { width: 16px; height: 16px; flex-shrink: 0 }
 .lp-final-cta-note {
+  display: inline-block;
   font-size: 12px;
-  line-height: 1.6;
-  color: var(--t3);
-  font-weight: 500;
+  line-height: 1.5;
+  font-weight: 600;
   margin: 0;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--blue-lt);
+  color: var(--blue-dim);
+  border: 1px solid var(--blue-mid);
+}
+
+/* ── LEGACY BLUE CTA (restored component) ── */
+.cta-section {
+  margin: 0 16px 48px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E") repeat,
+    radial-gradient(ellipse at 15% 85%, rgba(30,64,175,.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(147,197,253,.3) 0%, transparent 45%),
+    linear-gradient(135deg, var(--blue-dim) 0%, var(--blue) 45%, var(--blue) 100%);
+  border-radius: 24px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 8px 40px var(--blue-glow);
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,.06);
+  border-radius: 50%;
+}
+.cta-section::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -30px;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.cta-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -.7px; line-height: 1.24;
+  color: #fff; margin-bottom: 12px;
+  position: relative; z-index: 1;
+}
+.cta-sub {
+  font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.76);
+  font-weight: 500; margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+.cta-btn-white {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--blue);
+  font-size: 15px; font-weight: 800; letter-spacing: -.2px;
+  padding: 14px 32px; border-radius: var(--rp);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  transition: var(--tr);
+  position: relative; z-index: 1;
+}
+.cta-btn-white:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
+.cta-btn-white:active { transform: scale(.97) }
+.cta-btn-white svg { width: 16px; height: 16px }
+.cta-note-white {
+  margin-top: 14px; font-size: 11px; color: rgba(255,255,255,.58);
+  font-weight: 500; position: relative; z-index: 1;
 }
 
 /* ── FOOTER (matches index.html footer-a; scrolls with page, not fixed) ── */
@@ -1974,7 +2015,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     <div class="lp-philo-bubble">
     <div class="lp-philo-inner">
       <p class="lp-philo-kicker" data-en="WHY POPLIST" data-ja="WHY POPLIST">WHY POPLIST</p>
-      <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Designed to minimise decision fatigue." data-ja="判断疲れを最小限に抑える設計。">判断疲れを最小限に抑える設計。</h2>
+      <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Designed to minimise<br>decision fatigue" data-ja="判断疲れを最小限に<br>抑える設計。">判断疲れを最小限に<br>抑える設計。</h2>
       <div class="lp-philo-grid">
         <article class="lp-philo-card">
           <div class="lp-philo-icon" aria-hidden="true">
@@ -2020,14 +2061,17 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     </div>
   </section>
 
-  <section class="lp-final-cta" aria-labelledby="lp-final-cta-heading">
-    <h2 id="lp-final-cta-heading" class="lp-final-cta-title" data-en="Try it free — feel the difference" data-ja="無料でつかって体感しよう">無料でつかって体感しよう</h2>
-    <p class="lp-final-cta-sub" data-en="No install. Runs in your browser." data-ja="インストール不要、ブラウザで動きます。">インストール不要、ブラウザで動きます。</p>
-    <a href="/" class="lp-final-cta-btn">
+  <section class="cta-section" aria-labelledby="lp-legacy-cta-heading">
+    <h2 id="lp-legacy-cta-heading" class="cta-title"><span data-en="Try it free." data-ja="無料でつかえます。">無料でつかえます。</span></h2>
+    <p class="cta-sub" data-en="Just open your browser. Try and see if it fits you." data-ja="ブラウザを開くだけ。<br>自分にあうか試せます。">ブラウザを開くだけ。<br>自分にあうか試せます。</p>
+    <a href="/" class="cta-btn-white">
       <span data-en="Try without signing in" data-ja="ログインなしで試す">ログインなしで試す</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
     </a>
-    <p class="lp-final-cta-note" data-en="Sign in for more tasks and sync across devices." data-ja="ログインすれば、タスク数も増えて同期可能に">ログインすれば、タスク数も増えて同期可能に</p>
+    <p class="cta-note-white" data-en="No account needed · Works in your browser" data-ja="アカウント不要・ブラウザで動作">アカウント不要・ブラウザで動作</p>
   </section>
 
   <div style="display:none;">
