@@ -529,11 +529,20 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:13px; color:var(--t3);
   line-height:1;
 }
-.add-task-text { font-size:13px; color:var(--t3) }
+.add-task-text {
+  font-size:13px;
+  color:var(--t3);
+  line-height:20px;
+  display:flex;
+  align-items:center;
+}
 .inline-add-inp {
   flex:1; border:none; outline:none;
   font-size:13px; font-family:inherit;
   background:transparent; color:var(--t1); min-width:0; padding:0;
+  height:20px;
+  line-height:20px;
+  align-self:center;
 }
 
 /* ════════════════════════════════════════
@@ -917,6 +926,22 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .pro-label-row {
   display:flex; align-items:center; gap:8px;
   padding:0 0 8px;            /* no extra left padding — flush with section-label */
+}
+.pro-link-btn {
+  margin-left:auto;
+  font-size:11px;
+  font-weight:700;
+  color:var(--t2);
+  text-decoration:none;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  transition:var(--tr);
+}
+.pro-link-btn:hover {
+  color:var(--blue);
+  border-color:var(--blue);
 }
 /* AI classify toggle switch */
 .ai-toggle-switch { position:relative; display:inline-block; width:44px; height:26px; flex-shrink:0; cursor:pointer }
@@ -2071,6 +2096,7 @@ GoogleService-Info.plist
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
+        <a class="pro-link-btn" href="/pricing.html" data-en="Get PRO" data-ja="PROを見る">Get PRO</a>
       </div>
       <div class="pro-wrap" id="proPickerWrap">
         <div class="pro-block">
