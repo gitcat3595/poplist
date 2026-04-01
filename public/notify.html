@@ -6,6 +6,8 @@
 <title>Poplist — Get Notified</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -60,7 +62,12 @@ nav {
   margin-left: 2px; vertical-align: super; font-style: normal;
   box-shadow: 0 0 0 2px var(--accent-glow), 0 0 8px var(--accent);
 }
-.nav-right { display: flex; align-items: center; gap: 8px }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto }
+.back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 600; color: var(--accent);
+}
+.back svg { width: 15px; height: 15px; flex-shrink: 0 }
 .lang-toggle {
   display: flex; background: var(--card); border-radius: var(--rp);
   padding: 3px; border: 1px solid var(--border); gap: 2px;
@@ -183,6 +190,19 @@ nav {
   padding: 12px 24px 0; line-height: 1.5;
 }
 .privacy-note a { color: var(--accent) }
+.consent-row {
+  margin: 10px 16px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.consent-row input { margin-top: 2px; accent-color: var(--accent); }
+.consent-text { font-size: 12px; color: var(--t2); line-height: 1.55; }
+.consent-text a { color: var(--accent); }
 
 /* ── SUCCESS SCREEN ── */
 .success-wrap {
@@ -191,17 +211,30 @@ nav {
 }
 .success-icon-wrap {
   width: 72px; height: 72px; border-radius: 50%;
-  background: #DCFCE7; border: 2px solid #86EFAC;
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 20px;
-  animation: pop-in .4s cubic-bezier(0.32,0.72,0,1);
 }
-@keyframes pop-in {
-  0% { transform: scale(0.5); opacity: 0 }
-  100% { transform: scale(1); opacity: 1 }
+.success-bubble {
+  width: 24px; height: 24px; border-radius: 50%;
+  position: relative;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 0 10px var(--accent-glow);
 }
-.success-check {
-  font-size: 32px;
+.success-bubble::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 65%, white);
+  opacity: .5;
+}
+.success-bubble.pop {
+  animation: bubble-pop-success .66s cubic-bezier(.4,0,.6,1) forwards;
+}
+@keyframes bubble-pop-success {
+  0%   { transform: scale(1); opacity: 1; }
+  45%  { transform: scale(1.22); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
 }
 .success-title {
   font-size: 22px; font-weight: 900; letter-spacing: -.5px;
@@ -227,11 +260,23 @@ nav {
 .success-detail {
   font-size: 12px; color: var(--t3); line-height: 1.6;
 }
+.footer {
+  margin: 30px 16px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--t3);
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
+}
+.footer a { color: var(--t2); }
 </style>
 </head>
 <body>
 
 <nav>
+  <a class="back" id="backLink" href="pricing.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="back-label">Back</span>
+  </a>
   <a href="pricing.html" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
@@ -343,6 +388,17 @@ nav {
       </button>
     </div>
 
+    <label class="consent-row" for="consentAll">
+      <input id="consentAll" type="checkbox" />
+      <span class="consent-text">
+        <span data-en="I agree to the " data-ja="私は次に同意します：">I agree to the </span>
+        <a href="privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</a>,
+        <a href="terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>,
+        <a href="eula.html" target="_blank" rel="noopener noreferrer">EULA</a>
+        <span data-en=" and consent to receive launch-related emails." data-ja="およびローンチ関連のメール通知に同意します。"> and consent to receive launch-related emails.</span>
+      </span>
+    </label>
+
     <p class="privacy-note">
       <span data-en="We'll only email you about Poplist PRO launch. No spam, ever. " data-ja="Poplist PROのローンチについてのみメールします。スパムは一切ありません。">We'll only email you about Poplist PRO launch. No spam, ever. </span>
       <a href="privacy.html" data-en="Privacy policy" data-ja="プライバシーポリシー">Privacy policy</a>
@@ -354,13 +410,13 @@ nav {
   <div class="success-screen" id="successScreen">
     <div class="success-wrap">
       <div class="success-icon-wrap">
-        <span class="success-check">✓</span>
+        <span class="success-bubble" id="successBubble"></span>
       </div>
       <h2 class="success-title">
         <span data-en="You're on the list!" data-ja="登録完了！">You're on the list!</span>
       </h2>
       <p class="success-sub">
-        <span data-en="We'll reach out the moment Poplist PRO is ready to purchase. Keep an eye on your inbox — there's an early-bird deal with your name on it." data-ja="Poplist PROの購入が可能になった瞬間にご連絡します。受信トレイをチェックしてください。アーリーバード特典をご用意しています。">We'll reach out the moment Poplist PRO is ready to purchase. Keep an eye on your inbox — there's an early-bird deal with your name on it.</span>
+        <span data-en="We'll reach out the moment Poplist PRO is ready to purchase." data-ja="Poplist PROの購入が可能になった瞬間にご連絡します。">We'll reach out the moment Poplist PRO is ready to purchase.</span>
       </p>
       <a href="index.html" class="success-back-btn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -371,6 +427,14 @@ nav {
         <span data-en="In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is." data-ja="その間、無料プランは完全に機能しています。音声タスク入力を試してみてください。その速さに驚くかもしれません。">In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is.</span>
       </p>
     </div>
+  </div>
+
+  <div class="footer">
+    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="/eula.html">EULA</a>
+    <a href="/data-deletion.html">Data Deletion</a>
   </div>
 
 </div>
@@ -407,17 +471,57 @@ function setLang(lang) {
   });
   // Plan pill label
   planPillText.textContent = lbl[lang] || lbl.en;
+  const backLabel = document.getElementById('back-label');
+  if (backLabel) backLabel.textContent = lang === 'ja' ? '戻る' : 'Back';
 }
 
 // ── Form submission ──
-function handleSubmit() {
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8",
+  authDomain: "poplist-ai.firebaseapp.com",
+  projectId: "poplist-ai",
+  storageBucket: "poplist-ai.firebasestorage.app",
+  messagingSenderId: "626209561981",
+  appId: "1:626209561981:web:f608569b981c2f56c18014"
+};
+
+let _db = null;
+try {
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  _db = firebase.firestore();
+} catch (e) {
+  console.warn('Firebase init failed:', e);
+}
+
+async function saveWaitlistSignup(payload) {
+  if (!_db) throw new Error('Database unavailable');
+  await _db.collection('waitlist_signups').add({
+    ...payload,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function setSubmitIdle() {
+  const btn = document.getElementById('submitBtn');
+  if (!btn) return;
+  btn.disabled = false;
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <span>${currentLang === 'ja' ? '準備ができたら通知する' : "Notify me when it's ready"}</span>
+  `;
+}
+
+async function handleSubmit() {
   const name    = document.getElementById('fieldName').value.trim();
   const email   = document.getElementById('fieldEmail').value.trim();
   const country = document.getElementById('fieldCountry').value;
+  const message = document.getElementById('fieldMessage').value.trim();
+  const consent = document.getElementById('consentAll')?.checked;
 
   if (!name) { shake('fieldName'); return }
   if (!email || !isValidEmail(email)) { shake('fieldEmail'); return }
   if (!country) { shake('fieldCountry'); return }
+  if (!consent) { shakeConsent(); return }
 
   // Disable button to prevent double-submit
   const btn = document.getElementById('submitBtn');
@@ -427,17 +531,41 @@ function handleSubmit() {
     <span>${currentLang === 'ja' ? '送信中...' : 'Sending…'}</span>
   `;
 
-  // Simulate async (replace with real fetch when backend is ready)
-  setTimeout(() => {
+  try {
+    await saveWaitlistSignup({
+      name,
+      email: email.toLowerCase(),
+      country,
+      message,
+      plan,
+      lang: currentLang,
+      consentedLegal: true,
+      consentedMarketing: true,
+      source: 'notify_page',
+      userAgent: navigator.userAgent || ''
+    });
+
     document.getElementById('formScreen').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
+    const b = document.getElementById('successBubble');
+    if (b) {
+      b.classList.remove('pop');
+      void b.offsetHeight;
+      b.classList.add('pop');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Reapply language to success screen
     document.querySelectorAll('[data-en][data-ja]').forEach(el => {
       const txt = el.getAttribute('data-' + currentLang);
       if (txt) el.innerHTML = txt;
     });
-  }, 900);
+  } catch (e) {
+    console.error('waitlist submit failed:', e);
+    setSubmitIdle();
+    alert(currentLang === 'ja'
+      ? '送信に失敗しました。少し時間をおいて再度お試しください。'
+      : 'Failed to submit. Please try again in a moment.');
+  }
 }
 
 function isValidEmail(e) {
@@ -456,6 +584,47 @@ function shake(id) {
     wrap.style.borderColor = '';
   }, 2000);
 }
+
+function shakeConsent() {
+  const el = document.querySelector('.consent-row');
+  if (!el) return;
+  el.style.background = 'rgba(239,68,68,.06)';
+  el.style.borderColor = 'rgba(239,68,68,.35)';
+  setTimeout(() => {
+    el.style.background = '';
+    el.style.borderColor = '';
+  }, 1800);
+}
+
+document.getElementById('backLink')?.addEventListener('click', e => {
+  e.preventDefault();
+  if (window.history.length > 1) window.history.back();
+  else window.location.href = 'pricing.html';
+});
+
+/* Sync accent colour with app setting */
+(function applyAccent() {
+  const ACCENT = {
+    'bc-blue':   {'--accent':'#3B82F6','--accent-lt':'#EFF6FF','--accent-glow':'rgba(59,130,246,.18)'},
+    'bc-navy':   {'--accent':'#1E40AF','--accent-lt':'#EFF6FF','--accent-glow':'rgba(30,64,175,.18)'},
+    'bc-teal':   {'--accent':'#0D9488','--accent-lt':'#F0FDFA','--accent-glow':'rgba(13,148,136,.18)'},
+    'bc-green':  {'--accent':'#16A34A','--accent-lt':'#F0FDF4','--accent-glow':'rgba(22,163,74,.18)'},
+    'bc-lime':   {'--accent':'#65A30D','--accent-lt':'#F7FEE7','--accent-glow':'rgba(101,163,13,.18)'},
+    'bc-yellow': {'--accent':'#FACC15','--accent-lt':'#FEFCE8','--accent-glow':'rgba(250,204,21,.18)'},
+    'bc-amber':  {'--accent':'#F97316','--accent-lt':'#FFF7ED','--accent-glow':'rgba(249,115,22,.18)'},
+    'bc-rose':   {'--accent':'#EF4444','--accent-lt':'#FEF2F2','--accent-glow':'rgba(239,68,68,.18)'},
+    'bc-pink':   {'--accent':'#EC4899','--accent-lt':'#FDF2F8','--accent-glow':'rgba(236,72,153,.18)'},
+    'bc-purple': {'--accent':'#7C3AED','--accent-lt':'#F5F3FF','--accent-glow':'rgba(124,58,237,.18)'},
+    'bc-black':  {'--accent':'#374151','--accent-lt':'#F9FAFB','--accent-glow':'rgba(55,65,81,.18)'},
+    'bc-slate':  {'--accent':'#475569','--accent-lt':'#F8FAFC','--accent-glow':'rgba(71,85,105,.18)'},
+    'bc-grey':   {'--accent':'#9CA3AF','--accent-lt':'#F3F4F6','--accent-glow':'rgba(156,163,175,.18)'},
+  };
+  try {
+    const c = localStorage.getItem('bubbleColour') || 'bc-blue';
+    const vars = ACCENT[c] || ACCENT['bc-blue'];
+    Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  } catch(e) {}
+})();
 </script>
 <style>
 @keyframes spin {
