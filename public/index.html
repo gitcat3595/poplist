@@ -479,6 +479,10 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   word-break:break-word; border-radius:6px; padding:2px 5px; margin:-2px -5px;
   cursor:text; outline:none; transition:background var(--tr); caret-color:var(--blue);
   flex:1; min-width:0;
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  -webkit-user-select:text;
+  user-select:text;
 }
 .task-text:focus { background:var(--surface) }
 
@@ -2143,7 +2147,7 @@ GoogleService-Info.plist
       </div>
       <div class="guide-row" style="border-bottom:none">
         <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20l4-16m2 16l4-16"/><path d="M3 8h18M3 16h18"/></svg></div>
-        <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category. (Requires sign-in)" data-ja="タスク名を長押しすると、カテゴリーを変更できます。（サインイン必要）">Press and hold the task name to move it to a different category. (Requires sign-in)</p></div>
+        <div><p class="guide-action" data-en="Hold to change category" data-ja="カテゴリーを変更する">Hold to change category</p><p class="guide-detail" data-en="Press and hold the task name to move it to a different category." data-ja="タスク名を長押しすると、カテゴリーを変更できます。">Press and hold the task name to move it to a different category.</p></div>
       </div>
     </div>
 
@@ -2616,6 +2620,12 @@ async function fsMarkDone(fsId) {
   catch (e) { console.warn('fsMarkDone:', e); }
 }
 
+function fsUpdateTaskCategory(fsId, category) {
+  if (!_db || !fsId || !category) return;
+  _db.collection('tasks').doc(fsId).update({ category })
+    .catch(e => console.warn('fsUpdateTaskCategory:', e));
+}
+
 async function fsLoadTasks(uid) {
   if (!_db) return;
   try {
@@ -3023,6 +3033,7 @@ function showTodayDoneInline() {
    • Short tap  → burst (complete) the task
    • Long press → open "Move to…" category sheet
 ══════════════════════════════════════════ */
+/* Category picker dots use current accent (--blue is the app accent token) */
 const CAT_META = [
   { en:'Work',     ja:'仕事',    colour:'var(--blue)' },
   { en:'Home',     ja:'家の事',  colour:'var(--blue)' },
@@ -3053,8 +3064,11 @@ function openCatEdit(taskItem) {
       border:none;width:100%;text-align:left;cursor:pointer;
       border-bottom:${idx < CAT_META.length-1 ? '1px solid var(--border)' : 'none'};
       -webkit-tap-highlight-color:transparent;touch-action:manipulation;`;
+    const dotRing = isCurrent
+      ? 'box-shadow:0 0 0 3px var(--blue-glow),0 0 10px color-mix(in srgb,var(--blue) 40%, transparent)'
+      : 'box-shadow:0 0 0 1px color-mix(in srgb,var(--blue) 30%, transparent)';
     btn.innerHTML = `
-      <span style="width:12px;height:12px;border-radius:50%;background:${cat.colour};flex-shrink:0;${isCurrent ? `box-shadow:0 0 0 3px ${cat.colour}33,0 0 8px 2px ${cat.colour}55` : ''}"></span>
+      <span class="cat-edit-dot" style="width:12px;height:12px;border-radius:50%;background:var(--blue);flex-shrink:0;${dotRing}"></span>
       <span style="flex:1;font-size:14px;font-weight:700;color:var(--t1)">${isJA ? cat.ja : cat.en}</span>
     `;
     btn.addEventListener('click', () => {
@@ -3094,6 +3108,10 @@ function moveCatTaskItem(item, newCatEn) {
 
   updateScreenState();
   reapplyFilter(); // keep active filter consistent after category move
+
+  if (!state.isLoggedIn) saveTaskCache();
+  else if (item.dataset.fsId) fsUpdateTaskCategory(item.dataset.fsId, newCatEn);
+
   const isJA = state.lang === 'ja';
   const catMeta = CAT_META.find(c => c.en === newCatEn);
   const label = isJA ? catMeta?.ja : catMeta?.en;
@@ -3109,7 +3127,10 @@ function attachBubble(bubble) {
 
 function attachTaskText(taskText) {
   let pressTimer = null;
-  let didLongPress = false;
+  let pressStartX = 0;
+  let pressStartY = 0;
+  const LONG_MS = 480;
+  const MOVE_CANCEL_PX = 16;
 
   // Long-press on text → open category sheet
   // Cache text edits in the correct language slot
@@ -3119,26 +3140,29 @@ function attachTaskText(taskText) {
   });
 
   taskText.addEventListener('pointerdown', e => {
-    didLongPress = false;
-    pressTimer = setTimeout(() => {
-      didLongPress = true;
-      taskText.releasePointerCapture(e.pointerId);
-      // Prevent text selection during long press
-      window.getSelection()?.removeAllRanges();
-      // Guests (not logged in) cannot change categories
-      if (FB_READY && !state.isLoggedIn) {
-        showToast(state.lang === 'ja' ? 'カテゴリー変更はサインインが必要です' : 'Sign in to change categories');
-        openM('settingsModal');
-        return;
-      }
-      openCatEdit(taskText.closest('.task-item'));
-    }, 500);
-  });
-  taskText.addEventListener('pointerup',     () => clearTimeout(pressTimer));
-  taskText.addEventListener('pointercancel', () => clearTimeout(pressTimer));
-  taskText.addEventListener('pointermove',   e => {
-    // Cancel if finger moved more than ~5px
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    pressStartX = e.clientX;
+    pressStartY = e.clientY;
     clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => {
+      pressTimer = null;
+      try {
+        if (taskText.hasPointerCapture?.(e.pointerId)) taskText.releasePointerCapture(e.pointerId);
+      } catch (_) { /* no capture */ }
+      window.getSelection()?.removeAllRanges();
+      taskText.blur();
+      const item = taskText.closest('.task-item');
+      if (item) openCatEdit(item);
+    }, LONG_MS);
+  });
+  const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
+  taskText.addEventListener('pointerup', cancelPress);
+  taskText.addEventListener('pointercancel', cancelPress);
+  taskText.addEventListener('pointermove', e => {
+    if (pressTimer == null) return;
+    const dx = e.clientX - pressStartX;
+    const dy = e.clientY - pressStartY;
+    if (dx * dx + dy * dy > MOVE_CANCEL_PX * MOVE_CANCEL_PX) cancelPress();
   });
 }
 document.querySelectorAll('.task-bubble').forEach(attachBubble);
