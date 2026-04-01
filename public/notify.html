@@ -167,6 +167,30 @@ nav {
   padding-right: 20px;
 }
 .form-select option { font-weight: 400 }
+.country-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.country-flag-slot {
+  flex-shrink: 0;
+  width: 32px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.country-flag {
+  width: 28px;
+  height: 21px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  display: block;
+  background: var(--raised);
+}
+.country-select-wrap .form-select { flex: 1; min-width: 0 }
 .form-textarea {
   resize: none; min-height: 72px; line-height: 1.55;
 }
@@ -277,7 +301,7 @@ nav {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     <span id="back-label">Back</span>
   </a>
-  <a href="pricing.html" class="nav-logo">Poplist<em></em></a>
+  <a href="pricing.html" class="nav-logo" id="navPricingLogo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -384,7 +408,7 @@ nav {
     <div class="submit-area">
       <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        <span data-en="Notify me when it's ready" data-ja="準備ができたら通知する">Notify me when it's ready</span>
+        <span data-en="Get notified" data-ja="お知らせを受け取る">Get notified</span>
       </button>
     </div>
 
@@ -454,10 +478,44 @@ const lbl = planLabels[plan] || planLabels.monthly;
 planPillText.textContent = lbl.en;
 planPill.classList.add(lbl.cls);
 
-// ── Language toggle ──
 let currentLang = 'en';
+
+function notifyPricingHref() {
+  const l = currentLang === 'ja' ? 'ja' : 'en';
+  return 'pricing.html?lang=' + encodeURIComponent(l);
+}
+
+function syncNotifyNavHrefs() {
+  const h = notifyPricingHref();
+  const back = document.getElementById('backLink');
+  const logo = document.getElementById('navPricingLogo');
+  if (back) back.href = h;
+  if (logo) logo.href = h;
+}
+
+const FLAG_CDN = 'https://flagcdn.com/w40/';
+function countryToFlagUrl(code) {
+  if (!code || code === 'OTHER') return '';
+  return FLAG_CDN + code.toLowerCase() + '.png';
+}
+function updateCountryFlag() {
+  const sel = document.getElementById('fieldCountry');
+  const img = document.getElementById('countryFlagPreview');
+  if (!sel || !img) return;
+  const url = countryToFlagUrl(sel.value);
+  if (url) {
+    img.src = url;
+    img.removeAttribute('hidden');
+  } else {
+    img.removeAttribute('src');
+    img.setAttribute('hidden', '');
+  }
+}
+
+// ── Language toggle ──
 function setLang(lang) {
   currentLang = lang;
+  try { localStorage.setItem('lang', lang); } catch (e) {}
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   // Text nodes
@@ -473,7 +531,21 @@ function setLang(lang) {
   planPillText.textContent = lbl[lang] || lbl.en;
   const backLabel = document.getElementById('back-label');
   if (backLabel) backLabel.textContent = lang === 'ja' ? '戻る' : 'Back';
+  syncNotifyNavHrefs();
 }
+
+(function initNotifyLang() {
+  const qLang = params.get('lang');
+  if (qLang === 'ja' || qLang === 'en') {
+    setLang(qLang);
+  } else {
+    const stored = localStorage.getItem('lang');
+    if (stored === 'ja' || stored === 'en') setLang(stored);
+    else syncNotifyNavHrefs();
+  }
+})();
+
+document.getElementById('fieldCountry')?.addEventListener('change', updateCountryFlag);
 
 // ── Form submission ──
 const FIREBASE_CONFIG = {
@@ -507,7 +579,7 @@ function setSubmitIdle() {
   btn.disabled = false;
   btn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    <span>${currentLang === 'ja' ? '準備ができたら通知する' : "Notify me when it's ready"}</span>
+    <span>${currentLang === 'ja' ? 'お知らせを受け取る' : 'Get notified'}</span>
   `;
 }
 
@@ -598,8 +670,7 @@ function shakeConsent() {
 
 document.getElementById('backLink')?.addEventListener('click', e => {
   e.preventDefault();
-  if (window.history.length > 1) window.history.back();
-  else window.location.href = 'pricing.html';
+  window.location.href = notifyPricingHref();
 });
 
 /* Sync accent colour with app setting */

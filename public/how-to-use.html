@@ -476,17 +476,6 @@ nav {
       </div>
     </div>
 
-    <div class="feature-row">
-      <div class="feat-icon"><i class="fa-solid fa-chart-bar"></i></div>
-      <div class="feat-body">
-        <div class="feat-title">
-          <span data-en="Weekly stats (coming)" data-ja="週間統計（準備中）">Weekly stats (coming)</span>
-          <span class="feat-pro-tag">PRO</span>
-        </div>
-        <div class="feat-desc" data-en="See how productive you've been this week, broken down by category." data-ja="データでなにをやったかを確認。">See how productive you've been this week, broken down by category.</div>
-      </div>
-    </div>
-
   </div>
 
   <!-- FREE vs PRO comparison chart -->
@@ -557,19 +546,7 @@ nav {
       <div class="val-yes">✓</div>
     </div>
 
-    <div class="compare-row">
-      <div class="feat-row-left">
-        <div class="feat-icon"><i class="fa-solid fa-chart-bar"></i></div>
-        <div class="feat-info">
-          <div class="feat-name" data-en="Weekly stats" data-ja="週間統計">Weekly stats</div>
-          <div class="feat-desc-small" data-en="Productivity breakdown by category" data-ja="カテゴリ別の生産性を確認">Productivity breakdown by category</div>
-        </div>
-      </div>
-      <div class="val-no">—</div>
-      <div class="val-yes">✓</div>
-    </div>
-
-    <a class="compare-pricing-link" href="/pricing.html" data-en="See full pricing →" data-ja="料金の詳細を見る →">See full pricing →</a>
+    <a class="compare-pricing-link" id="htuComparePricing" href="/pricing.html" data-en="See full pricing →" data-ja="料金の詳細を見る →">See full pricing →</a>
   </div>
 
   <!-- FAQ -->
@@ -607,7 +584,7 @@ nav {
         <span data-en="What's the difference between Free and PRO?" data-ja="無料とPROの違いは何ですか？">What's the difference between Free and PRO?</span>
         <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div class="faq-answer" data-en="Free plan gives you up to 10 tasks, 2 colour themes, and basic stats. PRO unlocks unlimited tasks, 13 colour themes, custom keywords, category colours, task rollover, full stats, and cloud sync." data-ja="無料プランは最大10タスク、2種類のカラーテーマ、基本統計が使えます。PROは無制限タスク、13種類のカラーテーマ、カスタムキーワード、カテゴリカラー、タスク繰越、フル統計、クラウド同期がすべて解放されます。">Free gives you 10 tasks, 2 colour themes, and today-only stats. PRO unlocks everything — unlimited tasks, 13 themes, custom keywords, category colours, rollover, full stats, and cloud sync.</div>
+      <div class="faq-answer" data-en="Free plan gives you up to 10 tasks, 2 colour themes, and basic stats. PRO unlocks unlimited tasks, 13 colour themes, custom keywords, category colours, task rollover, and cloud sync." data-ja="無料プランは最大10タスク、2種類のカラーテーマ、基本統計が使えます。PROは無制限タスク、13種類のカラーテーマ、カスタムキーワード、カテゴリカラー、タスク繰越、クラウド同期がすべて解放されます。">Free gives you 10 tasks, 2 colour themes, and today-only stats. PRO unlocks unlimited tasks, 13 themes, custom keywords, category colours, rollover, and cloud sync.</div>
     </div>
 
     <div class="faq-item">
@@ -630,7 +607,7 @@ nav {
       <div class="plan-footer-name" data-en="Free" data-ja="無料">Free</div>
       <div class="plan-footer-price" data-en="$0" data-ja="$0">$0</div>
       <div class="plan-footer-note" data-en="10 tasks · 2 themes · basic stats" data-ja="10タスク · 2テーマ · 基本統計">10 tasks · 2 themes · basic stats</div>
-      <a href="pricing.html#plans" class="plan-footer-cta">
+      <a href="pricing.html" class="plan-footer-cta" id="htuPlanFree">
         <span data-en="Free plan" data-ja="無料プラン">Free plan</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
@@ -638,10 +615,10 @@ nav {
 
     <div class="plan-footer-card pro">
       <div class="plan-footer-name" data-en="PRO" data-ja="PRO">PRO</div>
-      <div class="plan-footer-price" data-en="$2.50/mo" data-ja="$2.50/月">$2.50/mo</div>
-      <div class="plan-footer-note" data-en="Unlimited everything · annual plan" data-ja="すべて無制限 · 年額プラン">Unlimited everything · annual plan</div>
-      <a href="pricing.html#plans" class="plan-footer-cta">
-        <span data-en="See PRO plans" data-ja="PROプランを見る">See PRO plans</span>
+      <div class="plan-footer-price" data-en="Coming soon" data-ja="未定">Coming soon</div>
+      <div class="plan-footer-note" data-en="Pricing will be announced at launch" data-ja="料金は公開時にお知らせします">Pricing will be announced at launch</div>
+      <a href="notify.html?plan=monthly" class="plan-footer-cta" id="htuPlanPro">
+        <span data-en="Get notified" data-ja="お知らせを受け取る">Get notified</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
     </div>
@@ -682,13 +659,33 @@ nav {
 
 // ── Language toggle ──
 function setLang(lang) {
+  try { localStorage.setItem('lang', lang); } catch (e) {}
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.querySelectorAll('[data-en][data-ja]').forEach(el => {
     const txt = el.getAttribute('data-' + lang);
     if (txt) el.innerHTML = txt;
   });
+  const ph = '/pricing.html?lang=' + encodeURIComponent(lang);
+  const nw = '/notify.html?plan=monthly&lang=' + encodeURIComponent(lang);
+  document.getElementById('htuComparePricing')?.setAttribute('href', ph);
+  document.getElementById('htuPlanFree')?.setAttribute('href', ph);
+  document.getElementById('htuPlanPro')?.setAttribute('href', nw);
 }
+
+(function initHowToUseLang() {
+  const qp = new URLSearchParams(location.search);
+  const ql = qp.get('lang');
+  let L = 'en';
+  if (ql === 'ja' || ql === 'en') L = ql;
+  else {
+    try {
+      const s = localStorage.getItem('lang');
+      if (s === 'ja' || s === 'en') L = s;
+    } catch (e) {}
+  }
+  setLang(L);
+})();
 
 // ── FAQ accordion ──
 function toggleFaq(btn) {

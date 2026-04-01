@@ -6,6 +6,7 @@
 <title>Poplist — Start free, task lists that don’t drain you</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -2175,16 +2176,6 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
       </div>
     </div>
 
-    <div class="lp-feature-row">
-      <div class="lp-feat-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <div class="lp-feat-body">
-        <div class="lp-feat-title"><span data-en="Weekly stats" data-ja="週間統計（準備中）">Weekly stats</span><span class="lp-feat-pro-tag">PRO</span></div>
-        <div class="lp-feat-desc" data-en="See how productive you've been this week, broken down by category." data-ja="データでなにをやったかを確認。">See how productive you've been this week, broken down by category.</div>
-      </div>
-    </div>
-
   </div>
   </div>
   
@@ -2196,7 +2187,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     <button type="button" class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
     <nav class="footer-a-links" aria-label="Footer">
       <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="/pricing.html" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/pricing.html" data-en="Plans" data-ja="プラン" id="lp1FooterPricingLink">Plans</a>
       <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
       <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms" data-ja="利用規約">Terms</a>
     </nav>
@@ -2844,6 +2835,9 @@ function setLang(lang) {
     var t = chip.getAttribute('data-timing') || 'This Week';
     chip.textContent = lpExpTimingLabel(t);
   });
+  var ph = '/pricing.html?lang=' + encodeURIComponent(lang);
+  var lp1Foot = document.getElementById('lp1FooterPricingLink');
+  if (lp1Foot) lp1Foot.href = ph;
 }
 (function initLpLang() {
   var saved = null;

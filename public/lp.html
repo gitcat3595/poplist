@@ -6,6 +6,7 @@
 <title>Poplist — Capture tasks by voice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -1141,6 +1142,7 @@ body.lang-ja .lp-cm-item {
   border: 1px solid var(--blue-glow);
 }
 .compare-wrap.lp-compare-wrap .feat-icon svg { color: var(--blue); display: block }
+.compare-wrap.lp-compare-wrap .feat-icon i { font-size: 14px; color: var(--blue); line-height: 1; display: block }
 .compare-wrap.lp-compare-wrap .feat-name {
   font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 1px;
 }
@@ -1681,16 +1683,6 @@ footer {
       </div>
     </div>
 
-    <div class="lp-feature-row">
-      <div class="lp-feat-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <div class="lp-feat-body">
-        <div class="lp-feat-title"><span data-en="Weekly stats" data-ja="週間統計（準備中）">Weekly stats</span><span class="lp-feat-pro-tag">PRO</span></div>
-        <div class="lp-feat-desc" data-en="See how productive you've been this week, broken down by category." data-ja="データでなにをやったかを確認。">See how productive you've been this week, broken down by category.</div>
-      </div>
-    </div>
-
   </div>
   </div>
   
@@ -1698,7 +1690,7 @@ footer {
   <p class="lp-section-label" data-en="FREE vs PRO" data-ja="無料 vs PRO">FREE vs PRO</p>
   <div class="compare-wrap lp-compare-wrap" id="lpCompareChart"></div>
 
-  <a href="/pricing.html" class="lp-pricing-link" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
+  <a href="/pricing.html" class="lp-pricing-link" id="lpPricingLink" data-en="See full pricing →" data-ja="詳細な料金を見る →">See full pricing →</a>
 
   <!-- ── CTA SECTION ── -->
   <section class="cta-section">
@@ -1722,7 +1714,7 @@ footer {
   <div class="footer-links">
     <a href="/privacy.html" data-en="Privacy" data-ja="プライバシー">Privacy</a>
     <a href="/terms.html" data-en="Terms" data-ja="利用規約">Terms</a>
-    <a href="/pricing.html" data-en="Pricing" data-ja="料金">Pricing</a>
+    <a href="/pricing.html" data-en="Pricing" data-ja="料金" id="lpFooterPricingLink">Pricing</a>
     <a href="/how-to-use.html" data-en="How to use" data-ja="使い方">How to use</a>
   </div>
   <p class="footer-copy">© 2025 Poplist</p>
@@ -2217,6 +2209,11 @@ function setLang(lang) {
   });
   if (typeof window.lpRefreshColorItDescs === 'function') window.lpRefreshColorItDescs();
   if (typeof window._lpRefreshCompareChart === 'function') window._lpRefreshCompareChart();
+  var ph = '/pricing.html?lang=' + encodeURIComponent(lang);
+  var lpPl = document.getElementById('lpPricingLink');
+  if (lpPl) lpPl.href = ph;
+  var ftPl = document.getElementById('lpFooterPricingLink');
+  if (ftPl) ftPl.href = ph;
 }
 (function initLpLang() {
   var saved = null;

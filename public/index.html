@@ -2096,7 +2096,7 @@ GoogleService-Info.plist
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
-        <a class="pro-link-btn" href="/pricing.html" data-en="Get PRO" data-ja="PROを見る">Get PRO</a>
+        <a class="pro-link-btn" id="proPricingLink" href="pricing.html" data-en="Get PRO" data-ja="PROを見る">Get PRO</a>
       </div>
       <div class="pro-wrap" id="proPickerWrap">
         <div class="pro-block">
@@ -4802,6 +4802,13 @@ const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homeP
   ja: [{ t: '今日は何をする？', s: '思いつくままで大丈夫。' }]
 };
 
+function syncProPricingHref(lang) {
+  const el = document.getElementById('proPricingLink');
+  if (!el) return;
+  const l = lang === 'ja' ? 'ja' : 'en';
+  el.href = 'pricing.html?lang=' + encodeURIComponent(l);
+}
+
 // Restore language from localStorage and sync all toggles + mic
 (function restoreLang() {
   const saved = localStorage.getItem('lang');
@@ -4812,6 +4819,7 @@ const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homeP
     ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
     document.body.classList.toggle('lang-ja', isJA);
     applyLang(saved); /* includes refreshHomePrompt */
+    syncProPricingHref(saved);
   } else {
     const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
     const detected = navLang.startsWith('ja') ? 'ja' : 'en';
@@ -4822,6 +4830,7 @@ const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homeP
     ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
     document.body.classList.toggle('lang-ja', isJA);
     applyLang(detected);
+    syncProPricingHref(detected);
   }
 })();
 
@@ -5642,6 +5651,7 @@ function refreshHomePrompt(lang) {
 
 /* ── applyLang: swap every data-en/data-ja element text + placeholder ── */
 async function applyLang(lang) {
+  syncProPricingHref(lang);
   const isJA = lang === 'ja';
   document.querySelectorAll('[data-en][data-ja]').forEach(el => {
     const txt = isJA ? el.dataset.ja : el.dataset.en;

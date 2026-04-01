@@ -21,8 +21,14 @@ const ICONS = {
   keywords: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
   export: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
   cloud: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>`,
-  stats: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
 };
+
+/** Font Awesome (solid) — load all.min.css on pages that render this chart */
+function iconHTML(iconKey) {
+  if (iconKey === 'palette') return '<i class="fa-solid fa-palette" aria-hidden="true"></i>';
+  if (iconKey === 'rollover') return '<i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>';
+  return ICONS[iconKey] || '';
+}
 
 /**
  * Default feature set for the Free vs PRO comparison.
@@ -78,12 +84,6 @@ export const COMPARE_FEATURES = [
     desc: 'Sync across all devices', descJa: 'すべてのデバイスで同期',
     free: false, pro: true,
   },
-  {
-    icon: 'stats',
-    name: 'Weekly stats',    nameJa: '週間統計',
-    desc: 'Productivity breakdown (coming soon)', descJa: '生産性の内訳（近日公開）',
-    free: false, pro: true,
-  },
 ];
 
 /** Escape text for double-quoted HTML attributes */
@@ -120,7 +120,7 @@ function buildChartHTML(features, lang = 'en') {
   const rowsHTML = features.map(f => `
     <div class="compare-row">
       <div class="feat-row-left">
-        <div class="feat-icon">${ICONS[f.icon] || ''}</div>
+        <div class="feat-icon">${iconHTML(f.icon)}</div>
         <div class="feat-info">
           <div class="feat-name" data-en="${escAttr(f.name)}" data-ja="${escAttr(f.nameJa)}">${t(f.name, f.nameJa)}</div>
           <div class="feat-desc-small" data-en="${escAttr(f.desc)}" data-ja="${escAttr(f.descJa)}">${t(f.desc, f.descJa)}</div>

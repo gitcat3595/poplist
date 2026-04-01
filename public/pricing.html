@@ -6,6 +6,7 @@
 <title>Poplist — Plans & Pricing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -147,6 +148,7 @@ nav {
   border: 1px solid var(--accent-glow);
 }
 .feat-icon svg { color: var(--accent); display: block }
+.feat-icon i { font-size: 14px; color: var(--accent); line-height: 1; display: block }
 .feat-row-left { display: flex; align-items: center; gap: 10px }
 .feat-info {}
 .feat-name {
@@ -242,8 +244,21 @@ nav {
 .price-cta-btn:hover { filter: brightness(0.88); transform: translateY(-1px) }
 .price-cta-btn:active { filter: brightness(0.82); transform: none }
 
+/* ── PRO coming (pricing hidden until launch) ── */
+.pro-coming-block {
+  margin: 16px 16px 0;
+  text-align: center;
+  padding: 0 4px 8px;
+}
+.pro-coming-msg {
+  font-size: 14px;
+  color: var(--t2);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+
 /* ── LIFETIME BLOCK ── */
-.lifetime-section { padding: 20px 16px 0 }
+.lifetime-section { padding: 20px 16px 0; display: none }
 .lifetime-card {
   background: var(--card); border: 1.5px solid var(--border);
   border-radius: var(--rc);
@@ -331,10 +346,10 @@ nav {
       <span data-en="Poplist PRO" data-ja="Poplist PRO">Poplist PRO</span>
     </div>
     <h1 class="hero-title">
-      <span data-en="Simple pricing,<br>zero surprises." data-ja="シンプルな料金、<br>驚きなし。">Simple pricing,<br>zero surprises.</span>
+      <span data-en="Free vs PRO" data-ja="無料 vs PRO">Free vs PRO</span>
     </h1>
     <p class="hero-sub">
-      <span data-en="Unlock all features. Pay the way that works for you." data-ja="すべての機能を解放。あなたに合った支払い方法を選んでください。">Unlock all features. Pay the way that works for you.</span>
+      <span data-en="Compare features below. PRO pricing will be announced when it launches — get notified when it’s ready." data-ja="下の表で機能を比較できます。PROの料金は公開時にお知らせします。">Compare features below. PRO pricing will be announced when it launches — get notified when it’s ready.</span>
     </p>
   </div>
 
@@ -345,8 +360,16 @@ nav {
   <!-- Populated by compare-chart.js -->
   <div class="compare-wrap" id="compare-chart"></div>
 
-  <!-- PLAN TOGGLE & PRICE DISPLAY -->
-  <div id="plans" class="plan-toggle-section">
+  <!-- PRO pricing: amounts hidden until launch -->
+  <div class="pro-coming-block">
+    <p class="pro-coming-msg">
+      <span data-en="PRO pricing isn’t public yet. We’ll email you when it launches — no spam." data-ja="PROの料金はまだ公開していません。リリース時にお知らせします（スパムはしません）。">PRO pricing isn’t public yet. We’ll email you when it launches — no spam.</span>
+    </p>
+    <button type="button" class="price-cta-btn" onclick="goNotify('monthly')" data-en="Get notified →" data-ja="お知らせを受け取る →">Get notified →</button>
+  </div>
+
+  <!-- Legacy price UI (hidden; restore when PRO launches) -->
+  <div id="plans" class="plan-toggle-section" style="display:none">
     <div class="plan-toggle-wrap">
       <button class="toggle-pill active" id="pill-monthly" onclick="setPlan('monthly')">
         <span data-en="Monthly" data-ja="月額">Monthly</span>
@@ -358,7 +381,7 @@ nav {
     </div>
   </div>
 
-  <div class="plan-display">
+  <div class="plan-display" style="display:none">
     <!-- MONTHLY -->
     <div class="plan-block active-plan plan-block active" id="block-monthly">
       <div class="plan-price-card active-plan">
@@ -410,8 +433,8 @@ nav {
     </div>
   </div>
 
-  <p class="legal-note" data-en="Payments via Stripe. Subscriptions renew automatically — cancel any time. Lifetime is a one-time purchase with no recurring charge." data-ja="Stripeによる決済。サブスクリプションは自動更新 — いつでもキャンセル可。買い切りは一回限りの支払いです。">
-    Payments via Stripe. Subscriptions renew automatically — cancel any time.<br>Lifetime is a one-time purchase with no recurring charge.
+  <p class="legal-note" data-en="When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service." data-ja="PRO公開時はStripeで決済できる予定です。プライバシーポリシーと利用規約をご確認ください。">
+    When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service.
   </p>
 
 </div>
@@ -422,6 +445,13 @@ let currentLang = 'en';
 // Relative URL works from /pricing.html next to /js/; fails on file:// — use a local server
 try {
   const { renderCompareChart, COMPARE_FEATURES } = await import('./js/compare-chart.js');
+  const qp = new URLSearchParams(location.search);
+  const ql = qp.get('lang');
+  if (ql === 'ja' || ql === 'en') currentLang = ql;
+  else {
+    const stored = localStorage.getItem('lang');
+    if (stored === 'ja' || stored === 'en') currentLang = stored;
+  }
   renderCompareChart('#compare-chart', COMPARE_FEATURES, currentLang);
   window._compareFeatures = COMPARE_FEATURES;
   window._renderCompareChart = renderCompareChart;
@@ -476,6 +506,19 @@ function setLang(lang) {
 }
 window.setLang = setLang;
 
+(function initLangUI() {
+  const qp = new URLSearchParams(location.search);
+  const ql = qp.get('lang');
+  let lang = 'en';
+  if (ql === 'ja' || ql === 'en') lang = ql;
+  else {
+    const stored = localStorage.getItem('lang');
+    if (stored === 'ja' || stored === 'en') lang = stored;
+  }
+  currentLang = lang;
+  setLang(lang);
+})();
+
 // ── Plan toggle ──
 function setPlan(plan) {
   document.querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
@@ -487,7 +530,8 @@ window.setPlan = setPlan;
 
 // ── Navigate to notify page ──
 function goNotify(plan) {
-  window.location.href = 'notify.html?plan=' + plan;
+  const lang = currentLang === 'ja' ? 'ja' : 'en';
+  window.location.href = 'notify.html?plan=' + encodeURIComponent(plan) + '&lang=' + encodeURIComponent(lang);
 }
 window.goNotify = goNotify;
 
