@@ -80,7 +80,7 @@ nav {
 .lang-btn.active { background: var(--accent); color: #fff }
 
 /* ── PAGE ── */
-.page { width: 100%; max-width: 480px; padding: 0 0 60px }
+.page { width: 100%; max-width: 480px; padding: 0 0 100px }
 
 /* ── FORM SCREEN ── */
 .form-screen, .success-screen { width: 100% }
@@ -106,22 +106,6 @@ nav {
 .hero-sub {
   font-size: 13px; color: var(--t2); line-height: 1.6;
   max-width: 300px; margin: 0 auto;
-}
-
-/* ── INFO CARD ── */
-.info-card {
-  margin: 0 16px 20px;
-  background: var(--accent-lt); border: 1px solid rgba(59,130,246,.2);
-  border-radius: var(--rc); padding: 14px 16px;
-  display: flex; gap: 12px; align-items: flex-start;
-}
-.info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px }
-.info-text {}
-.info-title {
-  font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 3px;
-}
-.info-body {
-  font-size: 12px; color: var(--t2); line-height: 1.55;
 }
 
 /* ── FORM ── */
@@ -209,24 +193,14 @@ nav {
 .submit-btn:hover { filter: brightness(0.88); transform: translateY(-1px) }
 .submit-btn:active { filter: brightness(0.82); transform: none }
 .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none }
-.privacy-note {
-  text-align: center; font-size: 10.5px; color: var(--t3);
-  padding: 12px 24px 0; line-height: 1.5;
+.submit-consent-note {
+  font-size: 11px; color: var(--t2);
+  line-height: 1.6;
+  padding: 14px 18px 8px;
+  text-align: center;
 }
-.privacy-note a { color: var(--accent) }
-.consent-row {
-  margin: 10px 16px 0;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-.consent-row input { margin-top: 2px; accent-color: var(--accent); }
-.consent-text { font-size: 12px; color: var(--t2); line-height: 1.55; }
-.consent-text a { color: var(--accent); }
+.submit-consent-note a { color: var(--accent); text-decoration: none }
+.submit-consent-note a:hover { text-decoration: underline }
 
 /* ── SUCCESS SCREEN ── */
 .success-wrap {
@@ -328,15 +302,6 @@ nav {
       </p>
     </div>
 
-    <!-- INFO CARD -->
-    <div class="info-card">
-      <div class="info-icon">💌</div>
-      <div class="info-text">
-        <div class="info-title" data-en="No payment today" data-ja="今日は支払い不要">No payment today</div>
-        <div class="info-body" data-en="We're not taking payments yet. Leave your details and you'll be first in line when checkout goes live." data-ja="まだ支払いは受け付けていません。詳細をご記入いただくと、チェックアウトが開始された際に最初にご案内します。">We're not taking payments yet. Leave your details and you'll be first in line when checkout goes live.</div>
-      </div>
-    </div>
-
     <!-- FORM -->
     <div class="form-card">
 
@@ -365,31 +330,36 @@ nav {
           <span data-en="Country" data-ja="国">Country</span>
           <span class="label-required" data-en="required" data-ja="必須">required</span>
         </label>
-        <select class="form-select" id="fieldCountry" required>
-          <option value="" disabled selected data-en="Select country" data-ja="国を選択">Select country</option>
-          <option value="JP">🇯🇵 Japan</option>
-          <option value="US">🇺🇸 United States</option>
-          <option value="GB">🇬🇧 United Kingdom</option>
-          <option value="AU">🇦🇺 Australia</option>
-          <option value="CA">🇨🇦 Canada</option>
-          <option value="SG">🇸🇬 Singapore</option>
-          <option value="KR">🇰🇷 South Korea</option>
-          <option value="TW">🇹🇼 Taiwan</option>
-          <option value="HK">🇭🇰 Hong Kong</option>
-          <option value="DE">🇩🇪 Germany</option>
-          <option value="FR">🇫🇷 France</option>
-          <option value="NL">🇳🇱 Netherlands</option>
-          <option value="SE">🇸🇪 Sweden</option>
-          <option value="NO">🇳🇴 Norway</option>
-          <option value="DK">🇩🇰 Denmark</option>
-          <option value="FI">🇫🇮 Finland</option>
-          <option value="NZ">🇳🇿 New Zealand</option>
-          <option value="IN">🇮🇳 India</option>
-          <option value="CN">🇨🇳 China</option>
-          <option value="BR">🇧🇷 Brazil</option>
-          <option value="MX">🇲🇽 Mexico</option>
-          <option value="OTHER" data-en="Other" data-ja="その他">Other</option>
-        </select>
+        <div class="country-select-wrap">
+          <div class="country-flag-slot" aria-hidden="true">
+            <img id="countryFlagPreview" class="country-flag" alt="" width="28" height="21" hidden decoding="async" />
+          </div>
+          <select class="form-select" id="fieldCountry" required>
+            <option value="" disabled selected data-en="Select country" data-ja="国を選択">Select country</option>
+            <option value="JP">Japan</option>
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="AU">Australia</option>
+            <option value="CA">Canada</option>
+            <option value="SG">Singapore</option>
+            <option value="KR">South Korea</option>
+            <option value="TW">Taiwan</option>
+            <option value="HK">Hong Kong</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="NL">Netherlands</option>
+            <option value="SE">Sweden</option>
+            <option value="NO">Norway</option>
+            <option value="DK">Denmark</option>
+            <option value="FI">Finland</option>
+            <option value="NZ">New Zealand</option>
+            <option value="IN">India</option>
+            <option value="CN">China</option>
+            <option value="BR">Brazil</option>
+            <option value="MX">Mexico</option>
+            <option value="OTHER" data-en="Other" data-ja="その他">Other</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
@@ -412,21 +382,7 @@ nav {
       </button>
     </div>
 
-    <label class="consent-row" for="consentAll">
-      <input id="consentAll" type="checkbox" />
-      <span class="consent-text">
-        <span data-en="I agree to the " data-ja="私は次に同意します：">I agree to the </span>
-        <a href="privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</a>,
-        <a href="terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>,
-        <a href="eula.html" target="_blank" rel="noopener noreferrer">EULA</a>
-        <span data-en=" and consent to receive launch-related emails." data-ja="およびローンチ関連のメール通知に同意します。"> and consent to receive launch-related emails.</span>
-      </span>
-    </label>
-
-    <p class="privacy-note">
-      <span data-en="We'll only email you about Poplist PRO launch. No spam, ever. " data-ja="Poplist PROのローンチについてのみメールします。スパムは一切ありません。">We'll only email you about Poplist PRO launch. No spam, ever. </span>
-      <a href="privacy.html" data-en="Privacy policy" data-ja="プライバシーポリシー">Privacy policy</a>
-    </p>
+    <p class="submit-consent-note" id="submitConsentNote"></p>
 
   </div>
 
@@ -453,13 +409,18 @@ nav {
     </div>
   </div>
 
-  <div class="footer">
-    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
-    <a href="/privacy.html">Privacy Policy</a>
-    <a href="/terms.html">Terms of Service</a>
-    <a href="/eula.html">EULA</a>
-    <a href="/data-deletion.html">Data Deletion</a>
-  </div>
+  <footer class="site-footer footer-a" id="siteFooter">
+    <div class="footer-a-top">
+      <button type="button" class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
+      <nav class="footer-a-links" aria-label="Footer">
+        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+        <a href="/pricing.html" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms" data-ja="利用規約">Terms</a>
+      </nav>
+    </div>
+    <span class="footer-a-copy">© 2026 ALLERISE</span>
+  </footer>
 
 </div>
 
@@ -491,6 +452,19 @@ function syncNotifyNavHrefs() {
   const logo = document.getElementById('navPricingLogo');
   if (back) back.href = h;
   if (logo) logo.href = h;
+  const fp = document.getElementById('footerPlansLink');
+  if (fp) fp.href = '/pricing.html?lang=' + encodeURIComponent(currentLang === 'ja' ? 'ja' : 'en');
+}
+
+function updateSubmitConsentNote() {
+  const el = document.getElementById('submitConsentNote');
+  if (!el) return;
+  const target = ' target="_blank" rel="noopener noreferrer"';
+  if (currentLang === 'ja') {
+    el.innerHTML = 'このフォームを送信することで、<a href="privacy.html"' + target + '>プライバシーポリシー</a>、<a href="terms.html"' + target + '>利用規約</a>、および <a href="eula.html"' + target + '>EULA</a> に同意したものとみなされます。ご登録のメールアドレスは、Poplist に関するご案内（PRO の公開通知など）にのみ利用し、それ以外の目的には使用しません。';
+  } else {
+    el.innerHTML = 'By submitting this form, you agree to our <a href="privacy.html"' + target + '>Privacy Policy</a>, <a href="terms.html"' + target + '>Terms of Service</a>, and <a href="eula.html"' + target + '>EULA</a>. Your email will be used only for Poplist-related announcements (such as PRO launch). We will not use it for unrelated marketing.';
+  }
 }
 
 const FLAG_CDN = 'https://flagcdn.com/w40/';
@@ -532,6 +506,7 @@ function setLang(lang) {
   const backLabel = document.getElementById('back-label');
   if (backLabel) backLabel.textContent = lang === 'ja' ? '戻る' : 'Back';
   syncNotifyNavHrefs();
+  updateSubmitConsentNote();
 }
 
 (function initNotifyLang() {
@@ -541,7 +516,10 @@ function setLang(lang) {
   } else {
     const stored = localStorage.getItem('lang');
     if (stored === 'ja' || stored === 'en') setLang(stored);
-    else syncNotifyNavHrefs();
+    else {
+      syncNotifyNavHrefs();
+      updateSubmitConsentNote();
+    }
   }
 })();
 
@@ -588,12 +566,10 @@ async function handleSubmit() {
   const email   = document.getElementById('fieldEmail').value.trim();
   const country = document.getElementById('fieldCountry').value;
   const message = document.getElementById('fieldMessage').value.trim();
-  const consent = document.getElementById('consentAll')?.checked;
 
   if (!name) { shake('fieldName'); return }
   if (!email || !isValidEmail(email)) { shake('fieldEmail'); return }
   if (!country) { shake('fieldCountry'); return }
-  if (!consent) { shakeConsent(); return }
 
   // Disable button to prevent double-submit
   const btn = document.getElementById('submitBtn');
@@ -613,6 +589,7 @@ async function handleSubmit() {
       lang: currentLang,
       consentedLegal: true,
       consentedMarketing: true,
+      consentMethod: 'submit_implied',
       source: 'notify_page',
       userAgent: navigator.userAgent || ''
     });
@@ -657,20 +634,13 @@ function shake(id) {
   }, 2000);
 }
 
-function shakeConsent() {
-  const el = document.querySelector('.consent-row');
-  if (!el) return;
-  el.style.background = 'rgba(239,68,68,.06)';
-  el.style.borderColor = 'rgba(239,68,68,.35)';
-  setTimeout(() => {
-    el.style.background = '';
-    el.style.borderColor = '';
-  }, 1800);
-}
-
 document.getElementById('backLink')?.addEventListener('click', e => {
   e.preventDefault();
   window.location.href = notifyPricingHref();
+});
+
+document.getElementById('footerLogoBtn')?.addEventListener('click', function () {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 /* Sync accent colour with app setting */
