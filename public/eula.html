@@ -23,12 +23,12 @@
         background: rgba(236,238,242,.94); backdrop-filter: blur(20px) saturate(1.4);
         -webkit-backdrop-filter: blur(20px) saturate(1.4);
         border-bottom: 1px solid #D4D7DD; padding: 13px 24px;
-        display: flex; align-items: center; justify-content: space-between }
+        display: flex; align-items: center; gap: 10px }
   .nav-logo { font-size: 17px; font-weight: 900; letter-spacing: -.4px; color: #111111; text-decoration: none }
   .nav-logo em { display: inline-block; width: 7px; height: 7px;
     background: var(--blue); border-radius: 50%; margin-left: 2px;
     vertical-align: super; font-style: normal }
-  .nav-right { display: flex; align-items: center; gap: 8px }
+  .nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto }
   .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
           font-weight: 600; color: var(--blue); text-decoration: none }
   .back svg { width: 15px; height: 15px; flex-shrink: 0 }
@@ -61,23 +61,23 @@
 </head>
 <body>
 <nav>
+  <a class="back" id="backLink" href="/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="back-label">Back</span>
+  </a>
   <a href="/" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('ja')">JP</button>
     </div>
-    <a class="back" href="javascript:history.back()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      <span id="back-label">Back</span>
-    </a>
   </div>
 </nav>
 
 <div id="lang-en">
 <div class="wrap">
   <h1>End User Licence Agreement</h1>
-  <p class="meta">Last updated: March 2025</p>
+  <p class="meta">Effective date: 1 April 2026</p>
 
   <p>This End User Licence Agreement ("EULA") is a legal agreement between you ("User") and Poplist ("Licensor") for use of the Poplist application ("App"). By installing or using the App, you agree to be bound by the terms of this EULA.</p>
 
@@ -133,9 +133,10 @@
   <p>If you have any questions about this EULA, please contact us at <a href="mailto:legal@poplist.app">legal@poplist.app</a>.</p>
 
   <div class="footer">
-    <span>© 2025 Poplist.</span>
+    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
     <a href="/privacy.html">Privacy Policy</a>
     <a href="/terms.html">Terms of Service</a>
+    <a href="/eula.html">EULA</a>
     <a href="/data-deletion.html">Data Deletion</a>
   </div>
 </div>
@@ -144,7 +145,7 @@
 <div id="lang-ja" style="display:none">
 <div class="wrap">
   <h1>エンドユーザーライセンス契約</h1>
-  <p class="meta">最終更新：2025年3月</p>
+  <p class="meta">発効日：2026年4月1日</p>
 
   <p>このエンドユーザーライセンス契約（以下「EULA」）は、Poplistアプリケーション（以下「本アプリ」）の使用に関して、お客様（以下「ユーザー」）とPoplist（以下「ライセンサー」）の間の法的合意です。本アプリをインストールまたは使用することで、このEULAの条件に拘束されることに同意します。</p>
 
@@ -200,9 +201,10 @@
   <p>このEULAについてご質問がある場合は、<a href="mailto:legal@poplist.app">legal@poplist.app</a>までご連絡ください。</p>
 
   <div class="footer">
-    <span>© 2025 Poplist.</span>
+    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
     <a href="/privacy.html">プライバシーポリシー</a>
     <a href="/terms.html">利用規約</a>
+    <a href="/eula.html">EULA</a>
     <a href="/data-deletion.html">データ削除</a>
   </div>
 </div>
@@ -239,6 +241,12 @@ function setLang(lang) {
   document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
   document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
 }
+
+document.getElementById('backLink')?.addEventListener('click', e => {
+  e.preventDefault();
+  if (window.history.length > 1) window.history.back();
+  else window.location.href = '/';
+});
 </script>
 </body>
 </html>

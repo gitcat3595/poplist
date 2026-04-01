@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Poplist - Sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <style>
+    :root {
+      --bg:#eceef2; --card:#fff; --border:#d4d7dd; --t1:#111; --t2:#6b7280; --blue:#3b82f6;
+      --rp:16px; --sh:0 2px 10px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--t1);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; display: grid; place-items: center; padding: 20px;
+    }
+    .card {
+      width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; box-shadow: var(--sh); padding: 22px;
+    }
+    .logo { text-align: center; font-size: 22px; font-weight: 900; letter-spacing: -.4px; margin-bottom: 12px; }
+    .logo em {
+      display:inline-block; width:8px; height:8px; background: var(--blue); border-radius:50%;
+      margin-left:2px; vertical-align: super; font-style: normal;
+    }
+    h1 { margin: 0 0 16px; text-align: center; font-size: 20px; }
+    p.sub { margin: 0 0 18px; text-align: center; color: var(--t2); font-size: 13px; line-height: 1.6; }
+    .btn, input {
+      width: 100%; border-radius: var(--rp); border: 1px solid var(--border); padding: 12px 14px; font: inherit;
+    }
+    .btn { background: #fff; font-weight: 700; cursor: pointer; }
+    .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn + .btn, input + input, .field { margin-top: 10px; }
+    .sep { text-align: center; color: var(--t2); font-size: 12px; margin: 14px 0; }
+    .row { display: flex; gap: 8px; margin-top: 10px; }
+    .row .btn { flex: 1; }
+    .note { margin-top: 12px; font-size: 12px; color: var(--t2); text-align: center; min-height: 16px; }
+    .back { margin-top: 12px; text-align: center; }
+    .back a { color: var(--t2); text-decoration: none; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo">Poplist<em></em></div>
+    <h1>Sign in</h1>
+    <p class="sub">Use Google or your Gmail/email address.</p>
+
+    <button class="btn" id="googleBtn">Continue with Google</button>
+    <div class="sep">or</div>
+
+    <input class="field" id="email" type="email" placeholder="Email (Gmail or any email)" autocomplete="email" />
+    <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" />
+    <div class="row">
+      <button class="btn primary" id="emailSignInBtn">Sign in</button>
+      <button class="btn" id="emailCreateBtn">Create account</button>
+    </div>
+
+    <div class="note" id="msg"></div>
+    <div class="back"><a href="/">Back to app</a></div>
+  </main>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8",
+      authDomain: "poplist-ai.firebaseapp.com",
+      projectId: "poplist-ai",
+      storageBucket: "poplist-ai.firebasestorage.app",
+      messagingSenderId: "626209561981",
+      appId: "1:626209561981:web:f608569b981c2f56c18014"
+    };
+
+    const msg = document.getElementById('msg');
+    const say = (t) => { msg.textContent = t || ''; };
+    let auth = null;
+
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      auth = firebase.auth();
+    } catch (e) {
+      say('Firebase init failed: ' + e.message);
+    }
+
+    if (auth) {
+      auth.onAuthStateChanged((user) => {
+        if (user) window.location.href = '/';
+      });
+    }
+
+    document.getElementById('googleBtn').addEventListener('click', async () => {
+      if (!auth) return;
+      say('');
+      try {
+        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        window.location.href = '/';
+      } catch (e) {
+        if (e.code !== 'auth/popup-closed-by-user') say(e.message);
+      }
+    });
+
+    async function emailAuth(isCreate) {
+      if (!auth) return;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) { say('Enter email and password.'); return; }
+      say('');
+      try {
+        if (isCreate) await auth.createUserWithEmailAndPassword(email, password);
+        else await auth.signInWithEmailAndPassword(email, password);
+        window.location.href = '/';
+      } catch (e) {
+        say(e.message);
+      }
+    }
+
+    document.getElementById('emailSignInBtn').addEventListener('click', () => emailAuth(false));
+    document.getElementById('emailCreateBtn').addEventListener('click', () => emailAuth(true));
+  </script>
+</body>
+</html>

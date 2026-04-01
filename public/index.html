@@ -18,6 +18,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="/copy-bank.js"></script>
 
 <!--
   ═══════════════════════════════════════════════════════════
@@ -2220,20 +2221,18 @@ GoogleService-Info.plist
     </div>
     <!-- Scrollable body -->
     <div style="overflow-y:auto;padding:0 20px 8px">
-      <div style="text-align:center;margin-bottom:14px;margin-top:4px">
-        <p style="font-size:15px;font-weight:800;color:var(--black);line-height:1.35;margin:0 0 4px" data-en="A voice-generated task list" data-ja="あたまが忙しい人のための、">A voice-generated task list</p>
-        <p style="font-size:15px;font-weight:800;color:var(--black);line-height:1.35;margin:0 0 14px" data-en="designed for busy minds." data-ja="話して作るタスクリスト。">designed for busy minds.</p>
-      </div>
       <!-- Same wordmark + blue dot as nav (no colour change) -->
-      <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <div style="display:flex;justify-content:center;margin-bottom:14px;margin-top:4px">
         <div class="nav-logo" style="font-size:22px">Poplist<em></em></div>
       </div>
+      <div style="text-align:center;margin-bottom:18px">
+        <p style="font-size:15px;font-weight:800;color:var(--black);line-height:1.35;margin:0 0 4px" data-en="A voice-generated task list" data-ja="あたまが忙しい人のための、">A voice-generated task list</p>
+        <p style="font-size:15px;font-weight:800;color:var(--black);line-height:1.35;margin:0" data-en="designed for busy minds." data-ja="話して作るタスクリスト。">designed for busy minds.</p>
+      </div>
 
-      <p style="font-size:13px;color:var(--t2);line-height:1.75;margin:0 0 16px" data-en="Poplist takes care of that. No need to worry about forgetting, tidy your thoughts before you speak, or keep unfinished tasks in your head." data-ja="Poplistはそれを解消します。だから忘れる必要なし、話す前の整理も不要。終わっていないタスクを覚えておかなくても大丈夫。">Poplist takes care of that. No need to worry about forgetting, tidy your thoughts before you speak, or keep unfinished tasks in your head.</p>
+      <p style="font-size:13px;color:var(--t2);line-height:1.75;margin:0 0 12px" data-en="We created Poplist because too much energy gets wasted before the doing even begins — organising, categorising, prioritising, trying to remember everything. That invisible effort is exhausting." data-ja="Poplistを作ったのは、やる前にエネルギーを持っていかれすぎることに気づいたからです。整理、分類、優先順位をつける。忘れないように覚えようとする。そして、終わっていないタスクであたまがいっぱい。地味にエネルギーをけずられていく。">We created Poplist because too much energy gets wasted before the doing even begins — organising, categorising, prioritising, trying to remember everything. That invisible effort is exhausting.</p>
 
-      <p style="font-size:13px;color:var(--t3);letter-spacing:.12em;text-align:center;margin:0 0 16px">ーー</p>
-
-      <p style="font-size:13px;color:var(--t2);line-height:1.75;margin:0 0 24px" data-en="Use less energy on organising, and put more into doing." data-ja="整理するエネルギーを減らして、やることにエネルギーをまわせます。">Use less energy on organising, and put more into doing.</p>
+      <p style="font-size:13px;color:var(--t2);line-height:1.75;margin:0 0 24px" data-en="Poplist is designed to take that weight off. No need to worry about forgetting, no need to tidy your thoughts before you speak, and no need to carry unfinished tasks in your head. Less mental load. More action." data-ja="Poplistはそれを解消します。だから忘れる必要なし、話す前の整理も不要。終わっていないタスクを抱えつづけなくても大丈夫。整理するエネルギーを減らして、やることにエネルギーを。">Poplist is designed to take that weight off. No need to worry about forgetting, no need to tidy your thoughts before you speak, and no need to carry unfinished tasks in your head. Less mental load. More action.</p>
 
       <!-- App Store link (placeholder until live) -->
       <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--raised);border:1px solid var(--border);border-radius:12px;opacity:.45;pointer-events:none;margin-bottom:8px">
@@ -3465,6 +3464,12 @@ function getTotalTasks() {
   return document.querySelectorAll('.task-item:not(.collapsing)').length;
 }
 
+function getAllTasksDoneCopy(lang) {
+  const bank = window.POPLIST_COPY_BANK || {};
+  const map = bank.allTasksDone || {};
+  return map[lang] || map.en || { title: 'Mission Completed', sub: 'Every task is done.' };
+}
+
 function showDoneScreen() {
   const el = document.getElementById('doneScreen');
   if (!el) return;
@@ -3475,11 +3480,11 @@ function showDoneScreen() {
   const title    = el.querySelector('.done-title');
   const sub      = el.querySelector('.done-sub');
   const info     = document.getElementById('carryOverInfo');
-  const ja       = state.lang === 'ja';
+  const doneCopy = getAllTasksDoneCopy(state.lang);
 
   // Full done screen only runs when the list is empty — one celebration, then home (mic)
-  if (title) title.textContent = ja ? 'やることはすべて完了です' : 'Mission Completed';
-  if (sub) sub.textContent = ja ? 'すべてのタスクが完了しました' : 'Every task is done.';
+  if (title) title.textContent = doneCopy.title;
+  if (sub) sub.textContent = doneCopy.sub;
 
   if (info) info.style.display = 'none';
 
@@ -4765,40 +4770,10 @@ refreshProFeatureLocks();
   }
 })();
 
-/* Home empty-state prompts — must be defined before restoreLang (it calls refreshHomePrompt → HOME_PROMPTS). */
-const HOME_PROMPTS = {
-  en: [
-    { t: 'What needs doing?', s: 'Groceries, meetings, errands — say it messy. We\'ll tidy it into tasks.' },
-    { t: 'Get it off your mind', s: 'Tap the mic and talk like you\'re thinking out loud.' },
-    { t: 'What\'s on your plate?', s: 'One breath is enough. We sort and schedule for you.' },
-    { t: 'Say what\'s bouncing around', s: 'No perfect wording — work, home, life, all in one go.' },
-    { t: 'Tell Poplist what\'s up', s: 'Voice in, clean list out. Come back here anytime to dump more.' },
-    { t: 'What are you carrying today?', s: 'Ramble through your to-dos; we catch what matters.' },
-    { t: 'Brain dump, voice edition', s: 'Lists, worries, half-formed plans — say them in any order.' },
-    { t: 'Anything to remember?', s: 'Deadlines, people to call, stuff to buy — we\'ll slot them in.' },
-    { t: 'Start with one thing', s: 'Or twenty. Either way, talking beats forgetting.' },
-    { t: 'Your turn to ramble', s: 'We listen for tasks hiding inside the noise.' },
-    { t: 'What would you forget by tonight?', s: 'Say it now; we\'ll hold it so you don\'t have to.' },
-    { t: 'Quick capture, big relief', s: 'Ten seconds of voice can empty a crowded head.' },
-    { t: 'Work, home, or in between?', s: 'Mix them up — we split and tag automatically.' },
-    { t: 'Fresh start, empty list', s: 'Fill it the easy way: speak, then sort later.' },
-  ],
-  ja: [
-    { t: '今日のやること、話してみる？', s: '買い物、メール、細かい用事 — 思いつくままで大丈夫。' },
-    { t: '頭の中を、そのまま', s: 'マイクをタップして、考えているように話すだけ。' },
-    { t: '今日なにを片付けたい？', s: '短くても長くても。話した内容からタスクにします。' },
-    { t: 'やること、声に出して', s: 'うまい言い方は不要。カテゴリと期限はこちらで整理します。' },
-    { t: 'いま気になっていることは？', s: '仕事・家・自分のこと、混ざってもOK。' },
-    { t: 'また積もってきた？', s: 'ここで一度吐き出して、リストにしましょう。' },
-    { t: '思いついた順にどうぞ', s: '順番や完璧な文章はいりません。' },
-    { t: '忘れそうなこと、先に', s: '期限や連絡、買い物 — 口に出せばリストに残ります。' },
-    { t: 'ひとことからでも', s: '長く話しても、ひとことでも。続きはあとから。' },
-    { t: 'ざっくり話してOK', s: 'タスクはこちらで拾い集めます。' },
-    { t: '今夜までに消したい用事', s: '今のうちに声にして、頭から外しましょう。' },
-    { t: '声にするとスッとする', s: '短い独り言でも、頭の中が軽くなります。' },
-    { t: '仕事も家のことも一気に', s: '混ぜて話して大丈夫。分類はおまかせ。' },
-    { t: '真っさらなリストから', s: '話して埋めていくのがいちばん早いです。' },
-  ],
+/* Home empty-state prompts — centralised in copy-bank.js */
+const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homePrompts) || {
+  en: [{ t: 'What needs doing?', s: 'Say it messy. We will tidy it into tasks.' }],
+  ja: [{ t: '今日は何をする？', s: '思いつくままで大丈夫。' }]
 };
 
 // Restore language from localStorage and sync all toggles + mic
@@ -5002,7 +4977,7 @@ if (!FB_READY) {
 
 document.getElementById('googleSignInBtn')?.addEventListener('click', () => {
   closeSettingsModal();
-  signInWithGoogle();
+  window.location.href = '/auth.html';
 });
 
 document.getElementById('appleSignInBtn')?.addEventListener('click', () => {
@@ -5012,11 +4987,11 @@ document.getElementById('appleSignInBtn')?.addEventListener('click', () => {
 
 document.getElementById('emailSignInBtn')?.addEventListener('click', () => {
   closeSettingsModal();
-  openM('emailAuthModal');
+  window.location.href = '/auth.html';
 });
 document.getElementById('accountLoginBtn')?.addEventListener('click', () => {
   closeSettingsModal();
-  openM('emailAuthModal');
+  window.location.href = '/auth.html';
 });
 
 document.getElementById('signOutBtn')?.addEventListener('click', () => {
