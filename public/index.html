@@ -885,10 +885,23 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   border:1px solid var(--border);
   overflow:hidden;
 }
-/* Style tabs and colour grid — unlocked in web demo (iOS uses StoreKit gate) */
+/* Bubble style always interactive; palette grid may be locked for non-PRO (see .free-non-pro) */
 .pro-wrap .bubble-style-tabs,
+.pro-wrap .bubble-preview-row {
+  pointer-events: auto;
+}
 .pro-wrap .colour-grid {
-  pointer-events:auto;
+  pointer-events: auto;
+}
+.pro-wrap.free-non-pro #colourGrid {
+  pointer-events: none;
+  opacity: 0.48;
+}
+.pro-wrap.free-non-pro #catList,
+.pro-wrap.free-non-pro #addCategoryRow,
+.pro-wrap.free-non-pro #newCatForm {
+  pointer-events: none;
+  opacity: 0.48;
 }
 .pro-block { padding:14px 16px 16px }    /* same horizontal as settings-row */
 .pro-divider { height:1px; background:var(--border); margin:0 16px } /* inset 16px each side — same spacing as general rows */
@@ -2685,11 +2698,9 @@ if (FB_READY) {
   _auth.onAuthStateChanged(async user => {
     state.userId    = user?.uid  || null;
     state.isLoggedIn = !!user;
-    updateAuthUI(user);
     if (user) {
       localStorage.removeItem(TASK_CACHE_KEY); // Firestore takes over — discard local cache
       state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
-      updateAuthUI(user); // re-render service tier now that isProUser is resolved
       await mergePendingGuestTasks(user.uid);
       await fsLoadTasks(user.uid);
     } else {
@@ -2700,6 +2711,9 @@ if (FB_READY) {
         loadTaskCache();
       }
     }
+    updateAuthUI(user);
+    refreshProFeatureLocks();
+    enforceProPaletteOnly();
   });
 }
 
@@ -4446,13 +4460,9 @@ if (SR) {
 // Simulate Pro unlock for demo (in iOS: check StoreKit receipt)
 document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   state.isProUser = true;
-  // Remove pointer-events lock from all Pro controls
   const wrap = document.getElementById('proPickerWrap');
   if (wrap) {
-    wrap.querySelectorAll('.bubble-style-tabs,.colour-grid,.bubble-preview-row,.add-plus-row').forEach(el => {
-      el.style.pointerEvents = 'all';
-    });
-    // Hide the upgrade button row
+    wrap.classList.remove('free-non-pro');
     const upgradeRow = wrap.querySelector('.upgrade-row');
     if (upgradeRow) upgradeRow.style.display = 'none';
   }
@@ -4462,6 +4472,7 @@ document.getElementById('unlockProBtn')?.addEventListener('click', () => {
   }
   syncAllBubbles();
   updateCatDragHandles();
+  refreshProFeatureLocks();
   showToast(state.lang==='ja' ? 'Proにアップグレードしました' : 'Pro unlocked! Pick a colour to theme the whole app');
 });
 
@@ -4512,6 +4523,12 @@ function buildCatList() {
     row.appendChild(chevron);
     row.addEventListener('click', e => {
       if (e.target.closest('.cat-drag-handle')) return;
+      if (FB_READY && !state.isProUser) {
+        showToast(state.lang === 'ja'
+          ? 'カテゴリーとキーワードの編集はPROでご利用いただけます'
+          : 'Categories and keywords are available on Pro');
+        return;
+      }
       item.classList.toggle('open');
     });
     // Desktop: HTML5 drag-and-drop via handle
@@ -4711,6 +4728,7 @@ function refreshCatChips() {
 buildCatList();
 updateCatDragHandles();
 syncAllBubbles(); // sync add-preview bubble style on first load
+refreshProFeatureLocks();
 
 // Restore default timing from localStorage and sync settings chip
 (function restoreDefaultTiming() {
@@ -4772,8 +4790,15 @@ const HOME_PROMPTS = {
     document.body.classList.toggle('lang-ja', isJA);
     applyLang(saved); /* includes refreshHomePrompt */
   } else {
-    document.body.classList.toggle('lang-ja', false);
-    refreshHomePrompt(state.lang);
+    const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    const detected = navLang.startsWith('ja') ? 'ja' : 'en';
+    state.lang = detected;
+    localStorage.setItem('lang', detected);
+    const isJA = detected === 'ja';
+    ['langEN','sLangEN'].forEach(id => document.getElementById(id)?.classList.toggle('active', !isJA));
+    ['langJP','sLangJP'].forEach(id => document.getElementById(id)?.classList.toggle('active', isJA));
+    document.body.classList.toggle('lang-ja', isJA);
+    applyLang(detected);
   }
 })();
 
@@ -4787,6 +4812,12 @@ updateDoneForTodayBtn();
 
 // Add category
 document.getElementById('addCategoryRow')?.addEventListener('click', () => {
+  if (FB_READY && !state.isProUser) {
+    showToast(state.lang === 'ja'
+      ? 'カテゴリーの追加はPROでご利用いただけます'
+      : 'Add categories with Pro');
+    return;
+  }
   const form = document.getElementById('newCatForm');
   if (!form) return;
   form.style.display = form.style.display === 'none' ? '' : 'none';
@@ -4794,6 +4825,12 @@ document.getElementById('addCategoryRow')?.addEventListener('click', () => {
 });
 
 function addCustomCategory(name) {
+  if (FB_READY && !state.isProUser) {
+    showToast(state.lang === 'ja'
+      ? 'カテゴリーの追加はPROでご利用いただけます'
+      : 'Add categories with Pro');
+    return;
+  }
   name = name.trim();
   if (!name) return;
   const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -4884,37 +4921,31 @@ document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
 updateClassifyModeUI();
 
 
-// Style tabs
+// Style tabs — all users can save (Default / Chrome colour mode is separate, in General)
 document.querySelectorAll('.bst-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.bst-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.bubbleStyle = tab.dataset.style;
-    if (state.isProUser) {
-      localStorage.setItem('bubbleStyle', state.bubbleStyle);
-    } else {
-      showToast(state.lang === 'ja'
-        ? '今すぐ試せます。保存はPROでご利用いただけます'
-        : 'Try it now — save your style with Pro');
-    }
+    localStorage.setItem('bubbleStyle', state.bubbleStyle);
     updateBubblePreview();
     syncAllBubbles();
   });
 });
 
-// Colour swatches
+// Colour swatches — PRO only when Firebase is enabled (demo / no Firebase = full access)
 document.querySelectorAll('#colourGrid .cswatch').forEach(sw => {
   sw.addEventListener('click', () => {
+    if (FB_READY && !state.isProUser) {
+      showToast(state.lang === 'ja'
+        ? 'バブルカラーのカスタムはPROでご利用いただけます'
+        : 'Custom accent colours are available on Pro');
+      return;
+    }
     document.querySelectorAll('#colourGrid .cswatch').forEach(s => s.classList.remove('sel'));
     sw.classList.add('sel');
     state.bubbleColour = sw.dataset.colour;
-    if (state.isProUser) {
-      localStorage.setItem('bubbleColour', state.bubbleColour);
-    } else {
-      showToast(state.lang === 'ja'
-        ? '今すぐ試せます。保存はPROでご利用いただけます'
-        : 'Try it now — save your style with Pro');
-    }
+    localStorage.setItem('bubbleColour', state.bubbleColour);
     updateBubblePreview();
     syncAllBubbles();
     // Apply colour to whole UI (buttons, borders, glows) if not in grey mode
@@ -4948,21 +4979,21 @@ if (!FB_READY) {
 }
 
 document.getElementById('googleSignInBtn')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   signInWithGoogle();
 });
 
 document.getElementById('appleSignInBtn')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   signInWithApple();
 });
 
 document.getElementById('emailSignInBtn')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   openM('emailAuthModal');
 });
 document.getElementById('accountLoginBtn')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   openM('emailAuthModal');
 });
 
@@ -5027,7 +5058,7 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
     card.style.opacity = '0'; card.style.transform = 'scale(.97)';
     setTimeout(() => card.classList.add('empty'), 250);
   });
-  closeM('settingsModal');
+  closeSettingsModal();
   showToast('All tasks cleared');
 });
 
@@ -5036,23 +5067,16 @@ document.getElementById('clearAllBtn')?.addEventListener('click', () => {
 ══════════════════════════════════════════ */
 const openM = id => {
   const el = document.getElementById(id);
+  if (!el) return;
   el.classList.add('show');
   const sheet = el.querySelector('.modal-sheet');
   if (sheet) sheet.scrollTop = 0;
 };
-const closeM = id => document.getElementById(id).classList.remove('show');
+const closeM = id => document.getElementById(id)?.classList.remove('show');
 
 document.getElementById('settingsBtn')?.addEventListener('click', () => openM('settingsModal'));
-document.getElementById('closeSettings')?.addEventListener('click', () => {
-  // Persist the default timing chosen in settings
-  const ddc = document.getElementById('defaultDeadlineChip');
-  if (ddc) {
-    state.defaultTiming = ddc.dataset.timing || 'This Week';
-    localStorage.setItem('defaultTiming', state.defaultTiming);
-  }
-  closeM('settingsModal');
-});
-document.getElementById('settingsModal')?.addEventListener('click', e => { if(e.target.id==='settingsModal') closeM('settingsModal') });
+document.getElementById('closeSettings')?.addEventListener('click', () => closeSettingsModal());
+document.getElementById('settingsModal')?.addEventListener('click', e => { if(e.target.id==='settingsModal') closeSettingsModal() });
 
 /* ── Legal document modal ── */
 const LEGAL_CONTENT = {
@@ -5218,12 +5242,12 @@ document.getElementById('upgradeFreeToProBtn')?.addEventListener('click', () => 
 document.getElementById('aboutAppRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('closeAbout')?.addEventListener('click', () => closeM('aboutModal'));
 document.getElementById('plansLinkRow')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   document.getElementById('upgradeProBtn')?.click() || openM('aboutModal');
 });
 document.getElementById('downloadLinkRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('howToUseLinkRow')?.addEventListener('click', () => {
-  closeM('settingsModal');
+  closeSettingsModal();
   // Scroll to the How it works section in settings, or re-open settings
   openM('settingsModal');
   setTimeout(() => {
@@ -5347,6 +5371,37 @@ const COLOUR_ACCENT_VARS = {
   'bc-chrome': {'--blue':'#374151','--blue-dim':'#1f2937','--blue-lt':'#F9FAFB','--blue-glow':'rgba(55,65,81,.18)','--shbtn':'0 4px 16px rgba(55,65,81,.38)'},
   'bc-white':  {'--blue':'#CBD5E1','--blue-dim':'#94A3B8','--blue-lt':'#F8FAFC','--blue-glow':'rgba(203,213,225,.18)','--shbtn':'0 4px 16px rgba(203,213,225,.38)'},
 };
+
+function refreshProFeatureLocks() {
+  const wrap = document.getElementById('proPickerWrap');
+  if (!wrap) return;
+  wrap.classList.toggle('free-non-pro', FB_READY && !state.isProUser);
+}
+
+/* Non-PRO (with Firebase): only default blue accent; custom palette is PRO */
+function enforceProPaletteOnly() {
+  if (!FB_READY || state.isProUser) return;
+  if (state.bubbleColour === 'bc-blue') return;
+  state.bubbleColour = 'bc-blue';
+  try { localStorage.removeItem('bubbleColour'); } catch (e) {}
+  document.querySelectorAll('#colourGrid .cswatch').forEach(sw =>
+    sw.classList.toggle('sel', sw.dataset.colour === 'bc-blue'));
+  if (!state.greyBubbles) {
+    const v = COLOUR_ACCENT_VARS['bc-blue'];
+    if (v) applyAccentVars(v);
+  }
+  syncAllBubbles();
+  updateBubblePreview();
+}
+
+function closeSettingsModal() {
+  const ddc = document.getElementById('defaultDeadlineChip');
+  if (ddc) {
+    state.defaultTiming = ddc.dataset.timing || 'This Week';
+    localStorage.setItem('defaultTiming', state.defaultTiming);
+  }
+  closeM('settingsModal');
+}
 
 function updateBurstEffectUI() {
   const on = document.getElementById('burstEffectOn');

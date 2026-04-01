@@ -2193,9 +2193,11 @@ footer {
 })();
 
 function setLang(lang) {
+  try { localStorage.setItem('lang', lang); } catch (e) {}
   document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
   var btn = document.querySelector('.lang-btn[onclick="setLang(\'' + lang + '\')"]');
   if (btn) btn.classList.add('active');
+  document.documentElement.lang = lang === 'ja' ? 'ja' : 'en';
   document.body.classList.toggle('lang-ja', lang === 'ja');
   document.querySelectorAll('[data-en][data-ja]').forEach(function(el) {
     var txt = el.getAttribute('data-' + lang);
@@ -2216,7 +2218,15 @@ function setLang(lang) {
   if (typeof window.lpRefreshColorItDescs === 'function') window.lpRefreshColorItDescs();
   if (typeof window._lpRefreshCompareChart === 'function') window._lpRefreshCompareChart();
 }
-setLang('en');
+(function initLpLang() {
+  var saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) {}
+  var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  var resolved = (saved === 'ja' || saved === 'en')
+    ? saved
+    : (nav.startsWith('ja') ? 'ja' : 'en');
+  setLang(resolved);
+})();
 
 /* Sync accent colour from main app localStorage */
 (function applyAccent() {
