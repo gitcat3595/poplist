@@ -35,6 +35,18 @@
   padding-bottom: 20px;
 }
 
+/* Same horizontal column as nav (480px + 20px side padding) */
+.uf-footer--align {
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
 .uf-footer__logo {
   font-size: 15px;
   font-weight: 900;

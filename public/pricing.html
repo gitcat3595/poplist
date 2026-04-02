@@ -74,7 +74,12 @@ nav {
 .lang-btn.active { background: var(--accent); color: #fff }
 
 /* ── PAGE CONTAINER ── */
-.page { width: 100%; max-width: 480px; padding-bottom: 60px }
+.page {
+  width: 100%;
+  max-width: 480px;
+  flex: 1 1 auto;
+  padding-bottom: 24px;
+}
 
 /* ── HERO ── */
 .hero {
@@ -439,20 +444,20 @@ nav {
     When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service.
   </p>
 
-  <footer class="uf-footer uf-footer--static">
-    <div class="uf-footer__inner">
-      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
-      <nav class="uf-footer__nav" aria-label="Footer">
-        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
-        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
-      </nav>
-      <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
-    </div>
-  </footer>
-
 </div>
+
+<footer class="uf-footer uf-footer--static uf-footer--align" id="siteFooter" aria-label="Site footer">
+  <div class="uf-footer__inner">
+    <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+    <nav class="uf-footer__nav" aria-label="Footer">
+      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+      <a href="pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+    </nav>
+    <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
+  </div>
+</footer>
 
 <script type="module">
 let currentLang = 'en';

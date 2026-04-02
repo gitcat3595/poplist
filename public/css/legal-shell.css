@@ -1,0 +1,92 @@
+/* Legal subpages — same 480px column as pricing / notify / how-to-use */
+
+body.legal-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.legal-page nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(236, 238, 242, 0.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border, #d4d7dd);
+}
+
+.legal-page .nav-logo {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--t1, #111111);
+  text-decoration: none;
+}
+
+.legal-page .nav-logo em {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--blue, #3b82f6);
+  border-radius: 50%;
+  margin-left: 2px;
+  vertical-align: super;
+  font-style: normal;
+}
+
+.legal-page .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.legal-page .back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue, #3b82f6);
+  text-decoration: none;
+}
+
+.legal-page .back svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.legal-lang {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.legal-page .wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 20px 24px;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-lang .wrap > .uf-footer--align {
+  margin-top: auto;
+  padding-top: 40px;
+}

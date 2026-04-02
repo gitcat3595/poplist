@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/unified-footer.css">
+<link rel="stylesheet" href="/css/legal-shell.css">
 <style>
   :root {
     --blue: #3B82F6;
@@ -21,25 +22,14 @@
     --t3: #9CA3AF;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  body { font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
-         background: #ECEEF2; color: #111111; padding: 0;
-         -webkit-font-smoothing: antialiased }
-  nav { position: sticky; top: 0; z-index: 10;
-        background: rgba(236,238,242,.94); backdrop-filter: blur(20px) saturate(1.4);
-        -webkit-backdrop-filter: blur(20px) saturate(1.4);
-        border-bottom: 1px solid #D4D7DD; padding: 13px 24px;
-        display: flex; align-items: center; gap: 10px }
-  .nav-logo { font-size: 17px; font-weight: 900; letter-spacing: -.4px; color: #111111; text-decoration: none }
-  .nav-logo em { display: inline-block; width: 7px; height: 7px;
-    background: var(--blue); border-radius: 50%; margin-left: 2px;
-    vertical-align: super; font-style: normal }
-  .nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto }
-  .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px;
-          font-weight: 600; color: var(--blue); text-decoration: none }
-  .back svg { width: 15px; height: 15px; flex-shrink: 0 }
+  body.legal-page {
+    font-family: 'Plus Jakarta Sans','Noto Sans JP', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--t1);
+  }
   .lang-toggle {
     display: flex; background: #fff; border-radius: 50px;
-    padding: 3px; border: 1px solid #D4D7DD; gap: 2px;
+    padding: 3px; border: 1px solid var(--border); gap: 2px;
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
   .lang-btn {
@@ -48,7 +38,6 @@
     cursor: pointer; border: none; background: none; font-family: inherit;
   }
   .lang-btn.active { background: var(--blue); color: #fff }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 80px }
   h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.3px }
   .meta { font-size: 12px; color: #9CA3AF; margin-bottom: 32px }
   h2 { font-size: 11px; font-weight: 800; text-transform: uppercase;
@@ -76,7 +65,7 @@
   </div>
 </nav>
 
-<div id="lang-en">
+<div id="lang-en" class="legal-lang">
 <div class="wrap">
   <h1>Terms of Service</h1>
   <p class="meta">Effective date: 1 April 2026</p>
@@ -142,7 +131,7 @@
   <h2>14. Contact Us</h2>
   <p>If you have any questions about these Terms, please contact us at <a href="mailto:legal@poplist.app">legal@poplist.app</a>.</p>
 
-  <footer class="uf-footer uf-footer--static" style="margin-top:48px">
+  <footer class="uf-footer uf-footer--static uf-footer--align">
     <div class="uf-footer__inner">
       <a href="/" class="uf-footer__logo">Poplist<em></em></a>
       <nav class="uf-footer__nav" aria-label="Footer">
@@ -157,7 +146,7 @@
 </div>
 </div>
 
-<div id="lang-ja" style="display:none">
+<div id="lang-ja" class="legal-lang" style="display:none">
 <div class="wrap">
   <h1>利用規約</h1>
   <p class="meta">発効日：2026年4月1日</p>
@@ -223,7 +212,7 @@
   <h2>14. お問い合わせ</h2>
   <p>これらの規約についてご質問がある場合は、<a href="mailto:legal@poplist.app">legal@poplist.app</a>までご連絡ください。</p>
 
-  <footer class="uf-footer uf-footer--static" style="margin-top:48px">
+  <footer class="uf-footer uf-footer--static uf-footer--align">
     <div class="uf-footer__inner">
       <a href="/" class="uf-footer__logo">Poplist<em></em></a>
       <nav class="uf-footer__nav" aria-label="Footer">
@@ -265,8 +254,8 @@
 function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
-  document.getElementById('lang-en').style.display = lang === 'en' ? '' : 'none';
-  document.getElementById('lang-ja').style.display = lang === 'ja' ? '' : 'none';
+  document.getElementById('lang-en').style.display = lang === 'en' ? 'flex' : 'none';
+  document.getElementById('lang-ja').style.display = lang === 'ja' ? 'flex' : 'none';
   document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
 }
 
