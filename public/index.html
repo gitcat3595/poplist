@@ -809,6 +809,14 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 .cat-item-kw   { font-size:11px; color:var(--t3) }
 .cat-item-chevron { font-size:10px; color:var(--t3); transition:transform .2s; line-height:1 }
 .cat-item.open .cat-item-chevron { transform:rotate(180deg) }
+.cat-help-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; margin-left:6px;
+  border-radius:999px; border:1px solid var(--border);
+  font-size:10px; font-weight:800; color:var(--t3);
+  background:var(--raised); cursor:pointer;
+}
+.cat-help-btn:hover { color:var(--blue); border-color:var(--blue) }
 .cat-item-keywords {
   display:none; padding:0 12px 10px; flex-wrap:wrap; gap:6px;
 }
@@ -4014,9 +4022,59 @@ async function classifyTranscript(transcript) {
     return localClassify(tr, defaultTiming);
   }
 
-  // Build custom keyword map for AI: { Work: ['client1', 'boss'], Home: ['mom', 'cleaner'] }
+  // Build keyword map for AI: user-defined keywords are prioritised.
   const categoryKeywords = {};
-  state.categories.forEach(c => { if (c.keywords.length) categoryKeywords[c.en] = c.keywords; });
+  state.categories.forEach(c => {
+    const kws = [...(c.customKeywords || []), ...(c.keywords || [])]
+      .filter(Boolean)
+      .filter((v, i, arr) => arr.indexOf(v) === i);
+    if (kws.length) categoryKeywords[c.en] = kws;
+  });
+
+  // Keyword-priority pass for PRO: user keywords > title inference > model context
+  const assignByKeywordPriority = (tasks) => {
+    if (!Array.isArray(tasks) || !tasks.length) return tasks || [];
+    const escapeRx = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const hasAnyUserKeywords = (cat) => ((cat.customKeywords || []).length + (cat.keywords || []).length) > 0;
+    const byUserKeywords = (text) => {
+      const t = String(text || '');
+      for (const cat of state.categories) {
+        if (cat.id === 'other') continue;
+        const userWords = [...(cat.customKeywords || []), ...(cat.keywords || [])]
+          .filter(Boolean)
+          .filter((v, i, arr) => arr.indexOf(v) === i);
+        if (userWords.some(kw => new RegExp(escapeRx(kw), 'i').test(t))) return cat.en;
+      }
+      return null;
+    };
+    const byCategoryTitle = (text) => {
+      const t = String(text || '').toLowerCase();
+      for (const cat of state.categories) {
+        if (cat.id === 'other') continue;
+        const titleTokens = [cat.en, cat.ja]
+          .filter(Boolean)
+          .flatMap(v => String(v).split(/[\s・／/|,，、]+/))
+          .map(v => v.trim().toLowerCase())
+          .filter(v => v.length >= 2);
+        if (titleTokens.some(tok => t.includes(tok))) return cat.en;
+      }
+      return null;
+    };
+    return tasks.map(task => {
+      const txt = task?.text || '';
+      const kwCat = byUserKeywords(txt);
+      if (kwCat) return { ...task, category: kwCat };
+      const titleCat = byCategoryTitle(txt);
+      // If this task currently lands in a category with no user keywords, trust title inference.
+      if (titleCat) {
+        const current = state.categories.find(c => c.en === task?.category);
+        if (!task?.category || task.category === 'Other' || !current || !hasAnyUserKeywords(current)) {
+          return { ...task, category: titleCat };
+        }
+      }
+      return task;
+    });
+  };
 
   const localTasks = () => localClassify(tr, defaultTiming);
 
@@ -4039,7 +4097,8 @@ async function classifyTranscript(transcript) {
           .filter(x => x.text.length > 0);
         if (tasks.length > 0) {
           tasks = subdivideTaskObjects(tasks, defaultTiming);
-          return preferRicherLocalSplit(tr, tasks, defaultTiming);
+          // For PRO, keep AI understanding as primary, then enforce keyword-priority remap.
+          return assignByKeywordPriority(tasks);
         }
       }
     }
@@ -4047,7 +4106,7 @@ async function classifyTranscript(transcript) {
     console.warn('API classify failed, using local:', e);
   }
 
-  return preferRicherLocalSplit(tr, localTasks(), defaultTiming);
+  return assignByKeywordPriority(preferRicherLocalSplit(tr, localTasks(), defaultTiming));
 }
 
 /* ══════════════════════════════════════════════════════
@@ -4519,13 +4578,26 @@ function buildCatList() {
     nameEl.dataset.en = cat.en; nameEl.dataset.ja = cat.ja;
     nameEl.textContent = state.lang==='ja' ? cat.ja : cat.en;
     row.appendChild(nameEl);
+    // Small hint on the default first category to teach rename interaction.
+    if (cat.id === 'work') {
+      const hintBtn = document.createElement('button');
+      hintBtn.type = 'button';
+      hintBtn.className = 'cat-edit-hint-btn';
+      hintBtn.textContent = '?';
+      hintBtn.title = state.lang === 'ja' ? 'カテゴリー名をタップして編集' : 'Tap category name to edit';
+      hintBtn.style.cssText = 'margin-left:4px;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:var(--raised);color:var(--t3);font-size:11px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;';
+      hintBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        showToast(state.lang === 'ja' ? 'カテゴリー名をダブルタップで編集できます' : 'Double-tap a category name to edit');
+      });
+      row.appendChild(hintBtn);
+    }
     const kwLabel = document.createElement('span');
     kwLabel.className = 'cat-item-kw';
     kwLabel.dataset.en = 'add keywords'; kwLabel.dataset.ja = 'キーワード追加';
-    kwLabel.textContent = state.lang==='ja' ? 'キーワード追加' : 'add keywords';
     row.appendChild(kwLabel);
     const chevron = document.createElement('span');
-    chevron.className = 'cat-item-chevron'; chevron.textContent = '▾';
+    chevron.className = 'cat-item-chevron'; chevron.textContent = '>';
     row.appendChild(chevron);
     row.addEventListener('click', e => {
       if (e.target.closest('.cat-drag-handle')) return;
@@ -4536,6 +4608,7 @@ function buildCatList() {
         return;
       }
       item.classList.toggle('open');
+      syncKwLabel();
     });
     // Desktop: HTML5 drag-and-drop via handle
     item.draggable = false; // only enable when handle is grabbed
@@ -4576,6 +4649,20 @@ function buildCatList() {
     const kwSection = document.createElement('div');
     kwSection.className = 'cat-item-keywords';
     if (!cat.customKeywords) cat.customKeywords = [];
+    function syncKwLabel() {
+      const isOpen = item.classList.contains('open');
+      const hasKw = (cat.customKeywords?.length || 0) > 0;
+      if (isOpen) {
+        kwLabel.textContent = '';
+      } else if (hasKw) {
+        kwLabel.textContent = state.lang === 'ja'
+          ? `キーワード ${cat.customKeywords.length}`
+          : `${cat.customKeywords.length} keyword${cat.customKeywords.length > 1 ? 's' : ''}`;
+      } else {
+        kwLabel.textContent = state.lang==='ja' ? 'キーワード追加' : 'add keywords';
+      }
+      chevron.textContent = '>';
+    }
     function renderKws() {
       kwSection.innerHTML = '';
       // Show user-added keywords as small chips (system defaults stay hidden)
@@ -4650,6 +4737,7 @@ function buildCatList() {
         });
         kwSection.appendChild(renameRow);
       }
+      syncKwLabel();
     }
     renderKws();
     item.appendChild(kwSection);
@@ -5552,10 +5640,26 @@ function initCatCollapseHeader(header) {
     arrow.setAttribute('aria-hidden', 'true');
     rightGroup.appendChild(arrow);
   }
+  const card = header.closest('.category-card');
+  if (card?.id === 'cat-work' && !header.querySelector('.cat-help-btn')) {
+    const help = document.createElement('button');
+    help.type = 'button';
+    help.className = 'cat-help-btn';
+    help.textContent = '?';
+    help.setAttribute('aria-label', state.lang === 'ja' ? 'カテゴリー編集のヒント' : 'Category edit hint');
+    help.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      showToast(state.lang === 'ja' ? 'カテゴリ名を編集するにはタイトルをダブルタップ' : 'Tap category title twice to edit category');
+    });
+    const nameEl = header.querySelector('.cat-name');
+    if (nameEl?.after) nameEl.after(help);
+    else header.insertBefore(help, rightGroup);
+  }
 
   function toggleCollapse() {
-    const card = header.closest('.category-card');
-    if (card) card.classList.toggle('cat-collapsed');
+    const c = header.closest('.category-card');
+    if (c) c.classList.toggle('cat-collapsed');
   }
 
   // ── Single click/tap on right group (count + arrow) → collapse/expand ──
