@@ -187,9 +187,9 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
 .voice-wrap { display:flex; flex-direction:column; align-items:center; gap:8px }
 
-/* Voice button — larger tap target for the main “talk your tasks” action */
+/* Voice button — larger tap target for the main “talk your tasks” action (+20% vs original 88px; top edge stays in flow) */
 .voice-btn {
-  width:88px; height:88px; border-radius:50%;
+  width:calc(88px * 1.2); height:calc(88px * 1.2); border-radius:50%;
   background:var(--card);
   border:1.5px solid var(--border);
   box-shadow:var(--shcard), 0 0 0 0 transparent;
@@ -212,7 +212,7 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   0%,100% { box-shadow:var(--shcard), 0 0 0 4px var(--blue-glow), 0 0 0 10px var(--blue-glow) }
   50%      { box-shadow:var(--shcard), 0 0 0 10px var(--blue-glow), 0 0 0 20px var(--blue-glow) }
 }
-.voice-btn .mic-icon { width:26px; height:26px }
+.voice-btn .mic-icon { width:calc(26px * 1.2); height:calc(26px * 1.2) }
 .mic-icon { width:20px; height:20px }
 .voice-label { display:none }
 .voice-transcript {
@@ -1569,7 +1569,7 @@ body.lang-ja .home-why-title {
       </svg>
     </button>
     <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す" style="font-size:13px;color:var(--t2);margin-top:12px">Tap to add tasks by voice</span>
-    <button class="home-manual-btn" id="homeManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task manually</button>
+    <button class="home-manual-btn" id="homeManualBtn" data-en="Add task" data-ja="タスクを追加">Add task</button>
   </div>
 
   <!-- WHY POPLIST / Features preview (placed well below mic + Add Task) -->
@@ -1622,7 +1622,7 @@ body.lang-ja .home-why-title {
         <line x1="9" y1="22" x2="15" y2="22"/>
       </svg>
     </button>
-    <button class="done-manual-btn" id="doneManualBtn" data-en="+ Add task" data-ja="＋ 追加">+ Add task</button>
+    <button class="done-manual-btn" id="doneManualBtn" data-en="Add task" data-ja="タスクを追加">Add task</button>
     <!-- carry-over info — shown after Done for today when tasks remain -->
     <div id="carryOverInfo" style="display:none;text-align:center;margin-top:20px">
       <p class="done-carry-count" id="carryOverCount"></p>
