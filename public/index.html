@@ -5530,6 +5530,29 @@ function initCatCollapseHeader(header) {
     toggleCollapse();
   }, { passive: false });
 
+  // ── Long-press on category header (PRO) → open category settings for reordering ──
+  let lpTimer = null;
+  const lpStart = () => {
+    if (!state.isProUser) return;
+    lpTimer = setTimeout(() => {
+      lpTimer = null;
+      openM('settingsModal');
+      const panel = document.querySelector('#settingsModal .settings-panel');
+      const catTitle = document.querySelector('.pro-block-title[data-en="Categories"]');
+      if (panel && catTitle) {
+        panel.scrollTo({ top: catTitle.offsetTop - 40, behavior: 'smooth' });
+      }
+    }, 550);
+  };
+  const lpCancel = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } };
+
+  header.addEventListener('mousedown', e => { if (e.button === 0) lpStart(); });
+  header.addEventListener('mouseup', lpCancel);
+  header.addEventListener('mouseleave', lpCancel);
+  header.addEventListener('touchstart', lpStart, { passive:true });
+  header.addEventListener('touchend', lpCancel);
+  header.addEventListener('touchcancel', lpCancel);
+
   // ── Double-click on cat-name → inline rename (PRO) or nudge (non-PRO) ──
   const catNameEl = header.querySelector('.cat-name');
   if (catNameEl) {
