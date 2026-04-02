@@ -236,12 +236,28 @@
 })();
 
 function setLang(lang) {
+  if (lang !== 'ja') lang = 'en';
+  try { localStorage.setItem('lang', lang); } catch (e) {}
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.getElementById('lang-en').style.display = lang === 'en' ? 'flex' : 'none';
   document.getElementById('lang-ja').style.display = lang === 'ja' ? 'flex' : 'none';
   document.getElementById('back-label').textContent = lang === 'ja' ? '戻る' : 'Back';
 }
+
+(function initLang() {
+  const qp = new URLSearchParams(location.search);
+  const ql = qp.get('lang');
+  let L = 'en';
+  if (ql === 'ja' || ql === 'en') L = ql;
+  else {
+    try {
+      const s = localStorage.getItem('lang');
+      if (s === 'ja' || s === 'en') L = s;
+    } catch (e) {}
+  }
+  setLang(L);
+})();
 
 document.getElementById('backLink')?.addEventListener('click', e => {
   e.preventDefault();

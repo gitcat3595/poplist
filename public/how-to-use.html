@@ -637,8 +637,8 @@ nav {
       <nav class="uf-footer__nav" aria-label="Footer">
         <a href="/" data-en="About" data-ja="Poplistについて">About</a>
         <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
-        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
       </nav>
       <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
     </div>
@@ -686,6 +686,13 @@ function setLang(lang) {
   document.getElementById('htuPlanFree')?.setAttribute('href', ph);
   document.getElementById('htuPlanPro')?.setAttribute('href', nw);
   document.getElementById('footerPlansLink')?.setAttribute('href', ph);
+  const lp = lang === 'ja' ? 'ja' : 'en';
+  document.querySelectorAll('a[data-legal-link="privacy"]').forEach(a => {
+    a.href = '/privacy.html?lang=' + lp;
+  });
+  document.querySelectorAll('a[data-legal-link="terms"]').forEach(a => {
+    a.href = '/terms.html?lang=' + lp;
+  });
 }
 
 (function initHowToUseLang() {
