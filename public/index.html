@@ -1938,6 +1938,8 @@ GoogleService-Info.plist
           <div class="fb-dot disconnected" id="fbStatusDot"></div>
           <p id="fbStatusText" data-en="Guest" data-ja="ゲスト" style="margin:0;white-space:nowrap;">Guest</p>
           <span id="fbStatusSub" data-en="Sign in to sync across devices" data-ja="サインインでデバイス間同期" style="margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Sign in to sync across devices</span>
+          <span id="authTierBadge"
+                style="display:none;margin-left:6px;font-size:10px;font-weight:800;padding:4px 8px;border-radius:999px;border:1px solid var(--border);color:var(--t2);background:var(--raised);white-space:nowrap;">FREE</span>
         </div>
         <button id="accountLoginBtn"
                 type="button"
@@ -2581,6 +2583,8 @@ function updateAuthUI(user) {
   const dot         = document.getElementById('fbStatusDot');
   const statusText  = document.getElementById('fbStatusText');
   const statusSub   = document.getElementById('fbStatusSub');
+  const tierBadge   = document.getElementById('authTierBadge');
+  const loginBtn    = document.getElementById('accountLoginBtn');
   const signInRow   = document.getElementById('authSignInRow');
   const accountRow  = document.getElementById('authAccountRow');
   const emailLabel  = document.getElementById('authEmailLabel');
@@ -2592,12 +2596,27 @@ function updateAuthUI(user) {
     if (signInRow)  signInRow.style.display  = 'none';
     if (accountRow) accountRow.style.display = '';
     if (emailLabel) emailLabel.textContent   = user.email || user.displayName || 'Signed in';
+    if (tierBadge) {
+      const isJA = state.lang === 'ja';
+      tierBadge.style.display = '';
+      tierBadge.textContent = state.isProUser ? 'PRO' : (isJA ? '無料' : 'FREE');
+      tierBadge.style.color = state.isProUser ? '#16A34A' : 'var(--t2)';
+      tierBadge.style.borderColor = state.isProUser ? 'rgba(22,163,74,.28)' : 'var(--border)';
+      tierBadge.style.background = state.isProUser ? 'rgba(22,163,74,.08)' : 'var(--raised)';
+    }
+    if (loginBtn) {
+      loginBtn.textContent = state.lang === 'ja' ? 'アカウント' : 'Account';
+    }
   } else {
     if (dot)        dot.className       = 'fb-dot disconnected';
     if (statusText) statusText.textContent = state.lang === 'ja' ? '未サインイン' : 'Not signed in';
     if (statusSub)  statusSub.textContent  = state.lang === 'ja' ? 'サインインでデバイス間同期' : 'Sign in to sync across devices';
     if (signInRow)  signInRow.style.display  = '';
     if (accountRow) accountRow.style.display = 'none';
+    if (tierBadge) tierBadge.style.display = 'none';
+    if (loginBtn) {
+      loginBtn.textContent = state.lang === 'ja' ? 'ログイン' : 'Log in';
+    }
   }
 
   // Update Service section — three tiers: guest / free / pro
@@ -2618,7 +2637,17 @@ if (FB_READY) {
   _auth.onAuthStateChanged(async user => {
     state.userId    = user?.uid  || null;
     state.isLoggedIn = !!user;
+    // Fast UI response first; avoid waiting on Firestore reads before reflecting login state
+    if (!user) state.isProUser = false;
+    updateAuthUI(user);
     if (user) {
+      const statusSub = document.getElementById('fbStatusSub');
+      const tierBadge = document.getElementById('authTierBadge');
+      if (statusSub) statusSub.textContent = state.lang === 'ja' ? 'プランを確認中…' : 'Checking plan…';
+      if (tierBadge) {
+        tierBadge.style.display = '';
+        tierBadge.textContent = '...';
+      }
       localStorage.removeItem(TASK_CACHE_KEY); // Firestore takes over — discard local cache
       state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
       await mergePendingGuestTasks(user.uid);
