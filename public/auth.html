@@ -82,7 +82,7 @@
   <main class="card">
     <div class="logo">Poplist<em></em></div>
     <h1>Sign in</h1>
-    <p class="sub">Use Google or your Gmail/email address.</p>
+    <p class="sub">Use Google or your email address.</p>
 
     <button class="btn google-btn" id="googleBtn">
       <span class="google-icon">
@@ -98,7 +98,7 @@
     </button>
     <div class="sep">or</div>
 
-    <input class="field" id="email" type="email" placeholder="Email (Gmail or any email)" autocomplete="email" />
+    <input class="field" id="email" type="email" placeholder="Email address" autocomplete="email" />
     <div class="field-wrap">
       <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" />
       <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
@@ -141,10 +141,16 @@
     let auth = null;
 
     try {
-      firebase.initializeApp(FIREBASE_CONFIG);
+      if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      }
       auth = firebase.auth();
     } catch (e) {
-      say('Unable to connect to sign-in service. Please try again in a moment.');
+      // If default app already exists or other non-fatal error, try to grab auth anyway
+      try { auth = firebase.auth(); } catch (_) {}
+      if (!auth) {
+        say('Unable to connect to sign-in service. Please try again in a moment.');
+      }
     }
 
     if (auth) {
