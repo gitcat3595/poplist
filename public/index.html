@@ -553,19 +553,29 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   box-shadow:var(--shcard); border:1px solid var(--border); overflow:hidden;
   margin-top:16px;
 }
-.add-task-active { display:flex; align-items:center; padding:14px 16px 14px; gap:13px }
+.add-task-active {
+  display:flex;
+  align-items:flex-start;
+  padding:14px 16px 14px;
+  gap:13px;
+}
 .add-bubble-ph {
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
-  opacity:.3; pointer-events:none; align-self:center;
+  opacity:.3; pointer-events:none;
+  /* First line of textarea is ~14px / lh 1.45; nudge bubble so its optical center matches that line */
+  margin-top:1px;
   transition: transform .16s cubic-bezier(.25,.46,.45,.94);
 }
-.add-input-body { flex:1; min-width:0; position:relative; overflow:visible }
+.add-input-body { flex:1; min-width:0; position:relative; overflow:visible; align-self:stretch }
 .add-task-field {
   font-size:14px; font-weight:600; color:var(--t1);
   width:100%; border:none; background:transparent; outline:none;
-  padding:2px 0; caret-color:var(--blue); line-height:1.45;
+  padding:0 0 2px;
+  margin:0;
+  caret-color:var(--blue); line-height:1.45;
   min-height:44px; max-height:160px; resize:vertical;
   font-family:inherit; display:block;
+  box-sizing:border-box;
 }
 .add-task-field::placeholder { color:var(--t3) }
 
