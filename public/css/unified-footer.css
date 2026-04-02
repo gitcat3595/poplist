@@ -22,6 +22,7 @@
 }
 
 .uf-footer__inner {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,16 +36,20 @@
   padding-bottom: 20px;
 }
 
-/* Same horizontal column as nav (480px + 20px side padding) */
+/* Centered column (480px). Side padding only when combined with .uf-footer--padded
+   (matches nav). Inside pre-padded containers (e.g. legal .wrap), use --align alone. */
 .uf-footer--align {
   width: 100%;
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
   box-sizing: border-box;
   flex-shrink: 0;
+}
+
+.uf-footer--padded {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .uf-footer__logo {
@@ -88,13 +93,17 @@
   font-weight: 600;
   color: var(--uf-t3);
   text-decoration: none;
-  padding: 2px 10px;
-  border-right: 1px solid var(--uf-border);
+  padding: 2px 0;
   transition: color 0.18s;
 }
 
-.uf-footer__nav a:last-child {
-  border-right: none;
+.uf-footer__nav a:not(:last-child)::after {
+  content: '·';
+  display: inline-block;
+  margin: 0 10px;
+  color: var(--uf-t3);
+  font-weight: 500;
+  pointer-events: none;
 }
 
 .uf-footer__nav a:hover {

@@ -89,4 +89,8 @@ body.legal-page {
 .legal-lang .wrap > .uf-footer--align {
   margin-top: auto;
   padding-top: 40px;
+  max-width: none;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
