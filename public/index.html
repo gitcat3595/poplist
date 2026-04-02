@@ -5996,7 +5996,9 @@ document.getElementById('exportCopy')?.addEventListener('click', () => {
 // Register service worker for PWA / offline support
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(e => console.warn('SW registration failed:', e));
+    navigator.serviceWorker.register('/sw.js?v=20260402-1')
+      .then(reg => reg.update())
+      .catch(e => console.warn('SW registration failed:', e));
   });
 }
 </script>
