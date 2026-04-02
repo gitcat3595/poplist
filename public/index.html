@@ -1866,7 +1866,7 @@ GoogleService-Info.plist
       <div class="mic-bar"></div>
     </div>
     <div class="mic-modal-hint" id="micModalHint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
-    <button class="mic-stop-btn" id="micStopBtn" data-en="Stop listening" data-ja="停止">Stop listening</button>
+    <button class="mic-stop-btn" id="micStopBtn" data-en="Stop listening and add tasks" data-ja="停止してタスクを追加">Stop listening and add tasks</button>
   </div>
 </div>
 
@@ -3782,6 +3782,16 @@ document.getElementById('pasteListProcess')?.addEventListener('click', processPa
 document.getElementById('pasteListInput')?.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); processPasteList(); }
 });
+// Auto-grow bulk textarea so longer input stays visible
+(function initPasteListAutosize() {
+  const ta = document.getElementById('pasteListInput');
+  if (!ta) return;
+  const auto = () => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 360) + 'px';
+  };
+  ta.addEventListener('input', auto);
+})();
 
 /* ══════════════════════════════════════════
    INLINE EDIT
