@@ -91,6 +91,7 @@
 .uf-footer__nav a {
   font-size: 10px;
   font-weight: 600;
+  line-height: 1.35;
   color: var(--uf-t3);
   text-decoration: none;
   padding: 2px 0;

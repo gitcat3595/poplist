@@ -1,5 +1,5 @@
 // Poplist service worker — network-first for HTML, cache-first for static assets
-const CACHE = 'poplist-v4';
+const CACHE = 'poplist-v5';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());
