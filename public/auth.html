@@ -31,16 +31,51 @@
     p.sub { margin: 0 0 18px; text-align: center; color: var(--t2); font-size: 13px; line-height: 1.6; }
     .btn, input {
       width: 100%; border-radius: var(--rp); border: 1px solid var(--border); padding: 12px 14px; font: inherit;
+      min-height: 44px;
     }
     .btn { background: #fff; font-weight: 700; cursor: pointer; }
     .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
     .btn + .btn, input + input, .field { margin-top: 10px; }
     .sep { text-align: center; color: var(--t2); font-size: 12px; margin: 14px 0; }
-    .row { display: flex; gap: 8px; margin-top: 10px; }
-    .row .btn { flex: 1; }
+    .row { display: flex; gap: 8px; margin-top: 10px; align-items: stretch; }
+    .row .btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; }
     .note { margin-top: 12px; font-size: 12px; color: var(--t2); text-align: center; min-height: 16px; }
     .back { margin-top: 12px; text-align: center; }
     .back a { color: var(--t2); text-decoration: none; font-size: 12px; }
+    .google-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; font-weight: 600;
+    }
+    .google-icon {
+      width: 18px; height: 18px; display: inline-block;
+    }
+    .field-wrap {
+      position: relative; margin-top: 10px;
+    }
+    .field-wrap input {
+      padding-right: 40px;
+    }
+    .pw-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      width: 22px; height: 22px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--t2); cursor: pointer; border: none; background: transparent;
+    }
+    .pw-toggle svg {
+      width: 16px; height: 16px;
+    }
+    .toast {
+      position: fixed; left: 50%; top: 16px; transform: translateX(-50%);
+      padding: 10px 16px; border-radius: 999px;
+      background: rgba(17,17,17,.9); color: #fff; font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      transform-origin: top center;
+      z-index: 30;
+    }
+    .toast.show {
+      opacity: 1; transform: translate(-50%, 0);
+    }
   </style>
 </head>
 <body>
@@ -49,11 +84,29 @@
     <h1>Sign in</h1>
     <p class="sub">Use Google or your Gmail/email address.</p>
 
-    <button class="btn" id="googleBtn">Continue with Google</button>
+    <button class="btn google-btn" id="googleBtn">
+      <span class="google-icon">
+        <svg viewBox="0 0 24 24">
+          <path fill="#EA4335" d="M11.99 10.2v3.6h5.02c-.2 1.16-.81 2.15-1.72 2.81l2.79 2.17c1.62-1.5 2.55-3.7 2.55-6.33 0-.61-.05-1.19-.16-1.75H11.99z"/>
+          <path fill="#34A853" d="M6.53 14.32l-.87.67-2.23 1.73C4.73 19.86 8.09 22 11.99 22c2.7 0 4.97-.89 6.62-2.41l-2.79-2.17c-.75.51-1.71.82-2.83.82-2.18 0-4.03-1.47-4.69-3.46z"/>
+          <path fill="#4A90E2" d="M3.43 7.28C2.73 8.7 2.34 10.3 2.34 12s.39 3.3 1.09 4.72C4.09 14.73 5.94 13.26 8.12 13.26c1.08 0 2.05.37 2.82.99l2.83-2.2c-.78-.77-1.78-1.3-2.83-1.57-.44-.12-.91-.18-1.39-.18-3.9 0-7.26-2.14-8.12-5.02z"/>
+          <path fill="#FBBC05" d="M11.99 4.04c1.47 0 2.8.5 3.85 1.49l2.88-2.88C17 1.19 14.73.34 11.99.34 8.09.34 4.73 2.48 3.43 5.96l3.77 2.93C7.96 6.51 9.81 4.04 11.99 4.04z"/>
+        </svg>
+      </span>
+      <span>Continue with Google</span>
+    </button>
     <div class="sep">or</div>
 
     <input class="field" id="email" type="email" placeholder="Email (Gmail or any email)" autocomplete="email" />
-    <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" />
+    <div class="field-wrap">
+      <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" />
+      <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
     <div class="row">
       <button class="btn primary" id="emailSignInBtn">Sign in</button>
       <button class="btn" id="emailCreateBtn">Create account</button>
@@ -62,6 +115,8 @@
     <div class="note" id="msg"></div>
     <div class="back"><a href="/">Back to app</a></div>
   </main>
+
+  <div class="toast" id="toast"></div>
 
   <script>
     const FIREBASE_CONFIG = {
@@ -74,19 +129,29 @@
     };
 
     const msg = document.getElementById('msg');
+    const toast = document.getElementById('toast');
     const say = (t) => { msg.textContent = t || ''; };
+    const showToast = (text) => {
+      if (!toast) return;
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    };
     let auth = null;
 
     try {
       firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
     } catch (e) {
-      say('Firebase init failed: ' + e.message);
+      say('Unable to connect to sign-in service. Please try again in a moment.');
     }
 
     if (auth) {
       auth.onAuthStateChanged((user) => {
-        if (user) window.location.href = '/';
+        if (user) {
+          showToast('Signed in as ' + (user.email || 'Poplist user'));
+          setTimeout(() => { window.location.href = '/'; }, 800);
+        }
       });
     }
 
@@ -95,9 +160,10 @@
       say('');
       try {
         await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        window.location.href = '/';
+        // onAuthStateChanged will handle toast + redirect
       } catch (e) {
-        if (e.code !== 'auth/popup-closed-by-user') say(e.message);
+        if (e.code === 'auth/popup-closed-by-user') return;
+        say(mapError(e.code));
       }
     });
 
@@ -108,16 +174,49 @@
       if (!email || !password) { say('Enter email and password.'); return; }
       say('');
       try {
-        if (isCreate) await auth.createUserWithEmailAndPassword(email, password);
-        else await auth.signInWithEmailAndPassword(email, password);
-        window.location.href = '/';
+        if (isCreate) {
+          await auth.createUserWithEmailAndPassword(email, password);
+          showToast('Account created. Signing you in…');
+        } else {
+          await auth.signInWithEmailAndPassword(email, password);
+          showToast('Signed in. Opening Poplist…');
+        }
+        // onAuthStateChanged will redirect
       } catch (e) {
-        say(e.message);
+        say(mapError(e.code));
       }
     }
 
     document.getElementById('emailSignInBtn').addEventListener('click', () => emailAuth(false));
     document.getElementById('emailCreateBtn').addEventListener('click', () => emailAuth(true));
+
+    // Password show / hide
+    document.getElementById('pwToggle').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      if (!pw) return;
+      const isHidden = pw.type === 'password';
+      pw.type = isHidden ? 'text' : 'password';
+      document.getElementById('pwToggle').setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+
+    function mapError(code) {
+      switch (code) {
+        case 'auth/invalid-email':
+          return 'Please enter a valid email address.';
+        case 'auth/user-not-found':
+          return 'No account found for this email.';
+        case 'auth/wrong-password':
+          return 'Incorrect password. Try again or reset it.';
+        case 'auth/email-already-in-use':
+          return 'An account already exists with this email.';
+        case 'auth/weak-password':
+          return 'Password should be at least 6 characters.';
+        case 'auth/network-request-failed':
+          return 'Network error. Please check your connection and try again.';
+        default:
+          return 'Something went wrong. Please try again.';
+      }
+    }
   </script>
 </body>
 </html>
