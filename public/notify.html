@@ -6,6 +6,7 @@
 <title>Poplist — Get Notified</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/unified-footer.css">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
@@ -258,14 +259,7 @@ nav {
 .success-detail {
   font-size: 12px; color: var(--t3); line-height: 1.6;
 }
-.footer {
-  margin: 30px 16px 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-size: 12px; color: var(--t3);
-  display: flex; flex-wrap: wrap; gap: 4px 14px;
-}
-.footer a { color: var(--t2); }
+
 </style>
 </head>
 <body>
@@ -409,17 +403,17 @@ nav {
     </div>
   </div>
 
-  <footer class="site-footer footer-a" id="siteFooter">
-    <div class="footer-a-top">
-      <button type="button" class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
-      <nav class="footer-a-links" aria-label="Footer">
+  <footer class="uf-footer uf-footer--fixed" id="siteFooter">
+    <div class="uf-footer__inner">
+      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <nav class="uf-footer__nav" aria-label="Footer">
         <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="/pricing.html" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
         <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms" data-ja="利用規約">Terms</a>
+        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
       </nav>
+      <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
     </div>
-    <span class="footer-a-copy">© 2026 ALLERISE</span>
   </footer>
 
 </div>
@@ -443,7 +437,7 @@ let currentLang = 'en';
 
 function notifyPricingHref() {
   const l = currentLang === 'ja' ? 'ja' : 'en';
-  return 'pricing.html?lang=' + encodeURIComponent(l);
+  return 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
 }
 
 function syncNotifyNavHrefs() {
@@ -637,10 +631,6 @@ function shake(id) {
 document.getElementById('backLink')?.addEventListener('click', e => {
   e.preventDefault();
   window.location.href = notifyPricingHref();
-});
-
-document.getElementById('footerLogoBtn')?.addEventListener('click', function () {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 /* Sync accent colour with app setting */

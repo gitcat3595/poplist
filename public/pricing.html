@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -105,6 +106,7 @@ nav {
 }
 
 /* ── COMPARISON TABLE ── */
+#compare-chart { scroll-margin-top: 88px; }
 .compare-wrap {
   margin: 0 16px;
   background: var(--card);
@@ -437,6 +439,19 @@ nav {
     When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service.
   </p>
 
+  <footer class="uf-footer uf-footer--static">
+    <div class="uf-footer__inner">
+      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <nav class="uf-footer__nav" aria-label="Footer">
+        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+        <a href="pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+      </nav>
+      <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
+    </div>
+  </footer>
+
 </div>
 
 <script type="module">
@@ -492,8 +507,11 @@ try {
 // ── Language toggle ──
 function setLang(lang) {
   currentLang = lang;
+  try { localStorage.setItem('lang', lang); } catch (e) {}
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  const fp = document.getElementById('footerPlansLink');
+  if (fp) fp.setAttribute('href', 'pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart');
   // Re-render the chart in the new language
   if (window._compareFeatures && window._compareFeatures.length) {
     window._renderCompareChart('#compare-chart', window._compareFeatures, lang);

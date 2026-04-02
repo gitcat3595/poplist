@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -630,6 +631,19 @@ nav {
     <a href="mailto:hello@poplist.app" data-en="Contact us" data-ja="お問い合わせ">Contact us</a>
   </p>
 
+  <footer class="uf-footer uf-footer--static">
+    <div class="uf-footer__inner">
+      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <nav class="uf-footer__nav" aria-label="Footer">
+        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+        <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+        <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+      </nav>
+      <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
+    </div>
+  </footer>
+
 </div>
 
 <script>
@@ -666,11 +680,12 @@ function setLang(lang) {
     const txt = el.getAttribute('data-' + lang);
     if (txt) el.innerHTML = txt;
   });
-  const ph = '/pricing.html?lang=' + encodeURIComponent(lang);
+  const ph = '/pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
   const nw = '/notify.html?plan=monthly&lang=' + encodeURIComponent(lang);
   document.getElementById('htuComparePricing')?.setAttribute('href', ph);
   document.getElementById('htuPlanFree')?.setAttribute('href', ph);
   document.getElementById('htuPlanPro')?.setAttribute('href', nw);
+  document.getElementById('footerPlansLink')?.setAttribute('href', ph);
 }
 
 (function initHowToUseLang() {

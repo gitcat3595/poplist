@@ -1,0 +1,98 @@
+/* Poplist — unified footer: logo, About / Plans / Privacy / Terms of Service, copyright */
+
+.uf-footer {
+  --uf-bg: var(--bg, #ECEEF2);
+  --uf-border: var(--border, #D4D7DD);
+  --uf-t1: var(--t1, #111111);
+  --uf-t3: var(--t3, #9CA3AF);
+  --uf-accent: var(--blue, var(--accent, #3B82F6));
+}
+
+.uf-footer--fixed {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background: var(--uf-bg);
+  z-index: 10;
+}
+
+.uf-footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--uf-border);
+  padding-top: 16px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+}
+
+.uf-footer--static .uf-footer__inner {
+  padding-bottom: 20px;
+}
+
+.uf-footer__logo {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.35px;
+  color: var(--uf-t1);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+.uf-footer__logo em {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--uf-accent);
+  border-radius: 50%;
+  margin-left: 2px;
+  vertical-align: super;
+  font-style: normal;
+}
+
+.uf-footer__logo:hover {
+  opacity: 0.88;
+}
+
+.uf-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.uf-footer__nav a {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--uf-t3);
+  text-decoration: none;
+  padding: 2px 10px;
+  border-right: 1px solid var(--uf-border);
+  transition: color 0.18s;
+}
+
+.uf-footer__nav a:last-child {
+  border-right: none;
+}
+
+.uf-footer__nav a:hover {
+  color: var(--uf-accent);
+}
+
+.uf-footer__copy {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--uf-t3);
+  text-align: center;
+}

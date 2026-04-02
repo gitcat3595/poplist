@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-system.css">
+<link rel="stylesheet" href="/css/unified-footer.css">
 
 <!-- Firebase SDK (compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -1443,128 +1444,6 @@ body.lang-ja .home-prompt-sub { font-size:14px; line-height:1.5 }
 }
 
 /* ════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════ */
-
-/* ── Shared footer base ── */
-.site-footer {
-  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
-  width:100%; max-width:480px;
-  padding:0 20px;
-  background:var(--bg);
-  z-index:10;
-}
-
-/* ══ VARIANT A — Ghost Strip (two-row on mobile) ══ */
-.footer-a {
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  border-top:1px solid var(--border);
-  padding-top:16px; padding-bottom:20px;
-}
-.footer-a-top {
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  flex-wrap:wrap; width:100%;
-}
-.footer-a-logo {
-  font-size:13px; font-weight:900; letter-spacing:-.3px; color:var(--t2);
-  white-space:nowrap; flex-shrink:0;
-  background:none; border:none; cursor:pointer; padding:0; font-family:inherit;
-}
-.footer-a-logo:hover { color:var(--blue) }
-.footer-a-logo em {
-  display:inline-block; width:5px; height:5px;
-  background:var(--blue); border-radius:50%;
-  margin-left:1px; vertical-align:super; font-style:normal;
-}
-.footer-a-links {
-  display:flex; align-items:center; flex-wrap:wrap; gap:0; justify-content:center;
-}
-.footer-a-links a {
-  font-size:10px; font-weight:600; color:var(--t3);
-  text-decoration:none; padding:2px 8px;
-  transition:color .18s;
-  border-right:1px solid var(--border);
-}
-.footer-a-links a:last-child { border-right:none }
-.footer-a-links a:hover { color:var(--blue) }
-.footer-a-copy {
-  font-size:10px; color:var(--t3); font-weight:500;
-  text-align:center; width:100%;
-}
-
-/* ══ VARIANT B — Three Columns (structured, card-like) ══ */
-.footer-b {
-  border-top:1px solid var(--border);
-  padding-top:24px; padding-bottom:24px;
-}
-.footer-b-grid {
-  display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;
-  margin-bottom:20px;
-}
-.footer-b-col-title {
-  font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
-  color:var(--t3); margin-bottom:10px;
-}
-.footer-b-col a {
-  display:block; font-size:11px; font-weight:500; color:var(--t2);
-  text-decoration:none; padding:3px 0; transition:color .18s; line-height:1.4;
-}
-.footer-b-col a:hover { color:var(--blue) }
-.footer-b-brand { margin-bottom:6px }
-.footer-b-brand-logo {
-  font-size:14px; font-weight:900; letter-spacing:-.4px; color:var(--black-mid);
-}
-.footer-b-brand-logo em {
-  display:inline-block; width:6px; height:6px;
-  background:var(--blue); border-radius:50%;
-  margin-left:2px; vertical-align:super; font-style:normal;
-}
-.footer-b-tagline {
-  font-size:10px; color:var(--t3); font-weight:500; line-height:1.5; margin-top:4px;
-}
-.footer-b-bottom {
-  border-top:1px solid var(--border); padding-top:14px;
-  display:flex; align-items:center; justify-content:space-between;
-}
-.footer-b-copy { font-size:10px; color:var(--t3); font-weight:500 }
-
-/* ══ VARIANT C — Centered Compact (centered, clean) ══ */
-.footer-c {
-  text-align:center;
-  border-top:1px solid var(--border);
-  padding-top:20px; padding-bottom:24px;
-}
-.footer-c-logo {
-  font-size:15px; font-weight:900; letter-spacing:-.4px; color:var(--black-mid);
-  display:inline-flex; align-items:center; gap:1px;
-}
-.footer-c-logo em {
-  display:inline-block; width:6px; height:6px;
-  background:var(--blue); border-radius:50%;
-  margin-left:2px; vertical-align:super; font-style:normal;
-}
-.footer-c-tagline {
-  font-size:11px; color:var(--t3); font-weight:500; margin-top:4px; margin-bottom:16px;
-}
-.footer-c-links {
-  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:0;
-  margin-bottom:6px;
-}
-.footer-c-links a {
-  font-size:10px; font-weight:600; color:var(--t3);
-  text-decoration:none; padding:3px 9px;
-  border-right:1px solid var(--border);
-  transition:color .18s;
-}
-.footer-c-links a:last-child { border-right:none }
-.footer-c-links a:hover { color:var(--blue) }
-.footer-c-sep {
-  width:40px; height:1px; background:var(--border);
-  margin:12px auto;
-}
-.footer-c-copy { font-size:10px; color:var(--t3); font-weight:500 }
-
-/* ════════════════════════════════════════
    BOTTOM ACTION BAR (shown when tasks exist)
 ════════════════════════════════════════ */
 .bottom-bar {
@@ -1867,72 +1746,19 @@ GoogleService-Info.plist
 
 </div><!-- /container -->
 
-<!-- ═══════ FOOTER ═══════
-     Three variants — keep one, comment out the other two.
-     Active: VARIANT A (Ghost Strip) · VARIANT B (Three Columns) · VARIANT C (Centered)
-════════════════════════════════════════════════════════════════════ -->
-
-<!-- ── VARIANT A · Ghost Strip ─────────────────────────────────── -->
-<footer class="site-footer footer-a" id="siteFooter">
-  <div class="footer-a-top">
-    <button class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
-    <nav class="footer-a-links" aria-label="Footer">
-      <a href="#" id="footerAbout" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
-      <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-      <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
+<!-- ═══════ FOOTER (unified — hidden while task list + bottom bar visible) ═══════ -->
+<footer class="uf-footer uf-footer--fixed" id="siteFooter">
+  <div class="uf-footer__inner">
+    <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+    <nav class="uf-footer__nav" aria-label="Footer">
+      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+      <a href="pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
     </nav>
-  </div>
-  <span class="footer-a-copy">© 2026 ALLERISE</span>
-</footer>
-
-<!--
-── VARIANT B · Three Columns ──────────────────────────────────────
-<footer class="site-footer footer-b" id="siteFooter">
-  <div class="footer-b-grid">
-    <div class="footer-b-col">
-      <div class="footer-b-brand">
-        <span class="footer-b-brand-logo">Poplist<em></em></span>
-        <p class="footer-b-tagline">Instant task list<br>generator</p>
-      </div>
-    </div>
-    <div class="footer-b-col">
-      <div class="footer-b-col-title" data-en="About" data-ja="Poplistについて">About</div>
-      <a href="/" data-en="Home" data-ja="ホーム">Home</a>
-      <a href="#" id="footerAbout" data-en="About Poplist" data-ja="Poplistについて">About Poplist</a>
-      <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
-      <a href="#" id="footerDownload" data-en="Download" data-ja="ダウンロード">Download</a>
-    </div>
-    <div class="footer-b-col">
-      <div class="footer-b-col-title" data-en="Support" data-ja="サポート">Support</div>
-      <a href="/privacy.html" target="_blank" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</a>
-      <a href="/terms.html"   target="_blank" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
-      <a href="/security.html" target="_blank" data-en="Security" data-ja="セキュリティ">Security</a>
-    </div>
-  </div>
-  <div class="footer-b-bottom">
-    <span class="footer-b-copy">© 2026 ALLERISE</span>
+    <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
 </footer>
--->
-
-<!--
-── VARIANT C · Centered Compact ────────────────────────────────────
-<footer class="site-footer footer-c" id="siteFooter">
-  <span class="footer-c-logo">Poplist<em></em></span>
-  <p class="footer-c-tagline">Instant task list generator</p>
-  <nav class="footer-c-links" aria-label="Footer">
-    <a href="/" data-en="Home" data-ja="ホーム">Home</a>
-    <a href="#" id="footerAbout" data-en="About" data-ja="Poplistについて">About</a>
-    <a href="#" id="footerPlans" data-en="Plans" data-ja="プラン">Plans</a>
-    <a href="/privacy.html" target="_blank" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-    <a href="/terms.html"   target="_blank" data-en="Terms"   data-ja="利用規約">Terms</a>
-    <a href="/security.html" target="_blank" data-en="Security" data-ja="セキュリティ">Security</a>
-  </nav>
-  <div class="footer-c-sep"></div>
-  <p class="footer-c-copy">© 2026 ALLERISE</p>
-</footer>
--->
 
 <!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
 <div class="bottom-bar" id="bottomBar" style="display:none">
@@ -2611,8 +2437,7 @@ const FB_READY = (() => {
 // When Firebase is not configured, unlock Pro so the demo works fully
 if (!FB_READY) {
   state.isProUser = true;
-  // No auth — load cached guest tasks immediately (DOM is ready by this point)
-  loadTaskCache();
+  // Guest cache loaded after updateScreenState exists (see end of screen-state block)
 }
 
 // Always save task cache on tab close (catches any unsaved in-flight tasks)
@@ -2738,6 +2563,7 @@ if (FB_READY) {
         _guestCacheLoaded = true;
         loadTaskCache();
       }
+      updateScreenState();
     }
     updateAuthUI(user);
     refreshProFeatureLocks();
@@ -3674,6 +3500,12 @@ function updateScreenState() {
     updateDoneForTodayBtn();
   }
 }
+
+/* Initial chrome: footer vs bottom bar (also after guest cache load) */
+if (!FB_READY) {
+  loadTaskCache();
+}
+updateScreenState();
 
 /* Show manual add card */
 function openManualAddCard(scrollIntoView) {
@@ -4813,10 +4645,10 @@ const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homeP
 };
 
 function syncProPricingHref(lang) {
-  const el = document.getElementById('proPricingLink');
-  if (!el) return;
   const l = lang === 'ja' ? 'ja' : 'en';
-  el.href = 'pricing.html?lang=' + encodeURIComponent(l);
+  const q = 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
+  document.getElementById('proPricingLink')?.setAttribute('href', q);
+  document.getElementById('footerPlansLink')?.setAttribute('href', q);
 }
 
 // Restore language from localStorage and sync all toggles + mic
@@ -5285,7 +5117,8 @@ document.getElementById('aboutAppRow')?.addEventListener('click', () => openM('a
 document.getElementById('closeAbout')?.addEventListener('click', () => closeM('aboutModal'));
 document.getElementById('plansLinkRow')?.addEventListener('click', () => {
   closeSettingsModal();
-  document.getElementById('upgradeProBtn')?.click() || openM('aboutModal');
+  const l = state.lang === 'ja' ? 'ja' : 'en';
+  window.location.href = 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
 });
 document.getElementById('downloadLinkRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('howToUseLinkRow')?.addEventListener('click', () => {
@@ -5300,11 +5133,6 @@ document.getElementById('faqLinkRow')?.addEventListener('click', () => openM('fa
 document.getElementById('closeFaq')?.addEventListener('click', () => closeM('faqModal'));
 document.getElementById('faqModal')?.addEventListener('click', e => { if(e.target.id==='faqModal') closeM('faqModal') });
 document.getElementById('aboutModal')?.addEventListener('click', e => { if(e.target.id==='aboutModal') closeM('aboutModal') });
-
-// Footer links
-document.getElementById('footerAbout')?.addEventListener('click', e => { e.preventDefault(); openM('aboutModal'); });
-document.getElementById('footerPlans')?.addEventListener('click', e => { e.preventDefault(); openM('settingsModal'); });
-document.getElementById('footerLogoBtn')?.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
 document.getElementById('legalRowPrivacy')?.addEventListener('click', () => openLegal('privacy'));
 document.getElementById('legalRowTerms')?.addEventListener('click',   () => openLegal('terms'));

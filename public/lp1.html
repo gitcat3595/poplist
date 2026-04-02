@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -1521,50 +1522,6 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   font-weight: 500; position: relative; z-index: 1;
 }
 
-/* ── FOOTER (matches index.html footer-a; scrolls with page, not fixed) ── */
-.site-footer {
-  width: 100%; max-width: 480px;
-  margin: 0 auto;
-  padding: 0 20px;
-  background: var(--bg);
-}
-.site-footer.footer-a {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  border-top: 1px solid var(--border);
-  padding-top: 16px; padding-bottom: 28px;
-}
-.footer-a-top {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  flex-wrap: wrap; width: 100%;
-}
-.footer-a-logo {
-  font-size: 13px; font-weight: 900; letter-spacing: -.3px; color: var(--t2);
-  white-space: nowrap; flex-shrink: 0;
-  background: none; border: none; cursor: pointer; padding: 0; font-family: inherit;
-  text-decoration: none;
-}
-.footer-a-logo:hover { color: var(--blue) }
-.footer-a-logo em {
-  display: inline-block; width: 5px; height: 5px;
-  background: var(--blue); border-radius: 50%;
-  margin-left: 1px; vertical-align: super; font-style: normal;
-}
-.footer-a-links {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 0; justify-content: center;
-}
-.footer-a-links a {
-  font-size: 10px; font-weight: 600; color: var(--t3);
-  text-decoration: none; padding: 2px 8px;
-  transition: color .18s;
-  border-right: 1px solid var(--border);
-}
-.footer-a-links a:last-child { border-right: none }
-.footer-a-links a:hover { color: var(--blue) }
-.footer-a-copy {
-  font-size: 10px; color: var(--t3); font-weight: 500;
-  text-align: center; width: 100%;
-}
-
 /* ── LP1: Timing + export slide (filter bar matches index.html) ── */
 .lp-export-slide .phone-screen { position: relative; overflow: hidden; min-height: 280px; }
 .lp-exp-filter-bar {
@@ -2181,18 +2138,18 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   
 </div><!-- /page -->
 
-<!-- FOOTER (same pattern as index.html · Ghost Strip) -->
-<footer class="site-footer footer-a" id="siteFooter">
-  <div class="footer-a-top">
-    <button type="button" class="footer-a-logo" id="footerLogoBtn" aria-label="Back to top">Poplist<em></em></button>
-    <nav class="footer-a-links" aria-label="Footer">
+<!-- FOOTER (unified) -->
+<footer class="uf-footer uf-footer--static" style="width:100%;max-width:480px;margin:0 auto;padding:0 20px;box-sizing:border-box">
+  <div class="uf-footer__inner">
+    <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+    <nav class="uf-footer__nav" aria-label="Footer">
       <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="/pricing.html" data-en="Plans" data-ja="プラン" id="lp1FooterPricingLink">Plans</a>
+      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
       <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms" data-ja="利用規約">Terms</a>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
     </nav>
+    <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
-  <span class="footer-a-copy">© 2026 ALLERISE</span>
 </footer>
 
 <script>
@@ -2835,8 +2792,8 @@ function setLang(lang) {
     var t = chip.getAttribute('data-timing') || 'This Week';
     chip.textContent = lpExpTimingLabel(t);
   });
-  var ph = '/pricing.html?lang=' + encodeURIComponent(lang);
-  var lp1Foot = document.getElementById('lp1FooterPricingLink');
+  var ph = '/pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
+  var lp1Foot = document.getElementById('footerPlansLink');
   if (lp1Foot) lp1Foot.href = ph;
 }
 (function initLpLang() {
@@ -2873,9 +2830,6 @@ function setLang(lang) {
   } catch(e) {}
 })();
 
-document.getElementById('footerLogoBtn')?.addEventListener('click', function() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
 </script>
 </body>
 </html>

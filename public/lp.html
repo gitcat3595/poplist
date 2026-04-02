@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -1300,35 +1301,6 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   font-weight: 500; position: relative; z-index: 1;
 }
 
-/* ── FOOTER ── */
-footer {
-  width: 100%; max-width: 480px;
-  padding: 24px 24px 40px;
-  text-align: center;
-  border-top: 1px solid var(--border);
-}
-.footer-logo {
-  font-size: 16px; font-weight: 900; letter-spacing: -.4px; color: var(--t2);
-  margin-bottom: 16px; display: flex; align-items: center; justify-content: center;
-}
-.footer-logo em {
-  display: inline-block; width: 6px; height: 6px;
-  background: var(--blue); border-radius: 50%;
-  margin-left: 2px; vertical-align: super; font-style: normal;
-}
-.footer-links {
-  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
-  gap: 4px 16px;
-}
-.footer-links a {
-  font-size: 12px; color: var(--t3); font-weight: 500;
-  transition: var(--tr);
-}
-.footer-links a:hover { color: var(--t2) }
-.footer-copy {
-  margin-top: 16px;
-  font-size: 11px; color: var(--t3); font-weight: 400;
-}
 </style>
 </head>
 <body>
@@ -1708,16 +1680,18 @@ footer {
 
 </div><!-- /page -->
 
-<!-- FOOTER -->
-<footer>
-  <a href="/" class="footer-logo">Poplist<em></em></a>
-  <div class="footer-links">
-    <a href="/privacy.html" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-    <a href="/terms.html" data-en="Terms" data-ja="利用規約">Terms</a>
-    <a href="/pricing.html" data-en="Pricing" data-ja="料金" id="lpFooterPricingLink">Pricing</a>
-    <a href="/how-to-use.html" data-en="How to use" data-ja="使い方">How to use</a>
+<!-- FOOTER (unified) -->
+<footer class="uf-footer uf-footer--static" style="width:100%;max-width:480px;margin:0 auto;padding:0 24px;box-sizing:border-box">
+  <div class="uf-footer__inner">
+    <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+    <nav class="uf-footer__nav" aria-label="Footer">
+      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html" target="_blank" rel="noopener noreferrer" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+    </nav>
+    <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
-  <p class="footer-copy">© 2025 Poplist</p>
 </footer>
 
 <script>
@@ -2209,10 +2183,10 @@ function setLang(lang) {
   });
   if (typeof window.lpRefreshColorItDescs === 'function') window.lpRefreshColorItDescs();
   if (typeof window._lpRefreshCompareChart === 'function') window._lpRefreshCompareChart();
-  var ph = '/pricing.html?lang=' + encodeURIComponent(lang);
+  var ph = '/pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
   var lpPl = document.getElementById('lpPricingLink');
   if (lpPl) lpPl.href = ph;
-  var ftPl = document.getElementById('lpFooterPricingLink');
+  var ftPl = document.getElementById('footerPlansLink');
   if (ftPl) ftPl.href = ph;
 }
 (function initLpLang() {
