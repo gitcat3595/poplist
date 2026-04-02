@@ -3966,7 +3966,8 @@ async function classifyTranscript(transcript) {
   const tr = (transcript || '').trim();
   if (!tr) return [];
 
-  if (state.aiClassify === false) {
+  // For guests and free users, stay fully local to avoid API usage.
+  if (!state.isProUser || state.aiClassify === false) {
     return localClassify(tr, defaultTiming);
   }
 
@@ -4651,20 +4652,44 @@ function updateCatDragHandles() {
 }
 
 function rebuildDetectRegex() {
-  // Rebuild CAT_KW-like detection from state.categories
+  // Rebuild CAT_KW-like detection from current categories + keywords
   window._catDetectFn = text => {
-    // Email with a personal recipient → Home (overrides the Work 'email' keyword)
+    // Email with a personal recipient → Home (overrides generic "email" matches)
     if (/\b(email|emails?|mail|メール)\b/i.test(text) &&
         /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i.test(text)) {
       return 'Home';
     }
-    // Check user-defined keywords
+
+    // 1) PRO / renamed categories: ignore built-in defaults, rely on custom + user keywords
+    const hasRenamedCore =
+      state.categories.some(c =>
+        (c.id === 'work'     && c.en !== 'Work') ||
+        (c.id === 'home'     && c.en !== 'Home') ||
+        (c.id === 'personal' && c.en !== 'Personal')
+      );
+
+    // Helper: check keyword arrays against the text
+    const matchesAny = (words, t) => words.some(kw => kw && new RegExp(kw, 'i').test(t));
+
+    // a) Always honour per-category customKeywords first (user-entered project/client terms)
     for (const cat of state.categories) {
       if (cat.id === 'other') continue;
-      if (cat.keywords.some(kw => new RegExp(kw, 'i').test(text))) return cat.en;
+      if (matchesAny(cat.customKeywords || [], text)) return cat.en;
     }
-    // Fallback to comprehensive built-in lists (covers the vast majority of everyday tasks)
-    for (const [c, r] of Object.entries(LOCAL_CAT_KW)) if (r.test(text)) return c;
+
+    // b) Built-in defaults only apply when core categories are unrenamed
+    if (!hasRenamedCore) {
+      for (const [c, r] of Object.entries(LOCAL_CAT_KW)) {
+        if (r.test(text)) return c;
+      }
+    }
+
+    // c) Per-category "keywords" (editable list in PRO UI) — treated as the current source of truth.
+    for (const cat of state.categories) {
+      if (cat.id === 'other') continue;
+      if (matchesAny(cat.keywords || [], text)) return cat.en;
+    }
+
     return 'Other';
   };
 }
@@ -5436,9 +5461,15 @@ function startCatNameEdit(catNameEl) {
       if (state.lang === 'ja') cat.ja = newName; else cat.en = newName;
       catNameEl.dataset[state.lang === 'ja' ? 'ja' : 'en'] = newName;
       catNameEl.textContent = newName;
+      // If a core category (work/home/personal) is renamed, treat custom/user
+      // keywords as the new source of truth by clearing built-in defaults.
+      if (['work','home','personal'].includes(cat.id)) {
+        cat.keywords = [];
+      }
     }
     input.replaceWith(catNameEl);
     refreshCatChips();
+    rebuildDetectRegex();
   }
 
   input.addEventListener('blur', commit);
