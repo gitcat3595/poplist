@@ -76,9 +76,6 @@
                box-shadow: var(--shbtn);
                transition: filter .18s ease, transform .18s ease }
   .email-btn:hover { filter: brightness(0.88); transform: translateY(-1px) }
-  .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #D4D7DD;
-            font-size: 12px; color: #9CA3AF; display: flex; flex-wrap: wrap; gap: 4px 14px }
-  .footer a { color: #6B7280 }
 </style>
 </head>
 <body>
@@ -149,13 +146,18 @@
   <h2>Questions</h2>
   <p>If you have questions about your data or the deletion process, please review our <a href="/privacy.html">Privacy Policy</a> or contact us at <a href="mailto:privacy@poplist.app">privacy@poplist.app</a>.</p>
 
-  <div class="footer">
-    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
-    <a href="/privacy.html">Privacy Policy</a>
-    <a href="/terms.html">Terms of Service</a>
-    <a href="/eula.html">EULA</a>
-    <a href="/data-deletion.html">Data Deletion</a>
-  </div>
+  <footer class="uf-footer uf-footer--static" style="margin-top:48px">
+    <div class="uf-footer__inner">
+      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <nav class="uf-footer__nav" aria-label="Footer">
+        <a href="/">About</a>
+        <a href="/pricing.html?lang=en#compare-chart">Plans</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms of Service</a>
+      </nav>
+      <p class="uf-footer__copy">Poplist 2026 ©</p>
+    </div>
+  </footer>
 </div>
 </div>
 
@@ -212,13 +214,18 @@
   <h2>ご質問</h2>
   <p>データや削除プロセスについてご質問がある場合は、<a href="/privacy.html">プライバシーポリシー</a>をご確認いただくか、<a href="mailto:privacy@poplist.app">privacy@poplist.app</a>までご連絡ください。</p>
 
-  <div class="footer">
-    <span>© 2026 Poplist · Operated by Allerise Pte. Ltd.</span>
-    <a href="/privacy.html">プライバシーポリシー</a>
-    <a href="/terms.html">利用規約</a>
-    <a href="/eula.html">EULA</a>
-    <a href="/data-deletion.html">データ削除</a>
-  </div>
+  <footer class="uf-footer uf-footer--static" style="margin-top:48px">
+    <div class="uf-footer__inner">
+      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <nav class="uf-footer__nav" aria-label="Footer">
+        <a href="/">Poplistについて</a>
+        <a href="/pricing.html?lang=ja#compare-chart">プラン</a>
+        <a href="/privacy.html">プライバシー</a>
+        <a href="/terms.html">利用規約</a>
+      </nav>
+      <p class="uf-footer__copy">Poplist 2026 ©</p>
+    </div>
+  </footer>
 </div>
 </div>
 

@@ -146,12 +146,16 @@ nav {
 }
 .form-select {
   cursor: pointer;
+  padding-left: 4px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0 center;
-  padding-right: 20px;
+  background-position: right 8px center;
+  padding-right: 28px;
 }
-.form-select option { font-weight: 400 }
+.form-select option {
+  font-weight: 400;
+  padding: 10px 14px;
+}
 .country-select-wrap {
   display: flex;
   align-items: center;
@@ -175,7 +179,11 @@ nav {
   display: block;
   background: var(--raised);
 }
-.country-select-wrap .form-select { flex: 1; min-width: 0 }
+.country-select-wrap .form-select {
+  flex: 1;
+  min-width: 0;
+  padding-left: 12px;
+}
 .form-textarea {
   resize: none; min-height: 72px; line-height: 1.55;
 }
@@ -331,26 +339,27 @@ nav {
           <select class="form-select" id="fieldCountry" required>
             <option value="" disabled selected data-en="Select country" data-ja="国を選択">Select country</option>
             <option value="JP">Japan</option>
+            <option value="SG">Singapore</option>
             <option value="US">United States</option>
             <option value="GB">United Kingdom</option>
+            <option disabled value="" class="country-opt-rule">────────────────────</option>
             <option value="AU">Australia</option>
+            <option value="BR">Brazil</option>
             <option value="CA">Canada</option>
-            <option value="SG">Singapore</option>
-            <option value="KR">South Korea</option>
-            <option value="TW">Taiwan</option>
-            <option value="HK">Hong Kong</option>
-            <option value="DE">Germany</option>
-            <option value="FR">France</option>
-            <option value="NL">Netherlands</option>
-            <option value="SE">Sweden</option>
-            <option value="NO">Norway</option>
+            <option value="CN">China</option>
             <option value="DK">Denmark</option>
             <option value="FI">Finland</option>
-            <option value="NZ">New Zealand</option>
+            <option value="FR">France</option>
+            <option value="DE">Germany</option>
+            <option value="HK">Hong Kong</option>
             <option value="IN">India</option>
-            <option value="CN">China</option>
-            <option value="BR">Brazil</option>
             <option value="MX">Mexico</option>
+            <option value="NL">Netherlands</option>
+            <option value="NZ">New Zealand</option>
+            <option value="NO">Norway</option>
+            <option value="KR">South Korea</option>
+            <option value="SE">Sweden</option>
+            <option value="TW">Taiwan</option>
             <option value="OTHER" data-en="Other" data-ja="その他">Other</option>
           </select>
         </div>
