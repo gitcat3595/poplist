@@ -1,0 +1,5 @@
+sheet,lang,title,sub
+homePrompts,en,What needs doing?,Say it messy. We will tidy it into tasks.
+homePrompts,ja,今日は何をする？,思いつくままで大丈夫。
+allTasksDone,en,Mission Completed,Every task is done.
+allTasksDone,ja,やることはすべて完了です,すべてのタスクが完了しました

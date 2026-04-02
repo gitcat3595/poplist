@@ -20,6 +20,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="/copy-bank.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <!--
   ═══════════════════════════════════════════════════════════
@@ -4866,6 +4867,70 @@ const HOME_PROMPTS = (window.POPLIST_COPY_BANK && window.POPLIST_COPY_BANK.homeP
   en: [{ t: 'What needs doing?', s: 'Say it messy. We will tidy it into tasks.' }],
   ja: [{ t: '今日は何をする？', s: '思いつくままで大丈夫。' }]
 };
+
+/* Optional: load custom copy from /uploads/poplist-copy.xlsx
+   Sheet: homePrompts  (lang,title,sub)
+   Sheet: allTasksDone (lang,title,sub) */
+async function loadCustomCopyFromExcel() {
+  if (!window.XLSX) return;
+  try {
+    const res = await fetch('/uploads/poplist-copy.xlsx', { cache: 'no-store' });
+    if (!res.ok) return;
+    const buf = await res.arrayBuffer();
+    const wb = window.XLSX.read(buf, { type: 'array' });
+    const nextBank = window.POPLIST_COPY_BANK || {};
+
+    const homeSheet = wb.Sheets.homePrompts;
+    if (homeSheet) {
+      const rows = window.XLSX.utils.sheet_to_json(homeSheet, { defval: '' });
+      const out = { en: [], ja: [] };
+      rows.forEach(r => {
+        const lang = String(r.lang || '').trim().toLowerCase();
+        const title = String(r.title || '').trim();
+        const sub = String(r.sub || '').trim();
+        if ((lang === 'en' || lang === 'ja') && title) out[lang].push({ t: title, s: sub });
+      });
+      if (out.en.length || out.ja.length) {
+        nextBank.homePrompts = {
+          en: out.en.length ? out.en : (nextBank.homePrompts?.en || HOME_PROMPTS.en),
+          ja: out.ja.length ? out.ja : (nextBank.homePrompts?.ja || HOME_PROMPTS.ja)
+        };
+        HOME_PROMPTS.en = nextBank.homePrompts.en;
+        HOME_PROMPTS.ja = nextBank.homePrompts.ja;
+      }
+    }
+
+    const doneSheet = wb.Sheets.allTasksDone;
+    if (doneSheet) {
+      const rows = window.XLSX.utils.sheet_to_json(doneSheet, { defval: '' });
+      const out = { en: null, ja: null };
+      rows.forEach(r => {
+        const lang = String(r.lang || '').trim().toLowerCase();
+        const title = String(r.title || '').trim();
+        const sub = String(r.sub || '').trim();
+        if ((lang === 'en' || lang === 'ja') && (title || sub)) {
+          out[lang] = {
+            title: title || (lang === 'ja' ? 'やることはすべて完了です' : 'Mission Completed'),
+            sub: sub || (lang === 'ja' ? 'すべてのタスクが完了しました' : 'Every task is done.')
+          };
+        }
+      });
+      if (out.en || out.ja) {
+        const cur = nextBank.allTasksDone || {};
+        nextBank.allTasksDone = {
+          en: out.en || cur.en || { title: 'Mission Completed', sub: 'Every task is done.' },
+          ja: out.ja || cur.ja || { title: 'やることはすべて完了です', sub: 'すべてのタスクが完了しました' }
+        };
+      }
+    }
+
+    window.POPLIST_COPY_BANK = nextBank;
+    refreshHomePrompt(state.lang);
+  } catch (e) {
+    console.warn('Custom copy Excel load skipped:', e);
+  }
+}
+void loadCustomCopyFromExcel();
 
 function syncProPricingHref(lang) {
   const l = lang === 'ja' ? 'ja' : 'en';
