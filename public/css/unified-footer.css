@@ -1,4 +1,9 @@
-/* Poplist — unified footer: logo, About / Plans / Privacy / Terms of Service, copyright */
+/* Poplist — unified footer: logo, About / Plans / Privacy / Terms of Service, copyright
+ *
+ * Footer module: add class `footer-module` on the <footer> and copy the inner markup from
+ * public/index.html (`#siteFooter`) — logo, nav (four links + data-*), copyright line.
+ * Use `uf-footer--padded` on full-width pages; legal pages inside `.wrap` use `uf-footer--align` only.
+ */
 
 .uf-footer {
   --uf-bg: var(--bg, #ECEEF2);
