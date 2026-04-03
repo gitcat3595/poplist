@@ -273,13 +273,6 @@
       return user.providerData.some(p => p.providerId === 'apple.com');
     }
 
-    function isBlockedPlusAliasEmail(email) {
-      if (!email || typeof email !== 'string') return false;
-      const at = email.indexOf('@');
-      if (at <= 0) return false;
-      return email.slice(0, at).includes('+');
-    }
-
     async function loadProBadge(uid) {
       const el = document.getElementById('tierBadge');
       if (!db || !uid) return;
@@ -326,6 +319,7 @@
       const next = document.getElementById('emailNew').value.trim();
       const pw = document.getElementById('emailReauthPwd').value;
       if (!next || !next.includes('@')) { showToast(t('needEmail')); return; }
+      if (isBlockedPlusAliasEmail(next)) { showToast(t('plusAlias')); return; }
       if (!pw) { showToast(t('needPwd')); return; }
       try {
         const cred = firebase.auth.EmailAuthProvider.credential(user.email, pw);
