@@ -90,7 +90,7 @@
   position: static;
   top: auto;
   z-index: auto;
-  width: 100%;
+  width: auto;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -100,13 +100,13 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
 
-.uf-footer__nav a,
-.uf-footer__group-list a {
+.uf-footer__nav a {
   font-size: 10px;
   font-weight: 600;
   line-height: 1.35;
@@ -115,51 +115,48 @@
   padding: 2px 0;
   transition: color 0.18s;
 }
-.uf-footer__nav a:hover,
-.uf-footer__group-list a:hover {
+.uf-footer__nav > a:not(:last-child)::after,
+.uf-footer__nav > .uf-footer-about > a::after {
+  content: '·';
+  display: inline-block;
+  margin: 0 10px;
+  color: var(--uf-t3);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.uf-footer__nav a:hover {
   color: var(--uf-accent);
 }
 
-.uf-footer__group {
+/* About child menu (footer only) */
+.uf-footer-about {
+  position: relative;
+  display: inline-block;
+}
+
+.uf-footer-about-list {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 0;
+  padding: 8px 14px 8px 22px; /* bigger + more indent */
+  min-width: 180px;
+  background: var(--uf-bg);
+  box-shadow: 0 6px 20px rgba(0,0,0,.16);
   border-radius: 10px;
-}
-
-.uf-footer__group-toggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  padding: 4px 0;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--uf-t1);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.uf-footer__group-chevron {
-  font-size: 10px;
-  color: var(--uf-t3);
-  transition: transform 0.18s ease;
-}
-
-.uf-footer__group-list {
   display: none;
-  padding: 2px 0 4px;
 }
 
-.uf-footer__group-list a {
+.uf-footer-about-list a {
   display: block;
+  font-size: 11px;
+  padding: 3px 0;
 }
 
-.uf-footer__group.uf-footer__group--open .uf-footer__group-list {
+.uf-footer-about:hover .uf-footer-about-list,
+.uf-footer-about:focus-within .uf-footer-about-list {
   display: block;
-}
-
-.uf-footer__group.uf-footer__group--open .uf-footer__group-chevron {
-  transform: rotate(180deg);
 }
 
 .uf-footer__copy {
