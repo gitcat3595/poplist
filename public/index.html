@@ -2552,7 +2552,10 @@ function loadTaskCache() {
 }
 
 let _auth = null, _db = null;
+/** Public preview: same app UI, no Firebase — local tasks only, no login/sync. Append ?pre=1 to the URL. */
+const PRE_RELEASE = new URLSearchParams(location.search).has('pre');
 const FB_READY = (() => {
+  if (PRE_RELEASE) return false;
   if (FIREBASE_CONFIG.apiKey.startsWith('REPLACE')) return false; // not configured yet
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
@@ -2564,6 +2567,22 @@ const FB_READY = (() => {
     return false;
   }
 })();
+
+function guestLimitApplies() {
+  return PRE_RELEASE || (FB_READY && !state.isLoggedIn);
+}
+
+function showGuestLimitToast() {
+  if (PRE_RELEASE) {
+    showToast(state.lang === 'ja'
+      ? `プレリリースは${GUEST_MAX_TASKS}件まで（このブラウザにのみ保存）`
+      : `Pre-release: ${GUEST_MAX_TASKS} tasks max (saved in this browser only).`);
+  } else {
+    showToast(state.lang === 'ja'
+      ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
+      : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
+  }
+}
 
 // When Firebase is not configured, unlock Pro so the demo works fully
 if (!FB_READY) {
@@ -3425,14 +3444,12 @@ async function submitAddTask() {
       tasks = [{ text, timing: defaultTiming, category: detectCat(text) || 'Other' }];
     }
 
-    if (FB_READY && !state.isLoggedIn) {
+    if (guestLimitApplies()) {
       const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
       const allowed = Math.max(0, GUEST_MAX_TASKS - count);
       if (allowed === 0) {
-        showToast(state.lang === 'ja'
-          ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
-          : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
-        openM('settingsModal');
+        showGuestLimitToast();
+        if (!PRE_RELEASE) openM('settingsModal');
         return;
       }
       if (tasks.length > allowed) tasks = tasks.slice(0, allowed);
@@ -3834,6 +3851,17 @@ async function processPasteList() {
       ? 'タスクを認識できませんでした。表現を変えてお試しください'
       : 'Could not parse any tasks — try rewording');
     return;
+  }
+
+  if (guestLimitApplies()) {
+    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
+    const allowed = Math.max(0, GUEST_MAX_TASKS - count);
+    if (allowed === 0) {
+      showGuestLimitToast();
+      if (!PRE_RELEASE) openM('settingsModal');
+      return;
+    }
+    if (tasks.length > allowed) tasks = tasks.slice(0, allowed);
   }
 
   // Make sure task list view is visible
@@ -4437,15 +4465,13 @@ if (SR) {
       return;
     }
 
-    // Guest task limit — cap voice tasks the same as manual add
-    if (FB_READY && !state.isLoggedIn) {
+    // Guest / pre-release task limit — cap voice tasks the same as manual add
+    if (guestLimitApplies()) {
       const current = document.querySelectorAll('.task-item:not(.collapsing)').length;
       const allowed = Math.max(0, GUEST_MAX_TASKS - current);
       if (allowed === 0) {
-        showToast(state.lang === 'ja'
-          ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
-          : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
-        openM('settingsModal');
+        showGuestLimitToast();
+        if (!PRE_RELEASE) openM('settingsModal');
         return;
       }
       tasks = tasks.slice(0, allowed);
@@ -5189,6 +5215,10 @@ function updateBubblePreview() {
 if (!FB_READY) {
   const acctSection = document.getElementById('accountSection');
   if (acctSection) acctSection.style.display = 'none';
+}
+if (PRE_RELEASE) {
+  document.body.classList.add('pre-release');
+  document.title = 'Poplist — Preview';
 }
 
 document.getElementById('googleSignInBtn')?.addEventListener('click', () => {
