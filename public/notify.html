@@ -339,7 +339,7 @@ nav {
         </label>
         <div class="country-select-wrap">
           <div class="country-flag-slot" aria-hidden="true">
-            <img id="countryFlagPreview" class="country-flag" alt="" width="28" height="21" hidden decoding="async" />
+            <img id="countryFlagPreview" class="country-flag" alt="" width="28" height="21" hidden decoding="async" referrerpolicy="no-referrer" />
           </div>
           <select class="form-select" id="fieldCountry" required>
             <option value="" disabled selected data-en="Select country" data-ja="国を選択">Select country</option>
@@ -347,7 +347,6 @@ nav {
             <option value="SG">Singapore</option>
             <option value="US">United States</option>
             <option value="GB">United Kingdom</option>
-            <option disabled value="" class="country-opt-rule">────────────────────</option>
             <option value="AU">Australia</option>
             <option value="BR">Brazil</option>
             <option value="CA">Canada</option>
@@ -476,8 +475,13 @@ function updateCountryFlag() {
   if (!sel || !img) return;
   const url = countryToFlagUrl(sel.value);
   if (url) {
+    img.setAttribute('hidden', '');
+    img.onload = () => img.removeAttribute('hidden');
+    img.onerror = () => {
+      img.removeAttribute('src');
+      img.setAttribute('hidden', '');
+    };
     img.src = url;
-    img.removeAttribute('hidden');
   } else {
     img.removeAttribute('src');
     img.setAttribute('hidden', '');
