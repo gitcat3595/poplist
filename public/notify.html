@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Poplist — Get Notified</title>
+<title>Poplist — Early launch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/unified-footer.css">
+<link rel="stylesheet" href="css/unified-footer.css">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
@@ -132,7 +132,12 @@ nav {
 }
 .label-optional {
   font-size: 10px; color: var(--t3); font-weight: 600; letter-spacing: 0;
-  text-transform: none; font-style: italic;
+  text-transform: none;
+}
+.form-hint {
+  font-size: 12px; font-weight: 500; color: var(--t2);
+  line-height: 1.45;
+  margin: 0 0 4px;
 }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 0;
@@ -291,16 +296,16 @@ nav {
   <!-- FORM SCREEN -->
   <div class="form-screen" id="formScreen">
 
-    <!-- HERO (plan-specific) -->
+    <!-- HERO -->
     <div class="hero">
-      <div class="plan-pill" id="planPill">
-        <span id="planPillText">PRO Monthly</span>
+      <div class="plan-pill monthly" id="planPill">
+        <span data-en="Be the first one to try" data-ja="いち早く使ってみるなら">Be the first one to try</span>
       </div>
       <h1 class="hero-title">
-        <span data-en="Be first to know<br>when we launch" data-ja="ローンチ時に<br>最初に知る">Be first to know<br>when we launch</span>
+        <span data-en="Receive early launch updates" data-ja="先行ローンチのお知らせを受け取る">Receive early launch updates</span>
       </h1>
       <p class="hero-sub">
-        <span data-en="Stripe payments are coming soon. Sign up and we'll notify you the moment PRO is available." data-ja="Stripe決済は近日公開予定。サインアップすると、PROが利用可能になった瞬間にお知らせします。">Stripe payments are coming soon. Sign up and we'll notify you the moment PRO is available.</span>
+        <span data-en="We're opening Poplist to a limited group first. Join the waitlist and we'll let you know before anyone else." data-ja="Poplistを人数限定で先行公開します。ウェイトリストに登録すると、いちばんにお知らせします。">We're opening Poplist to a limited group first. Join the waitlist and we'll let you know before anyone else.</span>
       </p>
     </div>
 
@@ -370,10 +375,11 @@ nav {
           <span data-en="Message" data-ja="メッセージ">Message</span>
           <span class="label-optional" data-en="optional" data-ja="任意">optional</span>
         </label>
+        <p class="form-hint" data-en="Requests, questions, a message — anything goes" data-ja="ご要望、ご質問、メッセージなど何でもどうぞ">Requests, questions, a message — anything goes</p>
         <textarea class="form-textarea" id="fieldMessage" rows="3"
-          data-placeholder-en="Anything you'd like us to know — feature requests, feedback, questions…"
-          data-placeholder-ja="ご要望、フィードバック、ご質問など何でもどうぞ…"
-          placeholder="Anything you'd like us to know — feature requests, feedback, questions…"></textarea>
+          data-placeholder-en="Optional — type here if you like"
+          data-placeholder-ja="（任意）ここにご入力ください"
+          placeholder="Optional — type here if you like"></textarea>
       </div>
 
     </div>
@@ -381,7 +387,7 @@ nav {
     <div class="submit-area">
       <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        <span data-en="Get notified" data-ja="お知らせを受け取る">Get notified</span>
+        <span data-en="Receive early launch updates" data-ja="先行ローンチのお知らせを受け取る">Receive early launch updates</span>
       </button>
     </div>
 
@@ -399,7 +405,7 @@ nav {
         <span data-en="You're on the list!" data-ja="登録完了！">You're on the list!</span>
       </h2>
       <p class="success-sub">
-        <span data-en="We'll reach out the moment Poplist PRO is ready to purchase." data-ja="Poplist PROの購入が可能になった瞬間にご連絡します。">We'll reach out the moment Poplist PRO is ready to purchase.</span>
+        <span data-en="We'll email you as soon as early access opens." data-ja="先行公開のご案内を、メールでお知らせします。登録ありがとうございます。">We'll email you as soon as early access opens.</span>
       </p>
       <a href="index.html" class="success-back-btn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -407,40 +413,30 @@ nav {
       </a>
       <div class="success-divider"></div>
       <p class="success-detail">
-        <span data-en="In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is." data-ja="その間、無料プランは完全に機能しています。音声タスク入力を試してみてください。その速さに驚くかもしれません。">In the meantime, the Free plan is fully functional. Try voice task entry — you might be surprised how fast it is.</span>
+        <span data-en="You can try the browser preview anytime from the Poplist site while you wait." data-ja="お待ちいただく間も、サイトからブラウザ版プレビューをお試しいただけます。">You can try the browser preview anytime from the Poplist site while you wait.</span>
       </p>
     </div>
   </div>
 
-  <footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module" id="siteFooter">
-    <div class="uf-footer__inner">
-      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
-      <nav class="uf-footer__nav" aria-label="Footer">
-        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
-        <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-        <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
-      </nav>
-      <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
-    </div>
-  </footer>
+</div><!-- /.page -->
 
-</div>
+<footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module" id="siteFooter">
+  <div class="uf-footer__inner">
+    <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+    <nav class="uf-footer__nav" aria-label="Footer">
+      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
+      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+      <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+    </nav>
+    <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
+  </div>
+</footer>
 
 <script>
-// ── Read plan from URL param ──
+// ── Optional plan tag for analytics (URL param; does not change page copy) ──
 const params = new URLSearchParams(window.location.search);
-const plan = params.get('plan') || 'monthly';
-const planPill = document.getElementById('planPill');
-const planPillText = document.getElementById('planPillText');
-const planLabels = {
-  monthly:  { en: 'PRO Monthly',  ja: 'PRO 月額プラン',  cls: 'monthly'  },
-  annual:   { en: 'PRO Annual',   ja: 'PRO 年額プラン',   cls: 'annual'   },
-  lifetime: { en: 'PRO Lifetime', ja: 'PRO 買い切りプラン', cls: 'lifetime' },
-};
-const lbl = planLabels[plan] || planLabels.monthly;
-planPillText.textContent = lbl.en;
-planPill.classList.add(lbl.cls);
+const plan = params.get('plan') || 'early_launch';
 
 let currentLang = 'en';
 
@@ -456,7 +452,7 @@ function syncNotifyNavHrefs() {
   if (back) back.href = h;
   if (logo) logo.href = h;
   const fp = document.getElementById('footerPlansLink');
-  if (fp) fp.href = '/pricing.html?lang=' + encodeURIComponent(currentLang === 'ja' ? 'ja' : 'en');
+  if (fp) fp.href = '/pricing.html?lang=' + encodeURIComponent(currentLang === 'ja' ? 'ja' : 'en') + '#compare-chart';
 }
 
 function updateSubmitConsentNote() {
@@ -464,9 +460,9 @@ function updateSubmitConsentNote() {
   if (!el) return;
   const target = ' target="_blank" rel="noopener noreferrer"';
   if (currentLang === 'ja') {
-    el.innerHTML = 'このフォームを送信することで、<a href="privacy.html"' + target + '>プライバシーポリシー</a>、<a href="terms.html"' + target + '>利用規約</a>、および <a href="eula.html"' + target + '>EULA</a> に同意したものとみなされます。ご登録のメールアドレスは、Poplist に関するご案内（PRO の公開通知など）にのみ利用し、それ以外の目的には使用しません。';
+    el.innerHTML = 'このフォームを送信することで、<a href="privacy.html"' + target + '>プライバシーポリシー</a>、<a href="terms.html"' + target + '>利用規約</a>、および <a href="eula.html"' + target + '>EULA</a> に同意したものとみなされます。ご登録のメールアドレスは、先行ローンチやプレビューなど Poplist に関するお知らせにのみ利用し、無関係なマーケティングには使用しません。';
   } else {
-    el.innerHTML = 'By submitting this form, you agree to our <a href="privacy.html"' + target + '>Privacy Policy</a>, <a href="terms.html"' + target + '>Terms of Service</a>, and <a href="eula.html"' + target + '>EULA</a>. Your email will be used only for Poplist-related announcements (such as PRO launch). We will not use it for unrelated marketing.';
+    el.innerHTML = 'By submitting this form, you agree to our <a href="privacy.html"' + target + '>Privacy Policy</a>, <a href="terms.html"' + target + '>Terms of Service</a>, and <a href="eula.html"' + target + '>EULA</a>. Your email will be used only for Poplist-related updates (early launch, preview, and product news). We will not use it for unrelated marketing.';
   }
 }
 
@@ -504,8 +500,6 @@ function setLang(lang) {
   document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
     el.placeholder = el.getAttribute('data-placeholder-' + lang);
   });
-  // Plan pill label
-  planPillText.textContent = lbl[lang] || lbl.en;
   const backLabel = document.getElementById('back-label');
   if (backLabel) backLabel.textContent = lang === 'ja' ? '戻る' : 'Back';
   syncNotifyNavHrefs();
@@ -565,9 +559,10 @@ function setSubmitIdle() {
   const btn = document.getElementById('submitBtn');
   if (!btn) return;
   btn.disabled = false;
+  const label = currentLang === 'ja' ? '先行ローンチのお知らせを受け取る' : 'Receive early launch updates';
   btn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    <span>${currentLang === 'ja' ? 'お知らせを受け取る' : 'Get notified'}</span>
+    <span>${label}</span>
   `;
 }
 
