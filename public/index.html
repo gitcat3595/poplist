@@ -1175,13 +1175,14 @@ body.lang-ja .home-prompt-sub { font-size:14px; line-height:1.5 }
 }
 .home-manual-btn:hover { border-color:var(--blue); color:var(--blue) }
 
-/* ── WHY POPLIST (features preview, borrowed from lp1) ─ */
+/* ── WHY POPLIST (features preview, borrowed from lp1) — same column width + centering as .home-head ─ */
 .home-why {
   width:100%;
-  max-width:480px;
+  max-width:360px;
   margin:120px auto 0;
-  padding:0 20px 40px;
+  padding:0 0 8px;
   box-sizing:border-box;
+  text-align:center;
 }
 .home-why-label {
   font-size:10px; font-weight:800; letter-spacing:.75px;
@@ -1192,6 +1193,7 @@ body.lang-ja .home-prompt-sub { font-size:14px; line-height:1.5 }
   font-size:22px; font-weight:900; letter-spacing:-.4px;
   line-height:1.3; color:var(--t1);
   margin:0 0 18px;
+  text-align:center;
 }
 body.lang-ja .home-why-title {
   font-size:20px;
@@ -1208,6 +1210,7 @@ body.lang-ja .home-why-title {
   border:1px solid var(--border);
   padding:12px 14px;
   box-shadow:0 1px 3px rgba(0,0,0,.06);
+  text-align:left;
 }
 .home-why-item h3 {
   font-size:14px; font-weight:800; margin:0 0 4px; color:var(--t1);
@@ -1570,32 +1573,32 @@ body.lang-ja .home-why-title {
     </button>
     <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す" style="font-size:13px;color:var(--t2);margin-top:12px">Tap to add tasks by voice</span>
     <button class="home-manual-btn" id="homeManualBtn" data-en="Add task" data-ja="タスクを追加">Add task</button>
-  </div>
 
-  <!-- WHY POPLIST / Features preview (placed well below mic + Add Task) -->
-  <section class="home-why" id="homeWhy">
-    <p class="home-why-label" data-en="WHY POPLIST" data-ja="Poplistでできること">WHY POPLIST</p>
-    <h2 class="home-why-title"
-        data-en="Less admin. More action."
-        data-ja="めんどうは減らす。行動する力を残す。">Less admin. More action.</h2>
-    <div class="home-why-grid">
-      <div class="home-why-item">
-        <h3 data-en="Talk, don’t type" data-ja="話すだけでタスクになる">Talk, don’t type</h3>
-        <p data-en="Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically."
-           data-ja="マイクをタップして頭にあることをそのまま話すだけで、きれいなタスクに整理されます。">Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically.</p>
+    <!-- WHY POPLIST — inside home screen so it hides with hero when Add task / task list is open -->
+    <section class="home-why" id="homeWhy">
+      <p class="home-why-label" data-en="WHY POPLIST" data-ja="Poplistでできること">WHY POPLIST</p>
+      <h2 class="home-why-title"
+          data-en="Less admin. More action."
+          data-ja="めんどうは減らす。行動する力を残す。">Less admin. More action.</h2>
+      <div class="home-why-grid">
+        <div class="home-why-item">
+          <h3 data-en="Talk, don’t type" data-ja="話すだけでタスクになる">Talk, don’t type</h3>
+          <p data-en="Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically."
+             data-ja="マイクをタップして頭にあることをそのまま話すだけで、きれいなタスクに整理されます。">Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically.</p>
+        </div>
+        <div class="home-why-item">
+          <h3 data-en="Paste messy notes" data-ja="メモやテキストをそのまま貼れる">Paste messy notes</h3>
+          <p data-en="Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you."
+             data-ja="長いメモやテキスト、書き起こしもそのまま貼り付けるだけで、自動でタスクに分割・整理されます。">Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you.</p>
+        </div>
+        <div class="home-why-item">
+          <h3 data-en="Stay organised by day" data-ja="今日・今週・そのうちで整理">Stay organised by day</h3>
+          <p data-en="Tasks fall into Today, This Week, and Later so your list stays focused without extra admin."
+             data-ja="タスクは「今日」「今週」「そのうち」に自動でまとまり、余計な管理なしでいまやるべきことに集中できます。">Tasks fall into Today, This Week, and Later so your list stays focused without extra admin.</p>
+        </div>
       </div>
-      <div class="home-why-item">
-        <h3 data-en="Paste messy notes" data-ja="メモやテキストをそのまま貼れる">Paste messy notes</h3>
-        <p data-en="Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you."
-           data-ja="長いメモやテキスト、書き起こしもそのまま貼り付けるだけで、自動でタスクに分割・整理されます。">Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you.</p>
-      </div>
-      <div class="home-why-item">
-        <h3 data-en="Stay organised by day" data-ja="今日・今週・そのうちで整理">Stay organised by day</h3>
-        <p data-en="Tasks fall into Today, This Week, and Later so your list stays focused without extra admin."
-           data-ja="タスクは「今日」「今週」「そのうち」に自動でまとまり、余計な管理なしでいまやるべきことに集中できます。">Tasks fall into Today, This Week, and Later so your list stays focused without extra admin.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
   <div id="doneScreen" class="done-screen" style="display:none">
@@ -3555,7 +3558,6 @@ function doneForToday() {
 
 function updateScreenState() {
   const siteFooter = document.getElementById('siteFooter');
-  const homeWhy    = document.getElementById('homeWhy');
 
   // Don't override the inline today-done panel while it's showing
   const _tdPanel = document.getElementById('todayDoneInline');
@@ -3587,7 +3589,6 @@ function updateScreenState() {
       bottomBar.style.display    = 'none';
       if (exportBtn) exportBtn.style.display = 'none';
       if (siteFooter) siteFooter.style.display = '';
-      if (homeWhy) homeWhy.style.display = 'none';
       showDoneScreen();
     } else {
       homeScreen.style.display   = '';
@@ -3596,7 +3597,6 @@ function updateScreenState() {
       bottomBar.style.display    = 'none';
       if (exportBtn) exportBtn.style.display = 'none';
       if (siteFooter) siteFooter.style.display = '';
-      if (homeWhy) homeWhy.style.display = '';
     }
   } else {
     homeScreen.style.display   = 'none';
@@ -3605,7 +3605,6 @@ function updateScreenState() {
     bottomBar.style.display    = '';
     if (exportBtn) exportBtn.style.display = '';
     if (siteFooter) siteFooter.style.display = 'none';
-    if (homeWhy) homeWhy.style.display = 'none';
     updateDoneForTodayBtn();
   }
 }
@@ -3667,6 +3666,7 @@ document.getElementById('seeCarryOverBtn')?.addEventListener('click', () => {
 document.querySelector('.btn-cancel')?.addEventListener('click', () => {
   const card = document.getElementById('manualAddCard');
   if (card) { card.style.display = 'none'; }
+  updateScreenState();
 });
 
 /* Inline add — tap any add-task-row to type right there, no scroll jump */
