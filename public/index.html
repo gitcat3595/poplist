@@ -1574,6 +1574,7 @@ body.lang-ja .home-why-title {
     <span class="voice-transcript" id="voiceTranscript" data-en="Tap to add tasks by voice" data-ja="タップして話す" style="font-size:13px;color:var(--t2);margin-top:12px">Tap to add tasks by voice</span>
     <button class="home-manual-btn" id="homeManualBtn" data-en="Add task" data-ja="タスクを追加">Add task</button>
 
+<<<<<<< HEAD
     <!-- WHY POPLIST — inside home screen so it hides with hero when Add task / task list is open -->
     <section class="home-why" id="homeWhy">
       <p class="home-why-label" data-en="WHY POPLIST" data-ja="Poplistでできること">WHY POPLIST</p>
@@ -1599,6 +1600,32 @@ body.lang-ja .home-why-title {
       </div>
     </section>
   </div>
+=======
+  <!-- HOW TO USE POPLIST / Features preview (placed well below mic + Add Task) -->
+  <section class="home-why" id="homeWhy">
+    <p class="home-why-label" data-en="HOW TO USE POPLIST" data-ja="Poplistの使い方">HOW TO USE POPLIST</p>
+    <h2 class="home-why-title"
+        data-en="Less admin. More action."
+        data-ja="めんどうは減らす。行動する力を残す。">Less admin. More action.</h2>
+    <div class="home-why-grid">
+      <div class="home-why-item">
+        <h3 data-en="Talk, don’t type" data-ja="話すだけでタスクになる">Talk, don’t type</h3>
+        <p data-en="Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically."
+           data-ja="マイクをタップして頭にあることをそのまま話すだけで、きれいなタスクに整理されます。">Tap the mic and say what’s on your mind — Poplist turns your words into clean tasks automatically.</p>
+      </div>
+      <div class="home-why-item">
+        <h3 data-en="Paste messy notes" data-ja="メモやテキストをそのまま貼れる">Paste messy notes</h3>
+        <p data-en="Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you."
+           data-ja="長いメモやテキスト、書き起こしもそのまま貼り付けるだけで、自動でタスクに分割・整理されます。">Drop in a long note, transcript, or bullet list. Poplist splits and organises everything into tasks for you.</p>
+      </div>
+      <div class="home-why-item">
+        <h3 data-en="Stay organised by day" data-ja="今日・今週・そのうちで整理">Stay organised by day</h3>
+        <p data-en="Tasks fall into Today, This Week, and Later so your list stays focused without extra admin."
+           data-ja="タスクは「今日」「今週」「そのうち」に自動でまとまります。あとは必要に応じでタップで期限を調整。">Tasks fall into Today, This Week, and Later. Change the due date when necessary.</p>
+      </div>
+    </div>
+  </section>
+>>>>>>> 1fcda28db78bd119e1ca0888b2db0dff29537b23
 
   <!-- DONE SCREEN — shown when all tasks are cleared -->
   <div id="doneScreen" class="done-screen" style="display:none">
@@ -1615,7 +1642,7 @@ body.lang-ja .home-why-title {
       <div class="done-bubble"></div>
       <div class="done-bubble"></div>
     </div>
-    <div class="done-title" data-en="You're done for today" data-ja="今日もお疲れさまです">You're done for today</div>
+    <div class="done-title" data-en="You're done everything" data-ja="お疲れさまでした">You've done everything</div>
     <div class="done-sub" data-en="All clear. Add more whenever you're ready." data-ja="タスクは全部完了。いつでも追加できます。">All clear. Add more whenever you're ready.</div>
     <button class="voice-btn" id="voiceBtnDone" style="margin-top:28px">
       <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1928,8 +1955,8 @@ GoogleService-Info.plist
     <p class="modal-sub" data-en="Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline." data-ja="メモ、音声テキスト、リストをそのまま貼り付け。タスクに分解してカテゴリ・期限を自動設定します。">Brain dump, speech transcript, bullet list — we'll split into tasks and auto-sort by category &amp; deadline.</p>
     <textarea class="paste-list-area" id="pasteListInput"
       placeholder="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
-      data-placeholder-en="e.g. call the dentist, buy groceries this week, send report to client by Monday, gym Saturday…"
-      data-placeholder-ja="例：歯医者に電話、今週食料品を買う、月曜日にクライアントへレポート送付、土曜日にジム…"></textarea>
+      data-placeholder-en="e.g. call the dentist, buy groceries on the way home, send report to client by Monday, gym Saturday…"
+      data-placeholder-ja="例：歯医者に電話、帰りに週買い物に行く、月曜日にクライアントへレポート送付、土曜日にジム…"></textarea>
     <p style="font-size:11px;color:var(--t3);margin:6px 2px 0;text-align:right" data-en="Ctrl+Enter to process" data-ja="Ctrl+Enterで処理">Ctrl+Enter to process</p>
     <button class="paste-list-process" id="pasteListProcess" data-en="Add Tasks" data-ja="タスクを追加する">Add Tasks</button>
     <button class="modal-cancel" id="closePasteList" data-en="Cancel" data-ja="キャンセル">Cancel</button>

@@ -92,8 +92,11 @@ nav {
   display: flex; flex-direction: column;
 }
 
-/* ── HERO ── */
-.hero {
+/* ── Hero-section (page landmark) + hero-module (LP hero content) ── */
+.hero-section {
+  width: 100%;
+}
+.hero-module {
   padding: 48px 24px 40px;
   text-align: center;
   display: flex; flex-direction: column; align-items: center;
@@ -1653,8 +1656,9 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
 
 <div class="page">
 
-  <!-- ── HERO ── -->
-  <section class="hero">
+  <!-- Hero-section: top LP block. hero-module: headline + CTA cluster. -->
+  <section class="hero-section" data-lp-section="hero" aria-label="Hero">
+    <div class="hero-module">
     <div class="hero-eyebrow">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="9" y="2" width="6" height="11" rx="3"/>
@@ -1673,6 +1677,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
       </svg>
     </a>
     <p class="hero-note" data-en="No sign up needed. Try for free" data-ja="ログインなしで無料で試せます">No sign up needed. Try for free</p>
+    </div>
   </section>
 
   <!-- ── KEY FEATURES CAROUSEL ── -->
