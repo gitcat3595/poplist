@@ -3998,26 +3998,52 @@ function countCjkChars(s) {
   return (s.match(/[\u3040-\u30ff\u4e00-\u9fff]/g) || []).length;
 }
 
+/* Merge orphan fragments (e.g. stray auxiliaries) back into the previous task for coherent phrases. */
+function mergeTinyJapaneseSegments(parts) {
+  if (!parts || parts.length <= 1) return parts || [];
+  const merged = [parts[0].trim()];
+  for (let i = 1; i < parts.length; i++) {
+    const cur = parts[i].trim();
+    if (!cur) continue;
+    const prev = merged[merged.length - 1];
+    const cjkCur = countCjkChars(cur);
+    /* Keep 2–4 CJK fragments if they look like full micro-tasks; merge only tiny tails (<3 CJK, short). */
+    if (merged.length && cjkCur < 3 && cur.length <= 5) {
+      merged[merged.length - 1] = (prev + cur).trim();
+    } else {
+      merged.push(cur);
+    }
+  }
+  return merged.filter(Boolean);
+}
+
 /* Japanese run-ons often omit 、 between actions (て-chain). Split into separate task strings. */
 function splitLongJapaneseRunOn(s) {
   const cjk = countCjkChars(s);
-  /* Only skip splitting for very short fragments (longer run-ons still get て/connector passes). */
-  if (s.length <= 14 && cjk < 5) return [s];
+  /* Need more than 4 Japanese characters before we try to split (otherwise one short task). */
+  if (cjk <= 4) return [s];
 
   /* List connectors — split without requiring spaces (speech often has no space after また). */
   let bits = s.split(/(?:また|そして|それから|そのあと|その後|あとで|加えて|なお|ちなみに|および|並びに|次に)/);
   if (bits.length > 1) {
-    return bits.flatMap(b => {
+    const joined = bits.flatMap(b => {
       b = b.trim();
       return b.length > 1 ? splitLongJapaneseRunOn(b) : [];
     }).filter(Boolean);
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
   }
 
   bits = s.split(/[、，・｜|／/]+/).map(x => x.trim()).filter(x => x.length > 1);
-  if (bits.length > 1) return bits.flatMap(b => splitLongJapaneseRunOn(b));
+  if (bits.length > 1) {
+    const joined = bits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
 
   bits = s.split(/\u3000+/).map(x => x.trim()).filter(x => x.length > 1);
-  if (bits.length > 1) return bits.flatMap(b => splitLongJapaneseRunOn(b));
+  if (bits.length > 1) {
+    const joined = bits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
 
   const out = [];
   let buf = '';
@@ -4030,7 +4056,8 @@ function splitLongJapaneseRunOn(s) {
         continue;
       }
       if (/^[\u3040-\u30ff\u4e00-\u9fff]{3,}/.test(tailSlice)) {
-        const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある)/.test(tailSlice);
+        /* Do not break ～て + auxiliary / compound (keep grammatical units together). */
+        const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある|いく|きる|あげる|もらう)/.test(tailSlice);
         if (!badFollow) {
           out.push((buf + 'て').trim());
           buf = '';
@@ -4041,8 +4068,11 @@ function splitLongJapaneseRunOn(s) {
     buf += ch;
   }
   if (buf.trim()) out.push(buf.trim());
-  if (out.length > 1) return out.flatMap(b => splitLongJapaneseRunOn(b));
-  return [s];
+  if (out.length > 1) {
+    const deeper = out.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(deeper.length > 0 ? deeper : [s]);
+  }
+  return mergeTinyJapaneseSegments([s]);
 }
 
 function splitLongEnglishRunOn(s) {
@@ -4099,8 +4129,8 @@ function localClassify(transcript, defaultTiming) {
 
   const parts = base.flatMap(p => {
     const ck = countCjkChars(p);
-    /* Japanese: run て-chain / connector split for medium-length phrases (old gate was >22 chars, so many dictation run-ons were never split). */
-    if (ck >= 4 && p.length > 10) return splitLongJapaneseRunOn(p);
+    /* Japanese: only split when there are more than 4 Japanese script characters; splitter uses connectors / 、 / て-context. */
+    if (ck > 4) return splitLongJapaneseRunOn(p);
     if (ck < 4 && p.length > 56) return splitLongEnglishRunOn(p);
     return [p];
   });
