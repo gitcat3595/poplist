@@ -104,22 +104,37 @@
   align-items: center;
   justify-content: center;
   gap: 0;
+  line-height: 1;
+}
+
+/* Top-row items: same vertical box so JP labels (e.g. Poplistについて vs プラン) line up */
+.uf-footer__nav > a,
+.uf-footer__nav > .uf-footer-about {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  min-height: 1.5em;
 }
 
 .uf-footer__nav a {
   font-size: 10px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.25;
   color: var(--uf-t3);
   text-decoration: none;
-  padding: 2px 0;
+  padding: 0;
   transition: color 0.18s;
 }
+
 .uf-footer__nav > a:not(:last-child)::after,
 .uf-footer__nav > .uf-footer-about > a::after {
   content: '·';
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
   margin: 0 10px;
+  height: 1em;
+  line-height: 1;
   color: var(--uf-t3);
   font-weight: 500;
   pointer-events: none;
@@ -132,7 +147,14 @@
 /* About child menu (footer only) */
 .uf-footer-about {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Trigger link (not in .uf-footer-about-list): same row alignment as other nav links */
+.uf-footer-about > a {
+  display: inline-flex;
+  align-items: center;
 }
 
 .uf-footer-about-list {
