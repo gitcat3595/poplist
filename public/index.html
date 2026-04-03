@@ -3979,7 +3979,7 @@ const LOCAL_TIMING_KW = {
 };
 /* Obligation / future intent — usually Today when no explicit “later” */
 const LOCAL_TIMING_URGENT_EN = /\b(have to|has to|must|need to|got to|gotta)\b/i;
-const LOCAL_TIMING_URGENT_JP = /(しないといけない|しなくてはいけない|なければならない|しなくちゃ|なきゃ|忘れないように|忘れないようにしないと|今すぐ|今日中|急いで)/;
+const LOCAL_TIMING_URGENT_JP = /(しないといけない|しなくてはいけない|なければならない|なきゃいけない|しなくちゃ|忘れないように|忘れないようにしないと|今すぐ|今日中|急いで)/;
 
 // Personal-recipient keywords — used to route "email to mum" → Home instead of Work
 const PERSONAL_RECIPIENT_KW = /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i;
@@ -4026,7 +4026,7 @@ function mergeTinyJapaneseSegments(parts) {
 function splitJapaneseObligationBoundaries(s) {
   if (!s || countCjkChars(s) <= 4) return null;
   let t = s;
-  t = t.replace(/(ないといけない|なければならない|しなくてはいけない|しなくちゃいけない|しなくちゃ)(?=[\u4e00-\u9fff])/g, '$1\u0000');
+  t = t.replace(/(ないといけない|なければならない|なきゃいけない|しなくてはいけない|しなくちゃいけない|しなくちゃ)(?=[\u4e00-\u9fff])/g, '$1\u0000');
   const poly = t.split('\u0000').map(x => x.trim()).filter(x => x.length > 1);
   return poly.length > 1 ? poly : null;
 }
@@ -4183,6 +4183,9 @@ function localClassify(transcript, defaultTiming) {
     .flatMap(seg => seg.split(/\r?\n+/))
     .flatMap(seg =>
       seg.split(/(?:,\s*and\s+|\s+and\s+|\s+then\s+|\s+also\s+|[、，・｜|／/;；]\s*|,\s+)/i)
+    )
+    .flatMap(seg =>
+      seg.split(/\s+(?=(?:need to|have to|has to|must|got to|gotta|going to|will)\s+)/i)
     )
     .map(s => s.replace(/^(and|also|then|next|そして|それから|あと|また|さらに|次に)\s+/i, '').trim())
     .filter(s => s.length > 1);

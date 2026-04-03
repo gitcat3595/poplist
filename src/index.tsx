@@ -56,7 +56,7 @@ Your job:
 2. For each task output:
    - "text": clean concise task in the SAME LANGUAGE as the input. Remove timing words like "today","this week","今日","今週".
    - "timing": exactly one of "Today", "This Week", "Later" — always English.
-     • Today = urgent, due today, ASAP
+     • Today = urgent, due today, ASAP; English: must / have to / need to / got to / going to (when it marks an imminent obligation); Japanese: しないといけない, なければならない, しなくちゃ, 忘れないように（しないと）, 今すぐ, 今日中, etc.
      • This Week = within the week, soon
      • Later = someday, no rush
      Default: "${defaultTiming || 'This Week'}"
@@ -81,6 +81,12 @@ Output: [{"text":"資料をまとめる","timing":"This Week","category":"Work"}
 
 Input (Japanese, no て/connector — still multiple tasks): "レポートを提出する請求書を確認する"
 Output: [{"text":"レポートを提出する","timing":"This Week","category":"Work"},{"text":"請求書を確認する","timing":"This Week","category":"Work"}]
+
+Input (Japanese, obligation phrasing): "請求書を確認しないといけないレポートも提出しなくちゃ"
+Output: [{"text":"請求書を確認する","timing":"Today","category":"Work"},{"text":"レポートも提出する","timing":"Today","category":"Work"}]
+
+Input (English, modals): "buy milk need to call the client must send the invoice"
+Output: [{"text":"Buy milk","timing":"This Week","category":"Home"},{"text":"Call the client","timing":"Today","category":"Work"},{"text":"Send the invoice","timing":"Today","category":"Work"}]
 
 Input (English, no punctuation): "callmomemailclientbuygroceries"
 Output: [{"text":"Call mom","timing":"This Week","category":"Home"},{"text":"Email client","timing":"This Week","category":"Work"},{"text":"Buy groceries","timing":"This Week","category":"Home"}]
