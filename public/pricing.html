@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="/css/unified-footer.css">
+<link rel="stylesheet" href="css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -338,7 +338,7 @@ nav {
 <body>
 
 <nav>
-  <a href="/" class="nav-logo">Poplist<em></em></a>
+  <a href="index.html" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -444,12 +444,12 @@ nav {
 
   <footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module" id="siteFooter" aria-label="Site footer">
     <div class="uf-footer__inner">
-      <a href="/" class="uf-footer__logo">Poplist<em></em></a>
+      <a href="index.html" class="uf-footer__logo">Poplist<em></em></a>
       <nav class="uf-footer__nav" aria-label="Footer">
-        <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
-        <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-        <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+        <a href="index.html" data-en="About" data-ja="Poplistについて">About</a>
+        <a href="plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
+        <a href="terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
       </nav>
       <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
     </div>
@@ -553,10 +553,10 @@ function setLang(lang) {
   });
   const lp = lang === 'ja' ? 'ja' : 'en';
   document.querySelectorAll('a[data-legal-link="privacy"]').forEach(a => {
-    a.href = '/privacy.html?lang=' + lp;
+    a.href = 'privacy.html?lang=' + lp;
   });
   document.querySelectorAll('a[data-legal-link="terms"]').forEach(a => {
-    a.href = '/terms.html?lang=' + lp;
+    a.href = 'terms.html?lang=' + lp;
   });
 }
 window.setLang = setLang;
