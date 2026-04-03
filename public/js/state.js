@@ -5,7 +5,7 @@ const state = {
   bubbleStyle:    'luminous', // luminous | solid | ring | ink
   bubbleColour:   'bc-blue',  // bc-* class
   isProUser:      false,       // set true after Firebase auth confirms Pro; always true when no Firebase config
-  aiClassify:     true,        // PRO — use AI (OpenAI) for classification; false = local keyword-only
+  aiClassify:     true,        // always on — mirrors index.html (API classify; local fallback only)
   greyBubbles:    false,       // FREE — greyscale mode
   burstEffect:    true,        // particle burst on task complete / done screen (persisted)
   lang:           'en',

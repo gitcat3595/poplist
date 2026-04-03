@@ -5853,6 +5853,7 @@ function updateBurstEffectUI() {
     document.getElementById('colourModeGrey')?.classList.add('active');
     document.getElementById('colourModeBlue')?.classList.remove('active');
   }
+  try { localStorage.removeItem('aiClassify'); } catch (_) {}
   updateClassifyModeUI();
   updateBurstEffectUI();
   if (c || s || g) {
