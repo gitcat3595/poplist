@@ -7,6 +7,7 @@ body.legal-page {
   align-items: center;
 }
 
+/* Top bar: logo + language only (back lives in .page-back inside main content) */
 .legal-page nav {
   position: sticky;
   top: 0;
@@ -17,7 +18,8 @@ body.legal-page {
   padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 0;
   background: rgba(236, 238, 242, 0.94);
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
@@ -47,7 +49,35 @@ body.legal-page {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Back link — first row inside main column, not in sticky nav */
+/* Single back row under nav (same width as .wrap) */
+.legal-page-back-row {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  padding: 10px 20px 0;
+  margin: 0 auto;
+}
+
+.legal-page .page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue, #3b82f6);
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legal-page .page-back svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
 }
 
 .legal-page .back {
@@ -72,6 +102,7 @@ body.legal-page {
   max-width: 480px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   box-sizing: border-box;
 }
 
@@ -79,7 +110,7 @@ body.legal-page {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 40px 20px 24px;
+  padding: 28px 20px 24px;
   box-sizing: border-box;
   flex: 1;
   display: flex;

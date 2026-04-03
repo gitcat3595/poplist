@@ -43,7 +43,7 @@ a { text-decoration: none; color: inherit }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
 input, select, textarea { font-family: var(--font) }
 
-/* ── NAV ── */
+/* ── NAV (logo + language only — back is in .page-back below) ── */
 nav {
   position: sticky; top: 0; z-index: 100;
   width: 100%; max-width: 480px;
@@ -54,6 +54,17 @@ nav {
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
   border-bottom: 1px solid var(--border);
 }
+.page-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 600; color: var(--accent);
+  text-decoration: none;
+  padding: 12px 20px 6px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.page-back svg { width: 15px; height: 15px; flex-shrink: 0 }
 .nav-logo {
   font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--t1);
 }
@@ -63,12 +74,7 @@ nav {
   margin-left: 2px; vertical-align: super; font-style: normal;
   box-shadow: 0 0 0 2px var(--accent-glow), 0 0 8px var(--accent);
 }
-.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto }
-.back {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 13px; font-weight: 600; color: var(--accent);
-}
-.back svg { width: 15px; height: 15px; flex-shrink: 0 }
+.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0 }
 .lang-toggle {
   display: flex; background: var(--card); border-radius: var(--rp);
   padding: 3px; border: 1px solid var(--border); gap: 2px;
@@ -293,10 +299,6 @@ nav {
 <body>
 
 <nav>
-  <a class="back" id="backLink" href="plans.html">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    <span id="back-label">Back</span>
-  </a>
   <a href="plans.html" class="nav-logo" id="navPricingLogo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
@@ -307,6 +309,11 @@ nav {
 </nav>
 
 <div class="page">
+
+  <a class="page-back" id="backLink" href="plans.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="back-label">Back</span>
+  </a>
 
   <!-- FORM SCREEN -->
   <div class="form-screen" id="formScreen">

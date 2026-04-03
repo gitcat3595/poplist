@@ -1,0 +1,20 @@
+# Poplist (poplist.site) — routes that must not be public send users to the main landing page.
+# Cloudflare Pages / Netlify-style redirects (copied to dist root by Vite).
+
+# Pre-launch / preview only
+/pre-lp.html           /lp1.html 301
+/pre-index.html        /lp1.html 301
+/pre-settings.html     /lp1.html 301
+
+# Legacy LP alias → canonical landing
+/lp.html               /lp1.html 301
+
+# Internal mocks, demos, and design tools (not for production traffic)
+/lp-playful-mock.html  /lp1.html 301
+/welcome.html          /lp1.html 301
+/app.html              /lp1.html 301
+/settings-mock.html    /lp1.html 301
+/pro-mock.html         /lp1.html 301
+/logo-preview.html     /lp1.html 301
+/design-manual.html     /lp1.html 301
+/demo-persistence.html  /lp1.html 301
