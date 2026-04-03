@@ -168,37 +168,20 @@
     .account-plan-block {
       margin-top: 4px;
     }
-    .account-free-line {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--t2);
-      margin: 0 0 10px;
-      line-height: 1.45;
-    }
     .pro-label-row {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 8px 10px;
       padding: 0 0 4px;
-    }
-    .pro-badge {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 8px;
-      background: var(--blue-lt);
-      border: 1px solid var(--blue-glow);
-      border-radius: 20px;
-      color: var(--blue);
-      letter-spacing: 0.3px;
     }
     .account-pro-line {
       flex: 1;
-      min-width: 140px;
+      min-width: 0;
       font-size: 11px;
       font-weight: 600;
       color: var(--t2);
-      line-height: 1.4;
+      line-height: 1.5;
     }
     .pro-link-btn {
       margin-left: auto;
@@ -405,10 +388,8 @@
         </div>
 
         <div class="account-plan-block" id="planBlockFree">
-          <p class="account-free-line" id="freeCapLine">Free plan: up to 20 tasks.</p>
           <div class="pro-label-row">
-            <span class="pro-badge">PRO</span>
-            <span class="account-pro-line" id="proPitchLine">PRO: unlimited tasks and more features.</span>
+            <span class="account-pro-line" id="planTeaserLine">Free plan: up to 20 tasks only. PRO: unlimited tasks and more features.</span>
             <a class="pro-link-btn" id="seeProChip" href="plans.html?lang=en#compare-chart">See PRO</a>
           </div>
           <a class="account-compare-link" id="compareLink" href="plans.html?lang=en#compare-chart">Free vs PRO comparison</a>
@@ -494,8 +475,7 @@
         sectionSignIn: 'Sign-in details',
         sectionDanger: 'Danger zone',
         signedIn: 'Signed in',
-        freeCap: 'Free plan: up to 20 tasks only.',
-        proPitch: 'PRO: unlimited tasks and more features.',
+        planTeaserLine: 'Free plan: up to 20 tasks only. PRO: unlimited tasks and more features.',
         seePro: 'See PRO',
         compare: 'Free vs PRO comparison',
         proThanks: 'You’re on PRO. Thank you for your support.',
@@ -525,8 +505,7 @@
         sectionSignIn: 'サインイン情報',
         sectionDanger: '危険な操作',
         signedIn: 'サインイン済み',
-        freeCap: 'Freeは20タスクのみ',
-        proPitch: 'PROならタスク無制限・多様な機能',
+        planTeaserLine: 'Freeは20タスクのみ PROならタスク無制限・多様な機能',
         seePro: 'Proを見る',
         compare: '無料とPROを比較',
         proThanks: 'PROプランをご利用中です。ありがとうございます。',
@@ -591,8 +570,7 @@
       document.getElementById('lblSectionSignIn').textContent = t('sectionSignIn');
       document.getElementById('lblSectionDanger').textContent = t('sectionDanger');
       document.getElementById('statusTitle').textContent = t('signedIn');
-      document.getElementById('freeCapLine').textContent = t('freeCap');
-      document.getElementById('proPitchLine').textContent = t('proPitch');
+      document.getElementById('planTeaserLine').textContent = t('planTeaserLine');
       document.getElementById('seeProChip').textContent = t('seePro');
       document.getElementById('compareLink').textContent = t('compare');
       document.getElementById('planBlockPro').textContent = t('proThanks');
