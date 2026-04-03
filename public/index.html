@@ -1026,13 +1026,15 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
    TOAST
 ════════════════════════════════════════ */
 .toast {
-  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(14px);
+  position:fixed; top:50%; left:50%;
+  transform:translate(-50%, -50%) translateY(10px);
   background:var(--black); color:#fff; font-size:13px; font-weight:700;
   padding:10px 20px; border-radius:var(--rp);
   box-shadow:0 4px 20px rgba(0,0,0,.2);
   opacity:0; transition:all .24s ease; pointer-events:none; white-space:nowrap; z-index:300;
+  max-width:min(92vw, 420px); white-space:normal; text-align:center;
 }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0) }
+.toast.show { opacity:1; transform:translate(-50%, -50%) translateY(0) }
 
 /* ════════════════════════════════════════
    SECTION HEAD
@@ -2017,6 +2019,11 @@ GoogleService-Info.plist
                 data-en="Log in"
                 data-ja="ログイン">Log in</button>
       </div>
+      <p id="accountPageHint" style="display:none;margin:10px 0 0;font-size:12px;font-weight:600;color:var(--t2);line-height:1.45">
+        <a href="/account.html" id="accountPageLink" style="color:var(--blue);text-decoration:none;font-weight:800" data-en="Plans, email &amp; password" data-ja="プラン・メール・パスワード">Plans, email &amp; password</a>
+        <span data-en=" · " data-ja=" · "> · </span>
+        <span id="settingsTierHint" data-en="You're on Free." data-ja="現在：無料プラン">You're on Free.</span>
+      </p>
       <!-- keep hidden auth containers for existing JS compatibility -->
       <div id="authSignInRow" style="display:none"></div>
       <div id="authAccountRow" style="display:none"></div>
@@ -2482,6 +2489,8 @@ const FIREBASE_CONFIG = {
 
 // Guest mode: max tasks before sign-in is required for sync
 const GUEST_MAX_TASKS = 10;
+/** Signed-in Free tier (synced); PRO has no cap */
+const FREE_USER_MAX_TASKS = 50;
 
 /* ── Guest task cache — persist tasks in localStorage for phone users ── */
 const TASK_CACHE_KEY = 'pl_tasks';
@@ -2538,9 +2547,50 @@ function showGuestLimitToast() {
       : `Pre-release: ${GUEST_MAX_TASKS} tasks max (saved in this browser only).`);
   } else {
     showToast(state.lang === 'ja'
-      ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで無制限に。`
-      : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in for unlimited & sync.`);
+      ? `ゲストは${GUEST_MAX_TASKS}件まで。サインインで同期と無料${FREE_USER_MAX_TASKS}件まで。`
+      : `Guest limit (${GUEST_MAX_TASKS} tasks). Sign in to sync — Free plan: ${FREE_USER_MAX_TASKS} tasks.`);
   }
+}
+
+function freeUserLimitApplies() {
+  return FB_READY && state.isLoggedIn && !state.isProUser && !PRE_RELEASE;
+}
+
+function showFreeLimitToast() {
+  showToast(state.lang === 'ja'
+    ? `無料プランは${FREE_USER_MAX_TASKS}件まで。PROで無制限に。`
+    : `Free plan: ${FREE_USER_MAX_TASKS} tasks max. Upgrade to PRO for unlimited.`);
+}
+
+/** @returns {{ allowed: number, kind: 'guest'|'free'|'none' }} */
+function getRemainingTaskSlots() {
+  if (guestLimitApplies()) {
+    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
+    return { allowed: Math.max(0, GUEST_MAX_TASKS - count), kind: 'guest' };
+  }
+  if (freeUserLimitApplies()) {
+    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
+    return { allowed: Math.max(0, FREE_USER_MAX_TASKS - count), kind: 'free' };
+  }
+  return { allowed: Infinity, kind: 'none' };
+}
+
+/**
+ * Enforces guest / free caps. Returns trimmed tasks, or null if none can be added (toast shown).
+ * @param {Array} tasks
+ * @param {boolean} [openSettings]
+ */
+function applyTaskLimitToTasks(tasks, openSettings = true) {
+  const { allowed, kind } = getRemainingTaskSlots();
+  if (allowed === Infinity) return tasks;
+  if (allowed === 0) {
+    if (kind === 'guest') showGuestLimitToast();
+    else showFreeLimitToast();
+    if (!PRE_RELEASE && openSettings) openM('settingsModal');
+    return null;
+  }
+  if (tasks.length > allowed) return tasks.slice(0, allowed);
+  return tasks;
 }
 
 // When Firebase is not configured, unlock Pro so the demo works fully
@@ -2647,6 +2697,14 @@ function updateAuthUI(user) {
     if (loginBtn) {
       loginBtn.textContent = state.lang === 'ja' ? 'アカウント' : 'Account';
     }
+    const accountHint = document.getElementById('accountPageHint');
+    const tierHint = document.getElementById('settingsTierHint');
+    if (accountHint) accountHint.style.display = '';
+    if (tierHint) {
+      tierHint.textContent = state.isProUser
+        ? (isJA ? '現在：PRO' : "You're on PRO.")
+        : (isJA ? '現在：無料プラン' : "You're on Free.");
+    }
   } else {
     if (dot)        dot.className       = 'fb-dot disconnected';
     if (statusText) statusText.textContent = state.lang === 'ja' ? '未サインイン' : 'Not signed in';
@@ -2657,6 +2715,8 @@ function updateAuthUI(user) {
     if (loginBtn) {
       loginBtn.textContent = state.lang === 'ja' ? 'ログイン' : 'Log in';
     }
+    const accountHint = document.getElementById('accountPageHint');
+    if (accountHint) accountHint.style.display = 'none';
   }
 
   // Update Service section — three tiers: guest / free / pro
@@ -2689,7 +2749,7 @@ if (FB_READY) {
         tierBadge.textContent = '...';
       }
       localStorage.removeItem(TASK_CACHE_KEY); // Firestore takes over — discard local cache
-      state.isProUser = await fsCheckPro(user.uid) || true; // default true pending backend entitlement
+      state.isProUser = await fsCheckPro(user.uid);
       await mergePendingGuestTasks(user.uid);
       await fsLoadTasks(user.uid);
     } else {
@@ -3403,16 +3463,8 @@ async function submitAddTask() {
       tasks = [{ text, timing: defaultTiming, category: detectCat(text) || 'Other' }];
     }
 
-    if (guestLimitApplies()) {
-      const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
-      const allowed = Math.max(0, GUEST_MAX_TASKS - count);
-      if (allowed === 0) {
-        showGuestLimitToast();
-        if (!PRE_RELEASE) openM('settingsModal');
-        return;
-      }
-      if (tasks.length > allowed) tasks = tasks.slice(0, allowed);
-    }
+    tasks = applyTaskLimitToTasks(tasks);
+    if (tasks === null) return;
 
     addInput.value = '';
     setSelectedCat('Other');
@@ -3812,16 +3864,8 @@ async function processPasteList() {
     return;
   }
 
-  if (guestLimitApplies()) {
-    const count = document.querySelectorAll('.task-item:not(.collapsing)').length;
-    const allowed = Math.max(0, GUEST_MAX_TASKS - count);
-    if (allowed === 0) {
-      showGuestLimitToast();
-      if (!PRE_RELEASE) openM('settingsModal');
-      return;
-    }
-    if (tasks.length > allowed) tasks = tasks.slice(0, allowed);
-  }
+  tasks = applyTaskLimitToTasks(tasks);
+  if (tasks === null) return;
 
   // Make sure task list view is visible
   const homeScreen = document.getElementById('homeScreen');
@@ -4483,26 +4527,21 @@ if (SR) {
       return;
     }
 
-    // Guest / pre-release task limit — cap voice tasks the same as manual add
-    if (guestLimitApplies()) {
-      const current = document.querySelectorAll('.task-item:not(.collapsing)').length;
-      const allowed = Math.max(0, GUEST_MAX_TASKS - current);
-      if (allowed === 0) {
-        showGuestLimitToast();
-        if (!PRE_RELEASE) openM('settingsModal');
-        return;
-      }
-      tasks = tasks.slice(0, allowed);
-    }
+    tasks = applyTaskLimitToTasks(tasks);
+    if (tasks === null) return;
 
     // Stagger tasks into the list
     tasks.forEach((task, i) => {
       setTimeout(() => {
-        makeTaskItem(
+        const item = makeTaskItem(
           task.text     || t,
           task.timing   || state.defaultTiming || 'This Week',
           task.category || 'Other'
         );
+        if (state.isLoggedIn && item) {
+          fsAddTask(task.text || t, task.category || 'Other', task.timing || state.defaultTiming || 'This Week')
+            .then(id => { if (id) item.dataset.fsId = id; });
+        }
       }, i * 90);
     });
 
@@ -5272,7 +5311,7 @@ document.getElementById('emailSignInBtn')?.addEventListener('click', () => {
 });
 document.getElementById('accountLoginBtn')?.addEventListener('click', () => {
   closeSettingsModal();
-  window.location.href = '/auth.html';
+  window.location.href = (FB_READY && state.isLoggedIn) ? '/account.html' : '/auth.html';
 });
 
 document.getElementById('signOutBtn')?.addEventListener('click', () => {

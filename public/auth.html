@@ -37,8 +37,20 @@
     .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
     .btn + .btn, input + input, .field { margin-top: 10px; }
     .sep { text-align: center; color: var(--t2); font-size: 12px; margin: 14px 0; }
-    .row { display: flex; gap: 8px; margin-top: 10px; align-items: stretch; }
-    .row .btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; }
+    .row { margin-top: 10px; }
+    .create-link {
+      margin-top: 10px;
+      width: auto;
+      display: inline-block;
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      cursor: pointer;
+    }
+    .create-link:hover { text-decoration: underline; }
     .note { margin-top: 12px; font-size: 12px; color: var(--t2); text-align: center; min-height: 16px; }
     .back { margin-top: 12px; text-align: center; }
     .back a { color: var(--t2); text-decoration: none; font-size: 12px; }
@@ -110,8 +122,8 @@
     </div>
     <div class="row">
       <button class="btn primary" id="emailSignInBtn">Sign in</button>
-      <button class="btn" id="emailCreateBtn">Create account</button>
     </div>
+    <button class="create-link" id="emailCreateBtn" type="button">Create account</button>
 
     <div class="note" id="msg"></div>
     <div class="back"><a href="/">Back to app</a></div>
