@@ -4017,20 +4017,20 @@ function splitLongEnglishRunOn(s) {
 
 /* After API classify: break any remaining long lines (esp. Japanese) into multiple tasks. */
 function subdivideTaskObjects(tasks, defaultTiming) {
+  // Use the same local splitting logic as manual add / paste list so behaviour is consistent
+  // across browsers (including Safari) and across AI vs local classification.
   return tasks.flatMap(t => {
     const u = (t.text != null ? String(t.text) : '').trim();
     if (!u) return [];
-    const segs = countCjkChars(u) >= 6 ? splitLongJapaneseRunOn(u) : splitLongEnglishRunOn(u);
-    if (segs.length <= 1) return [t];
-    return segs.map(p => {
-      p = p.trim();
-      if (!p.length) return null;
-      return {
-        text: p,
-        timing: localDetectTiming(p, t.timing || defaultTiming),
-        category: localDetectCat(p) || t.category || 'Other'
-      };
-    }).filter(Boolean);
+    const baseTiming   = t.timing || defaultTiming;
+    const baseCategory = t.category || 'Other';
+    const localParts   = localClassify(u, baseTiming);
+    if (!localParts || localParts.length === 0) return [t];
+    return localParts.map(p => ({
+      text: p.text,
+      timing: p.timing || baseTiming,
+      category: p.category || baseCategory
+    }));
   });
 }
 
