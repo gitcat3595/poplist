@@ -1234,6 +1234,33 @@ body.lang-ja .home-how-title {
 .home-how-item p {
   font-size:13px; line-height:1.5; margin:0; color:var(--t2);
 }
+/* PRO row under how-to — accent tagline + settings-matched .pro-link-btn (PROを見る) */
+.home-how-pro-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px 12px;
+  width:100%;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--blue);
+  box-sizing:border-box;
+}
+.home-how-pro-tagline {
+  flex:1 1 180px;
+  margin:0;
+  min-width:0;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.45;
+  color:var(--blue);
+}
+.home-how-pro-row .pro-link-btn {
+  margin-left:auto;
+  flex-shrink:0;
+}
+.home-how-pro-row .pro-link-btn:active { transform:scale(.97) }
 
 
 /* ════════════════════════════════════════
@@ -1614,6 +1641,10 @@ body.lang-ja .home-how-title {
           <p data-en="Tasks fall into Today, This Week, and Later. Just tap to adjust the due date."
              data-ja="タスクは「今日」「今週」「そのうち」にまとまります。あとはタップで期限を調整。">Tasks fall into Today, This Week, and Later. Just tap to adjust the due date.</p>
         </div>
+      </div>
+      <div class="home-how-pro-row">
+        <p class="home-how-pro-tagline" data-en="Make it handier and more you →" data-ja="もっと便利に自分らしくするなら→">Make it handier and more you →</p>
+        <a class="pro-link-btn" id="homeProNudgeLink" href="pricing.html?lang=en#compare-chart" data-en="See PRO" data-ja="PROを見る">See PRO</a>
       </div>
     </section>
   </div>
@@ -4957,6 +4988,7 @@ function syncProPricingHref(lang) {
   const q = 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
   document.getElementById('proPricingLink')?.setAttribute('href', q);
   document.getElementById('footerPlansLink')?.setAttribute('href', q);
+  document.getElementById('homeProNudgeLink')?.setAttribute('href', q);
 }
 
 // Restore language from localStorage and sync all toggles + mic
