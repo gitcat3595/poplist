@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-system.css">
-<link rel="stylesheet" href="/css/unified-footer.css">
+<link rel="stylesheet" href="css/unified-footer.css">
 
 <!-- Firebase SDK (compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -107,6 +107,17 @@ body {
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
   overscroll-behavior-y: none;   /* prevent iOS pull-down rubber-band hiding content */
+}
+/* Nav + main + footer module share one 480px column (matches lp1; avoids unstyled / misaligned footer). */
+.index-shell {
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 0 auto;
 }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit;
          -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
@@ -1540,6 +1551,8 @@ body.lang-ja .home-how-title {
 </head>
 <body>
 
+<div class="index-shell">
+
 <!-- ═══════ NAV ═══════ -->
 <nav class="nav">
   <div class="nav-logo">Poplist<em></em></div>
@@ -1843,6 +1856,8 @@ GoogleService-Info.plist
     <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
 </footer>
+
+</div><!-- /index-shell -->
 
 <!-- ═══════ BOTTOM ACTION BAR (shown only when tasks exist) ═══════ -->
 <div class="bottom-bar" id="bottomBar" style="display:none">
