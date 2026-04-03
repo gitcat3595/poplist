@@ -210,6 +210,16 @@
     }
     .account-compare-link:hover { text-decoration: underline; }
 
+    .account-logout-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+    button.pro-link-btn {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
     .account-pro-note {
       font-size: 12px;
       font-weight: 600;
@@ -389,6 +399,10 @@
           </div>
         </div>
 
+        <div class="account-logout-row">
+          <button type="button" class="pro-link-btn" id="logoutChip">Log out</button>
+        </div>
+
         <div class="account-plan-block" id="planBlockFree">
           <div class="pro-label-row">
             <span class="account-pro-line" id="planTeaserLine">Free plan: up to 20 tasks only. PRO: unlimited tasks and more features.</span>
@@ -479,6 +493,7 @@
         signedIn: 'Signed in',
         planTeaserLine: 'Free plan: up to 20 tasks only. PRO: unlimited tasks and more features.',
         seePro: 'See PRO',
+        logOut: 'Log out',
         compare: 'Free vs PRO comparison',
         proThanks: 'You’re on PRO. Thank you for your support.',
         email: 'Email',
@@ -577,6 +592,7 @@
       document.getElementById('statusTitle').textContent = t('signedIn');
       document.getElementById('planTeaserLine').textContent = t('planTeaserLine');
       document.getElementById('seeProChip').textContent = t('seePro');
+      document.getElementById('logoutChip').textContent = t('logOut');
       document.getElementById('compareLink').textContent = t('compare');
       document.getElementById('planBlockPro').textContent = t('proThanks');
       document.getElementById('lblEmail').textContent = t('email');
@@ -609,6 +625,10 @@
 
     document.getElementById('langEn').addEventListener('click', () => { lang = 'en'; localStorage.setItem('lang', lang); applyCopy(); });
     document.getElementById('langJa').addEventListener('click', () => { lang = 'ja'; localStorage.setItem('lang', lang); applyCopy(); });
+
+    document.getElementById('logoutChip').addEventListener('click', () => {
+      if (auth) auth.signOut();
+    });
 
     function isBlockedPlusAliasEmail(email) {
       if (!email || typeof email !== 'string') return false;

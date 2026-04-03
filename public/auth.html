@@ -60,6 +60,10 @@
       cursor: pointer;
     }
     .create-link:hover { text-decoration: underline; }
+    .forgot-row {
+      margin-top: 6px;
+      text-align: right;
+    }
     .note { margin-top: 12px; font-size: 12px; color: var(--t2); text-align: center; min-height: 16px; }
     .back { margin-top: 12px; text-align: center; }
     .back a { color: var(--t2); text-decoration: none; font-size: 12px; }
@@ -130,6 +134,9 @@
         </svg>
       </button>
     </div>
+    <div class="forgot-row">
+      <button type="button" class="create-link" id="forgotPwdBtn">Forgot password?</button>
+    </div>
     <div class="row">
       <button class="btn primary" id="emailSignInBtn">Sign in</button>
     </div>
@@ -154,12 +161,63 @@
     const msg = document.getElementById('msg');
     const toast = document.getElementById('toast');
     const say = (t) => { msg.textContent = t || ''; };
-    const showToast = (text) => {
+    const showToast = (text, ms) => {
       if (!toast) return;
       toast.textContent = text;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2200);
+      setTimeout(() => toast.classList.remove('show'), typeof ms === 'number' ? ms : 2200);
     };
+    const _qLang = new URLSearchParams(location.search).get('lang');
+    let LANG = 'en';
+    if (_qLang === 'ja') LANG = 'ja';
+    else if (_qLang === 'en') LANG = 'en';
+    else if (localStorage.getItem('lang') === 'ja') LANG = 'ja';
+    const STR = {
+      en: {
+        forgotPwd: 'Forgot password?',
+        resetSent: 'Check your email for a reset link.',
+        enterEmailFirst: 'Enter your email address first.',
+        title: 'Sign in',
+        sub: 'Use Google or your email address.',
+        emailPh: 'Email address',
+        pwPh: 'Password (6+ characters)',
+        google: 'Continue with Google',
+        or: 'or',
+        signIn: 'Sign in',
+        create: 'Create account',
+        back: 'Back to app',
+      },
+      ja: {
+        forgotPwd: 'パスワードをお忘れですか？',
+        resetSent: '再設定用のリンクをメールで送信しました。受信箱をご確認ください。',
+        enterEmailFirst: '先にメールアドレスを入力してください。',
+        title: 'サインイン',
+        sub: 'Googleまたはメールアドレスで続行します。',
+        emailPh: 'メールアドレス',
+        pwPh: 'パスワード（6文字以上）',
+        google: 'Googleで続行',
+        or: 'または',
+        signIn: 'サインイン',
+        create: 'アカウントを作成',
+        back: 'アプリに戻る',
+      }
+    };
+    const tr = (k) => (STR[LANG] && STR[LANG][k]) || STR.en[k];
+
+    function applyAuthLang() {
+      document.documentElement.lang = LANG === 'ja' ? 'ja' : 'en';
+      document.getElementById('forgotPwdBtn').textContent = tr('forgotPwd');
+      document.querySelector('h1').textContent = tr('title');
+      document.querySelector('p.sub').textContent = tr('sub');
+      document.getElementById('email').placeholder = tr('emailPh');
+      document.getElementById('password').placeholder = tr('pwPh');
+      document.getElementById('googleBtn').querySelector('span:last-child').textContent = tr('google');
+      document.querySelector('.sep').textContent = tr('or');
+      document.getElementById('emailSignInBtn').textContent = tr('signIn');
+      document.getElementById('emailCreateBtn').textContent = tr('create');
+      document.querySelector('.back a').textContent = tr('back');
+    }
+
     let auth = null;
 
     try {
@@ -174,6 +232,8 @@
         say('Unable to connect to sign-in service. Please try again in a moment.');
       }
     }
+
+    applyAuthLang();
 
     if (auth) {
       auth.onAuthStateChanged((user) => {
@@ -230,6 +290,29 @@
     document.getElementById('emailSignInBtn').addEventListener('click', () => emailAuth(false));
     document.getElementById('emailCreateBtn').addEventListener('click', () => emailAuth(true));
 
+    // Reset link is emailed by Firebase (Authentication → Templates in console), not your own SMTP.
+    document.getElementById('forgotPwdBtn').addEventListener('click', async () => {
+      if (!auth) return;
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        say(tr('enterEmailFirst'));
+        return;
+      }
+      if (isBlockedPlusAliasEmail(email)) {
+        say(LANG === 'ja'
+          ? '「+」付きのメールは使えません。'
+          : "Email addresses with '+' in the name (e.g. name+tag@mail.com) aren't allowed.");
+        return;
+      }
+      say('');
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showToast(tr('resetSent'), 3800);
+      } catch (e) {
+        say(mapError(e.code));
+      }
+    });
+
     // Password show / hide
     document.getElementById('pwToggle').addEventListener('click', () => {
       const pw = document.getElementById('password');
@@ -242,9 +325,9 @@
     function mapError(code) {
       switch (code) {
         case 'auth/invalid-email':
-          return 'Please enter a valid email address.';
+          return LANG === 'ja' ? '有効なメールアドレスを入力してください。' : 'Please enter a valid email address.';
         case 'auth/user-not-found':
-          return 'No account found for this email.';
+          return LANG === 'ja' ? 'このメールのアカウントが見つかりません。' : 'No account found for this email.';
         case 'auth/wrong-password':
           return 'Incorrect password. Try again or reset it.';
         case 'auth/email-already-in-use':
