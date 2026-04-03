@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poplist — Plans</title>
+<link rel="canonical" href="plans.html">
+</head>
+<body>
+  <p style="font-family:system-ui,sans-serif;padding:24px;text-align:center;color:#444">
+    Opening plans… <a id="plansContinue" href="pricing.html#compare-chart">Continue</a>
+  </p>
+  <script>
+    (function () {
+      var search = location.search || '';
+      var hash = location.hash || '#compare-chart';
+      var target = 'pricing.html' + search + hash;
+      var a = document.getElementById('plansContinue');
+      if (a) a.href = target;
+      location.replace(target);
+    })();
+  </script>
+</body>
+</html>

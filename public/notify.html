@@ -278,11 +278,11 @@ nav {
 <body>
 
 <nav>
-  <a class="back" id="backLink" href="pricing.html">
+  <a class="back" id="backLink" href="plans.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     <span id="back-label">Back</span>
   </a>
-  <a href="pricing.html" class="nav-logo" id="navPricingLogo">Poplist<em></em></a>
+  <a href="plans.html" class="nav-logo" id="navPricingLogo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -425,7 +425,7 @@ nav {
     <a href="/" class="uf-footer__logo">Poplist<em></em></a>
     <nav class="uf-footer__nav" aria-label="Footer">
       <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
       <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
       <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
     </nav>
@@ -442,7 +442,7 @@ let currentLang = 'en';
 
 function notifyPricingHref() {
   const l = currentLang === 'ja' ? 'ja' : 'en';
-  return 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
+  return 'plans.html?lang=' + encodeURIComponent(l) + '#compare-chart';
 }
 
 function syncNotifyNavHrefs() {
@@ -452,7 +452,7 @@ function syncNotifyNavHrefs() {
   if (back) back.href = h;
   if (logo) logo.href = h;
   const fp = document.getElementById('footerPlansLink');
-  if (fp) fp.href = '/pricing.html?lang=' + encodeURIComponent(currentLang === 'ja' ? 'ja' : 'en') + '#compare-chart';
+  if (fp) fp.href = '/plans.html?lang=' + encodeURIComponent(currentLang === 'ja' ? 'ja' : 'en') + '#compare-chart';
 }
 
 function updateSubmitConsentNote() {

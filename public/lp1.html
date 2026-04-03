@@ -2195,7 +2195,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     <a href="/" class="uf-footer__logo">Poplist<em></em></a>
     <nav class="uf-footer__nav" aria-label="Footer">
       <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
       <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
       <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
     </nav>
@@ -2845,7 +2845,7 @@ function setLang(lang) {
     var t = chip.getAttribute('data-timing') || 'This Week';
     chip.textContent = lpExpTimingLabel(t);
   });
-  var ph = '/pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
+  var ph = '/plans.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
   var lp1Foot = document.getElementById('footerPlansLink');
   if (lp1Foot) lp1Foot.href = ph;
   var lp = lang === 'ja' ? 'ja' : 'en';

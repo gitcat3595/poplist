@@ -547,7 +547,7 @@ nav {
       <div class="val-yes">✓</div>
     </div>
 
-    <a class="compare-pricing-link" id="htuComparePricing" href="/pricing.html" data-en="See full pricing →" data-ja="料金の詳細を見る →">See full pricing →</a>
+    <a class="compare-pricing-link" id="htuComparePricing" href="/plans.html" data-en="See full pricing →" data-ja="料金の詳細を見る →">See full pricing →</a>
   </div>
 
   <!-- FAQ -->
@@ -608,7 +608,7 @@ nav {
       <div class="plan-footer-name" data-en="Free" data-ja="無料">Free</div>
       <div class="plan-footer-price" data-en="$0" data-ja="$0">$0</div>
       <div class="plan-footer-note" data-en="10 tasks · 2 themes · basic stats" data-ja="10タスク · 2テーマ · 基本統計">10 tasks · 2 themes · basic stats</div>
-      <a href="pricing.html" class="plan-footer-cta" id="htuPlanFree">
+      <a href="plans.html" class="plan-footer-cta" id="htuPlanFree">
         <span data-en="Free plan" data-ja="無料プラン">Free plan</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
@@ -636,7 +636,7 @@ nav {
       <a href="/" class="uf-footer__logo">Poplist<em></em></a>
       <nav class="uf-footer__nav" aria-label="Footer">
         <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
         <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
         <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
       </nav>
@@ -680,7 +680,7 @@ function setLang(lang) {
     const txt = el.getAttribute('data-' + lang);
     if (txt) el.innerHTML = txt;
   });
-  const ph = '/pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
+  const ph = '/plans.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
   const nw = '/notify.html?plan=monthly&lang=' + encodeURIComponent(lang);
   document.getElementById('htuComparePricing')?.setAttribute('href', ph);
   document.getElementById('htuPlanFree')?.setAttribute('href', ph);

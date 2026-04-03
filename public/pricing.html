@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Poplist — Plans & Pricing</title>
+<title>Poplist — Plans</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -252,15 +252,15 @@ nav {
 
 /* ── PRO coming (pricing hidden until launch) ── */
 .pro-coming-block {
-  margin: 16px 16px 0;
+  margin: 28px 16px 0;
   text-align: center;
-  padding: 0 4px 8px;
+  padding: 0 4px 18px;
 }
 .pro-coming-msg {
   font-size: 14px;
   color: var(--t2);
   line-height: 1.65;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 /* ── LIFETIME BLOCK ── */
@@ -326,6 +326,10 @@ nav {
   padding: 24px 24px 0; line-height: 1.55;
 }
 
+#siteFooter {
+  margin-top: 14px;
+}
+
 /* ── HIDDEN STATES ── */
 .plan-block { display: none }
 .plan-block.active { display: block }
@@ -348,20 +352,19 @@ nav {
   <!-- HERO -->
   <div class="hero">
     <div class="hero-badge">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
-      <span data-en="Poplist PRO" data-ja="Poplist PRO">Poplist PRO</span>
+      <span data-en="Customise to fit your style" data-ja="カスタマイズしてもっと便利に">Customise to fit your style</span>
     </div>
     <h1 class="hero-title">
-      <span data-en="Free vs PRO" data-ja="無料 vs PRO">Free vs PRO</span>
+      <span data-en="Learn about PRO" data-ja="より使いやすいPRO">Learn about PRO</span>
     </h1>
     <p class="hero-sub">
-      <span data-en="Compare features below. PRO pricing will be announced when it launches — get notified when it’s ready." data-ja="下の表で機能を比較できます。PROの料金は公開時にお知らせします。">Compare features below. PRO pricing will be announced when it launches — get notified when it’s ready.</span>
+      <span data-en="Choose useful features and rich styles.<br>PRO is coming soon." data-ja="便利な機能や豊富なスタイルが。<br>PROプランは近日公開予定。">Choose useful features and rich styles.<br>PRO is coming soon.</span>
     </p>
   </div>
 
   <!-- COMPARISON TABLE -->
   <div class="section-label">
-    <span data-en="FREE vs PRO" data-ja="無料 vs PRO">FREE vs PRO</span>
+    <span data-en="Learn about PRO" data-ja="PROを詳しく見る">Learn about PRO</span>
   </div>
   <!-- Populated by compare-chart.js -->
   <div class="compare-wrap" id="compare-chart"></div>
@@ -369,9 +372,9 @@ nav {
   <!-- PRO pricing: amounts hidden until launch -->
   <div class="pro-coming-block">
     <p class="pro-coming-msg">
-      <span data-en="PRO pricing isn’t public yet. We’ll email you when it launches — no spam." data-ja="PROの料金はまだ公開していません。リリース時にお知らせします（スパムはしません）。">PRO pricing isn’t public yet. We’ll email you when it launches — no spam.</span>
+      <span data-en="Be first to know when PRO launches.<br>Limited early access updates are here." data-ja="PROプランが公開された際にいち早くお知らせします。<br>人数限定の先行公開はこちらから">Be first to know when PRO launches.<br>Limited early access updates are here.</span>
     </p>
-    <button type="button" class="price-cta-btn" onclick="goNotify('monthly')" data-en="Get notified →" data-ja="お知らせを受け取る →">Get notified →</button>
+    <button type="button" class="price-cta-btn" onclick="goNotify('monthly')" data-en="Join early launch waitlist" data-ja="先行公開に登録する">Join early launch waitlist</button>
   </div>
 
   <!-- Legacy price UI (hidden; restore when PRO launches) -->
@@ -439,16 +442,12 @@ nav {
     </div>
   </div>
 
-  <p class="legal-note" data-en="When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service." data-ja="PRO公開時はStripeで決済できる予定です。プライバシーポリシーと利用規約をご確認ください。">
-    When PRO launches, you’ll be able to subscribe or buy a lifetime plan via Stripe. See Privacy Policy and Terms of Service.
-  </p>
-
   <footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module" id="siteFooter" aria-label="Site footer">
     <div class="uf-footer__inner">
       <a href="/" class="uf-footer__logo">Poplist<em></em></a>
       <nav class="uf-footer__nav" aria-label="Footer">
         <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-        <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+        <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
         <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
         <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
       </nav>
@@ -458,31 +457,58 @@ nav {
 
 </div>
 
-<script type="module">
+<script>
 let currentLang = 'en';
 
-// Relative URL works from /pricing.html next to /js/; fails on file:// — use a local server
-try {
-  const { renderCompareChart, COMPARE_FEATURES } = await import('./js/compare-chart.js');
-  const qp = new URLSearchParams(location.search);
-  const ql = qp.get('lang');
-  if (ql === 'ja' || ql === 'en') currentLang = ql;
-  else {
-    const stored = localStorage.getItem('lang');
-    if (stored === 'ja' || stored === 'en') currentLang = stored;
-  }
-  renderCompareChart('#compare-chart', COMPARE_FEATURES, currentLang);
-  window._compareFeatures = COMPARE_FEATURES;
-  window._renderCompareChart = renderCompareChart;
-} catch (err) {
-  console.error('compare-chart:', err);
-  const box = document.getElementById('compare-chart');
-  if (box) {
-    box.innerHTML = '<p style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px;line-height:1.5">Comparison table needs <strong>HTTP</strong> (e.g. run <code>npm run dev</code> or open via your deployed URL). Opening HTML as a <code>file://</code> link blocks loading the script module.</p>';
-  }
-  window._compareFeatures = [];
-  window._renderCompareChart = function () {};
+// Inline comparison renderer so this page also works on file://
+const COMPARE_FEATURES = [
+  { icon: 'tasks',    name: 'Tasks',              nameJa: 'タスク数',               desc: 'Total number of tasks',                    descJa: 'タスクの合計数',                    free: '30', pro: '∞' },
+  { icon: 'palette',  name: 'Colour palettes',    nameJa: 'カラーパレット',         desc: 'App theme colours',                        descJa: 'アプリテーマカラー',                 free: '2',  pro: '13' },
+  { icon: 'rollover', name: 'Task rollover',      nameJa: 'タスク繰越',             desc: 'Carry unfinished tasks forward',           descJa: '未完了タスクを翌日へ繰越',           free: true, pro: true },
+  { icon: 'category', name: 'Customise Category', nameJa: 'カテゴリのカスタマイズ', desc: 'Rename Work, Home, etc.',                  descJa: '仕事、家など名前を変更',             free: false, pro: true },
+  { icon: 'keywords', name: 'Custom keywords',    nameJa: 'カスタムキーワード',     desc: 'Save keywords for better categorisation',  descJa: 'キーワードを保存してより正確に分類', free: false, pro: true },
+  { icon: 'export',   name: 'Export tasks',       nameJa: 'タスクのエクスポート',   desc: 'Download your list to paste',              descJa: 'リストをダウンロードして貼り付け',   free: false, pro: true },
+  { icon: 'cloud',    name: 'Cloud sync',         nameJa: 'クラウド同期',           desc: 'Sync across all devices',                  descJa: 'すべてのデバイスで同期',             free: false, pro: true },
+];
+
+function iconHTML(icon) {
+  if (icon === 'palette') return '<i class="fa-solid fa-palette" aria-hidden="true"></i>';
+  if (icon === 'rollover') return '<i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>';
+  if (icon === 'tasks') return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>';
+  if (icon === 'category') return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>';
+  if (icon === 'keywords') return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>';
+  if (icon === 'export') return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+  if (icon === 'cloud') return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>';
+  return '';
 }
+
+function renderVal(v, isPro) {
+  if (v === true) return '<div class="compare-val"><span class="val-check">✓</span></div>';
+  if (v === false) return '<div class="compare-val"><span class="val-dash">—</span></div>';
+  return '<div class="compare-val"><span class="' + (isPro ? 'val-pro' : 'val-free') + '">' + v + '</span></div>';
+}
+
+function renderCompareChart(selector, features, lang) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  const t = (en, ja) => (lang === 'ja' ? ja : en);
+  const header = '<div class="compare-header"><div class="compare-header-label">' + t('Feature', '機能') + '</div><div class="compare-col-head"><div class="col-plan-name">' + t('Free', '無料') + '</div></div><div class="compare-col-head"><div class="col-plan-name col-plan-pro">PRO</div></div></div>';
+  const rows = features.map(function (f) {
+    return '<div class="compare-row"><div class="feat-row-left"><div class="feat-icon">' + iconHTML(f.icon) + '</div><div class="feat-info"><div class="feat-name">' + t(f.name, f.nameJa) + '</div><div class="feat-desc-small">' + t(f.desc, f.descJa) + '</div></div></div>' + renderVal(f.free, false) + renderVal(f.pro, true) + '</div>';
+  }).join('');
+  el.innerHTML = header + rows;
+}
+
+const qp = new URLSearchParams(location.search);
+const ql = qp.get('lang');
+if (ql === 'ja' || ql === 'en') currentLang = ql;
+else {
+  const stored = localStorage.getItem('lang');
+  if (stored === 'ja' || stored === 'en') currentLang = stored;
+}
+window._compareFeatures = COMPARE_FEATURES;
+window._renderCompareChart = renderCompareChart;
+renderCompareChart('#compare-chart', COMPARE_FEATURES, currentLang);
 
 // ── Accent colour sync from main app ──
 (function applyAccent() {
@@ -515,7 +541,7 @@ function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   const fp = document.getElementById('footerPlansLink');
-  if (fp) fp.setAttribute('href', 'pricing.html?lang=' + encodeURIComponent(lang) + '#compare-chart');
+  if (fp) fp.setAttribute('href', 'plans.html?lang=' + encodeURIComponent(lang) + '#compare-chart');
   // Re-render the chart in the new language
   if (window._compareFeatures && window._compareFeatures.length) {
     window._renderCompareChart('#compare-chart', window._compareFeatures, lang);

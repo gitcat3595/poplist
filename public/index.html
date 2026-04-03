@@ -1643,7 +1643,7 @@ body.lang-ja .home-how-title {
       </div>
       <div class="home-how-pro-row">
         <p class="home-how-pro-tagline" data-en="Customise for more convenience →" data-ja="カスタマイズしてもっと便利に→">Customise for more convenience →</p>
-        <a class="pro-link-btn" id="homeProNudgeLink" href="pricing.html?lang=en#compare-chart" data-en="See PRO" data-ja="PROを見る">See PRO</a>
+        <a class="pro-link-btn" id="homeProNudgeLink" href="plans.html?lang=en#compare-chart" data-en="See PRO" data-ja="PROを見る">See PRO</a>
       </div>
     </section>
   </div>
@@ -1883,11 +1883,11 @@ GoogleService-Info.plist
         <span class="uf-footer-about-list" id="footerAboutList">
           <a href="/" data-en="What is Poplist" data-ja="Poplistについて">What is Poplist</a>
           <!-- <a href="/lp1.html" data-en="How to use" data-ja="使い方">How to use</a> -->
-          <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+          <a href="/plans.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
           <a href="/#download" data-en="Download" data-ja="ダウンロード">Download</a>
         </span>
       </span>
-      <a href="/pricing.html?lang=en#compare-chart" data-en="Plans" data-ja="プラン">Plans</a>
+      <a href="/plans.html?lang=en#compare-chart" data-en="Plans" data-ja="プラン">Plans</a>
       <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
       <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
     </nav>
@@ -2071,7 +2071,7 @@ GoogleService-Info.plist
       <div class="pro-label-row">
         <span class="settings-section-label" style="margin:0;padding:0" data-en="Customise" data-ja="カスタマイズ">Customise</span>
         <span class="pro-badge">PRO</span>
-        <a class="pro-link-btn" id="proPricingLink" href="pricing.html" data-en="Get PRO" data-ja="PROを見る">Get PRO</a>
+        <a class="pro-link-btn" id="proPricingLink" href="plans.html" data-en="Get PRO" data-ja="PROを見る">Get PRO</a>
       </div>
       <div class="pro-wrap" id="proPickerWrap">
         <div class="pro-block">
@@ -4955,7 +4955,7 @@ void loadCustomCopyFromExcel();
 
 function syncProPricingHref(lang) {
   const l = lang === 'ja' ? 'ja' : 'en';
-  const q = 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
+  const q = 'plans.html?lang=' + encodeURIComponent(l) + '#compare-chart';
   document.getElementById('proPricingLink')?.setAttribute('href', q);
   document.getElementById('footerPlansLink')?.setAttribute('href', q);
   document.getElementById('homeProNudgeLink')?.setAttribute('href', q);
@@ -5466,7 +5466,7 @@ document.getElementById('closeAbout')?.addEventListener('click', () => closeM('a
 document.getElementById('plansLinkRow')?.addEventListener('click', () => {
   closeSettingsModal();
   const l = state.lang === 'ja' ? 'ja' : 'en';
-  window.location.href = 'pricing.html?lang=' + encodeURIComponent(l) + '#compare-chart';
+  window.location.href = 'plans.html?lang=' + encodeURIComponent(l) + '#compare-chart';
 });
 document.getElementById('downloadLinkRow')?.addEventListener('click', () => openM('aboutModal'));
 document.getElementById('howToUseLinkRow')?.addEventListener('click', () => {
