@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poplist — Share assets preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+JP:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1d24;
+      --card: #252a33;
+      --border: #3d4554;
+      --t1: #f1f5f9;
+      --t2: #94a3b8;
+      --blue: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      padding: 40px 24px 80px;
+      line-height: 1.5;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .lede {
+      font-size: 14px;
+      color: var(--t2);
+      margin-bottom: 36px;
+      max-width: 640px;
+    }
+    .lede code {
+      font-size: 12px;
+      background: var(--card);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--t2);
+      margin-bottom: 16px;
+    }
+    .tagline-row {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    @media (min-width: 720px) {
+      .tagline-row { grid-template-columns: 1fr 1fr; }
+    }
+    .tagline-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+    .tagline-card .label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--t2);
+      margin-bottom: 8px;
+    }
+    .tagline-card p {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--t1);
+      letter-spacing: -0.02em;
+    }
+    .tagline-card.ja p {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+    }
+    .icon-sizes {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 24px;
+    }
+    .icon-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .icon-box span {
+      font-size: 11px;
+      color: var(--t2);
+      font-weight: 600;
+    }
+    .icon-box img {
+      display: block;
+      border-radius: 22%;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .og-grid {
+      display: grid;
+      gap: 24px;
+    }
+    @media (min-width: 900px) {
+      .og-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .og-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .og-card .og-head {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--t2);
+      border-bottom: 1px solid var(--border);
+    }
+    .og-card .og-img {
+      line-height: 0;
+      background: #111;
+    }
+    .og-card .og-img img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .note {
+      margin-top: 32px;
+      padding: 16px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      background: rgba(59, 130, 246, 0.08);
+      font-size: 13px;
+      color: var(--t2);
+      max-width: 720px;
+    }
+    .note strong { color: var(--t1); font-weight: 700; }
+    a.back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+    a.back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Back to app</a>
+    <h1>Share &amp; home-screen assets (preview)</h1>
+    <p class="lede">
+      Review taglines, the <strong>P</strong> bubble app icon, and Open Graph images before wiring them into
+      <code>index.html</code> meta tags and <code>manifest.json</code>.
+      Twitter and Facebook usually expect <strong>PNG or JPG</strong> for <code>og:image</code>; export these SVGs at 1200×630 when you are happy with them.
+    </p>
+
+    <section>
+      <p class="section-title">Taglines (copy / meta)</p>
+      <div class="tagline-row">
+        <div class="tagline-card">
+          <div class="label">English</div>
+          <p>Poplist ｜ Voice first task list generator</p>
+        </div>
+        <div class="tagline-card ja">
+          <div class="label">日本語</div>
+          <p>Poplist ｜ 声でつくるタスクリストツール</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-title">App icon — round bubble “P” (SVG)</p>
+      <p class="lede" style="margin-bottom:16px">Use for favicon, PWA manifest, and <code>apple-touch-icon</code>. Same file scales cleanly.</p>
+      <div class="icon-sizes">
+        <div class="icon-box">
+          <img src="/assets/icon-p-bubble.svg" width="48" height="48" alt="48px">
+          <span>48 px</span>
+        </div>
+        <div class="icon-box">
+          <img src="/assets/icon-p-bubble.svg" width="64" height="64" alt="64px">
+          <span>64 px</span>
+        </div>
+        <div class="icon-box">
+          <img src="/assets/icon-p-bubble.svg" width="180" height="180" alt="180px">
+          <span>180 px (iOS home)</span>
+        </div>
+        <div class="icon-box">
+          <img src="/assets/icon-p-bubble.svg" width="192" height="192" alt="192px">
+          <span>192 px (manifest)</span>
+        </div>
+        <div class="icon-box">
+          <img src="/assets/icon-p-bubble.svg" width="512" height="512" alt="512px">
+          <span>512 px</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-title">Open Graph / Twitter cards (1200 × 630 SVG)</p>
+      <div class="og-grid">
+        <div class="og-card">
+          <div class="og-head">English — /assets/og-share-en.svg</div>
+          <div class="og-img">
+            <img src="/assets/og-share-en.svg" width="1200" height="630" alt="OG English">
+          </div>
+        </div>
+        <div class="og-card">
+          <div class="og-head">日本語 — /assets/og-share-ja.svg</div>
+          <div class="og-img">
+            <img src="/assets/og-share-ja.svg" width="1200" height="630" alt="OG Japanese">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">
+      <strong>Next step.</strong> After you approve this page, we can add
+      <code>&lt;meta property="og:title"&gt;</code>,
+      <code>og:description</code>,
+      <code>og:image</code>,
+      <code>twitter:card</code>,
+      and point <code>manifest.json</code> icons at exported PNGs (or keep SVG where browsers allow).
+    </p>
+  </div>
+</body>
+</html>

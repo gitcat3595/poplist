@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Poplist">
+  <defs>
+    <linearGradient id="ogbgja" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0F2F6"/>
+      <stop offset="100%" stop-color="#E2E5EB"/>
+    </linearGradient>
+    <radialGradient id="ogbubbleja" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="55%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </radialGradient>
+    <filter id="ogshja" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="24" flood-color="#000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#ogbgja)"/>
+  <circle cx="220" cy="315" r="118" fill="url(#ogbubbleja)" filter="url(#ogshja)"/>
+  <text x="220" y="360" text-anchor="middle" font-family="system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="128" font-weight="800" fill="#ffffff">P</text>
+  <text x="400" y="275" font-family="system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="56" font-weight="800" fill="#111111" letter-spacing="-0.03em">Poplist</text>
+  <text x="400" y="345" font-family="system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="30" font-weight="600" fill="#4B5563">&#65372; &#22768;&#12391;&#12388;&#12367;&#12427;&#12479;&#12473;&#12463;&#12522;&#12473;&#12488;&#12484;&#12540;&#12523;</text>
+  <text x="400" y="395" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="#9CA3AF">poplist.site</text>
+</svg>
