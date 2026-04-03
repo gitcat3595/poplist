@@ -46,7 +46,7 @@ export const COMPARE_FEATURES = [
     icon: 'tasks',
     name: 'Tasks',           nameJa: 'タスク数',
     desc: 'Total number of tasks', descJa: 'タスクの合計数',
-    free: '30', pro: '∞',
+    free: '50', pro: '∞',
   },
   {
     icon: 'palette',

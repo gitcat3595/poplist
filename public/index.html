@@ -2022,7 +2022,7 @@ GoogleService-Info.plist
       <p id="accountPageHint" style="display:none;margin:10px 0 0;font-size:12px;font-weight:600;color:var(--t2);line-height:1.45">
         <a href="/account.html" id="accountPageLink" style="color:var(--blue);text-decoration:none;font-weight:800" data-en="Plans, email &amp; password" data-ja="プラン・メール・パスワード">Plans, email &amp; password</a>
         <span data-en=" · " data-ja=" · "> · </span>
-        <span id="settingsTierHint" data-en="You're on Free." data-ja="現在：無料プラン">You're on Free.</span>
+        <span id="settingsTierHint">You're on Free.</span>
       </p>
       <!-- keep hidden auth containers for existing JS compatibility -->
       <div id="authSignInRow" style="display:none"></div>
@@ -5054,6 +5054,7 @@ function syncProPricingHref(lang) {
   document.getElementById('proPricingLink')?.setAttribute('href', q);
   document.getElementById('footerPlansLink')?.setAttribute('href', q);
   document.getElementById('homeProNudgeLink')?.setAttribute('href', q);
+  document.getElementById('accountPageLink')?.setAttribute('href', '/account.html?lang=' + encodeURIComponent(l));
 }
 
 // Restore language from localStorage and sync all toggles + mic
@@ -5989,6 +5990,12 @@ async function applyLang(lang) {
       el.innerHTML = txt; // only used for mic-modal-hint which has <br>
     }
   });
+  const tierHintSync = document.getElementById('settingsTierHint');
+  if (tierHintSync && state.isLoggedIn) {
+    tierHintSync.textContent = state.isProUser
+      ? (isJA ? '現在：PRO' : "You're on PRO.")
+      : (isJA ? '現在：無料プラン' : "You're on Free.");
+  }
   // Special: input placeholder
   const inp = document.getElementById('addTaskInput');
   if (inp) inp.placeholder = isJA ? inp.dataset.placeholderJa : inp.dataset.placeholderEn;
