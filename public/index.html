@@ -4026,7 +4026,8 @@ function mergeTinyJapaneseSegments(parts) {
 function splitJapaneseObligationBoundaries(s) {
   if (!s || countCjkChars(s) <= 4) return null;
   let t = s;
-  t = t.replace(/(ないといけない|なければならない|なきゃいけない|しなくてはいけない|しなくちゃいけない|しなくちゃ)(?=[\u4e00-\u9fff])/g, '$1\u0000');
+  /* Next segment starts with kanji/katakana (avoids splitting しなくちゃ+だめ) */
+  t = t.replace(/(ないといけない|なければならない|なきゃいけない|しなくてはいけない|しなくちゃいけない|しなくちゃ)(?=[\u4e00-\u9fff\u30a1-\u30ff])/g, '$1\u0000');
   const poly = t.split('\u0000').map(x => x.trim()).filter(x => x.length > 1);
   return poly.length > 1 ? poly : null;
 }
