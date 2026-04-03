@@ -1207,14 +1207,14 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   z-index: 2;
 }
 
-/* ── PHILOSOPHY — translucent blue “bubble” (old CTA vibe + stronger transparency) ── */
-.lp-philosophy {
+/* ── Design-philosophy-section (landmark) + design-philosophy-module (bubble card) ── */
+.design-philosophy-section {
   width: 100%;
   background: var(--bg);
   padding: 16px 16px 32px;
   position: relative;
 }
-.lp-philo-bubble {
+.design-philosophy-module {
   max-width: 448px;
   margin: 0 auto;
   border-radius: 26px;
@@ -1238,7 +1238,7 @@ body.lang-ja .ci-tab { font-size: 5.6px }
     0 10px 26px rgba(15,23,42,.08),
     0 1px 0 rgba(255,255,255,.9) inset;
 }
-.lp-philo-bubble::before {
+.design-philosophy-module::before {
   content: '';
   position: absolute;
   top: -34px;
@@ -1250,7 +1250,7 @@ body.lang-ja .ci-tab { font-size: 5.6px }
   pointer-events: none;
   animation: lpPhiloFloatA 5s ease-in-out infinite;
 }
-.lp-philo-bubble::after {
+.design-philosophy-module::after {
   content: '';
   position: absolute;
   bottom: 92px;
@@ -1980,9 +1980,9 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
 
   </section><!-- /demo-section -->
 
-  <!-- ── DESIGN PHILOSOPHY ── -->
-  <section class="lp-philosophy" aria-labelledby="lp-philo-heading">
-    <div class="lp-philo-bubble">
+  <!-- Design-philosophy-section: WHY POPLIST + decision-fatigue headline. design-philosophy-module: translucent bubble + cards. -->
+  <section class="design-philosophy-section" data-lp-section="design-philosophy" aria-labelledby="lp-philo-heading">
+    <div class="design-philosophy-module">
     <div class="lp-philo-inner">
       <p class="lp-philo-kicker" data-en="WHY POPLIST" data-ja="WHY POPLIST">WHY POPLIST</p>
       <h2 id="lp-philo-heading" class="lp-philo-title" data-en="Designed to minimise<br>decision fatigue" data-ja="判断疲れを最小限に<br>抑える設計。">判断疲れを最小限に<br>抑える設計。</h2>
@@ -2028,8 +2028,8 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
         </article>
       </div>
     </div>
-    </div>
-  </section>
+    </div><!-- /design-philosophy-module -->
+  </section><!-- /design-philosophy-section -->
 
   <section class="cta-section" aria-labelledby="lp-legacy-cta-heading">
     <h2 id="lp-legacy-cta-heading" class="cta-title"><span data-en="Try it free." data-ja="無料でつかえます。">無料でつかえます。</span></h2>
