@@ -2031,7 +2031,7 @@ GoogleService-Info.plist
       <p id="accountPageHint" style="display:none;margin:10px 0 0;font-size:12px;font-weight:600;color:var(--t2);line-height:1.45">
         <a href="/account.html" id="accountPageLink" style="color:var(--blue);text-decoration:none;font-weight:800" data-en="Plans, email &amp; password" data-ja="プラン・メール・パスワード">Plans, email &amp; password</a>
         <span data-en=" · " data-ja=" · "> · </span>
-        <span id="settingsTierHint">You're on Free.</span>
+        <span id="settingsTierHint">Total 20 tasks · You're on Free.</span>
       </p>
       <!-- keep hidden auth containers for existing JS compatibility -->
       <div id="authSignInRow" style="display:none"></div>
@@ -2422,16 +2422,21 @@ GoogleService-Info.plist
   service cloud.firestore {
     match /databases/{database}/documents {
 
-      // Users can only read/write their own tasks
-      match /users/{userId}/tasks/{taskId} {
-        allow read, write: if request.auth != null
-                          && request.auth.uid == userId;
+      // Top-level tasks (see fsAddTask / account deletion purge)
+      match /tasks/{taskId} {
+        allow read, delete: if request.auth != null
+                             && resource.data.userId == request.auth.uid;
+        allow create: if request.auth != null
+                      && request.resource.data.userId == request.auth.uid;
+        allow update: if request.auth != null
+                      && resource.data.userId == request.auth.uid
+                      && request.resource.data.userId == request.auth.uid;
       }
 
-      // User profile — read own only
+      // User profile (e.g. isPro)
       match /users/{userId} {
-        allow read, write: if request.auth != null
-                          && request.auth.uid == userId;
+        allow read, write, delete: if request.auth != null
+                                   && request.auth.uid == userId;
       }
 
       // Block all other access
@@ -2442,7 +2447,7 @@ GoogleService-Info.plist
   }
   ───────────────────────────────────────────────────────
   Data Model (Firestore):
-    /users/{uid}/tasks/{taskId}
+    /tasks/{taskId}
       - text:     String
       - category: String  (Work | Home | Personal | Other)
       - timing:   String  (Today | This Week | Later)
@@ -2689,6 +2694,7 @@ function updateAuthUI(user) {
   const emailLabel  = document.getElementById('authEmailLabel');
 
   if (user) {
+    const isJA = state.lang === 'ja';
     if (dot)        dot.className       = 'fb-dot connected';
     if (statusText) statusText.textContent = user.displayName || user.email || (state.lang === 'ja' ? 'サインイン済み' : 'Signed in');
     if (statusSub)  statusSub.textContent  = user.email || '';
@@ -2696,7 +2702,6 @@ function updateAuthUI(user) {
     if (accountRow) accountRow.style.display = '';
     if (emailLabel) emailLabel.textContent   = user.email || user.displayName || 'Signed in';
     if (tierBadge) {
-      const isJA = state.lang === 'ja';
       tierBadge.style.display = '';
       tierBadge.textContent = state.isProUser ? 'PRO' : (isJA ? '無料' : 'FREE');
       tierBadge.style.color = state.isProUser ? '#16A34A' : 'var(--t2)';
@@ -2712,7 +2717,7 @@ function updateAuthUI(user) {
     if (tierHint) {
       tierHint.textContent = state.isProUser
         ? (isJA ? '現在：PRO' : "You're on PRO.")
-        : (isJA ? '現在：無料プラン' : "You're on Free.");
+        : (isJA ? `合計${FREE_USER_MAX_TASKS}タスク · 無料プランです。` : `Total ${FREE_USER_MAX_TASKS} tasks · You're on Free.`);
     }
   } else {
     if (dot)        dot.className       = 'fb-dot disconnected';
@@ -5441,13 +5446,13 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">4. Data Retention</h4>
 <p style="margin-bottom:8px">We retain your personal data for as long as your account is active or as necessary to provide services. You may request deletion of your data at any time (see "Data Deletion Request" in Settings).</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">5. Your Rights (PDPA)</h4>
-<p style="margin-bottom:8px">Under the PDPA you have the right to access and correct your personal data. To exercise these rights, contact us at <strong>privacy@allerise.com</strong>.</p>
+<p style="margin-bottom:8px">Under the PDPA you have the right to access and correct your personal data. For legal, data deletion, and export requests, email <strong>legal@poplist.site</strong>. For general inquiries, <strong>hello@poplist.site</strong>.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">6. Children</h4>
 <p style="margin-bottom:8px">The App is not directed to children under 13. We do not knowingly collect data from children.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">7. Changes</h4>
 <p style="margin-bottom:8px">We may update this policy from time to time. Continued use of the App after changes constitutes acceptance of the revised policy.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. Contact</h4>
-<p>Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+<p>Allerise Pte. Ltd., Singapore · General: <strong>hello@poplist.site</strong> · Legal &amp; data: <strong>legal@poplist.site</strong></p>` },
     ja: { title: 'プライバシーポリシー',
       body: `<p style="margin-bottom:10px"><strong>最終更新日：2026年3月</strong></p>
 <p style="margin-bottom:10px">本プライバシーポリシーは、シンガポールに登記された会社である <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」「当社」）が、Poplistアプリケーション（以下「本アプリ」）の利用に関して情報をどのように収集・利用・共有するかを説明するものです。</p>
@@ -5462,13 +5467,13 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">4. データ保存期間</h4>
 <p style="margin-bottom:8px">お客様のアカウントが有効な期間、またはサービス提供に必要な期間、個人データを保存します。いつでもデータの削除をリクエストできます（設定の「データ削除リクエスト」をご参照ください）。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">5. お客様の権利（PDPA）</h4>
-<p style="margin-bottom:8px">PDPAに基づき、お客様は個人データへのアクセスおよび訂正を求める権利を有します。これらの権利を行使するには、<strong>privacy@allerise.com</strong> までご連絡ください。</p>
+<p style="margin-bottom:8px">PDPAに基づき、お客様は個人データへのアクセスおよび訂正を求める権利を有します。法的・データ削除・エクスポートは <strong>legal@poplist.site</strong> まで。その他は <strong>hello@poplist.site</strong> まで。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">6. 子どものプライバシー</h4>
 <p style="margin-bottom:8px">本アプリは13歳未満の子どもを対象としていません。当社は意図的に子どものデータを収集しません。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">7. ポリシーの変更</h4>
 <p style="margin-bottom:8px">本ポリシーは随時更新されることがあります。変更後も引き続き本アプリを利用された場合は、改訂後のポリシーに同意したものとみなします。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. お問い合わせ</h4>
-<p>Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+<p>Allerise Pte. Ltd.、シンガポール · 一般：<strong>hello@poplist.site</strong> · 法務・データ：<strong>legal@poplist.site</strong></p>` }
   },
   terms: {
     en: { title: 'Terms of Service',
@@ -5491,7 +5496,7 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. Governing Law</h4>
 <p style="margin-bottom:8px">These Terms are governed by the laws of Singapore. Any disputes shall be subject to the exclusive jurisdiction of the courts of Singapore.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">9. Contact</h4>
-<p>Allerise Pte. Ltd., Singapore · <strong>legal@allerise.com</strong></p>` },
+<p>Allerise Pte. Ltd., Singapore · <strong>legal@poplist.site</strong></p>` },
     ja: { title: '利用規約',
       body: `<p style="margin-bottom:10px"><strong>最終更新日：2026年3月</strong></p>
 <p style="margin-bottom:10px">本利用規約（以下「本規約」）は、シンガポールに登記された会社 <strong>Allerise Pte. Ltd.</strong>（以下「Allerise」）が提供するPoplistアプリケーションのご利用に適用されます。本アプリをご利用いただくことで、本規約に同意したものとみなされます。</p>
@@ -5512,7 +5517,7 @@ const LEGAL_CONTENT = {
 <h4 style="margin:14px 0 6px;color:var(--t1)">8. 準拠法</h4>
 <p style="margin-bottom:8px">本規約はシンガポール法に準拠します。紛争はシンガポールの裁判所の専属管轄に服するものとします。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">9. お問い合わせ</h4>
-<p>Allerise Pte. Ltd.、シンガポール · <strong>legal@allerise.com</strong></p>` }
+<p>Allerise Pte. Ltd.、シンガポール · <strong>legal@poplist.site</strong></p>` }
   },
   eula: {
     en: { title: 'End User Licence Agreement',
@@ -5557,22 +5562,22 @@ const LEGAL_CONTENT = {
   datadeletion: {
     en: { title: 'Data Deletion Request',
       body: `<p style="margin-bottom:14px">You have the right to request deletion of your personal data held by Allerise Pte. Ltd. at any time.</p>
-<h4 style="margin:14px 0 6px;color:var(--t1)">What will be deleted</h4>
-<p style="margin-bottom:8px">Upon a verified deletion request, we will permanently delete: your account credentials; your task and category data stored in our database; and any other personal data associated with your account.</p>
-<h4 style="margin:14px 0 6px;color:var(--t1)">How to request</h4>
-<p style="margin-bottom:8px">Send an email to <strong>privacy@allerise.com</strong> with the subject line <em>"Data Deletion Request"</em> from the email address associated with your account. We will process your request within 30 days in accordance with Singapore's PDPA.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">Delete in the app</h4>
+<p style="margin-bottom:8px">From <strong>Account</strong>, use <strong>Delete account</strong>. Your tasks and profile are removed as part of that flow; sign-in is removed immediately. Residual copies in backups or logs may take up to <strong>30 days</strong> to expire.</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">Or email us</h4>
+<p style="margin-bottom:8px">Send an email to <strong>legal@poplist.site</strong> with the subject line <em>"Data Deletion Request"</em> from the email address associated with your account. We will process your request within 30 days in accordance with Singapore's PDPA.</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">Note</h4>
 <p>Deletion is irreversible. Once deleted, your data and any active Pro subscription benefits cannot be recovered.</p>
-<p style="margin-top:14px">Allerise Pte. Ltd., Singapore · <strong>privacy@allerise.com</strong></p>` },
+<p style="margin-top:14px">Legal &amp; data: <strong>legal@poplist.site</strong> · General: <strong>hello@poplist.site</strong></p>` },
     ja: { title: 'データ削除リクエスト',
       body: `<p style="margin-bottom:14px">お客様は、Allerise Pte. Ltd.が保有するご自身の個人データの削除をいつでもリクエストする権利を有します。</p>
-<h4 style="margin:14px 0 6px;color:var(--t1)">削除されるデータ</h4>
-<p style="margin-bottom:8px">本人確認が完了した削除リクエストを受領後、以下を完全に削除します：アカウントの認証情報、データベースに保存されたタスクおよびカテゴリデータ、その他アカウントに関連する個人データ。</p>
-<h4 style="margin:14px 0 6px;color:var(--t1)">リクエスト方法</h4>
-<p style="margin-bottom:8px">アカウントに登録されたメールアドレスから、件名を <em>「Data Deletion Request（データ削除リクエスト）」</em> として <strong>privacy@allerise.com</strong> にメールをお送りください。シンガポールのPDPAに従い、30日以内にリクエストを処理します。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">アプリから削除</h4>
+<p style="margin-bottom:8px"><strong>アカウント</strong>の<strong>アカウントを削除</strong>で、タスクとプロフィールは削除処理の一環で消去され、サインインは直ちに削除されます。バックアップやログのコピーは最大<strong>30日</strong>で消滅する場合があります。</p>
+<h4 style="margin:14px 0 6px;color:var(--t1)">メールでリクエスト</h4>
+<p style="margin-bottom:8px">登録メールから件名 <em>「Data Deletion Request」</em> で <strong>legal@poplist.site</strong> にご連絡ください。PDPAに従い30日以内に処理します。</p>
 <h4 style="margin:14px 0 6px;color:var(--t1)">注意事項</h4>
 <p>削除は取り消せません。削除後は、データおよびアクティブなProサブスクリプションの特典を復元することはできません。</p>
-<p style="margin-top:14px">Allerise Pte. Ltd.、シンガポール · <strong>privacy@allerise.com</strong></p>` }
+<p style="margin-top:14px">法務・データ：<strong>legal@poplist.site</strong> · 一般：<strong>hello@poplist.site</strong></p>` }
   }
 };
 
@@ -6022,7 +6027,7 @@ async function applyLang(lang) {
   if (tierHintSync && state.isLoggedIn) {
     tierHintSync.textContent = state.isProUser
       ? (isJA ? '現在：PRO' : "You're on PRO.")
-      : (isJA ? '現在：無料プラン' : "You're on Free.");
+      : (isJA ? `合計${FREE_USER_MAX_TASKS}タスク · 無料プランです。` : `Total ${FREE_USER_MAX_TASKS} tasks · You're on Free.`);
   }
   // Special: input placeholder
   const inp = document.getElementById('addTaskInput');
