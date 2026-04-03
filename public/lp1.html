@@ -1526,9 +1526,22 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
 .lp-bold-cta-btn:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
 .lp-bold-cta-btn:active { transform: scale(.97) }
 .lp-bold-cta-btn svg { width: 16px; height: 16px }
+.lp-bold-cta-foot {
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
+}
 .lp-bold-cta-note {
-  margin-top: 14px; font-size: 11px; color: rgba(255,255,255,.58);
-  font-weight: 500; position: relative; z-index: 1;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.58);
+  font-weight: 500;
+}
+.lp-bold-cta-note + .lp-bold-cta-note {
+  border-top: 1px solid rgba(255,255,255,.22);
+  padding-top: 12px;
+  margin-top: 12px;
 }
 
 /* ── LP1: Timing + export slide (filter bar matches index.html) ── */
@@ -2036,7 +2049,7 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   <!-- Bold CTA module: closing strip after design philosophy -->
   <section class="lp-bold-cta-module" data-lp-section="bold-cta" aria-labelledby="lp-bold-cta-heading">
     <h2 id="lp-bold-cta-heading" class="lp-bold-cta-title"><span data-en="Try it free right now." data-ja="今すぐ無料でつかえます。">Try it free right now.</span></h2>
-    <p class="lp-bold-cta-sub" data-en="Just open your browser. Try and see if it fits you." data-ja="ブラウザを開くだけ。自分にあうか試せます。">Just open your browser. Try and see if it fits you.</p>
+    <p class="lp-bold-cta-sub" data-en="Just open in your browser<br>See how it works" data-ja="ブラウザを開いて試せます。">Just open in your browser<br>See how it works</p>
     <a href="/" class="lp-bold-cta-btn">
       <span data-en="Try without signing in" data-ja="ログインなしで試す">ログインなしで試す</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2044,7 +2057,10 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
         <polyline points="12 5 19 12 12 19"/>
       </svg>
     </a>
-    <p class="lp-bold-cta-note" data-en="No account required. Works in your browser.<br>Use Chrome or Google on your smartphone (currently not available on Safari)." data-ja="アカウント不要。ブラウザで動作。<br>スマートフォンでは Chrome または Google アプリをご利用ください（現在 Safari ではご利用いただけません）。">No account required. Works in your browser.<br>Use Chrome or Google on your smartphone (currently not available on Safari).</p>
+    <div class="lp-bold-cta-foot">
+      <p class="lp-bold-cta-note" data-en="No account required, works in your browser." data-ja="アカウント不要、ブラウザで動作">No account required, works in your browser.</p>
+      <p class="lp-bold-cta-note" data-en="Use Chrome or Google on your smartphone<br>(currently not available on Safari)." data-ja="スマートフォンでは Chrome または Google アプリをご利用ください<br>（現在 Safari ではご利用いただけません）。">Use Chrome or Google on your smartphone<br>(currently not available on Safari).</p>
+    </div>
   </section>
 
   <div style="display:none;">
