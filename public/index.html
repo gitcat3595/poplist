@@ -2480,7 +2480,7 @@ const state = {
   isLoggedIn:   false,
   carryOverCount: 0,         // tasks carrying over after Done for today
   defaultTiming:  'This Week', // new tasks default; restored from localStorage on load
-  aiClassify:     true,        // false = skip OpenAI /api/classify, on-device split only (when true, all tiers use API if available)
+  aiClassify:     true,        // always on — /api/classify (no user toggle; local only on API failure)
 };
 
 /* ══════════════════════════════════════════
@@ -4226,17 +4226,12 @@ function preferRicherLocalSplit(transcript, tasks, defaultTiming) {
 }
 
 /* Send transcript to Cloudflare Worker → OpenAI → structured task list
-   Falls back to local keyword classification if API fails or user chose Private mode */
+   Falls back to local keyword classification if API fails */
 async function classifyTranscript(transcript) {
   const categories    = state.categories.map(c => c.en);
   const defaultTiming = state.defaultTiming || 'This Week';
   const tr = (transcript || '').trim();
   if (!tr) return [];
-
-  // Private mode: on-device only. Otherwise try OpenAI for all users (low volume — better JP/EN splits + categories).
-  if (state.aiClassify === false) {
-    return localClassify(tr, defaultTiming);
-  }
 
   // Build keyword map for AI: user-defined keywords are prioritised.
   const categoryKeywords = {};
@@ -5323,44 +5318,22 @@ document.getElementById('newCatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Escape') { document.getElementById('newCatForm').style.display = 'none'; }
 });
 
-// Classification mode toggle (Settings General section)
+// AI classification is always on — UI reflects AI only (toggle controls removed / disabled if present)
 function updateClassifyModeUI() {
-  const ai = state.aiClassify;
-  document.getElementById('classifyModePrivate')?.classList.toggle('active', !ai);
-  document.getElementById('classifyModeAI')?.classList.toggle('active', ai);
-  // Sync the legacy Pro-section checkbox
+  document.getElementById('classifyModePrivate')?.classList.remove('active');
+  document.getElementById('classifyModeAI')?.classList.add('active');
   const cb = document.getElementById('aiClassifyCheck');
-  if (cb) cb.checked = ai;
-  // Update the chip on the home screen
+  if (cb) {
+    cb.checked = true;
+    cb.disabled = true;
+    cb.title = '';
+  }
   const chip = document.getElementById('classifyChip');
   if (chip) {
-    chip.textContent = ai ? 'AI' : 'Private';
-    chip.classList.toggle('ai-mode', ai);
+    chip.textContent = 'AI';
+    chip.classList.add('ai-mode');
   }
 }
-document.getElementById('classifyModePrivate')?.addEventListener('click', () => {
-  if (state.aiClassify === false) return;
-  state.aiClassify = false;
-  localStorage.setItem('aiClassify', 'false');
-  updateClassifyModeUI();
-  showToast('Private mode — on-device only');
-});
-document.getElementById('classifyModeAI')?.addEventListener('click', () => {
-  if (state.aiClassify === true) return;
-  state.aiClassify = true;
-  localStorage.setItem('aiClassify', 'true');
-  updateClassifyModeUI();
-  showToast('AI mode — cloud enhanced');
-});
-
-// AI Classification toggle (legacy Pro section — keep in sync, must persist like Settings → Private/AI)
-document.getElementById('aiClassifyCheck')?.addEventListener('change', e => {
-  state.aiClassify = e.target.checked;
-  localStorage.setItem('aiClassify', state.aiClassify ? 'true' : 'false');
-  updateClassifyModeUI();
-});
-
-// Init chip on load
 updateClassifyModeUI();
 
 
@@ -5861,7 +5834,6 @@ function updateBurstEffectUI() {
   const c  = localStorage.getItem('bubbleColour');
   const s  = localStorage.getItem('bubbleStyle');
   const g  = localStorage.getItem('greyBubbles');
-  const ai = localStorage.getItem('aiClassify');
   const burst = localStorage.getItem('burstEffect');
   if (burst === 'false') state.burstEffect = false;
   else state.burstEffect = true;
@@ -5881,15 +5853,9 @@ function updateBurstEffectUI() {
     document.getElementById('colourModeGrey')?.classList.add('active');
     document.getElementById('colourModeBlue')?.classList.remove('active');
   }
-  if (ai === 'false') {
-    state.aiClassify = false;
-    updateClassifyModeUI();
-  } else if (ai === 'true') {
-    state.aiClassify = true;
-    updateClassifyModeUI();
-  }
+  updateClassifyModeUI();
   updateBurstEffectUI();
-  if (c || s || g || ai) {
+  if (c || s || g) {
     if (!state.greyBubbles && COLOUR_ACCENT_VARS[state.bubbleColour]) {
       applyAccentVars(COLOUR_ACCENT_VARS[state.bubbleColour]);
     } else if (state.greyBubbles) {
