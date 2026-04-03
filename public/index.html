@@ -2480,7 +2480,7 @@ const state = {
   isLoggedIn:   false,
   carryOverCount: 0,         // tasks carrying over after Done for today
   defaultTiming:  'This Week', // new tasks default; restored from localStorage on load
-  aiClassify:     true,        // false = skip /api/classify, on-device split only
+  aiClassify:     true,        // false = skip OpenAI /api/classify, on-device split only (when true, all tiers use API if available)
 };
 
 /* ══════════════════════════════════════════
@@ -4070,9 +4070,9 @@ function splitLongJapaneseRunOn(s) {
   if (buf.trim()) out.push(buf.trim());
   if (out.length > 1) {
     const deeper = out.flatMap(b => splitLongJapaneseRunOn(b));
-    return mergeTinyJapaneseSegments(deeper.length > 0 ? deeper : [s]);
+    return mergeTinyJapaneseSegments(deeper.length > 0 ? deeper : out);
   }
-  return mergeTinyJapaneseSegments([s]);
+  return mergeTinyJapaneseSegments(out.length ? out : [s]);
 }
 
 function splitLongEnglishRunOn(s) {
@@ -4159,15 +4159,15 @@ function preferRicherLocalSplit(transcript, tasks, defaultTiming) {
 }
 
 /* Send transcript to Cloudflare Worker → OpenAI → structured task list
-   Falls back to local keyword classification if API key is not set */
+   Falls back to local keyword classification if API fails or user chose Private mode */
 async function classifyTranscript(transcript) {
   const categories    = state.categories.map(c => c.en);
   const defaultTiming = state.defaultTiming || 'This Week';
   const tr = (transcript || '').trim();
   if (!tr) return [];
 
-  // For guests and free users, stay fully local to avoid API usage.
-  if (!state.isProUser || state.aiClassify === false) {
+  // Private mode: on-device only. Otherwise try OpenAI for all users (low volume — better JP/EN splits + categories).
+  if (state.aiClassify === false) {
     return localClassify(tr, defaultTiming);
   }
 
@@ -4180,7 +4180,7 @@ async function classifyTranscript(transcript) {
     if (kws.length) categoryKeywords[c.en] = kws;
   });
 
-  // Keyword-priority pass for PRO: user keywords > title inference > model context
+  // Keyword-priority pass after AI: user keywords > title inference > model context
   const assignByKeywordPriority = (tasks) => {
     if (!Array.isArray(tasks) || !tasks.length) return tasks || [];
     const escapeRx = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -4246,7 +4246,6 @@ async function classifyTranscript(transcript) {
           .filter(x => x.text.length > 0);
         if (tasks.length > 0) {
           tasks = subdivideTaskObjects(tasks, defaultTiming);
-          // For PRO, keep AI understanding as primary, then enforce keyword-priority remap.
           return assignByKeywordPriority(tasks);
         }
       }
