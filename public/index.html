@@ -3977,6 +3977,9 @@ const LOCAL_TIMING_KW = {
   Today: /\b(today|urgent|asap|now|immediately|tonight|今日|今すぐ|急ぎ|本日|今夜)\b/i,
   Later: /\b(someday|eventually|later|future|no rush|そのうち|いつか|後で|将来|急がない)\b/i,
 };
+/* Obligation / future intent — usually Today when no explicit “later” */
+const LOCAL_TIMING_URGENT_EN = /\b(have to|has to|must|need to|got to|gotta)\b/i;
+const LOCAL_TIMING_URGENT_JP = /(しないといけない|しなくてはいけない|なければならない|しなくちゃ|なきゃ|忘れないように|忘れないようにしないと|今すぐ|今日中|急いで)/;
 
 // Personal-recipient keywords — used to route "email to mum" → Home instead of Work
 const PERSONAL_RECIPIENT_KW = /\b(mom|mum|mummy|dad|daddy|papa|mama|son|daughter|kids|child|children|husband|wife|partner|grandma|grandpa|granny|grandad|gramps|baby|mother|father|parents?|sibling|brother|sister|family|friend|お母さん|母|お父さん|父|子供|息子|娘|夫|妻|おばあちゃん|おじいちゃん|赤ちゃん|兄|弟|姉|妹|家族|友達)\b/i;
@@ -3990,6 +3993,8 @@ function localDetectCat(text) {
 }
 function localDetectTiming(text, def) {
   if (LOCAL_TIMING_KW.Today.test(text)) return 'Today';
+  if (LOCAL_TIMING_URGENT_EN.test(text)) return 'Today';
+  if (LOCAL_TIMING_URGENT_JP.test(text)) return 'Today';
   if (LOCAL_TIMING_KW.Later.test(text)) return 'Later';
   return def || 'This Week';
 }
@@ -4015,6 +4020,15 @@ function mergeTinyJapaneseSegments(parts) {
     }
   }
   return merged.filter(Boolean);
+}
+
+/* After obligation / must phrasing when another clause starts with kanji (e.g. …ないといけない請求書を…) */
+function splitJapaneseObligationBoundaries(s) {
+  if (!s || countCjkChars(s) <= 4) return null;
+  let t = s;
+  t = t.replace(/(ないといけない|なければならない|しなくてはいけない|しなくちゃいけない|しなくちゃ)(?=[\u4e00-\u9fff])/g, '$1\u0000');
+  const poly = t.split('\u0000').map(x => x.trim()).filter(x => x.length > 1);
+  return poly.length > 1 ? poly : null;
 }
 
 /* Polite / past endings jammed together without 。or spaces: …ます…ます / …ました… */
@@ -4068,6 +4082,12 @@ function splitLongJapaneseRunOn(s) {
     return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
   }
 
+  const obligationBits = splitJapaneseObligationBoundaries(s);
+  if (obligationBits) {
+    const joined = obligationBits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
+
   const suruBits = splitJapaneseAfterSuruKanji(s);
   if (suruBits) {
     const joined = suruBits.flatMap(b => splitLongJapaneseRunOn(b));
@@ -4105,7 +4125,13 @@ function splitLongJapaneseRunOn(s) {
 }
 
 function splitLongEnglishRunOn(s) {
-  let bits = s.split(/\s*(?:\band\b|\bthen\b|\balso\b|\bplus\b)\s+/i);
+  /* New clause often starts with must / have to / need to / will / going to */
+  let bits = s.split(/\s+(?=(?:need to|have to|has to|must|got to|gotta|going to|will)\s+)/i);
+  if (bits.length > 1) {
+    bits = bits.map(x => x.trim()).filter(x => x.length > 1);
+    if (bits.length > 1) return bits;
+  }
+  bits = s.split(/\s*(?:\band\b|\bthen\b|\balso\b|\bplus\b)\s+/i);
   if (bits.length > 1) return bits.map(x => x.trim()).filter(x => x.length > 1);
   bits = s.split(/\s*,\s+/).map(x => x.trim()).filter(x => x.length > 3);
   if (bits.length > 1) return bits;
