@@ -1922,7 +1922,7 @@ GoogleService-Info.plist
       <div class="compile-dot"></div>
     </div>
     <div class="compile-title" id="compileTitle">Compiling your list…</div>
-    <div class="compile-sub" id="compileSub">Organising tasks by category &amp; deadline</div>
+    <div class="compile-sub" id="compileSub">Sorting tasks by category</div>
   </div>
 </div>
 
@@ -1935,7 +1935,7 @@ GoogleService-Info.plist
       <div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div>
       <div class="mic-bar"></div>
     </div>
-    <div class="mic-modal-hint" id="micModalHint">Say your tasks naturally.<br>"Email the client today, buy groceries this week"</div>
+    <div class="mic-modal-hint" id="micModalHint">Speak your tasks…</div>
     <button class="mic-stop-btn" id="micStopBtn" data-en="Stop listening and add tasks" data-ja="停止してタスクを追加">Stop listening and add tasks</button>
   </div>
 </div>
@@ -3888,6 +3888,10 @@ const micModal     = document.getElementById('micModal');
 const micStopBtn   = document.getElementById('micStopBtn');
 const transcriptEl = document.getElementById('voiceTranscript');
 
+/* Mic modal hints (rotate while listening; used by applyLang — must be outside if(SR)) */
+const MIC_HINT_ROTATE_EN = ['Speak your tasks…', 'Take your time.', 'Pause when you need to.', 'Keep going.'];
+const MIC_HINT_ROTATE_JA = ['話しかけてください…', 'ゆっくりで大丈夫です。', '止まっても大丈夫です。', '続けてどうぞ。'];
+
 /* ── Local keyword-based classifier (fallback when no API key) ── */
 const LOCAL_CAT_KW = {
   Work:     /meeting|email|report|client|project|deadline|invoice|proposal|presentation|call|boss|budget|strategy|slide|review|打ち合わせ|メール|報告|クライアント|プロジェクト|締め切り|請求|提案|プレゼン|上司|予算|ミーティング/i,
@@ -4186,13 +4190,65 @@ function releaseMicProbe() {
 const compileOverlay = document.getElementById('compileOverlay');
 const compileTitle   = document.getElementById('compileTitle');
 const compileSub     = document.getElementById('compileSub');
+let compileMsgTimer = null;
+const COMPILE_SUB_EN = [
+  'Sorting tasks by category',
+  'Checking deadlines',
+  'Building your list',
+  'Almost there'
+];
+const COMPILE_SUB_JA = [
+  'カテゴリで分けています',
+  '期限を確認しています',
+  'リストを作成しています',
+  'もう少しです'
+];
+function clearCompileMessageLoop() {
+  if (compileMsgTimer) {
+    clearInterval(compileMsgTimer);
+    compileMsgTimer = null;
+  }
+}
+function startCompileMessageLoop() {
+  clearCompileMessageLoop();
+  const msgs = state.lang === 'ja' ? COMPILE_SUB_JA : COMPILE_SUB_EN;
+  let i = 0;
+  if (compileSub) compileSub.textContent = msgs[0];
+  compileMsgTimer = setInterval(() => {
+    i = (i + 1) % msgs.length;
+    if (compileSub) compileSub.textContent = msgs[i];
+  }, 1800);
+}
 function showCompile() {
-  if (compileTitle) compileTitle.textContent = state.lang === 'ja' ? 'リスト作成中…'      : 'Compiling your list…';
-  if (compileSub)   compileSub.textContent   = state.lang === 'ja' ? 'タスクを分類中です…' : 'Organising by category & deadline…';
+  if (compileTitle) compileTitle.textContent = state.lang === 'ja' ? 'リスト作成中…' : 'Compiling your list…';
+  if (compileSub) compileSub.textContent = state.lang === 'ja' ? COMPILE_SUB_JA[0] : COMPILE_SUB_EN[0];
   if (compileOverlay) compileOverlay.classList.add('show');
+  startCompileMessageLoop();
 }
 function hideCompile() {
+  clearCompileMessageLoop();
   if (compileOverlay) compileOverlay.classList.remove('show');
+}
+
+let micHintRotateTimer = null;
+function stopMicHintRotation() {
+  if (micHintRotateTimer) {
+    clearInterval(micHintRotateTimer);
+    micHintRotateTimer = null;
+  }
+}
+function startMicHintRotation() {
+  stopMicHintRotation();
+  const msgs = state.lang === 'ja' ? MIC_HINT_ROTATE_JA : MIC_HINT_ROTATE_EN;
+  const hint = document.getElementById('micModalHint');
+  if (hint) hint.textContent = msgs[0];
+  let i = 0;
+  micHintRotateTimer = setInterval(() => {
+    if (!state.isListening) return;
+    i = (i + 1) % msgs.length;
+    const h = document.getElementById('micModalHint');
+    if (h) h.textContent = msgs[i];
+  }, 2200);
 }
 
 if (SR) {
@@ -4211,6 +4267,7 @@ if (SR) {
     r.onstart = () => {
       // Defer one frame so WebKit can attach SR to the audio session before we stop the probe stream
       requestAnimationFrame(() => releaseMicProbe());
+      startMicHintRotation();
       // UI already shown optimistically in handleVoiceClick — just ensure state is set for restarts
       state.isListening = true;
       [voiceBtn,
@@ -4244,7 +4301,10 @@ if (SR) {
         let display = (fullTranscript + interimText).trim();
         // Keep only the last ~90 chars so it stays to ~2 lines and flows naturally
         if (display.length > 90) display = display.slice(-90).replace(/^\S+\s/, '');
-        if (display) hint.textContent = display;
+        if (display) {
+          stopMicHintRotation();
+          hint.textContent = display;
+        }
       }
     };
 
@@ -4363,6 +4423,7 @@ if (SR) {
   }
 
   function _clearListeningUI() {
+    stopMicHintRotation();
     releaseMicProbe();
     state.isListening = false;
     [voiceBtn,
@@ -4375,9 +4436,7 @@ if (SR) {
     transcriptEl.textContent = state.lang === 'ja' ? 'タップして話す' : 'Tap to add tasks by voice';
     // Reset mic hint for next session
     const hint = document.getElementById('micModalHint');
-    if (hint) hint.textContent = state.lang === 'ja'
-      ? 'いつものように話してください。例:仕事のメールを今日中に送って、休みの予定を確認して飛行機の予約をする'
-      : 'Say your tasks naturally.\n"Email the client today, buy groceries and book an appointment for my dentist"';
+    if (hint) hint.textContent = state.lang === 'ja' ? MIC_HINT_ROTATE_JA[0] : MIC_HINT_ROTATE_EN[0];
   }
 
   async function stopListening() {
@@ -4482,10 +4541,7 @@ if (SR) {
     ].forEach(b => b?.classList.add('listening'));
     transcriptEl.textContent = state.lang === 'ja' ? '聞いています…' : 'Listening…';
     transcriptEl.style.color = 'var(--bubble-color, var(--blue))';
-    const hint = document.getElementById('micModalHint');
-    if (hint) hint.textContent = state.lang === 'ja'
-      ? 'いつものように話してください…'
-      : 'Say your tasks naturally…';
+    startMicHintRotation();
 
     if (isIOS) {
       const md = navigator.mediaDevices;
@@ -5920,11 +5976,8 @@ async function applyLang(lang) {
   document.querySelectorAll('a[data-legal-link="deletion"]').forEach(a => {
     a.href = '/data-deletion.html?lang=' + langParam;
   });
-  // Special: mic modal hint (uses innerHTML for <br>)
   const hint = document.getElementById('micModalHint');
-  if (hint) hint.innerHTML = isJA
-    ? '自然に話してください。<br>「今日クライアントにメール、今週食料品を買う」'
-    : 'Say your tasks naturally.<br>"Email the client today, buy groceries this week"';
+  if (hint) hint.textContent = isJA ? MIC_HINT_ROTATE_JA[0] : MIC_HINT_ROTATE_EN[0];
   // Update timing chips in the task list view (they store timing in data-timing)
   document.querySelectorAll('.timing-chip').forEach(chip => {
     const timing = chip.dataset.timing;
