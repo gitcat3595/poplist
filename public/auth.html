@@ -187,11 +187,22 @@
       }
     });
 
+    function isBlockedPlusAliasEmail(email) {
+      if (!email || typeof email !== 'string') return false;
+      const at = email.indexOf('@');
+      if (at <= 0) return false;
+      return email.slice(0, at).includes('+');
+    }
+
     async function emailAuth(isCreate) {
       if (!auth) return;
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       if (!email || !password) { say('Enter email and password.'); return; }
+      if (isBlockedPlusAliasEmail(email)) {
+        say("Email addresses with '+' in the name (e.g. name+tag@mail.com) aren't allowed.");
+        return;
+      }
       say('');
       try {
         if (isCreate) {

@@ -2268,7 +2268,7 @@ GoogleService-Info.plist
       <!-- Q9 -->
       <div style="padding:14px 2px">
         <p style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:5px" data-en="Is it free?" data-ja="無料で使える？">Is it free?</p>
-        <p style="font-size:13px;color:var(--t2);line-height:1.65" data-en="You can use Poplist for free with up to 10 tasks. For more features like colour schemes and personalised categories, consider PRO." data-ja="最大10タスクまで無料でご利用いただけます。カラースキームやカスタムカテゴリなどの機能はPROプランで。">You can use Poplist for free with up to 10 tasks. For more features like colour schemes and personalised categories, consider PRO.</p>
+        <p style="font-size:13px;color:var(--t2);line-height:1.65" data-en="You can use Poplist for free: up to 10 tasks as a guest, or sign in for up to 20 synced tasks. For more features like colour schemes and personalised categories, consider PRO." data-ja="無料でご利用いただけます：ゲストは最大10件、このブラウザのみ。サインインの無料プランは最大20件まで同期。カラースキームやカスタムカテゴリなどはPROプランで。">You can use Poplist for free: up to 10 tasks as a guest, or sign in for up to 20 synced tasks. For more features like colour schemes and personalised categories, consider PRO.</p>
       </div>
 
     </div>
@@ -2490,7 +2490,7 @@ const FIREBASE_CONFIG = {
 // Guest mode: max tasks before sign-in is required for sync
 const GUEST_MAX_TASKS = 10;
 /** Signed-in Free tier (synced); PRO has no cap */
-const FREE_USER_MAX_TASKS = 50;
+const FREE_USER_MAX_TASKS = 20;
 
 /* ── Guest task cache — persist tasks in localStorage for phone users ── */
 const TASK_CACHE_KEY = 'pl_tasks';
@@ -2776,8 +2776,25 @@ function signInWithGoogle() {
   });
 }
 
+/** true if local part uses + subaddressing (e.g. name+tag@mail.com) — blocked */
+function isBlockedPlusAliasEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const at = email.indexOf('@');
+  if (at <= 0) return false;
+  return email.slice(0, at).includes('+');
+}
+function toastPlusAliasBlocked() {
+  showToast(state.lang === 'ja'
+    ? '「+」付きのメール（例：name+tag@mail.com）は使えません。'
+    : "Email addresses with '+' in the name (e.g. name+tag@mail.com) aren't allowed.");
+}
+
 function _handleEmailAuth(email, password, isNew) {
   if (!_auth) return;
+  if (isBlockedPlusAliasEmail(email)) {
+    toastPlusAliasBlocked();
+    return;
+  }
   const p = isNew
     ? _auth.createUserWithEmailAndPassword(email, password)
     : _auth.signInWithEmailAndPassword(email, password);
@@ -5348,6 +5365,7 @@ document.getElementById('emailAuthToggle')?.addEventListener('click', () => {
 document.getElementById('emailAuthForgot')?.addEventListener('click', () => {
   const email = document.getElementById('emailAuthEmail')?.value?.trim();
   if (!email) { showToast(state.lang === 'ja' ? 'メールを入力してください' : 'Enter your email first'); return; }
+  if (isBlockedPlusAliasEmail(email)) { toastPlusAliasBlocked(); return; }
   _auth?.sendPasswordResetEmail(email)
     .then(() => showToast(state.lang === 'ja' ? 'リセットメールを送信しました' : 'Password reset email sent'))
     .catch(e => showToast(e.message));
@@ -5357,6 +5375,7 @@ document.getElementById('emailAuthSubmit')?.addEventListener('click', () => {
   const email = document.getElementById('emailAuthEmail')?.value?.trim();
   const pwd   = document.getElementById('emailAuthPwd')?.value;
   if (!email || !pwd) { showToast(state.lang === 'ja' ? 'メールとパスワードを入力してください' : 'Enter email and password'); return; }
+  if (isBlockedPlusAliasEmail(email)) { toastPlusAliasBlocked(); return; }
   _handleEmailAuth(email, pwd, _emailAuthIsNew);
   closeM('emailAuthModal');
 });

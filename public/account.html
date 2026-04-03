@@ -92,7 +92,7 @@
       <div class="section-label" id="lblPlans">Plans</div>
       <a class="btn" id="plansLink" href="plans.html?lang=en#compare-chart">Free vs PRO comparison</a>
       <a class="btn primary" id="upgradeLink" href="plans.html?lang=en#compare-chart" style="margin-top:10px">Upgrade to PRO</a>
-      <p class="note" id="plansNote">See feature limits and pricing. Your Free account includes up to 50 active tasks.</p>
+      <p class="note" id="plansNote">See feature limits and pricing. Your Free account includes up to 20 active tasks.</p>
     </div>
 
     <div class="card" id="emailCard">
@@ -162,6 +162,7 @@
         pwdMismatch: 'New passwords do not match.',
         needPwd: 'Enter your current password.',
         needEmail: 'Enter a valid email.',
+        plusAlias: "Email addresses with '+' in the name (e.g. name+tag@mail.com) aren't allowed.",
       },
       ja: {
         title: 'アカウント',
@@ -169,7 +170,7 @@
         plans: 'プラン',
         compare: '無料とPROの比較',
         upgrade: 'PROにアップグレード',
-        plansNote: '機能と料金を確認できます。無料プランはアクティブなタスク最大50件までです。',
+        plansNote: '機能と料金を確認できます。無料プランはアクティブなタスク最大20件までです。',
         email: 'メール',
         updateEmail: 'メールを更新',
         password: 'パスワード',
@@ -186,6 +187,7 @@
         pwdMismatch: '新しいパスワードが一致しません。',
         needPwd: '現在のパスワードを入力してください。',
         needEmail: '有効なメールアドレスを入力してください。',
+        plusAlias: '「+」付きのメール（例：name+tag@mail.com）は使えません。',
       }
     };
 
@@ -269,6 +271,13 @@
     }
     function hasAppleProvider(user) {
       return user.providerData.some(p => p.providerId === 'apple.com');
+    }
+
+    function isBlockedPlusAliasEmail(email) {
+      if (!email || typeof email !== 'string') return false;
+      const at = email.indexOf('@');
+      if (at <= 0) return false;
+      return email.slice(0, at).includes('+');
     }
 
     async function loadProBadge(uid) {
