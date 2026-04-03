@@ -380,8 +380,8 @@ nav {
   padding: 2px 8px; border-radius: var(--rp);
 }
 
-/* ── FEATURES CAROUSEL ── */
-.features-carousel {
+/* ── Demo-section (landmark) + demo-carousel (track + dots that move) ── */
+.demo-section {
   position: relative;
   background: #fff;
   border-top: none;
@@ -390,17 +390,21 @@ nav {
   margin: 0;
 }
 /* Soften harsh cut from page bg — top + bottom blend (PC & mobile) */
-.features-carousel::before {
+.demo-section::before {
   content: '';
   display: block;
   height: 44px;
   background: linear-gradient(180deg, var(--bg) 0%, #ffffff 100%);
 }
-.features-carousel::after {
+.demo-section::after {
   content: '';
   display: block;
   height: 56px;
   background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+}
+.demo-carousel {
+  position: relative;
+  width: 100%;
 }
 .carousel-intro {
   text-align: center;
@@ -1681,11 +1685,13 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   </section>
 
   <!-- ── KEY FEATURES CAROUSEL ── -->
-  <section class="features-carousel">
+  <!-- Demo-section: intro + product demo. demo-carousel: sliding track + pager dots. -->
+  <section class="demo-section" data-lp-section="demo" aria-label="Product demo">
     <div class="carousel-intro">
       <p class="carousel-how-label" data-en="WHY POPLIST" data-ja="Poplistでできること">WHY POPLIST</p>
       <h2 class="carousel-main-title" data-en="Less admin.<br>More action." data-ja="めんどうは減らす。<br>行動する力を残す。">Less admin.<br>More action.</h2>
     </div>
+    <div class="demo-carousel">
     <div class="carousel-wrap">
       <div class="carousel-track" id="carouselTrack">
 
@@ -1970,8 +1976,9 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
       <button type="button" class="cdot" data-aria-en="Slide 5" data-aria-ja="スライド5" aria-label="Slide 5"></button>
       <button type="button" class="cdot" data-aria-en="Slide 6" data-aria-ja="スライド6" aria-label="Slide 6"></button>
     </div>
+    </div><!-- /demo-carousel -->
 
-  </section><!-- /features-carousel -->
+  </section><!-- /demo-section -->
 
   <!-- ── DESIGN PHILOSOPHY ── -->
   <section class="lp-philosophy" aria-labelledby="lp-philo-heading">
