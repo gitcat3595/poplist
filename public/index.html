@@ -4017,6 +4017,17 @@ function mergeTinyJapaneseSegments(parts) {
   return merged.filter(Boolean);
 }
 
+/* Polite / past endings jammed together without 。or spaces: …ます…ます / …ました… */
+function splitJapanesePoliteBoundaries(s) {
+  if (!s || countCjkChars(s) <= 4) return null;
+  let t = s;
+  t = t.replace(/(ませんでした)(?=[\u3040-\u30ff\u4e00-\u9fff])/g, '$1\u0000');
+  t = t.replace(/(ました)(?=[\u3040-\u30ff\u4e00-\u9fff])/g, '$1\u0000');
+  t = t.replace(/(ます)(?=[\u3040-\u30ff\u4e00-\u9fff])(?![かねよ])/g, '$1\u0000');
+  const poly = t.split('\u0000').map(x => x.trim()).filter(x => x.length > 1);
+  return poly.length > 1 ? poly : null;
+}
+
 /* Japanese run-ons often omit 、 between actions (て-chain). Split into separate task strings. */
 function splitLongJapaneseRunOn(s) {
   const cjk = countCjkChars(s);
@@ -4045,17 +4056,24 @@ function splitLongJapaneseRunOn(s) {
     return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
   }
 
+  const politeBits = splitJapanesePoliteBoundaries(s);
+  if (politeBits) {
+    const joined = politeBits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
+
   const out = [];
   let buf = '';
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
-    if (ch === 'て' && buf.length >= 4 && i < s.length - 4) {
+    if (ch === 'て' && buf.length >= 4 && i < s.length - 3) {
       const tailSlice = s.slice(i + 1);
       if (/につい$|におい$|ように$/.test(buf)) {
         buf += ch;
         continue;
       }
-      if (/^[\u3040-\u30ff\u4e00-\u9fff]{3,}/.test(tailSlice)) {
+      /* Next chunk is another predicate even without spaces / 、 */
+      if (/^[\u3040-\u30ff\u4e00-\u9fff]{2,}/.test(tailSlice)) {
         /* Do not break ～て + auxiliary / compound (keep grammatical units together). */
         const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある|いく|きる|あげる|もらう)/.test(tailSlice);
         if (!badFollow) {
@@ -4076,11 +4094,18 @@ function splitLongJapaneseRunOn(s) {
 }
 
 function splitLongEnglishRunOn(s) {
-  if (s.length < 56) return [s];
   let bits = s.split(/\s*(?:\band\b|\bthen\b|\balso\b|\bplus\b)\s+/i);
   if (bits.length > 1) return bits.map(x => x.trim()).filter(x => x.length > 1);
   bits = s.split(/\s*,\s+/).map(x => x.trim()).filter(x => x.length > 3);
   if (bits.length > 1) return bits;
+  /* No spaces / commas: split before common task verbs (callmombuy… → callmom | buy…) */
+  if (!/\s/.test(s) && s.length > 18) {
+    const glued = s.split(/(?<=[a-z])(?=call|email|e-?mail|text|buy|send|book|pay|meet|visit|schedule|remind|finish|return|pick|drop|go|get|make|take|order|print|review|write|read|clean|cook|walk|run)(?=[a-z])/i)
+      .map(x => x.trim())
+      .filter(x => x.length > 2);
+    if (glued.length > 1) return glued;
+  }
+  if (s.length < 56) return [s];
   return [s];
 }
 
@@ -4129,9 +4154,10 @@ function localClassify(transcript, defaultTiming) {
 
   const parts = base.flatMap(p => {
     const ck = countCjkChars(p);
-    /* Japanese: only split when there are more than 4 Japanese script characters; splitter uses connectors / 、 / て-context. */
+    /* Japanese: only split when there are more than 4 Japanese script characters; splitter uses connectors / 、 / ます / て-context. */
     if (ck > 4) return splitLongJapaneseRunOn(p);
-    if (ck < 4 && p.length > 56) return splitLongEnglishRunOn(p);
+    /* English (or roman text): long lines, or glued words with no spaces — still try to break into tasks. */
+    if (ck < 4 && (p.length > 56 || (!/\s/.test(p) && p.length > 18))) return splitLongEnglishRunOn(p);
     return [p];
   });
 

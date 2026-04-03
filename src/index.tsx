@@ -50,7 +50,9 @@ The user spoke or typed the following: "${transcript}"
 
 Your job:
 1. Split this into INDIVIDUAL actionable tasks (one task per item). Never return one giant task when the user listed several things.
-   Japanese input often chains actions with て (e.g. メールして資料を送る) or omits 、 between items — still output separate JSON objects for each distinct action.
+   Input may have NO spaces, NO commas (、), NO periods (。), and NO English punctuation — infer boundaries from meaning and grammar anyway.
+   Japanese: chains with て/で (e.g. 銀行に行って買い物して), polite run-ons (e.g. …ます…ます / …した…した), or plain verbs jammed together — still output one JSON object per distinct action.
+   English: infer separate tasks from conjunctions or topic shifts even when the user never typed spaces or commas.
 2. For each task output:
    - "text": clean concise task in the SAME LANGUAGE as the input. Remove timing words like "today","this week","今日","今週".
    - "timing": exactly one of "Today", "This Week", "Later" — always English.
@@ -73,6 +75,12 @@ Output: [{"text":"クライアントにメールする","timing":"Today","catego
 
 Input (Japanese, no commas): "銀行に行って買い物してレポートを書く"
 Output: [{"text":"銀行に行く","timing":"This Week","category":"Personal"},{"text":"買い物する","timing":"This Week","category":"Home"},{"text":"レポートを書く","timing":"This Week","category":"Work"}]
+
+Input (Japanese, no punctuation or spaces): "資料をまとめますクライアントにメールします会議の準備をします"
+Output: [{"text":"資料をまとめる","timing":"This Week","category":"Work"},{"text":"クライアントにメールする","timing":"This Week","category":"Work"},{"text":"会議の準備をする","timing":"This Week","category":"Work"}]
+
+Input (English, no punctuation): "callmomemailclientbuygroceries"
+Output: [{"text":"Call mom","timing":"This Week","category":"Home"},{"text":"Email client","timing":"This Week","category":"Work"},{"text":"Buy groceries","timing":"This Week","category":"Home"}]
 
 Return ONLY a valid JSON array. No markdown, no explanation.`
 
