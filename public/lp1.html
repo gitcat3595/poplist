@@ -1475,8 +1475,8 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   border: 1px solid var(--blue-mid);
 }
 
-/* ── LEGACY BLUE CTA (restored component) ── */
-.cta-section {
+/* ── Bold CTA module — bottom LP strip (blue gradient card + white button) ── */
+.lp-bold-cta-module {
   margin: 0 16px 48px;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E") repeat,
@@ -1490,31 +1490,31 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   position: relative;
   overflow: hidden;
 }
-.cta-section::before {
+.lp-bold-cta-module::before {
   content: '';
   position: absolute; top: -40px; right: -40px;
   width: 160px; height: 160px;
   background: rgba(255,255,255,.06);
   border-radius: 50%;
 }
-.cta-section::after {
+.lp-bold-cta-module::after {
   content: '';
   position: absolute; bottom: -60px; left: -30px;
   width: 200px; height: 200px;
   background: rgba(255,255,255,.04);
   border-radius: 50%;
 }
-.cta-title {
+.lp-bold-cta-title {
   font-size: 26px; font-weight: 900; letter-spacing: -.7px; line-height: 1.24;
   color: #fff; margin-bottom: 12px;
   position: relative; z-index: 1;
 }
-.cta-sub {
+.lp-bold-cta-sub {
   font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.76);
   font-weight: 500; margin-bottom: 28px;
   position: relative; z-index: 1;
 }
-.cta-btn-white {
+.lp-bold-cta-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: #fff; color: var(--blue);
   font-size: 15px; font-weight: 800; letter-spacing: -.2px;
@@ -1523,10 +1523,10 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   transition: var(--tr);
   position: relative; z-index: 1;
 }
-.cta-btn-white:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
-.cta-btn-white:active { transform: scale(.97) }
-.cta-btn-white svg { width: 16px; height: 16px }
-.cta-note-white {
+.lp-bold-cta-btn:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2) }
+.lp-bold-cta-btn:active { transform: scale(.97) }
+.lp-bold-cta-btn svg { width: 16px; height: 16px }
+.lp-bold-cta-note {
   margin-top: 14px; font-size: 11px; color: rgba(255,255,255,.58);
   font-weight: 500; position: relative; z-index: 1;
 }
@@ -2033,17 +2033,18 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     </div><!-- /design-philosophy-module -->
   </section><!-- /design-philosophy-section -->
 
-  <section class="cta-section" aria-labelledby="lp-legacy-cta-heading">
-    <h2 id="lp-legacy-cta-heading" class="cta-title"><span data-en="Try it free." data-ja="無料でつかえます。">無料でつかえます。</span></h2>
-    <p class="cta-sub" data-en="Just open your browser. Try and see if it fits you." data-ja="ブラウザを開くだけ。<br>自分にあうか試せます。">ブラウザを開くだけ。<br>自分にあうか試せます。</p>
-    <a href="/" class="cta-btn-white">
+  <!-- Bold CTA module: closing strip after design philosophy -->
+  <section class="lp-bold-cta-module" data-lp-section="bold-cta" aria-labelledby="lp-bold-cta-heading">
+    <h2 id="lp-bold-cta-heading" class="lp-bold-cta-title"><span data-en="Try it free right now." data-ja="今すぐ無料でつかえます。">Try it free right now.</span></h2>
+    <p class="lp-bold-cta-sub" data-en="Just open your browser. Try and see if it fits you." data-ja="ブラウザを開くだけ。自分にあうか試せます。">Just open your browser. Try and see if it fits you.</p>
+    <a href="/" class="lp-bold-cta-btn">
       <span data-en="Try without signing in" data-ja="ログインなしで試す">ログインなしで試す</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
     </a>
-    <p class="cta-note-white" data-en="No account needed · Works in your browser" data-ja="アカウント不要・ブラウザで動作">アカウント不要・ブラウザで動作</p>
+    <p class="lp-bold-cta-note" data-en="No account required. Works in your browser.<br>Use Chrome or Google on your smartphone (currently not available on Safari)." data-ja="アカウント不要。ブラウザで動作。<br>スマートフォンでは Chrome または Google アプリをご利用ください（現在 Safari ではご利用いただけません）。">No account required. Works in your browser.<br>Use Chrome or Google on your smartphone (currently not available on Safari).</p>
   </section>
 
   <div style="display:none;">
