@@ -7,133 +7,473 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-RPV42GPL3T');
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Poplist — Account</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/design-system.css" />
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <style>
-    :root {
-      --bg:#eceef2; --card:#fff; --border:#d4d7dd; --t1:#111; --t2:#6b7280; --blue:#3b82f6;
-      --bad:#b91c1c; --rp:16px; --sh:0 2px 10px rgba(0,0,0,.08);
-    }
-    * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; background: var(--bg); color: var(--t1);
-      font-family: "Plus Jakarta Sans", system-ui, sans-serif; padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--t1);
+      font-family: var(--font, "Plus Jakarta Sans", system-ui, sans-serif);
+      -webkit-font-smoothing: antialiased;
     }
-    .wrap { max-width: 440px; margin: 0 auto; }
-    .card {
-      width: 100%; background: var(--card); border: 1px solid var(--border);
-      border-radius: 20px; box-shadow: var(--sh); padding: 22px; margin-bottom: 14px;
+    body.lang-ja { font-family: "Plus Jakarta Sans", "Noto Sans JP", system-ui, sans-serif; }
+
+    .account-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px 16px 32px;
+      box-sizing: border-box;
     }
-    .logo { text-align: center; font-size: 22px; font-weight: 900; letter-spacing: -.4px; margin-bottom: 6px; }
-    .logo em {
-      display:inline-block; width:8px; height:8px; background: var(--blue); border-radius:50%;
-      margin-left:2px; vertical-align: super; font-style: normal;
+
+    .account-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
-    h1 { margin: 0 0 6px; text-align: center; font-size: 20px; }
-    .sub { margin: 0 0 18px; text-align: center; color: var(--t2); font-size: 13px; }
-    .tier {
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 999px;
-      border: 1px solid var(--border); margin: 0 auto 16px; width: fit-content;
+    .account-back {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--t2);
+      text-decoration: none;
     }
-    .tier.pro { color: #16a34a; border-color: rgba(22,163,74,.28); background: rgba(22,163,74,.08); }
-    .tier.free { color: var(--t2); background: #f3f4f6; }
-    .section-label {
-      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
-      color: var(--t2); margin: 0 0 10px;
+    .account-back:hover { color: var(--blue); }
+    .account-lang {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border-radius: var(--rp);
+      padding: 3px;
+      gap: 2px;
     }
-    .btn, input {
-      width: 100%; border-radius: var(--rp); border: 1px solid var(--border); padding: 12px 14px; font: inherit;
-      min-height: 44px;
+    .account-lang button {
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: var(--rp);
+      color: var(--t2);
+      cursor: pointer;
+      font-family: inherit;
     }
-    .btn {
-      background: #fff; font-weight: 700; cursor: pointer; text-align: center;
-      text-decoration: none; color: var(--t1); display: inline-block;
+    .account-lang button.active {
+      background: var(--blue);
+      color: #fff;
     }
-    .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
-    .btn.danger { background: #fff; border-color: rgba(185,28,28,.35); color: var(--bad); }
-    .btn + .btn, input + input, .field { margin-top: 10px; }
-    .note { margin-top: 8px; font-size: 12px; color: var(--t2); line-height: 1.5; }
-    .back { margin-top: 14px; text-align: center; }
-    .back a { color: var(--t2); text-decoration: none; font-size: 13px; font-weight: 600; }
+
+    /* Same card feel as settings modal sheet */
+    .account-sheet {
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shcard);
+      padding: 20px 18px 28px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--t1);
+      margin: 0 0 18px;
+    }
+
+    .settings-section { margin-bottom: 20px; }
+    .settings-section:last-child { margin-bottom: 0; }
+
+    .settings-section-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--t3);
+      margin-bottom: 8px;
+    }
+
+    .firebase-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--raised);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .firebase-status__main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .firebase-status__text {
+      min-width: 0;
+      flex: 1;
+    }
+    .firebase-status__text .status-title {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t2);
+    }
+    .firebase-status__text .status-sub {
+      display: block;
+      margin: 2px 0 0;
+      font-size: 11px;
+      color: var(--t3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .fb-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #16a34a;
+    }
+
+    .acct-tier-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--t2);
+      background: var(--raised);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .acct-tier-badge.is-pro {
+      color: #16a34a;
+      border-color: rgba(22, 163, 74, 0.28);
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    /* PRO promo row — matches Customise + PRO chip + Get PRO */
+    .account-plan-block {
+      margin-top: 4px;
+    }
+    .account-free-line {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t2);
+      margin: 0 0 10px;
+      line-height: 1.45;
+    }
+    .pro-label-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 0 4px;
+    }
+    .pro-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      background: var(--blue-lt);
+      border: 1px solid var(--blue-glow);
+      border-radius: 20px;
+      color: var(--blue);
+      letter-spacing: 0.3px;
+    }
+    .account-pro-line {
+      flex: 1;
+      min-width: 140px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t2);
+      line-height: 1.4;
+    }
+    .pro-link-btn {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--t2);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: var(--tr);
+      white-space: nowrap;
+    }
+    .pro-link-btn:hover {
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+    .account-compare-link {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .account-compare-link:hover { text-decoration: underline; }
+
+    .account-pro-note {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t2);
+      margin: 8px 0 0;
+      line-height: 1.45;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--t1);
+      margin: 0;
+    }
+    .settings-row-sub {
+      font-size: 11px;
+      color: var(--t3);
+      margin: 2px 0 0;
+    }
+    .settings-row > div:first-child { flex: 1; min-width: 0; }
+    .settings-row-right {
+      font-size: 13px;
+      color: var(--t2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .acct-text-btn {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--blue);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .acct-text-btn:hover {
+      border-color: var(--blue);
+      background: var(--blue-lt);
+    }
+    .acct-text-btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .acct-panel {
+      padding: 12px 0 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .acct-panel:last-of-type { border-bottom: none; }
+    .acct-panel input {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      margin-bottom: 8px;
+      background: var(--card);
+      color: var(--t1);
+    }
+    .acct-panel input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-lt);
+    }
+    .acct-panel-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .acct-primary-btn {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: none;
+      background: var(--blue);
+      color: #fff;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .acct-primary-btn:hover { filter: brightness(0.95); }
+
+    .acct-danger-btn {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(185, 28, 28, 0.35);
+      background: var(--card);
+      color: #b91c1c;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .acct-danger-btn:hover {
+      background: #fef2f2;
+    }
+
+    .oauth-note {
+      font-size: 11px;
+      color: var(--t3);
+      margin: 4px 0 0;
+      line-height: 1.4;
+    }
+
     .hidden { display: none !important; }
+
     .toast {
-      position: fixed; left: 50%; top: 50%;
+      position: fixed;
+      left: 50%;
+      top: 50%;
       transform: translate(-50%, -50%) translateY(10px);
-      padding: 10px 16px; border-radius: 999px;
-      background: rgba(17,17,17,.92); color: #fff; font-size: 13px; font-weight: 500;
-      box-shadow: 0 8px 24px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
-      transition: opacity .2s ease, transform .2s ease;
-      z-index: 50; max-width: min(92vw, 420px); text-align: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(17, 17, 17, 0.92);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 50;
+      max-width: min(92vw, 420px);
+      text-align: center;
     }
-    .toast.show { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
-    .lang-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
-    .lang-row button {
-      border: 1px solid var(--border); background: #fff; border-radius: 999px;
-      padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--t2);
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(0);
     }
-    .lang-row button.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="logo">Poplist<em></em></div>
-      <div class="lang-row">
+  <div class="account-shell">
+    <div class="account-top">
+      <a href="/" class="account-back" id="backLink">← Back to app</a>
+      <div class="account-lang">
         <button type="button" id="langEn" class="active">EN</button>
-        <button type="button" id="langJa">日本語</button>
+        <button type="button" id="langJa">JP</button>
       </div>
-      <h1 id="pageTitle">Account</h1>
-      <p class="sub" id="pageSub">Plans and sign-in details</p>
-      <div id="tierBadge" class="tier free">FREE</div>
     </div>
 
-    <div class="card">
-      <div class="section-label" id="lblPlans">Plans</div>
-      <a class="btn" id="plansLink" href="plans.html?lang=en#compare-chart">Free vs PRO comparison</a>
-      <a class="btn primary" id="upgradeLink" href="plans.html?lang=en#compare-chart" style="margin-top:10px">Upgrade to PRO</a>
-      <p class="note" id="plansNote">See feature limits and pricing. Your Free account includes up to 20 active tasks.</p>
-    </div>
+    <div class="account-sheet">
+      <h1 class="modal-title" id="pageTitle">Account</h1>
 
-    <div class="card" id="emailCard">
-      <div class="section-label" id="lblEmail">Email</div>
-      <p class="note" id="emailCurrent" style="margin-bottom:10px"></p>
-      <div id="emailEditBlock" class="hidden">
-        <input type="email" id="emailNew" autocomplete="email" data-ph-en="New email" data-ph-ja="新しいメール" />
-        <input type="password" id="emailReauthPwd" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
-        <button type="button" class="btn primary" id="emailSaveBtn">Update email</button>
+      <!-- ACCOUNT (same structure as Settings) -->
+      <div class="settings-section">
+        <div class="settings-section-label" id="lblSectionAccount">Account</div>
+
+        <div class="firebase-status">
+          <div class="firebase-status__main">
+            <div class="fb-dot" id="statusDot"></div>
+            <div class="firebase-status__text">
+              <p class="status-title" id="statusTitle">Signed in</p>
+              <span class="status-sub" id="statusEmail"></span>
+            </div>
+            <span class="acct-tier-badge" id="tierBadge">FREE</span>
+          </div>
+        </div>
+
+        <div class="account-plan-block" id="planBlockFree">
+          <p class="account-free-line" id="freeCapLine">Free plan: up to 20 tasks.</p>
+          <div class="pro-label-row">
+            <span class="pro-badge">PRO</span>
+            <span class="account-pro-line" id="proPitchLine">PRO: unlimited tasks and more features.</span>
+            <a class="pro-link-btn" id="seeProChip" href="plans.html?lang=en#compare-chart">See PRO</a>
+          </div>
+          <a class="account-compare-link" id="compareLink" href="plans.html?lang=en#compare-chart">Free vs PRO comparison</a>
+        </div>
+
+        <p class="account-pro-note hidden" id="planBlockPro">You’re on PRO. Thank you for your support.</p>
       </div>
-      <p class="note hidden" id="emailOAuthNote"></p>
-    </div>
 
-    <div class="card" id="pwdCard">
-      <div class="section-label" id="lblPassword">Password</div>
-      <div id="pwdEditBlock" class="hidden">
-        <input type="password" id="pwdCurrent" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
-        <input type="password" id="pwdNew" autocomplete="new-password" data-ph-en="New password (6+ characters)" data-ph-ja="新しいパスワード（6文字以上）" />
-        <input type="password" id="pwdNew2" autocomplete="new-password" data-ph-en="Confirm new password" data-ph-ja="新しいパスワード（確認）" />
-        <button type="button" class="btn primary" id="pwdSaveBtn">Update password</button>
+      <!-- Email / Password -->
+      <div class="settings-section">
+        <div class="settings-section-label" id="lblSectionSignIn">Sign-in details</div>
+
+        <div class="settings-row">
+          <div>
+            <p class="settings-row-label" id="lblEmail">Email</p>
+            <p class="settings-row-sub" id="emailDisplay"></p>
+            <p class="oauth-note hidden" id="emailOAuthNote"></p>
+          </div>
+          <div class="settings-row-right">
+            <button type="button" class="acct-text-btn" id="emailEditToggle">Edit</button>
+          </div>
+        </div>
+        <div class="acct-panel hidden" id="emailEditPanel">
+          <input type="email" id="emailNew" autocomplete="email" data-ph-en="New email" data-ph-ja="新しいメール" />
+          <input type="password" id="emailReauthPwd" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
+          <div class="acct-panel-actions">
+            <button type="button" class="acct-primary-btn" id="emailSaveBtn">Save email</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <p class="settings-row-label" id="lblPassword">Password</p>
+            <p class="settings-row-sub" id="pwdHint">Change your password</p>
+            <p class="oauth-note hidden" id="pwdOAuthNote"></p>
+          </div>
+          <div class="settings-row-right">
+            <button type="button" class="acct-text-btn" id="pwdEditToggle">Edit</button>
+          </div>
+        </div>
+        <div class="acct-panel hidden" id="pwdEditPanel">
+          <input type="password" id="pwdCurrent" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
+          <input type="password" id="pwdNew" autocomplete="new-password" data-ph-en="New password (6+ characters)" data-ph-ja="新しいパスワード（6文字以上）" />
+          <input type="password" id="pwdNew2" autocomplete="new-password" data-ph-en="Confirm new password" data-ph-ja="新しいパスワード（確認）" />
+          <div class="acct-panel-actions">
+            <button type="button" class="acct-primary-btn" id="pwdSaveBtn">Save password</button>
+          </div>
+        </div>
       </div>
-      <p class="note hidden" id="pwdOAuthNote"></p>
-    </div>
 
-    <div class="card">
-      <div class="section-label" id="lblDanger">Danger zone</div>
-      <input type="password" id="deletePwd" class="hidden" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
-      <button type="button" class="btn danger" id="deleteBtn">Delete account</button>
-      <p class="note" id="deleteHint">This permanently removes your Poplist sign-in. You may need to sign in again with Google if you use Google.</p>
+      <!-- Delete -->
+      <div class="settings-section">
+        <div class="settings-section-label" id="lblSectionDanger">Danger zone</div>
+        <div class="settings-row">
+          <div>
+            <p class="settings-row-label" id="lblDelete">Delete account</p>
+            <p class="settings-row-sub" id="deleteSub">Permanently remove your sign-in and data.</p>
+          </div>
+          <div class="settings-row-right">
+            <button type="button" class="acct-danger-btn" id="deleteBtn">Delete</button>
+          </div>
+        </div>
+        <input type="password" id="deletePwd" class="hidden" autocomplete="current-password" data-ph-en="Current password" data-ph-ja="現在のパスワード" />
+      </div>
     </div>
-
-    <p class="back"><a href="/" id="backLink">← Back to app</a></p>
   </div>
   <div class="toast" id="toast"></div>
 
@@ -150,53 +490,65 @@
     const COPY = {
       en: {
         title: 'Account',
-        sub: 'Plans and sign-in details',
-        plans: 'Plans',
+        sectionAccount: 'Account',
+        sectionSignIn: 'Sign-in details',
+        sectionDanger: 'Danger zone',
+        signedIn: 'Signed in',
+        freeCap: 'Free plan: up to 20 tasks only.',
+        proPitch: 'PRO: unlimited tasks and more features.',
+        seePro: 'See PRO',
         compare: 'Free vs PRO comparison',
-        upgrade: 'Upgrade to PRO',
-        plansNote: 'See feature limits and pricing. Your Free account includes up to 50 active tasks.',
+        proThanks: 'You’re on PRO. Thank you for your support.',
         email: 'Email',
-        updateEmail: 'Update email',
         password: 'Password',
-        updatePwd: 'Update password',
-        danger: 'Danger zone',
-        delete: 'Delete account',
-        deleteHint: 'This permanently deletes your account sign-in. Task data may be removed per our retention policy.',
+        pwdHint: 'Change your password',
+        edit: 'Edit',
+        saveEmail: 'Save email',
+        savePwd: 'Save password',
+        delete: 'Delete',
+        deleteSub: 'Permanently remove your sign-in and data.',
         back: '← Back to app',
-        oauthEmail: 'You signed in with Google or Apple. To change your email, manage it with your provider.',
-        oauthPwd: 'Password sign-in is not used for this account.',
-        toastSignedIn: 'Saved.',
+        oauthEmail: 'Signed in with Google or Apple — email is managed by your provider.',
+        oauthPwd: 'Password isn’t used for this sign-in.',
+        toastSaved: 'Saved.',
         toastDeleted: 'Account deleted.',
         confirmDelete: 'Delete your account permanently? This cannot be undone.',
         pwdMismatch: 'New passwords do not match.',
         needPwd: 'Enter your current password.',
         needEmail: 'Enter a valid email.',
-        plusAlias: "Email addresses with '+' in the name (e.g. name+tag@mail.com) aren't allowed.",
+        plusAlias: "Email addresses with '+' in the name aren't allowed.",
+        weakPwd: 'Use 6+ characters.',
       },
       ja: {
         title: 'アカウント',
-        sub: 'プランとサインイン情報',
-        plans: 'プラン',
-        compare: '無料とPROの比較',
-        upgrade: 'PROにアップグレード',
-        plansNote: '機能と料金を確認できます。無料プランはアクティブなタスク最大20件までです。',
+        sectionAccount: 'アカウント',
+        sectionSignIn: 'サインイン情報',
+        sectionDanger: '危険な操作',
+        signedIn: 'サインイン済み',
+        freeCap: 'Freeは20タスクのみ',
+        proPitch: 'PROならタスク無制限・多様な機能',
+        seePro: 'Proを見る',
+        compare: '無料とPROを比較',
+        proThanks: 'PROプランをご利用中です。ありがとうございます。',
         email: 'メール',
-        updateEmail: 'メールを更新',
         password: 'パスワード',
-        updatePwd: 'パスワードを更新',
-        danger: '危険な操作',
-        delete: 'アカウントを削除',
-        deleteHint: 'サインインが永久に削除されます。タスクデータはポリシーに従い削除されます。',
+        pwdHint: 'パスワードを変更',
+        edit: '編集',
+        saveEmail: 'メールを保存',
+        savePwd: 'パスワードを保存',
+        delete: '削除',
+        deleteSub: 'サインインとデータを完全に削除します。',
         back: '← アプリに戻る',
-        oauthEmail: 'GoogleまたはAppleでサインインしています。メールの変更は各サービスで行ってください。',
-        oauthPwd: 'このアカウントではパスワードは使われていません。',
-        toastSignedIn: '保存しました。',
+        oauthEmail: 'GoogleまたはAppleでサインイン中。メールは各サービスで管理されます。',
+        oauthPwd: 'このサインインではパスワードは使われていません。',
+        toastSaved: '保存しました。',
         toastDeleted: 'アカウントを削除しました。',
         confirmDelete: 'アカウントを完全に削除しますか？この操作は取り消せません。',
         pwdMismatch: '新しいパスワードが一致しません。',
         needPwd: '現在のパスワードを入力してください。',
         needEmail: '有効なメールアドレスを入力してください。',
-        plusAlias: '「+」付きのメール（例：name+tag@mail.com）は使えません。',
+        plusAlias: '「+」付きのメールは使えません。',
+        weakPwd: '6文字以上にしてください。',
       }
     };
 
@@ -207,8 +559,10 @@
     if (_params.get('lang') === 'ja' || _params.get('lang') === 'en') {
       localStorage.setItem('lang', lang);
     }
+
     let auth = null;
     let db = null;
+    let isProUser = false;
     const toast = document.getElementById('toast');
 
     function t(k) { return COPY[lang][k] || COPY.en[k]; }
@@ -220,56 +574,64 @@
       setTimeout(() => toast.classList.remove('show'), 2400);
     }
 
-    function setLang(next) {
-      lang = next;
-      localStorage.setItem('lang', lang);
+    function syncPlanLinks() {
+      const q = 'plans.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
+      document.getElementById('seeProChip').href = q;
+      document.getElementById('compareLink').href = q;
+    }
+
+    function applyCopy() {
       document.documentElement.lang = lang === 'ja' ? 'ja' : 'en';
+      document.body.classList.toggle('lang-ja', lang === 'ja');
       document.getElementById('langEn').classList.toggle('active', lang === 'en');
       document.getElementById('langJa').classList.toggle('active', lang === 'ja');
+
       document.getElementById('pageTitle').textContent = t('title');
-      document.getElementById('pageSub').textContent = t('sub');
-      document.getElementById('lblPlans').textContent = t('plans');
-      document.getElementById('plansLink').textContent = t('compare');
-      document.getElementById('upgradeLink').textContent = t('upgrade');
-      document.getElementById('plansNote').textContent = t('plansNote');
+      document.getElementById('lblSectionAccount').textContent = t('sectionAccount');
+      document.getElementById('lblSectionSignIn').textContent = t('sectionSignIn');
+      document.getElementById('lblSectionDanger').textContent = t('sectionDanger');
+      document.getElementById('statusTitle').textContent = t('signedIn');
+      document.getElementById('freeCapLine').textContent = t('freeCap');
+      document.getElementById('proPitchLine').textContent = t('proPitch');
+      document.getElementById('seeProChip').textContent = t('seePro');
+      document.getElementById('compareLink').textContent = t('compare');
+      document.getElementById('planBlockPro').textContent = t('proThanks');
       document.getElementById('lblEmail').textContent = t('email');
       document.getElementById('lblPassword').textContent = t('password');
-      document.getElementById('lblDanger').textContent = t('danger');
-      document.getElementById('emailSaveBtn').textContent = t('updateEmail');
-      document.getElementById('pwdSaveBtn').textContent = t('updatePwd');
+      document.getElementById('pwdHint').textContent = t('pwdHint');
+      document.getElementById('emailEditToggle').textContent = t('edit');
+      document.getElementById('pwdEditToggle').textContent = t('edit');
+      document.getElementById('emailSaveBtn').textContent = t('saveEmail');
+      document.getElementById('pwdSaveBtn').textContent = t('savePwd');
+      document.getElementById('lblDelete').textContent = t('delete');
+      document.getElementById('deleteSub').textContent = t('deleteSub');
       document.getElementById('deleteBtn').textContent = t('delete');
-      document.getElementById('deleteHint').textContent = t('deleteHint');
       document.getElementById('backLink').textContent = t('back');
       document.getElementById('emailOAuthNote').textContent = t('oauthEmail');
       document.getElementById('pwdOAuthNote').textContent = t('oauthPwd');
-      const ph = (el) => {
+
+      const ph = (id) => {
+        const el = document.getElementById(id);
         if (!el || !el.dataset.phEn) return;
         el.placeholder = lang === 'ja' ? el.dataset.phJa : el.dataset.phEn;
       };
-      ph(document.getElementById('emailNew'));
-      ph(document.getElementById('emailReauthPwd'));
-      ph(document.getElementById('pwdCurrent'));
-      ph(document.getElementById('pwdNew'));
-      ph(document.getElementById('pwdNew2'));
-      ph(document.getElementById('deletePwd'));
+      ph('emailNew');
+      ph('emailReauthPwd');
+      ph('pwdCurrent');
+      ph('pwdNew');
+      ph('pwdNew2');
+      ph('deletePwd');
       syncPlanLinks();
     }
 
-    function syncPlanLinks() {
-      const q = 'plans.html?lang=' + encodeURIComponent(lang) + '#compare-chart';
-      document.getElementById('plansLink').href = q;
-      document.getElementById('upgradeLink').href = q;
-    }
+    document.getElementById('langEn').addEventListener('click', () => { lang = 'en'; localStorage.setItem('lang', lang); applyCopy(); });
+    document.getElementById('langJa').addEventListener('click', () => { lang = 'ja'; localStorage.setItem('lang', lang); applyCopy(); });
 
-    document.getElementById('langEn').addEventListener('click', () => setLang('en'));
-    document.getElementById('langJa').addEventListener('click', () => setLang('ja'));
-
-    try {
-      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-      auth = firebase.auth();
-      db = firebase.firestore();
-    } catch (e) {
-      console.warn(e);
+    function isBlockedPlusAliasEmail(email) {
+      if (!email || typeof email !== 'string') return false;
+      const at = email.indexOf('@');
+      if (at <= 0) return false;
+      return email.slice(0, at).includes('+');
     }
 
     function hasPasswordProvider(user) {
@@ -282,29 +644,55 @@
       return user.providerData.some(p => p.providerId === 'apple.com');
     }
 
-    async function loadProBadge(uid) {
-      const el = document.getElementById('tierBadge');
+    document.getElementById('emailEditToggle').addEventListener('click', () => {
+      const p = document.getElementById('emailEditPanel');
+      if (document.getElementById('emailEditToggle').disabled) return;
+      p.classList.toggle('hidden');
+    });
+    document.getElementById('pwdEditToggle').addEventListener('click', () => {
+      const p = document.getElementById('pwdEditPanel');
+      if (document.getElementById('pwdEditToggle').disabled) return;
+      p.classList.toggle('hidden');
+    });
+
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    } catch (e) {
+      console.warn(e);
+    }
+
+    async function loadPro(uid) {
+      isProUser = false;
       if (!db || !uid) return;
       try {
         const doc = await db.collection('users').doc(uid).get();
-        const isPro = doc.exists && doc.data()?.isPro === true;
-        el.textContent = isPro ? 'PRO' : 'FREE';
-        el.className = 'tier ' + (isPro ? 'pro' : 'free');
+        isProUser = doc.exists && doc.data()?.isPro === true;
       } catch (_) {
-        el.textContent = 'FREE';
-        el.className = 'tier free';
+        isProUser = false;
       }
+      const badge = document.getElementById('tierBadge');
+      badge.textContent = isProUser ? 'PRO' : 'FREE';
+      badge.classList.toggle('is-pro', isProUser);
+      document.getElementById('planBlockFree').classList.toggle('hidden', isProUser);
+      document.getElementById('planBlockPro').classList.toggle('hidden', !isProUser);
     }
 
     function paintUser(user) {
       const email = user.email || '';
-      document.getElementById('emailCurrent').textContent = email || '—';
+      document.getElementById('statusEmail').textContent = email || '—';
+      document.getElementById('emailDisplay').textContent = email || '—';
       const pwdUser = hasPasswordProvider(user);
-      document.getElementById('emailEditBlock').classList.toggle('hidden', !pwdUser);
       document.getElementById('emailOAuthNote').classList.toggle('hidden', pwdUser);
-      document.getElementById('pwdEditBlock').classList.toggle('hidden', !pwdUser);
       document.getElementById('pwdOAuthNote').classList.toggle('hidden', pwdUser);
-      document.getElementById('deletePwd').classList.toggle('hidden', !pwdUser);
+      document.getElementById('pwdHint').classList.toggle('hidden', !pwdUser);
+      document.getElementById('emailEditToggle').disabled = !pwdUser;
+      document.getElementById('pwdEditToggle').disabled = !pwdUser;
+      if (!pwdUser) {
+        document.getElementById('emailEditPanel').classList.add('hidden');
+        document.getElementById('pwdEditPanel').classList.add('hidden');
+      }
       if (document.getElementById('emailNew')) document.getElementById('emailNew').value = email;
     }
 
@@ -314,7 +702,7 @@
           window.location.href = '/auth.html';
           return;
         }
-        await loadProBadge(user.uid);
+        await loadPro(user.uid);
         paintUser(user);
       });
     } else {
@@ -322,7 +710,7 @@
       setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
     }
 
-    document.getElementById('emailSaveBtn')?.addEventListener('click', async () => {
+    document.getElementById('emailSaveBtn').addEventListener('click', async () => {
       const user = auth.currentUser;
       if (!user || !hasPasswordProvider(user)) return;
       const next = document.getElementById('emailNew').value.trim();
@@ -335,21 +723,22 @@
         await user.reauthenticateWithCredential(cred);
         await user.updateEmail(next);
         document.getElementById('emailReauthPwd').value = '';
-        showToast(t('toastSignedIn'));
+        document.getElementById('emailEditPanel').classList.add('hidden');
+        showToast(t('toastSaved'));
         paintUser(user);
       } catch (e) {
         showToast(e.message || 'Error');
       }
     });
 
-    document.getElementById('pwdSaveBtn')?.addEventListener('click', async () => {
+    document.getElementById('pwdSaveBtn').addEventListener('click', async () => {
       const user = auth.currentUser;
       if (!user || !hasPasswordProvider(user)) return;
       const cur = document.getElementById('pwdCurrent').value;
       const p1 = document.getElementById('pwdNew').value;
       const p2 = document.getElementById('pwdNew2').value;
       if (!cur) { showToast(t('needPwd')); return; }
-      if (p1.length < 6) { showToast(lang === 'ja' ? '6文字以上にしてください' : 'Use 6+ characters'); return; }
+      if (p1.length < 6) { showToast(t('weakPwd')); return; }
       if (p1 !== p2) { showToast(t('pwdMismatch')); return; }
       try {
         const cred = firebase.auth.EmailAuthProvider.credential(user.email, cur);
@@ -358,20 +747,26 @@
         document.getElementById('pwdCurrent').value = '';
         document.getElementById('pwdNew').value = '';
         document.getElementById('pwdNew2').value = '';
-        showToast(t('toastSignedIn'));
+        document.getElementById('pwdEditPanel').classList.add('hidden');
+        showToast(t('toastSaved'));
       } catch (e) {
         showToast(e.message || 'Error');
       }
     });
 
-    document.getElementById('deleteBtn')?.addEventListener('click', async () => {
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
       if (!confirm(t('confirmDelete'))) return;
       const user = auth.currentUser;
       if (!user) return;
       try {
         if (hasPasswordProvider(user)) {
           const pw = document.getElementById('deletePwd').value;
-          if (!pw) { showToast(t('needPwd')); return; }
+          if (!pw) {
+            document.getElementById('deletePwd').classList.remove('hidden');
+            showToast(t('needPwd'));
+            document.getElementById('deletePwd').focus();
+            return;
+          }
           const cred = firebase.auth.EmailAuthProvider.credential(user.email, pw);
           await user.reauthenticateWithCredential(cred);
         } else if (hasGoogleProvider(user)) {
@@ -391,7 +786,7 @@
       }
     });
 
-    setLang(lang);
+    applyCopy();
   </script>
 </body>
 </html>
