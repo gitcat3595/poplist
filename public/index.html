@@ -4028,6 +4028,12 @@ function splitJapanesePoliteBoundaries(s) {
   return poly.length > 1 ? poly : null;
 }
 
+/* する + next clause starting with kanji (no て) — e.g. …をする会議に出る */
+function splitJapaneseAfterSuruKanji(s) {
+  const parts = s.split(/(?<=する)(?=[\u4e00-\u9fff])/g).map(x => x.trim()).filter(x => x.length > 1);
+  return parts.length > 1 ? parts : null;
+}
+
 /* Japanese run-ons often omit 、 between actions (て-chain). Split into separate task strings. */
 function splitLongJapaneseRunOn(s) {
   const cjk = countCjkChars(s);
@@ -4062,20 +4068,25 @@ function splitLongJapaneseRunOn(s) {
     return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
   }
 
+  const suruBits = splitJapaneseAfterSuruKanji(s);
+  if (suruBits) {
+    const joined = suruBits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
+
+  /* て-form chain — optional cue only; many lists have no て (handled by ます / を / する above). */
   const out = [];
   let buf = '';
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
     if (ch === 'て' && buf.length >= 4 && i < s.length - 3) {
       const tailSlice = s.slice(i + 1);
-      if (/につい$|におい$|ように$/.test(buf)) {
+      if (/につい$|におい$|ように$|くらい$|ばかり$/.test(buf)) {
         buf += ch;
         continue;
       }
-      /* Next chunk is another predicate even without spaces / 、 */
       if (/^[\u3040-\u30ff\u4e00-\u9fff]{2,}/.test(tailSlice)) {
-        /* Do not break ～て + auxiliary / compound (keep grammatical units together). */
-        const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある|いく|きる|あげる|もらう)/.test(tailSlice);
+        const badFollow = /^(しま|おく|いる|いた|ください|みる|くる|あげ|もら|おる|くれ|はい|ある|いく|きる|あげる|もらう|いう|でき|すぎ|たい)/.test(tailSlice);
         if (!badFollow) {
           out.push((buf + 'て').trim());
           buf = '';

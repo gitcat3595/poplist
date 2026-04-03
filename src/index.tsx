@@ -51,7 +51,7 @@ The user spoke or typed the following: "${transcript}"
 Your job:
 1. Split this into INDIVIDUAL actionable tasks (one task per item). Never return one giant task when the user listed several things.
    Input may have NO spaces, NO commas (、), NO periods (。), and NO English punctuation — infer boundaries from meaning and grammar anyway.
-   Japanese: chains with て/で (e.g. 銀行に行って買い物して), polite run-ons (e.g. …ます…ます / …した…した), or plain verbs jammed together — still output one JSON object per distinct action.
+   Japanese: infer boundaries from meaning — do not rely only on て, で, or それから; many inputs have none of these (e.g. …ます…ます, …する…する, or topic shifts with no connector). Chains with て/で (e.g. 銀行に行って買い物して) are one cue among many; still output one JSON object per distinct action.
    English: infer separate tasks from conjunctions or topic shifts even when the user never typed spaces or commas.
 2. For each task output:
    - "text": clean concise task in the SAME LANGUAGE as the input. Remove timing words like "today","this week","今日","今週".
@@ -78,6 +78,9 @@ Output: [{"text":"銀行に行く","timing":"This Week","category":"Personal"},{
 
 Input (Japanese, no punctuation or spaces): "資料をまとめますクライアントにメールします会議の準備をします"
 Output: [{"text":"資料をまとめる","timing":"This Week","category":"Work"},{"text":"クライアントにメールする","timing":"This Week","category":"Work"},{"text":"会議の準備をする","timing":"This Week","category":"Work"}]
+
+Input (Japanese, no て/connector — still multiple tasks): "レポートを提出する請求書を確認する"
+Output: [{"text":"レポートを提出する","timing":"This Week","category":"Work"},{"text":"請求書を確認する","timing":"This Week","category":"Work"}]
 
 Input (English, no punctuation): "callmomemailclientbuygroceries"
 Output: [{"text":"Call mom","timing":"This Week","category":"Home"},{"text":"Email client","timing":"This Week","category":"Work"},{"text":"Buy groceries","timing":"This Week","category":"Home"}]
