@@ -1878,10 +1878,30 @@ GoogleService-Info.plist
   <div class="uf-footer__inner">
     <a href="/" class="uf-footer__logo">Poplist<em></em></a>
     <nav class="uf-footer__nav" aria-label="Footer">
-      <a href="/" data-en="About" data-ja="Poplistについて">About</a>
-      <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
-      <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy" data-ja="プライバシー">Privacy</a>
-      <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+      <div class="uf-footer__group uf-footer__group--open">
+        <button type="button" class="uf-footer__group-toggle" data-group="about">
+          <span data-en="About" data-ja="Poplistについて">About</span>
+          <span class="uf-footer__group-chevron">⌃</span>
+        </button>
+        <div class="uf-footer__group-list" id="footerGroupAbout">
+          <a href="/" data-en="What is Poplist" data-ja="Poplistについて">What is Poplist</a>
+          <a href="/lp1.html" data-en="How to use" data-ja="使い方">How to use</a>
+          <a href="/pricing.html?lang=en#compare-chart" id="footerPlansLink" data-en="Plans" data-ja="プラン">Plans</a>
+          <a href="/#download" data-en="Download" data-ja="ダウンロード">Download</a>
+        </div>
+      </div>
+      <div class="uf-footer__group">
+        <button type="button" class="uf-footer__group-toggle" data-group="support">
+          <span data-en="Support" data-ja="サポート">Support</span>
+          <span class="uf-footer__group-chevron">⌃</span>
+        </button>
+        <div class="uf-footer__group-list" id="footerGroupSupport">
+          <a href="/terms.html?lang=en" data-legal-link="terms" data-en="Terms of Service" data-ja="利用規約">Terms of Service</a>
+          <a href="/privacy.html?lang=en" data-legal-link="privacy" data-en="Privacy Policy" data-ja="プライバシーポリシー">Privacy Policy</a>
+          <a href="/eula.html" data-en="End User License Agreement" data-ja="エンドユーザーライセンス契約">End User License Agreement</a>
+          <a href="/privacy.html?lang=en#security" data-en="Security" data-ja="セキュリティ">Security</a>
+        </div>
+      </div>
     </nav>
     <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
@@ -5114,6 +5134,15 @@ document.getElementById('catTitleHint')?.addEventListener('click', e => {
   showToast(state.lang === 'ja'
     ? 'カテゴリー名をダブルタップすると編集できます。キーワードで自動分類も調整できます。'
     : 'Double-tap a category name to edit it. You can also tune auto-categorisation with keywords.');
+});
+
+// Footer collapsible groups (About / Support)
+document.querySelectorAll('.uf-footer__group-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.closest('.uf-footer__group');
+    if (!group) return;
+    group.classList.toggle('uf-footer__group--open');
+  });
 });
 document.getElementById('newCatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') addCustomCategory(e.target.value);
