@@ -299,13 +299,13 @@ nav {
     <!-- HERO -->
     <div class="hero">
       <div class="plan-pill monthly" id="planPill">
-        <span data-en="Be the first one to try" data-ja="いち早く使ってみるなら">Be the first one to try</span>
+        <span data-en="Be the first to try" data-ja="いち早く使ってみるなら">Be the first to try</span>
       </div>
       <h1 class="hero-title">
-        <span data-en="Receive early launch updates" data-ja="先行ローンチのお知らせを受け取る">Receive early launch updates</span>
+        <span data-en="Get early access to PRO" data-ja="先行ローンチのお知らせを受け取る">Get early access to PRO</span>
       </h1>
       <p class="hero-sub">
-        <span data-en="We're opening Poplist to a limited group first. Join the waitlist and we'll let you know before anyone else." data-ja="Poplistを人数限定で先行公開します。ウェイトリストに登録すると、いちばんにお知らせします。">We're opening Poplist to a limited group first. Join the waitlist and we'll let you know before anyone else.</span>
+        <span data-en="We're opening PRO plan to a limited group first. Join the waitlist and we'll let you know before anyone else." data-ja="Poplistを人数限定で先行公開します。ウェイトリストに登録すると、いちばんにお知らせします。">We're opening PRO plan to a limited group first. Join the waitlist and we'll let you know before anyone else.</span>
       </p>
     </div>
 
@@ -375,11 +375,10 @@ nav {
           <span data-en="Message" data-ja="メッセージ">Message</span>
           <span class="label-optional" data-en="optional" data-ja="任意">optional</span>
         </label>
-        <p class="form-hint" data-en="Requests, questions, a message — anything goes" data-ja="ご要望、ご質問、メッセージなど何でもどうぞ">Requests, questions, a message — anything goes</p>
         <textarea class="form-textarea" id="fieldMessage" rows="3"
-          data-placeholder-en="Optional — type here if you like"
-          data-placeholder-ja="（任意）ここにご入力ください"
-          placeholder="Optional — type here if you like"></textarea>
+          data-placeholder-en="Requests, questions, a message — anything goes"
+          data-placeholder-ja="ご要望、ご質問、メッセージなど何でもどうぞ"
+          placeholder="Requests, questions, a message — anything goes"></textarea>
       </div>
 
     </div>
@@ -387,7 +386,7 @@ nav {
     <div class="submit-area">
       <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        <span data-en="Receive early launch updates" data-ja="先行ローンチのお知らせを受け取る">Receive early launch updates</span>
+        <span data-en="Notify me about PRO plan" data-ja="PROプランの通知を受け取る">Notify me about PRO plan</span>
       </button>
     </div>
 
@@ -559,7 +558,7 @@ function setSubmitIdle() {
   const btn = document.getElementById('submitBtn');
   if (!btn) return;
   btn.disabled = false;
-  const label = currentLang === 'ja' ? '先行ローンチのお知らせを受け取る' : 'Receive early launch updates';
+  const label = currentLang === 'ja' ? 'PROプランの通知を受け取る' : 'Notify me about PRO plan';
   btn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     <span>${label}</span>
