@@ -2105,7 +2105,14 @@ GoogleService-Info.plist
         </div>
         <div class="pro-divider"></div>
         <div class="pro-block">
-          <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">Categories</div>
+          <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">
+            Categories
+            <button type="button" class="cat-edit-hint-btn" id="catTitleHint"
+              title="Tap category name to edit"
+              style="margin-left:6px;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:var(--raised);color:var(--t3);font-size:11px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+              ?
+            </button>
+          </div>
           <div id="catList"></div>
           <div class="add-plus-row" id="addCategoryRow" style="cursor:pointer">
             <span class="add-plus-row-sign">+</span> <span data-en="Add category" data-ja="カテゴリーを追加">Add category</span>
@@ -4655,20 +4662,6 @@ function buildCatList() {
     nameEl.dataset.en = cat.en; nameEl.dataset.ja = cat.ja;
     nameEl.textContent = state.lang==='ja' ? cat.ja : cat.en;
     row.appendChild(nameEl);
-    // Small hint on the default first category to teach rename interaction.
-    if (cat.id === 'work') {
-      const hintBtn = document.createElement('button');
-      hintBtn.type = 'button';
-      hintBtn.className = 'cat-edit-hint-btn';
-      hintBtn.textContent = '?';
-      hintBtn.title = state.lang === 'ja' ? 'カテゴリー名をタップして編集' : 'Tap category name to edit';
-      hintBtn.style.cssText = 'margin-left:4px;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:var(--raised);color:var(--t3);font-size:11px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;';
-      hintBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        showToast(state.lang === 'ja' ? 'カテゴリー名をダブルタップで編集できます' : 'Double-tap a category name to edit');
-      });
-      row.appendChild(hintBtn);
-    }
     const kwLabel = document.createElement('span');
     kwLabel.className = 'cat-item-kw';
     kwLabel.dataset.en = 'add keywords'; kwLabel.dataset.ja = 'キーワード追加';
@@ -5113,6 +5106,14 @@ function addCustomCategory(name) {
 
 document.getElementById('newCatConfirmBtn')?.addEventListener('click', () => {
   addCustomCategory(document.getElementById('newCatInput')?.value || '');
+});
+
+// Categories help hint in section title
+document.getElementById('catTitleHint')?.addEventListener('click', e => {
+  e.stopPropagation();
+  showToast(state.lang === 'ja'
+    ? 'カテゴリー名をダブルタップすると編集できます。キーワードで自動分類も調整できます。'
+    : 'Double-tap a category name to edit it. You can also tune auto-categorisation with keywords.');
 });
 document.getElementById('newCatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') addCustomCategory(e.target.value);
