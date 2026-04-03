@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="/css/unified-footer.css">
+<link rel="stylesheet" href="css/unified-footer.css">
 <style>
 :root {
   --bg:        #ECEEF2;
@@ -41,11 +41,22 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+/* Nav + main + footer module share one 480px column (avoids unstyled footer / stray full-width text on wide viewports). */
+.lp1-shell {
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 0 auto;
+}
 a { text-decoration: none; color: inherit }
 button { cursor:pointer; border:none; background:none; font-family:inherit; color:inherit }
 
-/* ── NAV ── */
-nav {
+/* ── Top NAV only (.lp1-top-nav) — do not use bare `nav` (footer has .uf-footer__nav) ── */
+nav.lp1-top-nav {
   position: sticky; top: 0; z-index: 100;
   width: 100%; max-width: 480px;
   display: flex; align-items: center; justify-content: space-between;
@@ -1668,8 +1679,10 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
 </head>
 <body>
 
+<div class="lp1-shell">
+
 <!-- NAV -->
-<nav>
+<nav class="lp1-top-nav" aria-label="Primary">
   <a href="/" class="nav-logo">Poplist<em></em></a>
   <div class="nav-right">
     <div class="lang-toggle">
@@ -2176,8 +2189,8 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
   
 </div><!-- /page -->
 
-<!-- FOOTER MODULE (same inner markup as index.html) -->
-<footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module">
+<!-- FOOTER MODULE (same inner markup as index.html #siteFooter) -->
+<footer class="uf-footer uf-footer--static uf-footer--align uf-footer--padded footer-module" id="siteFooter">
   <div class="uf-footer__inner">
     <a href="/" class="uf-footer__logo">Poplist<em></em></a>
     <nav class="uf-footer__nav" aria-label="Footer">
@@ -2189,6 +2202,8 @@ body.lang-ja .lp-final-cta-title { font-size: 22px; letter-spacing: 0.03em; }
     <p class="uf-footer__copy" data-en="Poplist 2026 ©" data-ja="Poplist 2026 ©">Poplist 2026 ©</p>
   </div>
 </footer>
+
+</div><!-- /lp1-shell -->
 
 <script>
 /* Due-chip labels on LP export slide (anim chip has no data-en; sync with lang) */
