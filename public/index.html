@@ -4000,11 +4000,12 @@ function countCjkChars(s) {
 
 /* Japanese run-ons often omit 、 between actions (て-chain). Split into separate task strings. */
 function splitLongJapaneseRunOn(s) {
-  const MAX = 34;
   const cjk = countCjkChars(s);
-  if (s.length <= MAX && cjk < 9) return [s];
+  /* Only skip splitting for very short fragments (longer run-ons still get て/connector passes). */
+  if (s.length <= 14 && cjk < 5) return [s];
 
-  let bits = s.split(/(?:^|[\s。、，])(?:また|そして|それから|そのあと|その後|あとで|加えて|なお|ちなみに|および|並びに)\s+/);
+  /* List connectors — split without requiring spaces (speech often has no space after また). */
+  let bits = s.split(/(?:また|そして|それから|そのあと|その後|あとで|加えて|なお|ちなみに|および|並びに|次に)/);
   if (bits.length > 1) {
     return bits.flatMap(b => {
       b = b.trim();
@@ -4022,7 +4023,7 @@ function splitLongJapaneseRunOn(s) {
   let buf = '';
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
-    if (ch === 'て' && buf.length >= 5 && i < s.length - 4) {
+    if (ch === 'て' && buf.length >= 4 && i < s.length - 4) {
       const tailSlice = s.slice(i + 1);
       if (/につい$|におい$|ように$/.test(buf)) {
         buf += ch;
@@ -4098,8 +4099,9 @@ function localClassify(transcript, defaultTiming) {
 
   const parts = base.flatMap(p => {
     const ck = countCjkChars(p);
-    if (ck >= 6 && p.length > 22) return splitLongJapaneseRunOn(p);
-    if (ck < 6 && p.length > 56) return splitLongEnglishRunOn(p);
+    /* Japanese: run て-chain / connector split for medium-length phrases (old gate was >22 chars, so many dictation run-ons were never split). */
+    if (ck >= 4 && p.length > 10) return splitLongJapaneseRunOn(p);
+    if (ck < 4 && p.length > 56) return splitLongEnglishRunOn(p);
     return [p];
   });
 
