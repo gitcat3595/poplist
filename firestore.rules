@@ -1,0 +1,61 @@
+rules_version = '2';
+// Paste into Firebase Console → Firestore → Rules (this file matches the app + notify waitlist).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /tasks/{taskId} {
+      allow read, delete: if request.auth != null
+                           && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read, write, delete: if request.auth != null
+                                 && request.auth.uid == userId;
+    }
+
+    // public/notify.html — anonymous waitlist (view/export in Console only; no client reads)
+    match /waitlist_signups/{docId} {
+      allow create: if request.resource.data.keys().hasOnly([
+            'name', 'email', 'country', 'message', 'plan', 'lang',
+            'consentedLegal', 'consentedMarketing', 'consentMethod',
+            'source', 'userAgent', 'createdAt'
+          ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 200
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 3
+        && request.resource.data.email.size() <= 320
+        && request.resource.data.country is string
+        && request.resource.data.country.size() > 0
+        && request.resource.data.country.size() <= 32
+        && request.resource.data.message is string
+        && request.resource.data.message.size() <= 5000
+        && request.resource.data.plan is string
+        && request.resource.data.plan.size() <= 64
+        && request.resource.data.lang is string
+        && request.resource.data.lang in ['en', 'ja']
+        && request.resource.data.consentedLegal == true
+        && request.resource.data.consentedMarketing == true
+        && request.resource.data.consentMethod is string
+        && request.resource.data.consentMethod.size() <= 64
+        && request.resource.data.source is string
+        && request.resource.data.source.size() <= 64
+        && request.resource.data.userAgent is string
+        && request.resource.data.userAgent.size() <= 500
+        && request.resource.data.createdAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

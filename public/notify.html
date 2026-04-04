@@ -563,16 +563,15 @@ function setLang(lang) {
 
 document.getElementById('fieldCountry')?.addEventListener('change', updateCountryFlag);
 
-// ── Form submission ──
+// ── Form submission: Firestore = source of truth (list in Console → Data → waitlist_signups)
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8",
-  authDomain: "poplist-ai.firebaseapp.com",
-  projectId: "poplist-ai",
-  storageBucket: "poplist-ai.firebasestorage.app",
-  messagingSenderId: "626209561981",
-  appId: "1:626209561981:web:f608569b981c2f56c18014"
+  apiKey: 'AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8',
+  authDomain: 'poplist-ai.firebaseapp.com',
+  projectId: 'poplist-ai',
+  storageBucket: 'poplist-ai.firebasestorage.app',
+  messagingSenderId: '626209561981',
+  appId: '1:626209561981:web:f608569b981c2f56c18014'
 };
-
 let _db = null;
 try {
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -581,12 +580,29 @@ try {
   console.warn('Firebase init failed:', e);
 }
 
-async function saveWaitlistSignup(payload) {
-  if (!_db) throw new Error('Database unavailable');
+async function saveWaitlistToFirestore(payload) {
+  if (!_db) throw new Error('database_unavailable');
   await _db.collection('waitlist_signups').add({
     ...payload,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+}
+
+/** Optional: ping you by email (needs RESEND_* on Cloudflare). Failures are ignored. */
+async function notifyWaitlistAdmin(payload) {
+  try {
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.warn('waitlist admin notify:', res.status, data);
+    }
+  } catch (e) {
+    console.warn('waitlist admin notify failed:', e);
+  }
 }
 
 function setSubmitIdle() {
@@ -618,20 +634,23 @@ async function handleSubmit() {
     <span>${currentLang === 'ja' ? '送信中...' : 'Sending…'}</span>
   `;
 
+  const payload = {
+    name,
+    email: email.toLowerCase(),
+    country,
+    message: message || '',
+    plan,
+    lang: currentLang,
+    consentedLegal: true,
+    consentedMarketing: true,
+    consentMethod: 'submit_implied',
+    source: 'notify_page',
+    userAgent: (navigator.userAgent || '').slice(0, 500)
+  };
+
   try {
-    await saveWaitlistSignup({
-      name,
-      email: email.toLowerCase(),
-      country,
-      message,
-      plan,
-      lang: currentLang,
-      consentedLegal: true,
-      consentedMarketing: true,
-      consentMethod: 'submit_implied',
-      source: 'notify_page',
-      userAgent: navigator.userAgent || ''
-    });
+    await saveWaitlistToFirestore(payload);
+    notifyWaitlistAdmin(payload);
 
     document.getElementById('formScreen').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
@@ -650,9 +669,15 @@ async function handleSubmit() {
   } catch (e) {
     console.error('waitlist submit failed:', e);
     setSubmitIdle();
-    alert(currentLang === 'ja'
-      ? '送信に失敗しました。少し時間をおいて再度お試しください。'
-      : 'Failed to submit. Please try again in a moment.');
+    const code = e && e.code;
+    const isConfig = code === 'waitlist_mail_not_configured' || (e && e.status === 503);
+    alert(isConfig
+      ? (currentLang === 'ja'
+        ? 'フォームの送信先がまだ設定されていません。しばらくしてから再度お試しいただくか、hello@poplist.site までご連絡ください。'
+        : 'This form is not fully configured yet. Try again later or email hello@poplist.site.')
+      : (currentLang === 'ja'
+        ? '送信に失敗しました。少し時間をおいて再度お試しください。'
+        : 'Failed to submit. Please try again in a moment.'));
   }
 }
 

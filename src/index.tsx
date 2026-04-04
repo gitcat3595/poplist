@@ -3,6 +3,14 @@ import { cors } from 'hono/cors'
 
 type Bindings = {
   OPENAI_API_KEY: string
+  /** Resend API key — https://resend.com (required for waitlist emails) */
+  RESEND_API_KEY?: string
+  /** Inbox that receives new waitlist signups (default: hello@poplist.site) */
+  WAITLIST_TO?: string
+  /** Verified sender, e.g. Poplist <notify@yourdomain.com> or Resend onboarding@resend.dev for testing */
+  RESEND_FROM?: string
+  /** If "true", send a short confirmation to the subscriber as well */
+  WAITLIST_SEND_CONFIRM?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -173,6 +181,123 @@ Output: Return ONLY a valid JSON array of translated strings, same order, same c
   } catch (e) {
     console.error('translate error:', e)
     return c.json({ texts: [] })
+  }
+})
+
+function escapeHtml(s: string) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/* ──────────────────────────────────────────
+   POST /api/waitlist
+   Body: notify.html payload (name, email, country, message, plan, lang, …)
+   Sends admin notification via Resend. Set secrets in Cloudflare Pages:
+   RESEND_API_KEY, RESEND_FROM, optional WAITLIST_TO, WAITLIST_SEND_CONFIRM=true
+────────────────────────────────────────── */
+app.post('/api/waitlist', async (c) => {
+  const key = c.env?.RESEND_API_KEY || ''
+
+  let body: Record<string, unknown>
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ ok: false, error: 'invalid_json' }, 400)
+  }
+
+  const name = String(body.name || '').trim().slice(0, 200)
+  const email = String(body.email || '').trim().toLowerCase().slice(0, 320)
+  const country = String(body.country || '').trim().slice(0, 32)
+  const message = String(body.message || '').trim().slice(0, 5000)
+  const plan = String(body.plan || 'early_launch').slice(0, 64)
+  const lang = body.lang === 'ja' ? 'ja' : 'en'
+  const source = String(body.source || 'notify_page').slice(0, 64)
+  const userAgent = String(body.userAgent || '').slice(0, 500)
+
+  if (!name || !EMAIL_RE.test(email) || !country) {
+    return c.json({ ok: false, error: 'validation' }, 400)
+  }
+
+  const to = (c.env?.WAITLIST_TO || 'hello@poplist.site').trim()
+  const from =
+    (c.env?.RESEND_FROM || 'Poplist <onboarding@resend.dev>').trim()
+  const sendConfirm = String(c.env?.WAITLIST_SEND_CONFIRM || '').toLowerCase() === 'true'
+
+  const rows = [
+    ['Name', name],
+    ['Email', email],
+    ['Country', country],
+    ['Plan tag', plan],
+    ['Lang', lang],
+    ['Source', source],
+    ['Message', message || '—'],
+    ['User-Agent', userAgent || '—'],
+  ]
+    .map(([k, v]) => `<tr><td style="padding:6px 12px 6px 0;font-weight:700;vertical-align:top">${escapeHtml(k)}</td><td style="padding:6px 0">${escapeHtml(v)}</td></tr>`)
+    .join('')
+
+  const adminHtml = `<p>New PRO / early-launch waitlist signup.</p>
+<table style="border-collapse:collapse;font-family:system-ui,sans-serif;font-size:14px">${rows}</table>`
+
+  const adminSubject = `[Poplist waitlist] ${name} — ${country}`
+
+  try {
+    const adminRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject: adminSubject,
+        html: adminHtml,
+        reply_to: email,
+      }),
+    })
+
+    if (!adminRes.ok) {
+      const errText = await adminRes.text()
+      console.error('Resend admin notify failed:', adminRes.status, errText)
+      return c.json({ ok: false, error: 'mail_send_failed' }, 502)
+    }
+
+    if (sendConfirm && EMAIL_RE.test(email)) {
+      const isJa = lang === 'ja'
+      const subj = isJa
+        ? 'Poplist — 登録ありがとうございます'
+        : "Poplist — You're on the list"
+      const html = isJa
+        ? `<p>${escapeHtml(name)} 様</p><p>PRO先行ローンチのお知らせをお送りする準備ができ次第、ご連絡します。</p><p>— Poplist</p>`
+        : `<p>Hi ${escapeHtml(name)},</p><p>Thanks for joining the waitlist. We'll email you when early access to PRO opens.</p><p>— Poplist</p>`
+      const confRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from,
+          to: [email],
+          subject: subj,
+          html,
+        }),
+      })
+      if (!confRes.ok) {
+        console.warn('Resend confirm email failed:', await confRes.text())
+      }
+    }
+
+    return c.json({ ok: true })
+  } catch (e) {
+    console.error('waitlist error:', e)
+    return c.json({ ok: false, error: 'server' }, 500)
   }
 })
 
