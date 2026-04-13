@@ -1,5 +1,5 @@
 // Poplist service worker — network-first for HTML, cache-first for static assets
-const CACHE = 'poplist-v5';
+const CACHE = 'poplist-v6';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());
@@ -15,6 +15,17 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+
+  // Never cache Firebase Auth / token APIs — cache-first broke some sign-in flows (404 to wrong "server")
+  const authHosts = [
+    'identitytoolkit.googleapis.com',
+    'securetoken.googleapis.com',
+    'www.googleapis.com',
+  ];
+  if (authHosts.includes(url.hostname)) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
 
   // Always go network-first for API routes and HTML pages
   if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.html') || url.pathname === '/') {

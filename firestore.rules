@@ -48,8 +48,9 @@ service cloud.firestore {
         && request.resource.data.source is string
         && request.resource.data.source.size() <= 64
         && request.resource.data.userAgent is string
-        && request.resource.data.userAgent.size() <= 500
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.userAgent.size() <= 500;
+      // Note: do not require createdAt == request.time — FieldValue.serverTimestamp()
+      // often fails that check in rules and causes permission-denied on create.
 
       allow read, update, delete: if false;
     }

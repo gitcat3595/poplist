@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/unified-footer.css">
+<script src="/js/firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
@@ -564,16 +565,10 @@ function setLang(lang) {
 document.getElementById('fieldCountry')?.addEventListener('change', updateCountryFlag);
 
 // ── Form submission: Firestore = source of truth (list in Console → Data → waitlist_signups)
-const FIREBASE_CONFIG = {
-  apiKey: 'AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8',
-  authDomain: 'poplist-ai.firebaseapp.com',
-  projectId: 'poplist-ai',
-  storageBucket: 'poplist-ai.firebasestorage.app',
-  messagingSenderId: '626209561981',
-  appId: '1:626209561981:web:f608569b981c2f56c18014'
-};
+const FIREBASE_CONFIG = window.__POPLIST_FIREBASE_CONFIG__ || {};
+const _FB_OK = FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).startsWith('REPLACE');
 let _db = null;
-try {
+if (_FB_OK) try {
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   _db = firebase.firestore();
 } catch (e) {
@@ -671,6 +666,19 @@ async function handleSubmit() {
     setSubmitIdle();
     const code = e && e.code;
     const isConfig = code === 'waitlist_mail_not_configured' || (e && e.status === 503);
+    const isPerm = code === 'permission-denied';
+    if (isPerm) {
+      alert(currentLang === 'ja'
+        ? '保存が拒否されました。Firebase Console の Firestore → Rules に waitlist_signups のルールを公開してください（リポジトリの firestore.rules を参照）。'
+        : 'Save was blocked. In Firebase Console → Firestore → Rules, publish rules that allow creating waitlist_signups (see firestore.rules in the repo).');
+      return;
+    }
+    if (code === 'database_unavailable' || (e && e.message === 'database_unavailable')) {
+      alert(currentLang === 'ja'
+        ? 'データベースに接続できません。/js/firebase-config.js に Firebase の Web 設定を入れてデプロイしたうえで、ページを再読み込みしてください。'
+        : 'Could not connect to the database. Add your Firebase Web config in /js/firebase-config.js, deploy, then reload this page.');
+      return;
+    }
     alert(isConfig
       ? (currentLang === 'ja'
         ? 'フォームの送信先がまだ設定されていません。しばらくしてから再度お試しいただくか、hello@poplist.site までご連絡ください。'

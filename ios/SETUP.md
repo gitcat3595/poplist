@@ -12,31 +12,22 @@ SwiftUI app with Firebase Auth (Apple, Google, Email) + Firestore sync + StoreKi
 
 ---
 
-## Step 1 — Firebase Project
+## Step 1 — Firebase Project (one project for **web + iOS**)
 
-1. Go to [console.firebase.google.com](https://console.firebase.google.com) → **Add project** → name it `poplist`
-2. In the project, go to **Authentication → Sign-in method** and enable:
+Use a **single** Firebase project so Auth, Firestore, and Analytics stay aligned.
+
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) → **Add project** (or open your existing Poplist project) on your **main** Google account.
+2. **Authentication → Sign-in method** — enable:
    - **Email/Password**
    - **Google**
-   - **Apple** (requires your Apple Developer Team ID — find it at developer.apple.com)
-3. Go to **Firestore Database** → **Create database** → choose production mode
-4. Set these **Security Rules** in Firestore:
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /tasks/{taskId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-    }
-  }
-}
-```
-
-5. Go to **Project Settings → Your apps** → click the iOS icon
-   - Bundle ID: `com.allerise.poplist`
-   - Download **GoogleService-Info.plist**
+   - **Apple** (when ready: needs Apple Developer Services ID + key; see Firebase’s Apple provider screen)
+3. **Authentication → Settings → Authorized domains** — add every site you use, e.g. `poplist.site`, `www.poplist.site`, your `*.pages.dev` host, and `localhost` for local dev.
+4. **Google Cloud Console** (same project) → **APIs & Services → Credentials** → open the **Web client** OAuth 2.0 client → **Authorized JavaScript origins** — add the same `https://…` origins (and `http://localhost:PORT` if you test locally). Without this, **Google sign-in on the web** often fails even when Firebase Auth is enabled.
+5. **Firestore Database** → **Create database** → production mode → **Rules** — copy the **entire** contents of the repo file **`firestore.rules`** (repo root) into the console and **Publish**. Do not use the shorter snippet below; the real file includes `users`, `tasks` updates, and `waitlist_signups` for `public/notify.html`.
+6. **Project settings → Integrations** — link **Google Analytics** if you use it; then your Web app `firebaseConfig` may include `measurementId` — add it to `public/js/firebase-config.js` in the web repo.
+7. **Project settings → Your apps**:
+   - **Web** — register the app → paste the `firebaseConfig` values into **`public/js/firebase-config.js`** (replace all `REPLACE_*`).
+   - **iOS** — **Add app** → Bundle ID: `com.allerise.poplist` → download **`GoogleService-Info.plist`** for Xcode (must be from **this same** project as the web app).
 
 ---
 

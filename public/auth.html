@@ -15,6 +15,7 @@
   <title>Poplist - Sign in</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <script src="/js/firebase-config.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <style>
@@ -149,14 +150,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8",
-      authDomain: "poplist-ai.firebaseapp.com",
-      projectId: "poplist-ai",
-      storageBucket: "poplist-ai.firebasestorage.app",
-      messagingSenderId: "626209561981",
-      appId: "1:626209561981:web:f608569b981c2f56c18014"
-    };
+    const FIREBASE_CONFIG = window.__POPLIST_FIREBASE_CONFIG__ || {};
+    const FB_OK = FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).startsWith('REPLACE');
 
     const msg = document.getElementById('msg');
     const toast = document.getElementById('toast');
@@ -220,13 +215,14 @@
 
     let auth = null;
 
-    try {
+    if (!FB_OK) {
+      say('Sign-in is not configured yet. Add your Firebase Web config in /js/firebase-config.js.');
+    } else try {
       if (!firebase.apps.length) {
         firebase.initializeApp(FIREBASE_CONFIG);
       }
       auth = firebase.auth();
     } catch (e) {
-      // If default app already exists or other non-fatal error, try to grab auth anyway
       try { auth = firebase.auth(); } catch (_) {}
       if (!auth) {
         say('Unable to connect to sign-in service. Please try again in a moment.');

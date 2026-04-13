@@ -1,28 +1,15 @@
-/* ══════════════════════════════════════════
-   FIREBASE — Auth + Firestore
-   ─────────────────────────────────────────
-   Replace the placeholder values below with your Firebase project config.
-   Get them from: console.firebase.google.com
-     → Project Settings → Your apps → Web app → SDK snippet → Config
-   These are safe for client-side code (not secrets).
-   Keep OPENAI_API_KEY and service-account keys server-side only.
-══════════════════════════════════════════ */
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDzGLbfZHBt-IrFfVSL-altSvl_MCJltE8",
-  authDomain: "poplist-ai.firebaseapp.com",
-  projectId: "poplist-ai",
-  storageBucket: "poplist-ai.firebasestorage.app",
-  messagingSenderId: "626209561981",
-  appId: "1:626209561981:web:f608569b981c2f56c18014",
-  measurementId: "G-KDGBC59VX3"
-};
+/* Load /js/firebase-config.js before this file. */
+const FIREBASE_CONFIG =
+  typeof window !== 'undefined' && window.__POPLIST_FIREBASE_CONFIG__
+    ? window.__POPLIST_FIREBASE_CONFIG__
+    : {};
 
 // Guest mode: max tasks before sign-in is required for sync
 const GUEST_MAX_TASKS = 5;
 
 let _auth = null, _db = null;
 const FB_READY = (() => {
-  if (FIREBASE_CONFIG.apiKey.startsWith('REPLACE')) return false; // not configured yet
+  if (!FIREBASE_CONFIG.apiKey || String(FIREBASE_CONFIG.apiKey).startsWith('REPLACE')) return false;
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
     _auth = firebase.auth();
