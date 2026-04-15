@@ -4066,9 +4066,27 @@ function splitJapanesePoliteBoundaries(s) {
   return poly.length > 1 ? poly : null;
 }
 
-/* する + next clause starting with kanji (no て) — e.g. …をする会議に出る */
-function splitJapaneseAfterSuruKanji(s) {
-  const parts = s.split(/(?<=する)(?=[\u4e00-\u9fff])/g).map(x => x.trim()).filter(x => x.length > 1);
+/* After する / 行う when the next chunk looks like a new clause (hiragana/katakana/kanji).
+   Exclude grammar tails: することが, 行うこと, するので, … */
+function splitJapaneseAfterSuruOrKou(s) {
+  if (!s || countCjkChars(s) <= 4) return null;
+  const badFollow =
+    'こと|もの|よう|ため|とき|ところ|のが|のは|ので|のに|から|まで|より|かどうか|ように|ような|ばかり|くらい|ほど|など|かも|だけ|しか|って|なら';
+  const re = new RegExp(
+    '(?<=(?:する|行う))(?=[\\u3040-\\u30ff\\u4e00-\\u9fff])(?!' + badFollow + ')',
+    'g'
+  );
+  const parts = s.split(re).map(x => x.trim()).filter(x => x.length > 1);
+  return parts.length > 1 ? parts : null;
+}
+
+/* …てもらうおばあちゃん… — speech often omits 、 between actions (no する between clauses). */
+function splitJapaneseAfterMorauBoundaries(s) {
+  if (!s || !/もらう/.test(s) || countCjkChars(s) <= 4) return null;
+  const nextClause =
+    'おばあちゃん|おじいちゃん|お父さん|お母さん|お兄さん|お姉さん|学校|会社|コネクテッド|支払い|請求|メール|電話|プリント|クレジット|郵送|依頼|ウェブ|銀行|病院|先生|空港|市役所|区役所|税務|保育園|幼稚園|習い事|予約|申込|申し込み|振込|送金|返信|提出';
+  const re = new RegExp('(?<=もらう)(?=' + nextClause + ')', 'g');
+  const parts = s.split(re).map(x => x.trim()).filter(x => x.length > 1);
   return parts.length > 1 ? parts : null;
 }
 
@@ -4112,7 +4130,13 @@ function splitLongJapaneseRunOn(s) {
     return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
   }
 
-  const suruBits = splitJapaneseAfterSuruKanji(s);
+  const morauBits = splitJapaneseAfterMorauBoundaries(s);
+  if (morauBits) {
+    const joined = morauBits.flatMap(b => splitLongJapaneseRunOn(b));
+    return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
+  }
+
+  const suruBits = splitJapaneseAfterSuruOrKou(s);
   if (suruBits) {
     const joined = suruBits.flatMap(b => splitLongJapaneseRunOn(b));
     return mergeTinyJapaneseSegments(joined.length > 0 ? joined : [s]);
