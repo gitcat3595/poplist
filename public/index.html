@@ -507,10 +507,15 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   flex:1; min-width:0;
   touch-action:manipulation;
   -webkit-touch-callout:none;
+  /* Avoid OS text-selection highlight on long-press (change category); allow selection when editing */
+  -webkit-user-select:none;
+  user-select:none;
+}
+.task-text:focus {
+  background:var(--surface);
   -webkit-user-select:text;
   user-select:text;
 }
-.task-text:focus { background:var(--surface) }
 
 /* Chip — no × icon, clean pill, cycles on click */
 .timing-chip {
@@ -3207,6 +3212,8 @@ function moveCatTaskItem(item, newCatEn) {
   const addRow = newCard.querySelector('.add-task-row');
   addRow.parentNode.insertBefore(item, addRow);
   newCard.classList.add('was-used');
+  newCard.classList.remove('empty');
+  newCard.classList.remove('filtered-empty');
   newCard.style.display = '';
 
   // Update counts on both cards
@@ -3217,11 +3224,19 @@ function moveCatTaskItem(item, newCatEn) {
     // Hide old card if now empty
     if (card === oldCard && card.querySelectorAll('.task-item').length === 0) {
       card.style.display = 'none';
+      card.classList.add('empty');
     }
   });
 
   updateScreenState();
-  reapplyFilter(); // keep active filter consistent after category move
+  const activeBtn = document.querySelector('.filter-btn.active');
+  const f = activeBtn?.dataset.filter || 'all';
+  if (f === 'all') {
+    document.querySelectorAll('.task-item').forEach(i => { i.style.display = ''; });
+    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('filtered-empty'));
+  } else {
+    reapplyFilter();
+  }
 
   if (!state.isLoggedIn) saveTaskCache();
   else if (item.dataset.fsId) fsUpdateTaskCategory(item.dataset.fsId, newCatEn);
@@ -3253,6 +3268,10 @@ function attachTaskText(taskText) {
     else taskText.dataset.textEn = taskText.textContent;
   });
 
+  taskText.addEventListener('selectstart', e => {
+    if (document.activeElement !== taskText) e.preventDefault();
+  });
+
   taskText.addEventListener('pointerdown', e => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     pressStartX = e.clientX;
@@ -3266,7 +3285,9 @@ function attachTaskText(taskText) {
       window.getSelection()?.removeAllRanges();
       taskText.blur();
       const item = taskText.closest('.task-item');
-      if (item) openCatEdit(item);
+      if (item) {
+        openCatEdit(item);
+      }
     }, LONG_MS);
   });
   const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
@@ -5668,10 +5689,17 @@ function initCatCollapseHeader(header) {
   };
   const lpCancel = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } };
 
-  header.addEventListener('mousedown', e => { if (e.button === 0) lpStart(); });
+  header.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    if (e.target.closest('.cat-header-right')) return;
+    lpStart();
+  });
   header.addEventListener('mouseup', lpCancel);
   header.addEventListener('mouseleave', lpCancel);
-  header.addEventListener('touchstart', lpStart, { passive:true });
+  header.addEventListener('touchstart', e => {
+    if (e.target.closest('.cat-header-right')) return;
+    lpStart();
+  }, { passive:true });
   header.addEventListener('touchend', lpCancel);
   header.addEventListener('touchcancel', lpCancel);
 
