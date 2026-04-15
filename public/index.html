@@ -727,6 +727,20 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
 
 /* Settings structure */
 .settings-section      { margin-bottom:20px }
+/* Keep Account / login visible while scrolling long settings (e.g. to Categories) */
+#settingsModal #accountSection {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: var(--card);
+  padding-top: 6px;
+  margin-top: -6px;
+  box-shadow: 0 10px 12px -10px rgba(0,0,0,.14);
+}
+body.pl-cat-reorder-touch #settingsModal .modal-sheet {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
 .settings-section-label {
   font-size:10px; font-weight:800; text-transform:uppercase;
   letter-spacing:.8px; color:var(--t3); margin-bottom:8px;
@@ -4502,6 +4516,15 @@ state.categories = [
   { id:'other',    en:'Other',    ja:'その他',  keywords:[], customKeywords:[] },
 ];
 
+/** Pill text in settings → follows UI language (see refreshCategoryKeywordsForDisplayLang). */
+function keywordPillLabel(cat, canonical) {
+  if (!cat.kwI18n) cat.kwI18n = {};
+  const rec = cat.kwI18n[canonical];
+  if (!rec) return canonical;
+  if (state.lang === 'ja') return (rec.ja && String(rec.ja).trim()) || rec.en || canonical;
+  return (rec.en && String(rec.en).trim()) || rec.ja || canonical;
+}
+
 function buildCatList() {
   const list = document.getElementById('catList');
   if (!list) return;
@@ -4518,7 +4541,10 @@ function buildCatList() {
     const handle = document.createElement('div');
     handle.className = 'cat-drag-handle';
     handle.innerHTML = '<span></span><span></span><span></span>';
-    handle.setAttribute('title', 'Drag to reorder');
+    handle.dataset.titleEn = 'Drag to reorder';
+    handle.dataset.titleJa = 'ドラッグで並べ替え';
+    handle.title = state.lang === 'ja' ? handle.dataset.titleJa : handle.dataset.titleEn;
+    handle.draggable = !!state.isProUser;
     row.appendChild(handle);
     const dotEl = document.createElement('div');
     dotEl.className = 'cat-item-dot'; dotEl.style.background = 'var(--blue)';
@@ -4546,19 +4572,36 @@ function buildCatList() {
       item.classList.toggle('open');
       syncKwLabel();
     });
-    // Desktop: HTML5 drag-and-drop via handle
-    item.draggable = false; // only enable when handle is grabbed
-    handle.addEventListener('mousedown', () => { item.draggable = true; });
-    item.addEventListener('dragend',     () => { item.draggable = false; item.classList.remove('dragging'); });
-    item.addEventListener('dragstart', e => {
+    // Desktop: drag from hamburger handle only (item was not draggable → DnD never started)
+    handle.addEventListener('dragstart', e => {
+      if (!state.isProUser) {
+        e.preventDefault();
+        return;
+      }
+      e.stopPropagation();
       item.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', cat.id);
     });
-    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+    handle.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      document.querySelectorAll('#catList .cat-item.drag-over').forEach(n => n.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragenter', e => {
+      if (!state.isProUser) return;
+      e.preventDefault();
+    });
+    item.addEventListener('dragover', e => {
+      if (!state.isProUser) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      item.classList.add('drag-over');
+    });
     item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
     item.addEventListener('drop', e => {
-      e.preventDefault(); item.classList.remove('drag-over');
+      if (!state.isProUser) return;
+      e.preventDefault();
+      item.classList.remove('drag-over');
       const fromId = e.dataTransfer.getData('text/plain');
       if (fromId === cat.id) return;
       const fromIdx = state.categories.findIndex(c => c.id === fromId);
@@ -4568,17 +4611,37 @@ function buildCatList() {
       state.categories.splice(toIdx, 0, moved);
       buildCatList();
     });
-    // Mobile: long-press to activate drag (300ms)
-    let _lpTimer = null, _lpStartY = 0;
+    // Mobile: long-press handle, then drag (cancel only if finger moves ~10px+ before hold completes)
+    let _lpTimer = null;
+    let _lpStartX = 0;
+    let _lpStartY = 0;
     handle.addEventListener('touchstart', e => {
-      _lpStartY = e.touches[0].clientY;
+      if (!state.isProUser) return;
+      const t = e.touches[0];
+      _lpStartX = t.clientX;
+      _lpStartY = t.clientY;
       _lpTimer = setTimeout(() => {
+        _lpTimer = null;
         item.classList.add('dragging');
         _doTouchDrag(item, cat.id, list);
-      }, 280);
+      }, 420);
     }, { passive:true });
-    handle.addEventListener('touchmove',  () => clearTimeout(_lpTimer), { passive:true });
-    handle.addEventListener('touchend',   () => clearTimeout(_lpTimer), { passive:true });
+    handle.addEventListener('touchmove', e => {
+      if (!_lpTimer) return;
+      const t = e.touches[0];
+      const dx = t.clientX - _lpStartX;
+      const dy = t.clientY - _lpStartY;
+      if (dx * dx + dy * dy > 100) {
+        clearTimeout(_lpTimer);
+        _lpTimer = null;
+      }
+    }, { passive:true });
+    handle.addEventListener('touchend', () => {
+      if (_lpTimer) {
+        clearTimeout(_lpTimer);
+        _lpTimer = null;
+      }
+    }, { passive:true });
     item.appendChild(row);
 
     // Keyword section (shown when open)
@@ -4630,9 +4693,11 @@ function buildCatList() {
           if (!kw || cat.customKeywords.includes(kw)) return;
           cat.customKeywords.push(kw);
           if (!cat.keywords.includes(kw)) cat.keywords.push(kw);
+          cat.kwI18n = cat.kwI18n || {};
+          if (state.lang === 'ja') cat.kwI18n[kw] = { en: '', ja: kw };
+          else cat.kwI18n[kw] = { en: kw, ja: '' };
           rebuildDetectRegex();
           renderKws();
-          // Auto-translate silently: add other-language version for bilingual matching
           const targetLang = state.lang === 'ja' ? 'en' : 'ja';
           fetch('/api/translate', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -4643,6 +4708,11 @@ function buildCatList() {
               cat.keywords.push(t);
               rebuildDetectRegex();
             }
+            if (t && cat.kwI18n[kw]) {
+              if (targetLang === 'en') cat.kwI18n[kw].en = t;
+              else cat.kwI18n[kw].ja = t;
+              renderKws();
+            }
           }).catch(()=>{});
         }
       });
@@ -4652,9 +4722,18 @@ function buildCatList() {
       {
         const renameRow = document.createElement('div');
         renameRow.style.cssText = 'width:100%;display:flex;align-items:center;gap:6px;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)';
-        renameRow.innerHTML = `<span style="font-size:11px;color:var(--t3);font-weight:600">${state.lang==='ja'?'名前を変更:':'Rename:'}</span>
-          <input type="text" value="${state.lang==='ja'?cat.ja:cat.en}" style="flex:1;font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--card);color:var(--t1);outline:none;font-family:inherit">`;
-        const renameInp = renameRow.querySelector('input');
+        const hint = document.createElement('span');
+        hint.className = 'cat-rename-hint';
+        hint.dataset.en = 'Rename:';
+        hint.dataset.ja = '名前を変更:';
+        hint.style.cssText = 'font-size:11px;color:var(--t3);font-weight:600';
+        hint.textContent = state.lang === 'ja' ? hint.dataset.ja : hint.dataset.en;
+        const renameInp = document.createElement('input');
+        renameInp.type = 'text';
+        renameInp.value = state.lang === 'ja' ? cat.ja : cat.en;
+        renameInp.style.cssText = 'flex:1;font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--card);color:var(--t1);outline:none;font-family:inherit';
+        renameRow.appendChild(hint);
+        renameRow.appendChild(renameInp);
         renameInp.addEventListener('change', () => {
           const newName = renameInp.value.trim();
           if (!newName) return;
@@ -4683,23 +4762,39 @@ function buildCatList() {
 
 /* ── Touch drag-to-reorder for cat list (mobile long-press on handle) ── */
 function _doTouchDrag(dragItem, dragId, list) {
-  const items = () => [...list.querySelectorAll('.cat-item')];
   let over = null;
-  function onMove(e) {
-    const touch = e.touches[0];
-    const el = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cat-item');
+  document.body.classList.add('pl-cat-reorder-touch');
+  function pickTarget(clientX, clientY) {
+    const el = document.elementFromPoint(clientX, clientY)?.closest('.cat-item');
     if (over && over !== el) over.classList.remove('drag-over');
-    if (el && el !== dragItem) { el.classList.add('drag-over'); over = el; }
+    if (el && el !== dragItem) {
+      el.classList.add('drag-over');
+      over = el;
+    } else {
+      over = null;
+    }
   }
-  function onEnd() {
+  function onMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    if (!touch) return;
+    pickTarget(touch.clientX, touch.clientY);
+  }
+  let _ended = false;
+  function onEnd(e) {
+    if (_ended) return;
+    _ended = true;
+    const t = e.changedTouches && e.changedTouches[0];
+    if (t) pickTarget(t.clientX, t.clientY);
     document.removeEventListener('touchmove', onMove);
     document.removeEventListener('touchend', onEnd);
+    document.removeEventListener('touchcancel', onEnd);
+    document.body.classList.remove('pl-cat-reorder-touch');
     dragItem.classList.remove('dragging');
     if (over) {
       over.classList.remove('drag-over');
       const fromIdx = state.categories.findIndex(c => c.id === dragId);
-      const toId    = over.dataset.id;
-      const toIdx   = state.categories.findIndex(c => c.id === toId);
+      const toIdx   = state.categories.findIndex(c => c.id === over.dataset.id);
       if (fromIdx >= 0 && toIdx >= 0 && fromIdx !== toIdx) {
         const [moved] = state.categories.splice(fromIdx, 1);
         state.categories.splice(toIdx, 0, moved);
@@ -4707,15 +4802,37 @@ function _doTouchDrag(dragItem, dragId, list) {
       }
     }
   }
-  document.addEventListener('touchmove', onMove, { passive:true });
+  document.addEventListener('touchmove', onMove, { passive: false });
   document.addEventListener('touchend', onEnd);
+  document.addEventListener('touchcancel', onEnd);
 }
 
-/* Show drag handles when Pro is active */
+/* Show drag handles when Pro is active; keep draggable + tooltips in sync after PRO unlock / language */
 function updateCatDragHandles() {
   const catList = document.getElementById('catList');
   if (!catList) return;
   catList.classList.toggle('pro-active', !!state.isProUser);
+  const isJA = state.lang === 'ja';
+  catList.querySelectorAll('.cat-drag-handle').forEach(h => {
+    h.draggable = !!state.isProUser;
+    if (h.dataset.titleEn) {
+      h.title = isJA ? (h.dataset.titleJa || h.dataset.titleEn) : h.dataset.titleEn;
+    }
+  });
+}
+
+function syncSettingsCatListLang(isJA) {
+  document.querySelectorAll('#catList .cat-item-name').forEach(el => {
+    const id = el.closest('.cat-item')?.dataset?.id;
+    const cat = state.categories.find(c => c.id === id);
+    if (cat) el.textContent = isJA ? cat.ja : cat.en;
+  });
+  document.querySelectorAll('#catList .cat-rename-hint').forEach(h => {
+    if (h.dataset.en != null) h.textContent = isJA ? h.dataset.ja : h.dataset.en;
+  });
+  document.querySelectorAll('#catList .kw-add-input').forEach(inp => {
+    inp.placeholder = isJA ? ('+ ' + '\u30ad\u30fc\u30ef\u30fc\u30c9') : '+ keyword';
+  });
 }
 
 function rebuildDetectRegex() {
@@ -5086,11 +5203,7 @@ function updateBubblePreview() {
      tasks/{docId}: { text, category, timing, isDone, userId, createdAt }
 ══════════════════════════════════════════ */
 
-// Hide Account section entirely if Firebase not configured (demo/preview mode)
-if (!FB_READY) {
-  const acctSection = document.getElementById('accountSection');
-  if (acctSection) acctSection.style.display = 'none';
-}
+/* Account stays visible: Log in → /auth.html (auth page explains if Firebase is not configured). */
 if (PRE_RELEASE) {
   document.body.classList.add('pre-release');
   document.title = 'Poplist — Preview';
@@ -5492,6 +5605,7 @@ function refreshProFeatureLocks() {
   const wrap = document.getElementById('proPickerWrap');
   if (!wrap) return;
   wrap.classList.toggle('free-non-pro', FB_READY && !state.isProUser);
+  updateCatDragHandles();
 }
 
 /* Non-PRO (with Firebase): only default blue accent; custom palette is PRO */
@@ -5680,10 +5794,13 @@ function initCatCollapseHeader(header) {
     lpTimer = setTimeout(() => {
       lpTimer = null;
       openM('settingsModal');
-      const panel = document.querySelector('#settingsModal .settings-panel');
+      const sheet = document.querySelector('#settingsModal .modal-sheet');
       const catTitle = document.getElementById('catSectionLabel');
-      if (panel && catTitle) {
-        panel.scrollTo({ top: catTitle.offsetTop - 40, behavior: 'smooth' });
+      if (sheet && catTitle) {
+        requestAnimationFrame(() => {
+          const dy = catTitle.getBoundingClientRect().top - sheet.getBoundingClientRect().top + sheet.scrollTop;
+          sheet.scrollTo({ top: Math.max(0, dy - 8), behavior: 'smooth' });
+        });
       }
     }, 550);
   };
@@ -5838,6 +5955,8 @@ async function applyLang(lang) {
   }
 
   refreshHomePrompt(lang);
+  updateCatDragHandles();
+  syncSettingsCatListLang(isJA);
 
   // Translate task texts — use cached translation if available, else fetch from API
   const dataKey = isJA ? 'textJa' : 'textEn';
