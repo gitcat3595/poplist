@@ -966,6 +966,13 @@ input  { font-family:inherit; -webkit-appearance:none; border-radius:0; }
   font-size:10px; font-weight:800; text-transform:uppercase;
   letter-spacing:.8px; color:var(--t3); margin-bottom:12px;  /* same as section-label */
 }
+.pro-block-title--with-action {
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px;
+}
+.pro-block-title--with-action > span:first-child {
+  font-size:inherit; font-weight:inherit; letter-spacing:inherit;
+  color:inherit; text-transform:inherit;
+}
 .pro-label-row {
   display:flex; align-items:center; gap:8px;
   padding:0 0 8px;            /* no extra left padding — flush with section-label */
@@ -2132,11 +2139,12 @@ GoogleService-Info.plist
         </div>
         <div class="pro-divider"></div>
         <div class="pro-block">
-          <div class="pro-block-title" data-en="Categories" data-ja="カテゴリー">
-            Categories
-            <button type="button" class="cat-edit-hint-btn" id="catTitleHint"
-              title="Tap category name to edit"
-              style="margin-left:6px;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:var(--raised);color:var(--t3);font-size:11px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+          <div class="pro-block-title pro-block-title--with-action">
+            <span id="catSectionLabel" data-en="Categories" data-ja="カテゴリー">Categories</span>
+            <button type="button" class="cat-help-btn" id="catTitleHint"
+              data-title-en="Tap category name to edit"
+              data-title-ja="カテゴリー名をタップして編集"
+              title="Tap category name to edit">
               ?
             </button>
           </div>
@@ -5628,23 +5636,6 @@ function initCatCollapseHeader(header) {
     arrow.setAttribute('aria-hidden', 'true');
     rightGroup.appendChild(arrow);
   }
-  const card = header.closest('.category-card');
-  if (card?.id === 'cat-work' && !header.querySelector('.cat-help-btn')) {
-    const help = document.createElement('button');
-    help.type = 'button';
-    help.className = 'cat-help-btn';
-    help.textContent = '?';
-    help.setAttribute('aria-label', state.lang === 'ja' ? 'カテゴリー編集のヒント' : 'Category edit hint');
-    help.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      showToast(state.lang === 'ja' ? 'カテゴリ名を編集するにはタイトルをダブルタップ' : 'Tap category title twice to edit category');
-    });
-    const nameEl = header.querySelector('.cat-name');
-    if (nameEl?.after) nameEl.after(help);
-    else header.insertBefore(help, rightGroup);
-  }
-
   function toggleCollapse() {
     const c = header.closest('.category-card');
     if (c) c.classList.toggle('cat-collapsed');
@@ -5669,7 +5660,7 @@ function initCatCollapseHeader(header) {
       lpTimer = null;
       openM('settingsModal');
       const panel = document.querySelector('#settingsModal .settings-panel');
-      const catTitle = document.querySelector('.pro-block-title[data-en="Categories"]');
+      const catTitle = document.getElementById('catSectionLabel');
       if (panel && catTitle) {
         panel.scrollTo({ top: catTitle.offsetTop - 40, behavior: 'smooth' });
       }
@@ -5806,6 +5797,10 @@ async function applyLang(lang) {
   document.querySelectorAll('.cat-name[data-en]').forEach(el => {
     el.textContent = isJA ? el.dataset.ja : el.dataset.en;
   });
+  const catTitleHint = document.getElementById('catTitleHint');
+  if (catTitleHint && catTitleHint.dataset.titleEn) {
+    catTitleHint.title = isJA ? (catTitleHint.dataset.titleJa || catTitleHint.dataset.titleEn) : catTitleHint.dataset.titleEn;
+  }
   // Update defaultDeadlineChip text
   const ddc = document.getElementById('defaultDeadlineChip');
   if (ddc) {
